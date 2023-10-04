@@ -1,10 +1,15 @@
 // var JSDOM = require( 'jsdom' ).JSDOM,
-var happyDOMWindow = require( 'happy-dom' ).Window,
-// copy to ./js-externs/externs.js
-    CLEANUP_ONLY_1ST_AND_LAST_LINEBREAKS = {script:!0,style:!0,textarea:!0,noscript:!0},
-    
-    returnWithoutStrictness = false;
+var happyDOMWindow = require( 'happy-dom' ).Window;
 
+var CLEANUP_ONLY_1ST_AND_LAST_LINEBREAKS = { script : !0, style : !0, textarea : !0 };
+    
+var returnWithoutStrictness = false;
+
+/**
+ * @param {string} htmlString
+ * @param {string|!Object=} opt_selector
+ * @param {!Object=} opt_options
+ */
 p_html2json = function( htmlString, opt_selector, opt_options ){
     var json                 = [],
         currentChildNodeList = json,
@@ -12,9 +17,9 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         selector             = typeof opt_selector === 'string' ? opt_selector : '',
         
         options              = opt_selector && typeof opt_selector === 'object' ? opt_selector : opt_options || {},
-        trimWhitespace       = options.trimWhitespace,
-        keepCommnets         = !!options.keepCommnets,
-        argumentBrackets     = options.argumentBrackets || '()',
+        trimWhitespace       = options[ 'trimWhitespace' ],
+        keepCommnets         = !!options[ 'keepCommnets' ],
+        argumentBrackets     = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket    = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
         argClosingBracket    = argumentBrackets.substr( argumentBrackets.length ),
 
@@ -22,10 +27,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
 
         window               = new happyDOMWindow(),
         document             = window.document,
-        // jsdom                = new JSDOM( htmlString, { includeNodeLocations : true } ),
-        // document             = jsdom.window.document,
-        currentNode,
-        /* isDocument, */ targetNodes, i = 0, l;
+        currentNode, targetNodes, i = 0, l;
 
     // https://github.com/capricorn86/happy-dom-performance-test/blob/3f1fd6c5d814e66c4a27ce21ed14c56799fb2de0/lib/happy-dom.test.js#L15
     document.write( htmlString );
@@ -61,23 +63,28 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
     };
     return json;
 
+    /**
+     * 
+     * @param {!Node} currentNode 
+     * @param {!Array} currentChildNodeList 
+     * @param {boolean} underPreTag 
+     * @param {boolean} cleanupOnly1stAndLastLineBreaks 
+     * @return {!Array} 
+     */
     function walkNode( currentNode, currentChildNodeList, underPreTag, cleanupOnly1stAndLastLineBreaks ){
         var returnChildNodeList,
             textContent = currentNode.data,
-            functionNameAndArgs, nextNode; //,
-            // generatedByJsdom = !jsdom.nodeLocation( currentNode );
-            // console.log(currentNode.tagName || currentNode.data)
+            functionNameAndArgs, nextNode;
 
         switch( currentNode.nodeType ){
             case 1 :
-                var attributes      = {},
-                    childNodeList   = [],
-                    tagName         = currentNode.tagName.toLowerCase(),
-                    isPreTag        = tagName === 'pre',
+                var attributes     = {},
+                    tagName        = currentNode.tagName.toLowerCase(),
+                    isPreTag       = tagName === 'pre',
                     vdomChildNodes = currentNode.childNodes,
                     vdomAttrs      = currentNode.attributes,
-                    numAttrs        = vdomAttrs.length,
-                    i, l, attribute, attrName, attrValue, className = '', textNode;
+                    numAttrs       = vdomAttrs.length,
+                    i, l, attribute, attrName, attrValue, className = '', childNodeList, textNode;
 
                 for( i = 0, l = numAttrs; i < l ; ++i ){
                     attribute = vdomAttrs.item( i ),
@@ -130,24 +137,31 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         };
                     };
                 };
-                for( i = 0; i < vdomChildNodes.length; ++i ){
-                    walkNode( vdomChildNodes[ i ], childNodeList, isPreTag || underPreTag, CLEANUP_ONLY_1ST_AND_LAST_LINEBREAKS[ tagName ] );
+
+                if( tagName === 'noscript' ){
+                    returnWithoutStrictness = true;
+                    childNodeList = p_html2json( vdomChildNodes[ 0 ].data, 'body>*', options );
+                    returnWithoutStrictness = false;
+                } else {
+                    childNodeList = [];
+                    for( i = 0; i < vdomChildNodes.length; ++i ){
+                        walkNode( vdomChildNodes[ i ], childNodeList, isPreTag || underPreTag, CLEANUP_ONLY_1ST_AND_LAST_LINEBREAKS[ tagName ] );
+                    };
                 };
+
                 if( childNodeList.length === 1 && p_isStringOrNumber( childNodeList[ 0 ] ) ){
                     childNodeList = childNodeList[ 0 ];
                 };
 
-                //if( !generatedByJsdom ){
-                    if( numAttrs && ( childNodeList.length || p_isNumber( childNodeList ) ) ){
-                        currentChildNodeList.push( [ tagName, attributes, childNodeList ] );
-                    } else if( numAttrs ){
-                        currentChildNodeList.push( [ tagName, attributes ] );
-                    } else if( childNodeList.length || p_isNumber( childNodeList ) ){
-                        currentChildNodeList.push( [ tagName, childNodeList ] );
-                    } else {
-                        currentChildNodeList.push( [ tagName ] );
-                    };
-                //};
+                if( childNodeList.length || p_isNumber( childNodeList ) ){
+                    numAttrs
+                        ? currentChildNodeList.push( [ tagName, attributes, childNodeList ] )
+                        : currentChildNodeList.push( [ tagName, childNodeList ] );
+                } else {
+                    numAttrs
+                        ? currentChildNodeList.push( [ tagName, attributes ] )
+                        : currentChildNodeList.push( [ tagName ] );
+                };
                 break;
             // case 2 :
             case 3 :
@@ -237,25 +251,32 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 };
                 break;
             case 10 :
-                // if( !generatedByJsdom ){
-                    var xmlDeclarationAndDocumentType =
-                            htmlString.substr( 0, htmlString.indexOf( '>', htmlString.indexOf( '<!DOCTYPE ' ) ) + 1 )
-                                      .split( '\n' ).join( ' ' )      // 宣言中の改行を半角スペースに
-                                      .split( '  ' ).join( ' ' )      // 2つ以上の半角スペースをスペースに
-                                      .split( '> <' ).join( '>\n<' ); // xml 宣言と doctype 宣言の間は半角スペースで
+                var xmlDeclarationAndDocumentType =
+                        htmlString.substr( 0, htmlString.indexOf( '>', htmlString.indexOf( '<!DOCTYPE ' ) ) + 1 )
+                                    .split( '\n' ).join( ' ' )      // 宣言中の改行を半角スペースに
+                                    .split( '  ' ).join( ' ' )      // 2つ以上の半角スペースをスペースに
+                                    .split( '> <' ).join( '>\n<' ); // xml 宣言と doctype 宣言の間は半角スペースで
 
-                    currentChildNodeList.push( HTML_JSON_TYPE_DOCUMENT_NODE, xmlDeclarationAndDocumentType, returnChildNodeList = [] );
-                    // isDocument = true;
-                // };
+                currentChildNodeList.push( HTML_JSON_TYPE_DOCUMENT_NODE, xmlDeclarationAndDocumentType, returnChildNodeList = [] );
                 break;
         };
         return returnChildNodeList || currentChildNodeList;
     };
 
+    /**
+     * 
+     * @param {string} textContent 
+     * @return {string} 
+     */
     function getIECondition( textContent ){
         return extractStringBetween( textContent, '[', ']' );
     };
 
+    /**
+     * 
+     * @param {*} string 
+     * @return {{ name : string, args : (!Array|void) }} 
+     */
     function codeToObject( string ){
         var from = string.indexOf( argOpeningBracket ),
             name = trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ), // 先頭と最後の半角スペースを削除
@@ -279,6 +300,13 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                    .split( '&gt;' ).join( '>' );
     };
 
+    /**
+     * 
+     * @param {string} string 
+     * @param {string} fromString 
+     * @param {string} toString 
+     * @return {string} 
+     */
     function extractStringBetween( string, fromString, toString ){
         var from = string.indexOf( fromString ) + fromString.length,
             to   = string.indexOf( toString, from );
@@ -286,6 +314,11 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         return string.substring( from, to );
     };
 
+    /**
+     * 
+     * @param {!Element} htmlElement 
+     * @return {!Node} 
+     */
     function getFirstTextNode( htmlElement ){
         var childNodes = htmlElement.childNodes,
             i = 0, l = childNodes.length, node;
@@ -301,6 +334,11 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         };
     };
 
+    /**
+     * 
+     * @param {!Element} htmlElement 
+     * @return {!Node} 
+     */
     function getLastTextNode( htmlElement ){
         var childNodes = htmlElement.childNodes,
             i = childNodes.length, node;
@@ -316,10 +354,20 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         };
     };
 
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
     function removeWhitespace( string ){
         return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
     };
 
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
     function trimChar( string, chr ){
         while( string.charAt( 0 ) === chr ){ string = string.substr( 1 ); };
         while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };

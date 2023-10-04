@@ -13,6 +13,7 @@ gulp.task(
                     [
                         './src/js/1_global.js',
                         './src/js/2_packageGlobal.js',
+                        './src/js/3_moduleGlobal.js',
                         './src/js/html2json.js'
                     ]
                 ).pipe(
@@ -23,7 +24,7 @@ gulp.task(
                                 'void 0'
                             ],
                             basePath          : [
-                                './src/js/'
+                                './src' // not ./src/js
                             ]
                         }
                     )

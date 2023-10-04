@@ -112,15 +112,15 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 
 ## 4. HTML.Json 定義
 
-|                                  | 第1引数                     | 第2引数                               | 第3引数               | 第4引数               |
+|                                  | 第1要素                     | 第2要素                               | 第3要素               | 第4要素               |
 |:---------------------------------|:----------------------------|:--------------------------------------|:----------------------|:----------------------|
 | DOCUMENT_NODE                    | `0`                         | `"<!DOCTYPE html>"` *5                | -                     | -                     |
 | DOCUMENT_FRAGMENT_NODE           | `1`                         | `[]`                                  | -                     | -                     |
 | HTML_ELEMENT *4                  | `2`                         | `"input"`                             | `{}`                  | `[]` or `textContent` |
 | タグ名(.class#id) *1, *2         | `"input"`, `"p.main#main"`  |`{type:"text",style:{color:"red"}}` *3 | `[]` or `textContent` | -                     |
-| TEXT_NODE                        | `3`                         | `textContent`                         | -                     | -                     |
+| TEXT_NODE                        | `3`                         | `textContent` *6                      | -                     | -                     |
 | COMMENT_NODE                     | `4`                         | `string`                              | -                     | -                     |
-| 下の階層が隠れる条件付きコメント | `5`                         | `"(IE)&(vml)"`                        | `string`              | -                     |
+| 下の階層が隠れる条件付きコメント | `5`                         | `"(IE)&(vml)"`                        | `[]` or `textContent` | -                     |
 | 下の階層が見える条件付きコメント | `6`                         | `"!(IE)"`                             | `[]` or `textContent` | -                     |
 | 動的コンテンツ                   | `7`                         | `"メソッド名"`                        | `[]` メソッドの引数   | -                     |
 
@@ -129,7 +129,7 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 3. 省略が可能。値が `""` or `==null` では属性は追加されない。style 属性は ハッシュで記述する。`{style:{}}`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onReachDynamicContentsCallback で使用
 5. XHTML では `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
-6. TODO `textContent` は `string` または Finite な `number`
+6. `textContent` は `string` または Finite な `number`
 
 下の階層が隠れる条件付きコメント下に動的コンテンツを含むことは出来ません。これは、条件付きコメントの下にはパース出来ない html 文字列片を含む為です。
 動的コンテンツで、下の階層が隠れる条件付きコメントを含むコンテンツを出力するようにします。
@@ -180,7 +180,7 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 
 子要素が単一のテキストノード以外の場合は、必ず `[]` で囲む。子要素が単一の HTML 要素でも次のようになる。 `[ [ "br" ] ]`
 
-子要素が、TextNode, `<br>`, TextNode の場合は `[ "Hello,", [ "br" ], "World!" ]`
+子要素が、`Text`, `<br>`, `Text` の場合は `[ "Hello,", [ "br" ], "World!" ]`
 
 ### 4.3. TextNode
 
@@ -241,8 +241,8 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
      * 先頭または最後、または連続する半角スペースの保護には `\u0020` を使う。この工程で半角スペースに変換される。
      * `&#32;` は jsdom で半角スペースに変換されてしまう為、`&#32;` を削除から保護することは出来ない。
    * ここ迄で空文字列 `""` になった場合は、テキストノードは作られない
-   * この作業の行われないのは `<script>` `<style>` `<textarea>` `<noscript>` と `<pre>` の子要素。
-2. `<script>` `<style>` `<textarea>` `<noscript>` 下用の不要な空白文字の削除
+   * この作業の行われないのは `<script>` `<style>` `<textarea>` と `<pre>` の子要素。
+2. `<script>` `<style>` `<textarea>` 下用の不要な空白文字の削除
    * テキストノードの最初と最後の改行文字を削除
    * TODO JSON-LD を最小化
 3. `<pre>` 下用の不要な空白文字の削除
@@ -252,7 +252,7 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
    * 最後のテキストノードの最後が改行文字なら改行文字を削除
 4. コメントノードの削除
    * 条件付きコメント以外を削除します。
-   * TODO コメントノードのキープ
+   * コメントノードのキープ
    * 参考 [IEでコメントノードを事前に除去し速度を稼ぐ](https://uupaa.hatenadiary.org/entry/20091203/1259820356), [コメントがフロートの位置をずらす](https://web.archive.org/web/20110519022142/http://css-bug.jp/win/ie/ver6/0424/)
 
 ### 5.1. 公開用 HTML の為の機械処理

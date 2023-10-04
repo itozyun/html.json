@@ -1,13 +1,12 @@
-// copy to ./js-externs/externs.js
-var EMPTY_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base:!0,col:!0,embed:!0,keygen:!0,param:!0/* ,source:!0 */}, // TODO Opera 9 support
-    OMIT_CLOSE_TAG   = {p:!0,dt:!0,dd:!0,li:!0,option:!0,thead:!0,tfoot:!0,th:!0,tr:!0,td:!0,rt:!0,rp:!0,optgroup:!0,caption:!0,colgroup:!0,col:!0},
-    NO_OMIT_CLOSE    = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
-    IS_XML_ROOT      = {svg:!0, math:!0},
-    // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-    EXCLUDE_FROM_P   = {table:!0,img:!0,svg:!0,picture:!0,object:!0,embed:!0,video:!0,audio:!0,blockquot:!0,form:!0,fieldset:!0},
-    SKIP_HTML_ESCAPE = {script:!0,style:!0,plaintext:!0,xmp:!0,noscript:!0};
-    // Special Elements (can contain anything)
-
+/**
+ * 
+ * @param {!Array} json 
+ * @param {*} onReachDynamicContent 
+ * @param {*} opt_useQuotAllways 
+ * @param {*} opt_useConmma 
+ * @param {*} opt_errorHandler 
+ * @return {string} html string
+ */
 p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_useConmma, opt_errorHandler ){
     var errorHandler = opt_errorHandler || function(){},
         omittedCloseTagBefore, isInXMLTree = false;
