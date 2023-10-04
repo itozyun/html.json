@@ -1,0 +1,42 @@
+{
+  "name": "html.json",
+  "version": "0.0.0",
+  "description": "A compact and portable format that can be converted back to HTML in a lightweight way, achieving Web 1.0 level SSR!",
+  "author": "itozyun <itozyun@gmail.com> (https://outcloud.blogspot.com/)",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "ava": {
+    "files": [
+      "test/**/*"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/itozyun/html.json.git"
+  },
+  "keywords": [
+    "html",
+    "json",
+    "stream-json",
+    "ssr"
+  ],
+  "dependencies": {
+    "happy-dom": "^12.2.1",
+    "jsonparse": "^1.3.1",
+    "through": "^2.3.8"
+  },
+  "devDependencies": {
+    "aria-attributes": "^2.0.1",
+    "ava": "^5.3.1",
+    "google-closure-compiler": "^20230802.0.0",
+    "gulp": "^4.0.2",
+    "gulp-diamond-princess-zoning": "^0.10.0",
+    "html-element-attributes": "^3.2.0",
+    "html-tag-names": "^2.1.0",
+    "svg-element-attributes": "^2.0.1",
+    "svg-tag-names": "^3.0.1"
+  }
+}

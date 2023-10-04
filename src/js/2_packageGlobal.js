@@ -16,7 +16,15 @@ function p_isString( str ){
 };
 
 function p_isNumber( n ){
-    return 0 <= n || n < 0;
+    return n === n - 0;
+};
+
+function p_isStringOrNumber( v ){
+    return p_isString( v ) || p_isNumber( v );
+};
+
+function p_isNumberString( v ){
+    return p_isString( v ) && p_isNumber( + v );
 };
 
 function p_isNodeList( value ){

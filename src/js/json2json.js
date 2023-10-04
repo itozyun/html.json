@@ -37,7 +37,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
             case HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER :
                 walkChildNodes( arg2 );
                 break;
-            case HTML_JSON_TYPE_DYNAMIC_CONTENTS :
+            case HTML_JSON_TYPE_PROCESSING_INSTRUCTION :
                 if( p_isArray( arg2 ) ){
                     dynamicNode = onReachDynamicContent( arg1, arg2 );
                 } else if( array.length === 3 ){
@@ -126,7 +126,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
     function walkChildNodes( childNodes ){
         var i, childNodes, childNode;
 
-        for( i = 0; i < childNodes.length; ++i ){ // HTML_JSON_TYPE_DYNAMIC_CONTENTS で配列が変化する
+        for( i = 0; i < childNodes.length; ++i ){ // HTML_JSON_TYPE_PROCESSING_INSTRUCTION で配列が変化する
             childNode = childNodes[ i ];
 
             if( p_isString( childNode ) ){
@@ -166,7 +166,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
                 if( value !== undefined ){
                     delete attrs[ originalName ];
                     if( p_isArray( value ) ){
-                        if( value[ 0 ] === HTML_JSON_TYPE_DYNAMIC_CONTENTS ){
+                        if( value[ 0 ] === HTML_JSON_TYPE_PROCESSING_INSTRUCTION ){
                             attrs[ originalName ] = value.length === 2 ? value[ 1 ] :
                                                     [ value[ 1 ], value[ 2 ].length === 1 ? value[ 2 ][ 0 ] : value[ 2 ] ];
                             isStaticWebPage = false;
@@ -194,5 +194,5 @@ if( DEFINE_HTML2JSON__EXPORT_JSON2JSON ){
     p_json2json.HTML_JSON_TYPE_COMMENT_NODE                   = HTML_JSON_TYPE_COMMENT_NODE;
     p_json2json.HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER;
     p_json2json.HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER;
-    p_json2json.HTML_JSON_TYPE_DYNAMIC_CONTENTS               = HTML_JSON_TYPE_DYNAMIC_CONTENTS;
+    p_json2json.HTML_JSON_TYPE_PROCESSING_INSTRUCTION         = HTML_JSON_TYPE_PROCESSING_INSTRUCTION;
 };

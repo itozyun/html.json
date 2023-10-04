@@ -2,7 +2,7 @@
 var EMPTY_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base:!0,col:!0,embed:!0,keygen:!0,param:!0/* ,source:!0 */}, // TODO Opera 9 support
     OMIT_CLOSE_TAG   = {p:!0,dt:!0,dd:!0,li:!0,option:!0,thead:!0,tfoot:!0,th:!0,tr:!0,td:!0,rt:!0,rp:!0,optgroup:!0,caption:!0,colgroup:!0,col:!0},
     NO_OMIT_CLOSE    = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
-    IS_XML_ELEMENT   = {polyline:!0,rect:!0,line:!0,'v:polyline':!0,'v:rect':!0,'v:line':!0},
+    IS_XML_ROOT      = {svg:!0, math:!0},
     // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
     EXCLUDE_FROM_P   = {table:!0,img:!0,svg:!0,picture:!0,object:!0,embed:!0,video:!0,audio:!0,blockquot:!0,form:!0,fieldset:!0},
     SKIP_HTML_ESCAPE = {script:!0,style:!0,plaintext:!0,xmp:!0,noscript:!0};
@@ -10,7 +10,7 @@ var EMPTY_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base
 
 p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_useConmma, opt_errorHandler ){
     var errorHandler = opt_errorHandler || function(){},
-        omittedCloseTagBefore;
+        omittedCloseTagBefore, isInXMLTree = false;
 
     if( p_isArray( json ) ){
         return walkNode( json, null, 0, false, false );
@@ -23,7 +23,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
             arg0 = array[ 0 ],
             arg1 = array[ 1 ],
             arg2 = array[ 2 ],
-            offset = 0, dynamicNode, tagName, id, className, childNodesContents;
+            offset = 0, dynamicNode, tagName, id, className, childNodesContents, isXMLRoot;
 
         switch( arg0 ){
             case HTML_JSON_TYPE_DOCUMENT_NODE :
@@ -64,7 +64,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                 };
                 htmlString += walkChildNodes( arg2, noOmitCloseTag, skipEscapeForHTML ) + '<!--<![endif]-->';
                 break;
-            case HTML_JSON_TYPE_DYNAMIC_CONTENTS :
+            case HTML_JSON_TYPE_PROCESSING_INSTRUCTION :
                 if( p_isArray( arg2 ) ){
                     dynamicNode = onReachDynamicContent( arg1, arg2 );
                 } else if( array.length === 3 ){
@@ -121,6 +121,11 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                         htmlString += ' ' + walkAttributes( { className : className } );
                     };
 
+                    // xml;
+                    if( !isInXMLTree ){
+                        isXMLRoot = isInXMLTree = isXML( tagName );
+                    };
+
                     if( 1 + offset <= array.length ){
                         arg1 = array[ 1 + offset ];
                         // attr
@@ -140,18 +145,21 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                             };
                             htmlString += '>' + childNodesContents;
                         } else {
-                            htmlString += createEndOfTag( tagName, htmlString );
+                            htmlString += isInXMLTree ? '/>' : '>';
                         };
                     } else {
-                        htmlString += createEndOfTag( tagName, htmlString );
+                        htmlString += isInXMLTree ? '/>' : '>';
                     };
 
-                    // omit close tag?
-                    if( ( !IS_XML_ELEMENT[ tagName ] || childNodesContents ) && needCloseTag( tagName, noOmitCloseTag ) ){
+                    if( ( !isInXMLTree || childNodesContents ) && ( !OMIT_CLOSE_TAG[ tagName ] || noOmitCloseTag ) ){
                         htmlString += '</' + tagName + '>';
                         omittedCloseTagBefore = '';
                     } else {
                         omittedCloseTagBefore = EMPTY_ELEMENTS[ tagName ] ? '' : tagName;
+                    };
+
+                    if( isXMLRoot ){
+                        isInXMLTree = false;
                     };
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'Not html.json! [' + array + ']' );
@@ -161,20 +169,19 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
         return htmlString;
     };
 
-    function createEndOfTag( tagName, htmlString ){
-        var last = htmlString.charAt( htmlString.length - 1 );
-
-        return IS_XML_ELEMENT[ tagName ] ? ( last === '"' || last === "'" ? '' : ' ' ) + '/>' : '>';
-    };
-
-    function needCloseTag( tagName, noOmitCloseTag ){
-        return !EMPTY_ELEMENTS[ tagName ] && ( IS_XML_ELEMENT[ tagName ] || !OMIT_CLOSE_TAG[ tagName ] || noOmitCloseTag );
+    function isXML( tagName ){
+        if( isInXMLTree ){
+            return true;
+        } else if( IS_XML_ROOT[ tagName ] ){
+            return true;
+        };
+        return DEFINE_HTML2JSON__USE_XML_NS ? 0 < tagName.indexOf( ':' ) : false; // v: vml
     };
 
     function walkChildNodes( childNodes, noOmitCloseTag, skipEscapeForHTML ){
         var htmlString = '', i, childNode, htmlPartString;
 
-        for( i = 0; i < childNodes.length; ++i ){ // HTML_JSON_TYPE_DYNAMIC_CONTENTS で配列の長さが変化する
+        for( i = 0; i < childNodes.length; ++i ){ // HTML_JSON_TYPE_PROCESSING_INSTRUCTION で配列の長さが変化する
             childNode = childNodes[ i ];
 
             if( p_isString( childNode ) ){
@@ -307,5 +314,5 @@ if( DEFINE_HTML2JSON__EXPORT_JSON2HTML ){
     p_json2html.HTML_JSON_TYPE_COMMENT_NODE                   = HTML_JSON_TYPE_COMMENT_NODE;
     p_json2html.HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER;
     p_json2html.HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER;
-    p_json2html.HTML_JSON_TYPE_DYNAMIC_CONTENTS               = HTML_JSON_TYPE_DYNAMIC_CONTENTS;
+    p_json2html.HTML_JSON_TYPE_PROCESSING_INSTRUCTION         = HTML_JSON_TYPE_PROCESSING_INSTRUCTION;
 };

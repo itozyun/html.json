@@ -1,10 +1,21 @@
 # HTML.JSON
 
-1. html を json で表現する
-2. HTML を予め json 化しておけば、実行環境に HTML パーサーをインストールする必要が無くなる
-3. json から html への変換時に処理を追加できる
-4. ストリーミングでコンテンツの動的生成をする(予定)
-5. TODO html.json DOM(予定)
+A compact and portable format that can be converted back to HTML in a lightweight way, achieving Web 1.0 level SSR!
+
+[jsonml](http://www.jsonml.org/)([wiki](https://en.wikipedia.org/wiki/JsonML)) の拡張です.
+
+1. html を json で表現する(変換する)
+2. json から html への変換時に処理を追加できる
+   * HTML を予め json 化しておけば、実行環境に HTML パーサーが不要になる
+     * Web サーバの動的コンテンツ
+     * オフラインドキュメントのデータ形式
+     * PJAX
+3. `Stream` でコンテンツの動的生成
+4. ProcessingInstruction に改名, `[ 7, "function-name", ...args ]`
+5. InstructionAttr 動的属性, `{ ":href" : [ "function-name", ...args ] }`
+5. CDATA 追加, xhtml 対応?
+6. TODO html.json DOM(予定)
+7. TODO `<? include ./sidebar.json ?>`
 
 ## 目次
 
@@ -55,7 +66,6 @@ jsdom に依存する。
             "toggleList", // メソッド名
             [ "productList", 1 ] // メソッドの引数
         ]
-
     }
 ]
 ~~~
@@ -77,7 +87,7 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 * `null` or `""` 動的コンテンツを削除
 * `{string|number}` TEXT_NODE になる
 * strict な html.json `[ json2json.HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', [ ... ] ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.HTML_JSON_TYPE_DYNAMIC_CONTENTS, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
+* 戻り値が `[json2json.HTML_JSON_TYPE_PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
 
 
 ## 3. json2html
@@ -97,7 +107,7 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
 * strict な html.json `[ json2json.HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', [ ... ] ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.HTML_JSON_TYPE_DYNAMIC_CONTENTS, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
+* 戻り値が `[json2json.HTML_JSON_TYPE_PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
 
 
 ## 4. HTML.Json 定義
@@ -119,6 +129,7 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 3. 省略が可能。値が `""` or `==null` では属性は追加されない。style 属性は ハッシュで記述する。`{style:{}}`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onReachDynamicContentsCallback で使用
 5. XHTML では `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
+6. TODO `textContent` は `string` または Finite な `number`
 
 下の階層が隠れる条件付きコメント下に動的コンテンツを含むことは出来ません。これは、条件付きコメントの下にはパース出来ない html 文字列片を含む為です。
 動的コンテンツで、下の階層が隠れる条件付きコメントを含むコンテンツを出力するようにします。
