@@ -106,8 +106,8 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 * `undefiend` 何もしない
 * `null` or `""` 動的コンテンツを削除
 * `{string|number}` TEXT_NODE になる
-* strict な html.json `[ json2json.HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.HTML_JSON_TYPE_PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
+* strict な html.json `[ json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* 戻り値が `[json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
 
 
 ## 3. json2html
@@ -126,8 +126,8 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
-* strict な html.json `[ json2json.HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', [ ... ] ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.HTML_JSON_TYPE_PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
+* strict な html.json `[ json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', [ ... ] ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* 戻り値が `[json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
 
 
 ## 4. HTML.Json 定義

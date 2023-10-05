@@ -34,7 +34,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
     document.write( htmlString );
 
     if( selector ){ // Document Fragment
-        json.push( HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE );
+        json.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
 
         targetNodes = document.querySelectorAll( selector );
 
@@ -53,7 +53,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         };
         if( !document.doctype && !returnByNodeList ){
             if( p_isStringOrNumber( json[ 0 ] ) ){
-                json.unshift( HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE );
+                json.unshift( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
             } else if( json.length === 1 ){
                 json = json[ 0 ];
             };
@@ -191,14 +191,14 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 if( textContent.indexOf( '?' ) === 0 && textContent.charAt( textContent.length - 1 ) === '?' ){
                     functionNameAndArgs = codeToObject( extractStringBetween( textContent, '?', '?', true ) );
 
-                    currentJSONNode = [ HTML_JSON_TYPE_PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
+                    currentJSONNode = [ HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
 
                     if( functionNameAndArgs.args ){
                         currentJSONNode.push.apply( currentJSONNode, functionNameAndArgs.args );
                     };
                     parentJSONNode.push( currentJSONNode );
                 } else if( textContent.indexOf( '[if' ) === 0 && 0 < textContent.indexOf( '<![endif]' ) ){
-                    // HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER
+                    // HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
                     returnByNodeList     = true;
                     parentTreeIsInPreTag = inPreTag;
                     // console.log( extractStringBetween( textContent, '>', '<![endif]' ) )
@@ -206,16 +206,16 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     returnByNodeList = parentTreeIsInPreTag = false;
 
                     if( childNodeList.length || p_isNumber( childNodeList ) ){
-                        currentJSONNode = [ HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER, getIECondition( textContent ) ];
+                        currentJSONNode = [ HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, getIECondition( textContent ) ];
                         p_isArray( childNodeList )
                             ? currentJSONNode.push.apply( currentJSONNode, childNodeList )
                             : currentJSONNode.push( childNodeList );  // conditional, unescapedText
                         parentJSONNode.push( currentJSONNode );
                     };
                 } else if( textContent.indexOf( '[if' ) === 0 && 0 < textContent.indexOf( '><!' ) ){
-                    // HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER
+                    // HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
                     // 8:"[if !(IE)]><!"
-                    currentJSONNode = [ HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER, getIECondition( textContent ) ];
+                    currentJSONNode = [ HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, getIECondition( textContent ) ];
 
                     while( nextNode = currentVNode.nextSibling ){
                         if( nextNode.nodeType === 8 && nextNode.data === '<![endif]' ){
@@ -231,8 +231,8 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         parentJSONNode.push( currentJSONNode );
                     };
                 } else if( keepComments ){
-                    // HTML_JSON_TYPE_COMMENT_NODE
-                    parentJSONNode.push( [ HTML_JSON_TYPE_COMMENT_NODE, textContent ] );
+                    // HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE
+                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, textContent ] );
                 };
                 break;
             case 10 :
@@ -246,7 +246,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         .split( '> <' ).join( '>\n<' ); // xml 宣言と doctype 宣言の間は改行
                 };
 
-                parentJSONNode.push( HTML_JSON_TYPE_DOCUMENT_NODE, xmlDeclarationAndDocumentType );
+                parentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, xmlDeclarationAndDocumentType );
                 break;
         };
     };
@@ -358,8 +358,8 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
      */
     function mergeTextNodes( htmlJsonNode ){
         var nodeType   = htmlJsonNode[ 0 ];
-        var isElement  = nodeType === HTML_JSON_TYPE_ELEMENT_NODE || p_isString( nodeType );
-        var indexAttrs = nodeType === HTML_JSON_TYPE_ELEMENT_NODE ? 2 : 1;
+        var isElement  = nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE || p_isString( nodeType );
+        var indexAttrs = nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ? 2 : 1;
         var startIndex = isElement
                             ? (
                                 p_isObject( htmlJsonNode[ indexAttrs ] ) && ! p_isArray( htmlJsonNode[ indexAttrs ] )
@@ -367,7 +367,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                                     : indexAttrs
                               )
                             : (
-                                nodeType === HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE
+                                nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE
                                     ? 1
                                     : 2
                               );

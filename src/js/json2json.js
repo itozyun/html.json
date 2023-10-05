@@ -22,22 +22,22 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
             offset = 0, dynamicNode;
 
         switch( arg0 ){
-            case HTML_JSON_TYPE_DOCUMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
                 walkChildNodes( arg2 );
                 break;
-            case HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 walkChildNodes( arg1 );
                 break;
-            case HTML_JSON_TYPE_TEXT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
                 break;
-            case HTML_JSON_TYPE_COMMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 break;
-            case HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER :
+            case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
                 break;
-            case HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER :
+            case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 walkChildNodes( arg2 );
                 break;
-            case HTML_JSON_TYPE_PROCESSING_INSTRUCTION :
+            case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
                 if( p_isArray( arg2 ) ){
                     dynamicNode = onReachDynamicContent( arg1, arg2 );
                 } else if( array.length === 3 ){
@@ -52,17 +52,17 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
                             return -1;
                         } else {
                             json.length = 0;
-                            json.push( HTML_JSON_TYPE_COMMENT_NODE, '' );
+                            json.push( HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, '' );
                         };
                     } else if( p_isString( dynamicNode ) || p_isNumber( dynamicNode ) ){
                         if( parentArray ){
                             parentArray.splice( index, 1, '' + dynamicNode ); // TODO TextNode を纏める
                         } else {
                             json.length = 0;
-                            json.push( HTML_JSON_TYPE_TEXT_NODE, '' + dynamicNode );
+                            json.push( HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, '' + dynamicNode );
                         };
                     } else if( p_isArray( dynamicNode ) ){
-                        if( dynamicNode[ 0 ] === HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE ){
+                        if( dynamicNode[ 0 ] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
                             dynamicNode = dynamicNode[ 1 ];
                         };
                         if( !( 0 <= dynamicNode[ 0 ] ) ){ // isNodeList TODO documentFragment // json2json.toCompact, json2json.toStrict
@@ -73,7 +73,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
                                 // console.log( '----' )
                             } else {
                                 json.length = 0;
-                                json.push( HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE, dynamicNode );
+                                json.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, dynamicNode );
                             };
                         } else { // isHTMLJSON
                             if( parentArray ){
@@ -91,7 +91,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
                     isStaticWebPage = false;
                 };
                 break;
-            case HTML_JSON_TYPE_ELEMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE :
                 arg0   = array[ 1 ];
                 offset = 1;
             default :
@@ -126,7 +126,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
     function walkChildNodes( childNodes ){
         var i, childNodes, childNode;
 
-        for( i = 0; i < childNodes.length; ++i ){ // HTML_JSON_TYPE_PROCESSING_INSTRUCTION で配列が変化する
+        for( i = 0; i < childNodes.length; ++i ){ // HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION で配列が変化する
             childNode = childNodes[ i ];
 
             if( p_isString( childNode ) ){
@@ -166,7 +166,7 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
                 if( value !== undefined ){
                     delete attrs[ originalName ];
                     if( p_isArray( value ) ){
-                        if( value[ 0 ] === HTML_JSON_TYPE_PROCESSING_INSTRUCTION ){
+                        if( value[ 0 ] === HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION ){
                             attrs[ originalName ] = value.length === 2 ? value[ 1 ] :
                                                     [ value[ 1 ], value[ 2 ].length === 1 ? value[ 2 ][ 0 ] : value[ 2 ] ];
                             isStaticWebPage = false;
@@ -187,12 +187,12 @@ p_json2json = function( json, onReachDynamicContent, opt_errorHandler ){
 if( DEFINE_HTML2JSON__EXPORT_JSON2JSON ){
     module.exports = p_json2json;
 
-    p_json2json.HTML_JSON_TYPE_DOCUMENT_NODE                  = HTML_JSON_TYPE_DOCUMENT_NODE;
-    p_json2json.HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE         = HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE;
-    p_json2json.HTML_JSON_TYPE_ELEMENT_NODE                   = HTML_JSON_TYPE_ELEMENT_NODE;
-    p_json2json.HTML_JSON_TYPE_TEXT_NODE                      = HTML_JSON_TYPE_TEXT_NODE;
-    p_json2json.HTML_JSON_TYPE_COMMENT_NODE                   = HTML_JSON_TYPE_COMMENT_NODE;
-    p_json2json.HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER;
-    p_json2json.HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER;
-    p_json2json.HTML_JSON_TYPE_PROCESSING_INSTRUCTION         = HTML_JSON_TYPE_PROCESSING_INSTRUCTION;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE                  = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
+    p_json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION         = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION;
 };

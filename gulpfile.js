@@ -19,10 +19,10 @@ gulp.task(
                 ).pipe(
                     gulpDPZ(
                         {
-                            packageGlobalArgs : [
+                            /* packageGlobalArgs : [
                                 'undefined',
                                 'void 0'
-                            ],
+                            ], */
                             basePath          : [
                                 './src' // not ./src/js
                             ]

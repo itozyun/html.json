@@ -31,7 +31,7 @@ function p_isStringOrNumber( v ){
 };
 
 function p_isNumberString( v ){
-    return p_isString( v ) && p_isNumber( + v ) && p_isNumber( parseInt( v ) );
+    return p_isString( v ) && p_isNumber( + v ) && p_isNumber( parseInt( v, 10 ) );
 };
 
 function p_toNumber( v ){

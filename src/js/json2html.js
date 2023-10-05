@@ -25,27 +25,27 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
             offset = 0, dynamicNode, tagName, id, className, childNodesContents, isXMLRoot;
 
         switch( arg0 ){
-            case HTML_JSON_TYPE_DOCUMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
                 htmlString += arg1 + walkChildNodes( arg2 );
                 break;
-            case HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 htmlString += walkChildNodes( arg1, noOmitCloseTag, skipEscapeForHTML );
                 break;
-            case HTML_JSON_TYPE_TEXT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
                 if( omittedCloseTagBefore ){
                     htmlString += '</' + omittedCloseTagBefore + '>';
                     omittedCloseTagBefore = '';
                 };
                 htmlString += skipEscapeForHTML ? arg1 : escapeForHTML( arg1 );
                 break;
-            case HTML_JSON_TYPE_COMMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 if( p_isString( arg1 ) ){
                     htmlString += '<!--' + arg1 + '-->';
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'COMMENT_NODE Error! [' + array + ']' );
                 };
                 break;
-            case HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER :
+            case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント
                 if( p_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']>';
@@ -54,7 +54,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                 };
                 htmlString += arg2 + '<![endif]-->';
                 break;
-            case HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER :
+            case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 // 下の階層が見える条件付きコメント
                 if( p_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']><!-->';
@@ -63,7 +63,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                 };
                 htmlString += walkChildNodes( arg2, noOmitCloseTag, skipEscapeForHTML ) + '<!--<![endif]-->';
                 break;
-            case HTML_JSON_TYPE_PROCESSING_INSTRUCTION :
+            case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
                 if( p_isArray( arg2 ) ){
                     dynamicNode = onReachDynamicContent( arg1, arg2 );
                 } else if( array.length === 3 ){
@@ -75,14 +75,14 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                     if( dynamicNode === null || dynamicNode === '' ){
 
                     } else if( p_isString( dynamicNode ) || p_isNumber( dynamicNode ) ){
-                        htmlString += walkNode( [ HTML_JSON_TYPE_TEXT_NODE, '' + dynamicNode ], null, 0, noOmitCloseTag, skipEscapeForHTML );
+                        htmlString += walkNode( [ HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, '' + dynamicNode ], null, 0, noOmitCloseTag, skipEscapeForHTML );
                     } else if( p_isArray( dynamicNode ) ){
                         if( p_isArray( dynamicNode[ 0 ] ) ){
                             if( parentArray ){
                                 parentArray.splice.apply( parentArray, [ index, 1 ].concat( dynamicNode ) );
                                 return -1;
                             } else {
-                                htmlString += walkNode( [ HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE, dynamicNode ], null, 0, noOmitCloseTag, skipEscapeForHTML );
+                                htmlString += walkNode( [ HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, dynamicNode ], null, 0, noOmitCloseTag, skipEscapeForHTML );
                             };
                         } else {
                             if( parentArray ){
@@ -97,7 +97,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                     };
                 };
                 break;
-            case HTML_JSON_TYPE_ELEMENT_NODE :
+            case HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE :
                 arg0   = array[ 1 ];
                 offset = 1;
             default :
@@ -138,7 +138,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                                 childNodesContents = walkChildNodes( arg1, noOmitCloseTag || NO_OMIT_CLOSE[ tagName ], skipEscapeForHTML || SKIP_HTML_ESCAPE[ tagName ] );
                             // One TEXT_NODE
                             } else if( p_isString( arg1 ) ){
-                                childNodesContents = walkNode( [ HTML_JSON_TYPE_TEXT_NODE, arg1 ], null, 0, noOmitCloseTag, skipEscapeForHTML || SKIP_HTML_ESCAPE[ tagName ] );
+                                childNodesContents = walkNode( [ HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, arg1 ], null, 0, noOmitCloseTag, skipEscapeForHTML || SKIP_HTML_ESCAPE[ tagName ] );
                             } else if( DEFINE_HTML2JSON__DEBUG ){
                                 errorHandler( 'Invalid childNodes! [' + arg1 + ']' );
                             };
@@ -180,11 +180,11 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
     function walkChildNodes( childNodes, noOmitCloseTag, skipEscapeForHTML ){
         var htmlString = '', i, childNode, htmlPartString;
 
-        for( i = 0; i < childNodes.length; ++i ){ // HTML_JSON_TYPE_PROCESSING_INSTRUCTION で配列の長さが変化する
+        for( i = 0; i < childNodes.length; ++i ){ // HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION で配列の長さが変化する
             childNode = childNodes[ i ];
 
             if( p_isString( childNode ) ){
-                htmlString += walkNode( [ HTML_JSON_TYPE_TEXT_NODE, arg1 ], null, 0, noOmitCloseTag, skipEscapeForHTML );
+                htmlString += walkNode( [ HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, arg1 ], null, 0, noOmitCloseTag, skipEscapeForHTML );
             } else if( p_isArray( childNode ) ){
                 htmlPartString = walkNode( childNode, childNodes, i, noOmitCloseTag, skipEscapeForHTML );
                 if( htmlPartString === -1 ){
@@ -306,12 +306,12 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
 if( DEFINE_HTML2JSON__EXPORT_JSON2HTML ){
     module.exports = p_json2html;
 
-    p_json2html.HTML_JSON_TYPE_DOCUMENT_NODE                  = HTML_JSON_TYPE_DOCUMENT_NODE;
-    p_json2html.HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE         = HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE;
-    p_json2html.HTML_JSON_TYPE_ELEMENT_NODE                   = HTML_JSON_TYPE_ELEMENT_NODE;
-    p_json2html.HTML_JSON_TYPE_TEXT_NODE                      = HTML_JSON_TYPE_TEXT_NODE;
-    p_json2html.HTML_JSON_TYPE_COMMENT_NODE                   = HTML_JSON_TYPE_COMMENT_NODE;
-    p_json2html.HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_HIDE_LOWER;
-    p_json2html.HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER = HTML_JSON_TYPE_CONDITIONAL_COMMENT_SHOW_LOWER;
-    p_json2html.HTML_JSON_TYPE_PROCESSING_INSTRUCTION         = HTML_JSON_TYPE_PROCESSING_INSTRUCTION;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE                  = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
+    p_json2html.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION         = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION;
 };
