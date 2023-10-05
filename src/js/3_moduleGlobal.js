@@ -31,7 +31,11 @@ function p_isStringOrNumber( v ){
 };
 
 function p_isNumberString( v ){
-    return p_isString( v ) && p_isNumber( + v );
+    return p_isString( v ) && p_isNumber( + v ) && p_isNumber( parseInt( v ) );
+};
+
+function p_toNumber( v ){
+    return p_isNumberString( v ) ? + v : v;
 };
 
 function p_isNodeList( value ){

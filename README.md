@@ -17,6 +17,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 6. TODO html.json DOM(予定)
 7. TODO `<? include ./sidebar.json ?>`
 8. ~~`...node` の変更 jsonml と一致させる~~
+9. `<title>` 下のパース
 
 ## 目次
 
@@ -31,6 +32,26 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 ## 1. html2json
 
 heppy-dom に依存する。
+
+### `trimWhitespace`
+
+1. `trimWhitespace:"agressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する、但し次の条件から外れる場合は、其々に一つの半角スペースを残す
+   1. テキストノードの先頭が改行、かつ、後ろが改行と空白文字の場合、
+2. 空白文字を保護したい場合 `\u0020` を使う
+
+#### `trimWhitespace:"agressive"` でテキストノードの前後の空白文字をすべて削除する
+
+~~~html
+    </div>
+    html.json
+    <div>
+~~~
+
+#### `trimWhitespace:"agressive"` でもテキストノードの前後の空白文字を1つだけ残す
+
+~~~html
+<b>1</b> / <b>10</b>
+~~~
 
 ### 1.1. ProcessingInstruction
 
@@ -113,9 +134,9 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 
 |                                  | 第1要素                     | 第2要素                               | 第3要素        | 第4要素      |
 |:---------------------------------|:----------------------------|:--------------------------------------|:---------------|:-------------|
-| DOCUMENT_NODE                    | `0`                         | `"<!DOCTYPE html>"` *5                | `...node`      | -            |
-| DOCUMENT_FRAGMENT_NODE           | `1`                         | `[]`                                  | -              | -            |
-| HTML_ELEMENT *4                  | `2`                         | `"input"`                             | `{}`           | `...node`    |
+| DOCUMENT_NODE                    | `0`                         | `"<!DOCTYPE html>"` *5                | `...node` *7   | -            |
+| DOCUMENT_FRAGMENT_NODE           | `1`                         | `...node`                             | -              | -            |
+| HTML_ELEMENT *4                  | `2`                         | `"input"`                             | `{attributes}` | `...node`    |
 | タグ名(.class#id) *1, *2         | `"input"`, `"p.main#main"`  |`{type:"text",style:{color:"red"}}` *3 | `...node`      | -            |
 | TEXT_NODE                        | `3`                         | `textContent` *6                      | -              | -            |
 | COMMENT_NODE                     | `4`                         | `string`                              | -              | -            |
@@ -128,14 +149,13 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 3. 省略が可能。値が `""` or `==null` では属性は追加されない。style 属性は ハッシュで記述する。`{style:{}}`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onReachDynamicContentsCallback で使用
 5. XHTML では `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
-6. `...node` は `[nodeType, ...]`, `string` または Finite な `number`
+6. `textContent` は `string` または Finite な `number`
+7. `...node` は `[ nodeType, ... ]`, `string` または Finite な `number`
 
-下の階層が隠れる条件付きコメント下に動的コンテンツを含むことは出来ません。これは、条件付きコメントの下にはパース出来ない html 文字列片を含む為です。
-動的コンテンツで、下の階層が隠れる条件付きコメントを含むコンテンツを出力するようにします。
 
 ### 4.1. ドキュメント
 
-~~~json
+~~~js
 [ 
     0,
     "<!DOCTYPE html>",
@@ -146,20 +166,22 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
             "xmlns:v" : "urn:schemas-microsoft-com:vml"
         },
         [
+            "head",
+            {
+                "prefix" : "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"
+            },
             [
-                "head",
+                "meta",
                 {
-                    "prefix" : "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"
-                },
-                [
-                    [ "meta", { "http-equiv" : "Content-Type", "content" : "text/html; charset=utf-8" } ]
-                ]
-            ],
-            [
-                "body",
-                { "size" : 1 },
-                []
+                    "http-equiv" : "Content-Type",
+                    "content"    : "text/html; charset=utf-8"
+                }
             ]
+        ],
+        [
+            "body",
+            { "size" : 1 },
+            // ...childNodes
         ]
     ]
 ]
@@ -172,14 +194,13 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
     "body.app-root#app-root",
     { "size" : 1 },
     [
-        [ "p", [ [ "span", "Hello, World!" ] ] ]
+        "p",
+        [ "span", "Hello, World!" ]
     ]
 ]
 ~~~
 
-子要素が単一のテキストノード以外の場合は、必ず `[]` で囲む。子要素が単一の HTML 要素でも次のようになる。 `[ [ "br" ] ]`
-
-子要素が、`Text`, `<br>`, `Text` の場合は `[ "Hello,", [ "br" ], "World!" ]`
+子要素が、`Text`, `<br>`, `Text` の場合は `... "Hello,", [ "br" ], "World!"`
 
 ### 4.3. TextNode
 
@@ -191,32 +212,29 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 
 以下は単一のテキストノードの場合。
 
-~~~json
-[ 3, "Hello, World!" ]
+~~~js
+[ 3, "Hello, World!" ] // Text Node
+[ 1, 2023 ] // Document Fragment Node
 ~~~
 
 
 ### 4.4. 下の階層が隠れる条件付きコメント
 
-~~~json
+~~~js
 [ 
     5,
     "if (lt IE 9)&(vml)",
-    [
-        ...
-    ]
+    // ...childNodes
 ]
 ~~~
 
 ### 4.5. 下の階層が見える条件付きコメント
 
-~~~json
+~~~js
 [ 
     6,
     "if !IE",
-    [
-        ...
-    ]
+    // ...childNodes
 ]
 ~~~
 

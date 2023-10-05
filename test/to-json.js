@@ -28,6 +28,27 @@ t.deepEqual( html2json('<font color=red>Hello,World!'), ['font',{color:'red'},'H
 t.deepEqual( html2json('<noscript><p>js disabled!</p></noscript><p>This is application.'), [['noscript',['p', 'js disabled!']],['p','This is application.']] );
 });
 
+test('text', (t) => {
+    t.deepEqual( html2json('<!-- -->html<!-- -->.json'), [1, 'html.json']);
+
+    t.deepEqual( html2json('12<!-- -->34<!-- -->56'), [1, 123456]);
+
+    t.deepEqual( html2json('<span>1,100<!-- --> yen</span>'), ['span', '1,100 yen']);
+});
+
+test('whitespace', (t) => {
+    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', { trimWhitespace : 'agressive' }), [ 'p' ]);
+
+    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', { trimWhitespace : 'normal' }), ['p', ' ']);
+
+    t.deepEqual( html2json('<p>\n\n \t\t &#x20; \n\n \t\t', { trimWhitespace : 'agressive' }), ['p']);
+
+    t.deepEqual( html2json('<p>\n\n \t\t \\u0020 \n\n \t\t', { trimWhitespace : 'agressive' }), ['p', ' ']);
+
+    t.deepEqual( html2json('<p>\\u0020\\u0020', { trimWhitespace : 'normal' }), ['p', '  ']);
+    // t.deepEqual( html2json('<p>\\u0020'), ['p', '    ']);
+});
+
 test('number-string', (t) => {
     t.deepEqual( html2json('<p>1<p>2'), [['p',1],['p',2]]);
 

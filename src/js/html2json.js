@@ -41,7 +41,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         for( l = targetNodes.length; i < l; ++i ){
             walkNode( targetNodes[ i ], json, parentTreeIsInPreTag || false, false );
         };
-        // TODO 連続する Text の結合
+        mergeTextNodes( json );
     } else {
         currentVNode = document.doctype;
         if( !document.doctype ){
@@ -51,7 +51,6 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
             walkNode( currentVNode, json, false, false );
             currentVNode = currentVNode.nextSibling;
         };
-        // TODO 連続する Text の結合
         if( !document.doctype && !returnByNodeList ){
             if( p_isStringOrNumber( json[ 0 ] ) ){
                 json.unshift( HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE );
@@ -59,6 +58,8 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 json = json[ 0 ];
             };
         };
+
+        mergeTextNodes( json );
     };
     return json;
 
@@ -141,7 +142,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 for( i = 0; i < vChildNodes.length; ++i ){
                     walkNode( vChildNodes[ i ], currentJSONNode, isPreTag || inPreTag, TRIM_LINEBREAKS[ tagName ] );
                 };
-                // TODO 連続する Text の結合
+                mergeTextNodes( currentJSONNode );
 
                 parentJSONNode.push( currentJSONNode );
                 break;
@@ -182,7 +183,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     };
                 };
                 if( textContent ){
-                    parentJSONNode.push( p_isNumberString( textContent ) ? ( + textContent ) : textContent );
+                    parentJSONNode.push( p_toNumber( textContent ) );
                 };
                 break;
             case 8 :
@@ -224,7 +225,8 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         walkNode( nextNode, currentJSONNode, inPreTag, trimLineBreaks );
                         nextNode.remove();
                     };
-                    // TODO 連続する Text の結合
+                    mergeTextNodes( currentJSONNode );
+
                     if( 2 < currentJSONNode.length ){
                         parentJSONNode.push( currentJSONNode );
                     };
@@ -348,6 +350,47 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };
 
         return string;
+    };
+
+    /**
+     * 連続する Text の結合
+     * @param {!Array} htmlJsonNode 
+     */
+    function mergeTextNodes( htmlJsonNode ){
+        var nodeType   = htmlJsonNode[ 0 ];
+        var isElement  = nodeType === HTML_JSON_TYPE_ELEMENT_NODE || p_isString( nodeType );
+        var indexAttrs = nodeType === HTML_JSON_TYPE_ELEMENT_NODE ? 2 : 1;
+        var startIndex = isElement
+                            ? (
+                                p_isObject( htmlJsonNode[ indexAttrs ] ) && ! p_isArray( htmlJsonNode[ indexAttrs ] )
+                                    ? indexAttrs + 1
+                                    : indexAttrs
+                              )
+                            : (
+                                nodeType === HTML_JSON_TYPE_DOCUMENT_FRAGMENT_NODE
+                                    ? 1
+                                    : 2
+                              );
+        var node, text = '', i;
+
+        if( startIndex + 1 < htmlJsonNode.length ){
+            for( i = startIndex; i < htmlJsonNode.length; ){
+                node = htmlJsonNode[ i ];
+                if( p_isStringOrNumber( node ) ){
+                    text += node;
+                    htmlJsonNode.splice( i, 1 );
+                } else {
+                    if( text ){
+                        htmlJsonNode[ i ] = p_toNumber( text );
+                        text = '';
+                    };
+                    ++i;
+                };
+            };
+            if( text ){
+                htmlJsonNode[ i ] = p_toNumber( text );
+            };
+        };
     };
 };
 
