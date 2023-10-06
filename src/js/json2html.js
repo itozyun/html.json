@@ -11,14 +11,17 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
 
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
-    var options        = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {},
-        useQuotAllways = !!options[ 'useQuotAllways' ],
-        useConmma      = !!options[ 'useConmma' ],
-        attrPrefix     = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
+    var options       = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {},
+        quotAlways    = !!options[ 'quotAlways' ],
+        useSingleQuot = !!options[ 'useSingleQuot' ],
+        attrPrefix    = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
 
     var omittedCloseTagBefore, isInXMLTree = false;
 
     if( p_isArray( json ) ){
+        if( m_getNodeType( json ) === HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION ){
+            json = [ HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, json ];
+        };
         return /** @type {string} */ (walkNode( json, null, 0, false, false ));
     } else if( DEFINE_HTML2JSON__DEBUG ){
         errorHandler( 'Invalid html.json document!' );
@@ -43,8 +46,8 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
 
         switch( arg0 ){
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
-                if( DEFINE_HTML2JSON__USE_XHTML && arg1.indexOf( '<?xml ' ) === 0 ){
-                    isInXMLTree = isXMLRoot = true;
+                if( DEFINE_HTML2JSON__USE_XHTML && ( arg1.indexOf( '<?xml ' ) === 0 || 0 <= arg1.toUpperCase().indexOf( '<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ' ) ) ){
+                    isInXMLTree = true;
                 };
                 htmlString += arg1 + walkChildNodes( currentJSONNode, false, false );
                 break;
@@ -56,7 +59,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                     htmlString += '</' + omittedCloseTagBefore + '>';
                     omittedCloseTagBefore = '';
                 };
-                htmlString += skipEscapeForHTML ? arg1 : escapeForHTML( '' + arg1 );
+                htmlString += skipEscapeForHTML ? arg1 : p_escapeForHTML( '' + arg1 );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 if( p_isString( arg1 ) ){
@@ -84,7 +87,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 htmlString += walkChildNodes( currentJSONNode, noOmitCloseTag, skipEscapeForHTML ) + '<!--<![endif]-->';
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
-                result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex );
+                result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
 
                 if( result !== undefined ){
                     if( result === null || result === '' ){
@@ -93,8 +96,8 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                         return REMOVED;
                     } else if( p_isArray( result ) ){
                         return REMOVED;
-                    } else if( DEFINE_HTML2JSON__DEBUG ){
-                        errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
+                    // } else if( DEFINE_HTML2JSON__DEBUG ){
+                        // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                     };
                 };
                 break;
@@ -104,9 +107,9 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
             default :
                 if( p_isString( tagName ) ){
                     tagName   = parseTagName( tagName );
-                    id        = tagName._id;
-                    className = tagName._className;
-                    tagName   = tagName._tagName;
+                    id        = tagName[ 1 ];
+                    className = tagName[ 2 ];
+                    tagName   = tagName[ 0 ];
                     if( omittedCloseTagBefore === 'p' && EXCLUDE_FROM_P[ tagName ] ){
                         htmlString += '</p>'
                     };
@@ -115,10 +118,10 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                     htmlString += '<' + tagName;
 
                     if( id ){
-                        htmlString += ' ' + walkAttributes( { id : id } );
+                        htmlString += ' id=' + p_quotAttributeValue( id, useSingleQuot, quotAlways );
                     };
                     if( className ){
-                        htmlString += ' ' + walkAttributes( { className : className } );
+                        htmlString += ' class=' + p_quotAttributeValue( className, useSingleQuot, quotAlways );;
                     };
 
                     // xml;
@@ -202,20 +205,14 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
         return htmlString;
     };
 
-    function escapeForHTML( unsafeText ){
-        return unsafeText
-                   /** .split( '&lt;' ).join( '<' )
-                   .split( '&gt;' ).join( '>' )
-                   .split( '&amp;' ).join( '&' ) */ // 既にエスケープ済かもしれないので、一旦エスケープの解除
-                   .split( '&' ).join( '&amp;' )    // エスケープ
-                   .split( '<' ).join( '&lt;' )
-                   .split( '>' ).join( '&gt;' );
-    };
-
+    /**
+     * 
+     * @param {!Object} attrs 
+     * @return {string}
+     */
     function walkAttributes( attrs ){
         var attrText = '',
-            quot = useConmma ? "'" : '"',
-            name, value, isInstruction, strValue, hasQuot;
+            name, value, isInstruction;
     
         for( name in attrs ){
             value = attrs[ name ];
@@ -232,31 +229,21 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
 
                 if( !p_ATTR_NO_VALUE[ name ] ){
                     if( name === 'style' && p_isObject( value ) ){
-                        value = walkStyleAttributes( value );
+                        value = toCSSTest( value );
                         if( !value ) continue;
                     };
-                    strValue = '' + value;
-                    hasQuot = strValue.match( '"' );
-                    if( hasQuot && strValue.match( "'" ) ){ // " と ' を含む
-                        attrText += '="' + strValue.split( '\\"' ).join( '"' ) // 既にエスケープ済かもしれないので、一旦エスケープの解除
-                                                   .split( '"' ).join( '\\"' ) // " のエスケープ
-                                  + '"';
-                    } else if( hasQuot ){ // " を含む
-                        attrText += "='" + strValue + "'";
-                    } else if( useQuotAllways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
-                        // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
-                        // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
-                        attrText += '=' + quot + strValue + quot;
-                    } else {
-                        attrText += '=' + escapeForHTML( strValue );
-                    };
+                    attrText += '=' + p_quotAttributeValue( value, useSingleQuot, quotAlways );
                 };
             };
         };
         return attrText.substr( 1 );
     };
 
-    function walkStyleAttributes( styles ){
+    /**
+     * @param {!Object} styles 
+     * @return {string}
+     */
+    function toCSSTest( styles ){
         var cssText = '',
             name, value;
     
@@ -268,6 +255,11 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
         return cssText.substr( 1 );
     };
 
+    /**
+     * 
+     * @param {string} tagName 
+     * @return {!Array.<string>}
+     */
     function parseTagName( tagName ){
         var indexID = tagName.indexOf( '#' ),
             indexClassName = tagName.indexOf( '.' ),
@@ -288,12 +280,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 tagName   = tagName.split( '.' )[ 0 ];
             };
         };
-
-        return {
-            _tagName   : tagName,
-            _id        : id,
-            _className : className
-        }
+        return [ tagName, id, className ];
     };
 };
 

@@ -62,7 +62,7 @@ p_json2json = function( json, onInstruction, opt_onError, opt_options ){
                 walkChildNodes( currentJSONNode );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
-                result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex );
+                result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
 
                 if( result !== undefined ){
                     isTreeUpdated = true;
@@ -79,8 +79,8 @@ p_json2json = function( json, onInstruction, opt_onError, opt_options ){
                         // just replaced
                     } else if( p_isArray( result ) ){
                         return REMOVED;
-                    } else if( DEFINE_HTML2JSON__DEBUG ){
-                        errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
+                    // } else if( DEFINE_HTML2JSON__DEBUG ){
+                        // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                     };
                 } else {
                     isStaticWebPage = false;

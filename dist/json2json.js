@@ -3,123 +3,127 @@ var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON 
   var m;
   (function() {
     function n(a) {
-      return a && a.pop === [].pop;
+      return !(!a || a.pop !== [].pop);
     }
     function q(a) {
       return "" + a === a;
     }
-    function y(a) {
+    function z(a) {
       return a === a - 0;
     }
-    function u(a) {
-      return q(a) || y(a);
-    }
-    function z(a) {
-      return q(a) && y(+a) && y(parseInt(a, 10)) ? +a : a;
+    function v(a) {
+      return q(a) || z(a);
     }
     function A(a) {
-      return u(a) ? HTML_DOT_JSON__NODE_TYPE.TEXT_NODE : n(a) ? q(a[0]) ? HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE : a[0] : -1;
+      return q(a) && z(+a) && z(parseInt(a, 10)) ? +a : a;
     }
     function B(a) {
-      return !n(a) && a && "object" === typeof a;
+      return v(a) ? HTML_DOT_JSON__NODE_TYPE.TEXT_NODE : n(a) ? q(a[0]) ? HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE : a[0] : -1;
     }
     function C(a) {
-      var h = a[0], f = A(a) === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, k = h === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ? 2 : 1;
-      return f ? B(a[k]) ? k + 1 : k : h === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? 1 : 2;
+      return !n(a) && !(!a || "object" !== typeof a);
     }
     function D(a) {
-      var h = C(a), f = "", k;
+      var h = a[0], e = B(a) === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, k = h === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ? 2 : 1;
+      return e ? C(a[k]) ? k + 1 : k : h === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? 1 : 2;
+    }
+    function E(a) {
+      var h = D(a), e = "", k;
       if (h < a.length) {
         for (k = h; k < a.length;) {
           h = a[k];
-          var v = A(h);
-          v === HTML_DOT_JSON__NODE_TYPE.TEXT_NODE ? (f = u(h) ? f + h : f + h[1], a.splice(k, 1)) : (f && (a.splice(k, 0, z(f)), f = ""), ++k, v === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE && D(h));
+          var w = B(h);
+          w === HTML_DOT_JSON__NODE_TYPE.TEXT_NODE ? (e = v(h) ? e + h : e + h[1], a.splice(k, 1)) : (e && (a.splice(k, 0, A(e)), e = ""), ++k, w === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE && E(h));
         }
-        f && (a[k] = z(f));
+        e && (a[k] = A(e));
       }
     }
-    m = function(a, h, f, k) {
-      function v(b, d, g) {
-        var p = b[0], r = b[1], c = 1, e = p;
-        switch(p) {
+    m = function(a, h, e, k) {
+      function w(c, d, f) {
+        var l = c[0], p = c[1], t = 1, r = l;
+        switch(l) {
           case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE:
-            w(b);
+            x(c);
             break;
           case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
-            w(b);
+            x(c);
             break;
           case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE:
             break;
           case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE:
-            if (!G && d) {
-              return d.splice(g, 1), -1;
+            if (!H && d) {
+              return d.splice(f, 1), -1;
             }
             break;
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER:
-            w(b);
+            x(c);
             break;
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER:
-            w(b);
+            x(c);
             break;
           case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION:
-            c = b[1];
-            var l = b.slice(2);
-            c = l.length ? h(c, l) : h(c);
-            void 0 !== c && null !== c && "" !== c && (u(c) ? d ? d.splice(g, 1, c) : (b.length = 0, b.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, b)) : n(c) && (c[0] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? d ? (c.shift(), c.unshift(g, 1), d.splice.apply(d, c)) : (b.length = 0, b.push.apply(b, c)) : n(c[0]) ? d ? (c.unshift(g, 1), d.splice.apply(d, c)) : (b.length = 0, b.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE), b.push.apply(b, c)) : d ? d.splice(g, 1, c) : (b.length = 0, 
-            b.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, c))));
-            if (void 0 !== c) {
-              E = !0;
-              if (null === c || "" === c) {
-                return d ? d.splice(g, 1) : (a.length = 0, a.push(HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, "")), -1;
+            t = u;
+            var b = c[1];
+            l = c.slice(2);
+            b = l.length ? h(b, l) : h(b);
+            void 0 !== b && null !== b && "" !== b && (v(b) ? d ? d.splice(f, 1, b) : (c.length = 0, c.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, c)) : n(b) ? b[0] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? d ? (b.shift(), b.unshift(f, 1), d.splice.apply(d, b)) : (c.length = 0, c.push.apply(c, b)) : n(b[0]) ? d ? (b.unshift(f, 1), d.splice.apply(d, b)) : (c.length = 0, c.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE), c.push.apply(c, b)) : d ? d.splice(f, 1, b) : (c.length = 0, c.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, 
+            b)) : DEFINE_HTML2JSON__DEBUG && t("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(c) + "]"));
+            if (void 0 !== b) {
+              F = !0;
+              if (null === b || "" === b) {
+                return d ? d.splice(f, 1) : (a.length = 0, a.push(HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, "")), -1;
               }
-              if (!u(c)) {
-                if (n(c)) {
-                  return -1;
-                }
-                DEFINE_HTML2JSON__DEBUG && t("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(b) + "]");
+              if (!v(b) && n(b)) {
+                return -1;
               }
             } else {
-              x = !1;
+              y = !1;
             }
             break;
           case HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE:
-            e = r, c = 2;
+            r = p, t = 2;
           default:
-            if (q(e)) {
-              if (1 + c <= b.length) {
-                d = b[c];
-                if (B(d)) {
-                  for (l in d) {
-                    if (g = l, e = d[l], (p = 0 === l.indexOf(F)) && (l = l.substr(F.length)), "className" === l && (l = "class"), p) {
-                      p = h;
-                      r = l;
-                      var H = t;
-                      n(e) && q(e[0]) ? (r = e[0], e = e.slice(1), e = e.length ? p(r, e) : p(r)) : q(e) ? e = p(e) : DEFINE_HTML2JSON__DEBUG && H("Invalid InstructionAttr value! [" + r + "=" + e + "]");
-                      void 0 !== e ? (delete d[g], n(e) ? q(e[0]) ? (d[g] = e, x = !1) : DEFINE_HTML2JSON__DEBUG && t("Invalid dynamic attribute callback value! [" + g + "=" + e + "]") : null !== e && "" !== e && (d[l] = e)) : x = !1;
+            if (q(r)) {
+              if (1 + t <= c.length) {
+                d = c[t];
+                if (C(d)) {
+                  for (b in d) {
+                    f = b;
+                    var g = d[b];
+                    (l = 0 === b.indexOf(G)) && (b = b.substr(G.length));
+                    "className" === b && (b = "class");
+                    if (l) {
+                      p = void 0;
+                      l = h;
+                      r = b;
+                      var I = u;
+                      n(g) && q(g[0]) ? (p = g[0], r = g.slice(1), p = r.length ? l(p, r) : l(p)) : q(g) ? p = l(g) : DEFINE_HTML2JSON__DEBUG && I("Invalid InstructionAttr value! [" + r + "=" + g + "]");
+                      g = p;
+                      void 0 !== g ? (delete d[f], n(g) ? q(g[0]) ? (d[f] = g, y = !1) : DEFINE_HTML2JSON__DEBUG && u("Invalid dynamic attribute callback value! [" + f + "=" + g + "]") : null !== g && "" !== g && (d[b] = g)) : y = !1;
                     }
                   }
-                  0 === Object.keys(d).length && b.splice(c, 1);
+                  0 === Object.keys(d).length && c.splice(t, 1);
                 }
-                w(b);
+                x(c);
               }
             } else {
-              DEFINE_HTML2JSON__DEBUG && t("Not html.json! [" + b + "]");
+              DEFINE_HTML2JSON__DEBUG && u("Not html.json! [" + c + "]");
             }
         }
       }
-      function w(b) {
-        for (var d = C(b), g; d < b.length; ++d) {
-          g = b[d], u(g) || (n(g) ? -1 === v(g, b, d) && --d : DEFINE_HTML2JSON__DEBUG && t("Invalid html.json! [" + g + "]"));
+      function x(c) {
+        for (var d = D(c), f; d < c.length; ++d) {
+          f = c[d], v(f) || (n(f) ? -1 === w(f, c, d) && --d : DEFINE_HTML2JSON__DEBUG && u("Invalid html.json! [" + f + "]"));
         }
       }
-      var t = "function" === typeof f ? f : function(b) {
+      var u = "function" === typeof e ? e : function(c) {
       };
-      f = f && "object" === typeof f ? f : k || {};
-      var G = !!f.keepComments, F = f.instructionAttrPrefix || DEFINE_INSTRUCTION_ATTR_PREFIX, E = !1, x = !0;
+      e = e && "object" === typeof e ? e : k || {};
+      var H = !!e.keepComments, G = e.instructionAttrPrefix || DEFINE_INSTRUCTION_ATTR_PREFIX, F = !1, y = !0;
       if (n(a)) {
-        return v(a, null, 0), E && D(a), x;
+        return w(a, null, 0), F && E(a), y;
       }
-      DEFINE_HTML2JSON__DEBUG && t("Invalid html.json document!");
+      DEFINE_HTML2JSON__DEBUG && u("Invalid html.json document!");
     };
     DEFINE_HTML2JSON__EXPORT_JSON2JSON && (module.exports = m, m.DOCUMENT_NODE = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, m.DOCUMENT_FRAGMENT_NODE = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, m.ELEMENT_NODE = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, m.TEXT_NODE = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, m.COMMENT_NODE = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, m.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, m.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, 
     m.PROCESSING_INSTRUCTION = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION);

@@ -10,42 +10,92 @@ var EMPTY_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base
     SKIP_HTML_ESCAPE = {script:!0,style:!0,plaintext:!0,xmp:!0,noscript:!0};
     // Special Elements (can contain anything)
 
+/**
+ * 
+ * @param {*} value 
+ * @return {boolean}
+ */
 function p_isArray( value ){
-    return value && value.pop === [].pop;
+    return !!( value && value.pop === [].pop );
 };
 
+/**
+ * 
+ * @param {*} value 
+ * @return {boolean}
+ */
 function p_isObject( value ){
-    return value && typeof value === 'object';
+    return !!( value && typeof value === 'object' );
 };
 
+/**
+ * 
+ * @param {*} str 
+ * @return {boolean}
+ */
 function p_isString( str ){
     return '' + str === str;
 };
 
+/**
+ * 
+ * @param {*} n 
+ * @return {boolean}
+ */
 function p_isNumber( n ){
-    return n === n - 0;
+    return n === /** @type {number} */ (n) - 0;
 };
 
+/**
+ * 
+ * @param {*} v 
+ * @return {boolean}
+ */
 function p_isStringOrNumber( v ){
     return p_isString( v ) || p_isNumber( v );
 };
 
+/**
+ * 
+ * @param {*} v 
+ * @return {boolean}
+ */
 function p_isNumberString( v ){
     return p_isString( v ) && p_isNumber( + v ) && p_isNumber( parseInt( v, 10 ) );
 };
 
+/**
+ * 
+ * @param {*} v 
+ * @return {*}
+ */
 function p_toNumber( v ){
     return p_isNumberString( v ) ? + v : v;
 };
 
+/**
+ * 未使用
+ * @param {*} value 
+ * @return {boolean}
+ */
 function p_isNodeList( value ){
     return p_isArray( value ) && p_isArray( value[ 0 ] );
 };
 
-function p_isNode( value ){
+/**
+ * 未使用
+ * @param {*} value 
+ * @return {boolean}
+ */
+function p_isStrictNode( value ){
     return p_isArray( value ) && ( p_isNumber( value[ 0 ] ) || p_isString( value[ 0 ] ) );
 };
 
+/**
+ * 
+ * @param {*} value 
+ * @return {number} nodeType(HTML_DOT_JSON__NODE_TYPE)
+ */
 function m_getNodeType( value ){
     return p_isStringOrNumber( value )
         ? HTML_DOT_JSON__NODE_TYPE.TEXT_NODE
@@ -58,16 +108,36 @@ function m_getNodeType( value ){
         );
 };
 
+/**
+ * 
+ * @param {*} value 
+ * @return {boolean}
+ */
 function p_isAttributes( value ){
     return !p_isArray( value ) && p_isObject( value );
 };
 
+/**
+ * 
+ * @param {string} prefix 
+ * @param {string} name 
+ * @return {boolean}
+ */
 function p_isInstructionAttr( prefix, name ){
     return name.indexOf( prefix ) === 0;
 };
 
-function p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex ){
-    var functionName = currentJSONNode[ 1 ];
+/**
+ * 
+ * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {!Array} currentJSONNode 
+ * @param {!Array|null} parentJSONNode 
+ * @param {number} myIndex
+ * @param {!function(string)} errorHandler 
+ * @return {!Array|string|number|null|void}
+ */
+function p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler ){
+    var functionName = /** @type {string} */ (currentJSONNode[ 1 ]);
     var args         = currentJSONNode.slice( 2 );
     var result;
 
@@ -115,28 +185,87 @@ function p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJ
                     currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
                 };
             };
-        // } else if( DEFINE_HTML2JSON__DEBUG ){
-        //    error
+        } else if( DEFINE_HTML2JSON__DEBUG ){
+            errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
         };
     };
     return result;
 };
 
+/**
+ * 
+ * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {string} name 
+ * @param {string} value 
+ * @param {!function(string)} errorHandler 
+ * @return {!Array|string|number|null|void}
+ */
 function p_evaluteInstructionAttr( onInstruction, name, value, errorHandler ){
+    var result;
+
     if( p_isArray( value ) && p_isString( value[ 0 ] ) ){
-        var functionName = value[ 0 ];
+        var functionName = /** @type {string} */ (value[ 0 ]);
         var args         = value.slice( 1 );
+
         if( args.length ){
-            value = onInstruction( functionName, args );
+            result = onInstruction( functionName, args );
         } else {
-            value = onInstruction( functionName );
+            result = onInstruction( functionName );
         };
     } else if( p_isString( value ) ){
-        value = onInstruction( value );
+        result = onInstruction( value );
     } else if( DEFINE_HTML2JSON__DEBUG ){
         errorHandler( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
     };
-    return value;
+    return result;
+};
+
+/**
+ * 
+ * @param {string} unsafeText 
+ * @return {string}
+ */
+function p_escapeForHTML( unsafeText ){
+    return unsafeText
+               /** .split( '&lt;' ).join( '<' )
+               .split( '&gt;' ).join( '>' )
+               .split( '&amp;' ).join( '&' ) */ // 既にエスケープ済かもしれないので、一旦エスケープの解除
+               .split( '&' ).join( '&amp;' )    // エスケープ
+               .split( '<' ).join( '&lt;' )
+               .split( '>' ).join( '&gt;' );
+};
+
+/**
+ * 
+ * @param {string} value 
+ * @param {boolean} useSingleQuot 
+ * @param {boolean} quotAlways 
+ * @return {string}
+ */
+function p_quotAttributeValue( value, useSingleQuot, quotAlways ){
+    var strValue = '' + value;
+    var containDoubleQuot = strValue.match( '"' );
+
+    if( containDoubleQuot ){
+        if( strValue.match( "'" ) ){ // " と ' を含む
+            if( useSingleQuot ){
+                strValue = "'" + strValue.split( '&apos;' ).join( "'" ) // 既にエスケープ済かもしれないので、一旦エスケープの解除
+                                         .split( "'" ).join( '&apos;' ) // " のエスケープ
+                         + "'";
+            } else {
+                strValue = '"' + strValue.split( '&quot;' ).join( '"' ) // 既にエスケープ済かもしれないので、一旦エスケープの解除
+                                           .split( '"' ).join( '&quot;' ) // " のエスケープ
+                         + '"';
+            };
+        } else {
+            strValue = "'" + strValue + "'";
+        };
+    } else if( quotAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
+        // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
+        // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
+        strValue += ( useSingleQuot ? '"' : "'" ) + p_escapeForHTML( strValue ) + ( useSingleQuot ? '"' : "'" );
+    };
+    return strValue;
 };
 
 /**

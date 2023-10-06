@@ -16,7 +16,7 @@ test('simple',
 
         t.deepEqual(
             json2html(
-                [ 1, [ 7, 'random' ] ],
+                [ 7, 'random' ],
                 function( funcName ){
                     if( funcName === 'random' ){
                         return random;
