@@ -86,6 +86,46 @@ gulp.task(
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
+        },
+        function(){
+            return gulp.src(
+                    [
+                        './src/js/1_global.js',
+                        './src/js/2_packageGlobal.js',
+                        './src/js/3_moduleGlobal.js',
+                        './src/js/json2html.js'
+                    ]
+                ).pipe(
+                    gulpDPZ(
+                        {
+                            basePath          : [
+                                './src' // not ./src/js
+                            ]
+                        }
+                    )
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            externs           : [
+                                './src/js-externs/externs.js',
+                                './src/js-externs/tags-and-attributes.js'
+                            ],
+                            define            : [
+                                'DEFINE_HTML2JSON__DEBUG=true',
+                                'DEFINE_HTML2JSON__EXPORT_JSON2HTML=true'
+                            ],
+                            // compilation_level : 'ADVANCED',
+                            // compilation_level : 'WHITESPACE_ONLY',
+                            formatting        : 'PRETTY_PRINT',
+                            warning_level     : 'VERBOSE',
+                            // language_in       : 'ECMASCRIPT3',
+                            // language_out      : 'ECMASCRIPT3',
+                            js_output_file    : 'json2html.js'
+                        }
+                    )
+                ).pipe(
+                    gulp.dest( 'dist' )
+                );
         }
     )
 );

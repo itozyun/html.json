@@ -10,6 +10,9 @@ var
 /** @define {boolean} */
     DEFINE_HTML2JSON__USE_XHTML        = true;
 
+/** @define {string} */
+var DEFINE_INSTRUCTION_ATTR_PREFIX     = ':';
+
 /**
  * @enum {number}
  */

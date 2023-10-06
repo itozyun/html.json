@@ -62,6 +62,83 @@ function p_isAttributes( value ){
     return !p_isArray( value ) && p_isObject( value );
 };
 
+function p_isInstructionAttr( prefix, name ){
+    return name.indexOf( prefix ) === 0;
+};
+
+function p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex ){
+    var functionName = currentJSONNode[ 1 ];
+    var args         = currentJSONNode.slice( 2 );
+    var result;
+
+    if( args.length ){
+        result = onInstruction( functionName, args );
+    } else {
+        result = onInstruction( functionName );
+    };
+    if( result !== undefined ){
+        if( result === null || result === '' ){
+            //
+        } else if( p_isStringOrNumber( result ) ){
+            if( parentJSONNode ){
+                parentJSONNode.splice( myIndex, 1, result );
+            } else {
+                currentJSONNode.length = 0;
+                currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, currentJSONNode );
+            };
+        } else if( p_isArray( result ) ){
+            result = /** @type {!Array} */ (result);
+
+            if( result[ 0 ] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+                if( parentJSONNode ){
+                    result.shift();
+                    result.unshift( myIndex, 1 );
+                    parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
+                } else {
+                    currentJSONNode.length = 0;
+                    currentJSONNode.push.apply( currentJSONNode, result ); // <= [ DOCUMENT_FRAGMENT_NODE, ...result ]
+                };
+            } else if( p_isArray( result[ 0 ] ) ){ // nodeType を省略した DOCUMENT_FRAGMENT_NODE
+                if( parentJSONNode ){
+                    result.unshift( myIndex, 1 );
+                    parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
+                } else {
+                    currentJSONNode.length = 0;
+                    currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+                    currentJSONNode.push.apply( currentJSONNode, result );
+                };
+            } else {
+                if( parentJSONNode ){
+                    parentJSONNode.splice( myIndex, 1, result );
+                } else {
+                    currentJSONNode.length = 0;
+                    currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
+                };
+            };
+        // } else if( DEFINE_HTML2JSON__DEBUG ){
+        //    error
+        };
+    };
+    return result;
+};
+
+function p_evaluteInstructionAttr( onInstruction, name, value, errorHandler ){
+    if( p_isArray( value ) && p_isString( value[ 0 ] ) ){
+        var functionName = value[ 0 ];
+        var args         = value.slice( 1 );
+        if( args.length ){
+            value = onInstruction( functionName, args );
+        } else {
+            value = onInstruction( functionName );
+        };
+    } else if( p_isString( value ) ){
+        value = onInstruction( value );
+    } else if( DEFINE_HTML2JSON__DEBUG ){
+        errorHandler( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
+    };
+    return value;
+};
+
 /**
  * 
  * @param {!Array} htmlJsonNode

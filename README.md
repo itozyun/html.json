@@ -18,6 +18,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 7. TODO `<? include ./sidebar.json ?>`
 8. ~~`...node` の変更 jsonml と一致させる~~
 9. `<title>` 下のパース
+10. ~~全角文字の間の改行を削除するオプション~~ (参考:[ブラウザの問題：半角スペース、全角スペース、改行コード、整形処理](https://web.archive.org/web/20190330184130/http://www.geocities.co.jp/SiliconValley-SanJose/2485/browsertrouble.html))
 
 ## 目次
 
@@ -32,6 +33,12 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 ## 1. html2json
 
 heppy-dom に依存する。
+
+* `trimWhitespace`
+* `keepComments`
+* `removeLineBreaksBetweenFullWidth`
+* `argumentBrackets`
+* `instructionAttrPrefix`
 
 ### `trimWhitespace`
 

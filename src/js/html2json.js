@@ -12,20 +12,24 @@ var parentTreeIsInPreTag = false;
  * @param {!Object=} opt_options
  */
 p_html2json = function( htmlString, opt_selector, opt_options ){
-    var json                 = [],
-        selector             = typeof opt_selector === 'string' ? opt_selector : '',
+    var json              = [],
+        selector          = typeof opt_selector === 'string' ? opt_selector : '',
         
-        options              = opt_selector && typeof opt_selector === 'object' ? opt_selector : opt_options || {},
-        trimWhitespace       = options[ 'trimWhitespace' ],
-        keepComments         = !!options[ 'keepComments' ],
-        argumentBrackets     = options[ 'argumentBrackets' ] || '()',
-        argOpeningBracket    = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
-        argClosingBracket    = argumentBrackets.substr( argumentBrackets.length ),
+        options           = opt_selector && typeof opt_selector === 'object' ? opt_selector : opt_options || {},
+        trimWhitespace    = options[ 'trimWhitespace' ],
+        keepComments      = !!options[ 'keepComments' ],
+        argumentBrackets  = options[ 'argumentBrackets' ] || '()',
+        argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
+        argClosingBracket = argumentBrackets.substr( argumentBrackets.length ),
+        attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX,
 
-        isTrimAgressive      = trimWhitespace === 'agressive',
+        isTrimAgressive   = trimWhitespace === 'agressive',
 
-        window               = new happyDOMWindow(),
-        document             = window.document,
+        window            = new happyDOMWindow(),
+        document          = window.document,
+
+        removeLineBreaksBetweenFullWidth
+                          = !!options[ 'removeLineBreaksBetweenFullWidth' ],
         currentVNode, targetNodes, i = 0, l;
 
     trimWhitespace = trimWhitespace !== 'none' && trimWhitespace !== false;
@@ -42,8 +46,8 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
             walkNode( targetNodes[ i ], json, parentTreeIsInPreTag || false, false );
         };
     } else {
-        currentVNode = document.doctype;
-        if( !document.doctype ){
+        currentVNode = document.firstChild; // doctype or <html>
+        if( !document.doctype && !document.getElementsByTagName( 'head' )[ 0 ].childNodes.length ){
             currentVNode = document.body.firstChild;
         };
         while( currentVNode ){
@@ -95,7 +99,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         className = '.' + attrValue;
                         --numAttrs;
                         continue;
-                    } else if( attrName.charAt( 0 ) === ':' ){
+                    } else if( attrName.indexOf( attrPrefix ) === 0 ){
                         functionNameAndArgs = codeToObject( attrValue );
 
                         if( functionNameAndArgs.args ){
@@ -144,6 +148,9 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 break;
             // case 2 :
             case 3 :
+                if( !inPreTag && !trimLineBreaks /** pre, script, style, textarea には実施しない */ && removeLineBreaksBetweenFullWidth ){
+                    textContent = toNoLineBreaksBetweenFullWidth( textContent );
+                };
                 if( !inPreTag && trimWhitespace ){
                     if( trimLineBreaks ){
                         // 先頭と最後の改行文字を削除
@@ -344,6 +351,21 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };
 
         return string;
+    };
+
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
+    function toNoLineBreaksBetweenFullWidth( string ){
+        // この関数は、HTML文書を文字列として受け取り、全角文字に挟まれた改行コードを削除したHTML文書を文字列として返す
+        // 正規表現を使って、全角文字に挟まれた改行コードを空文字に置換する
+        // 全角文字の範囲は、Unicodeのコードポイントで指定する
+        // \uFF01-\uFF60は全角記号や英数字、\u3040-\u309Fはひらがな、\u30A0-\u30FFはカタカナ、\u4E00-\u9FFFは漢字などを表す
+        // \r\nや\nや\rなどの改行コードを表すために、\sというメタ文字を使う
+        // gというフラグを使って、文字列全体に対して置換を行う
+        return string.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2");
     };
 };
 

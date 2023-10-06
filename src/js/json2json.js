@@ -1,15 +1,21 @@
 /**
  * @param {!Array} json
  * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
- * @param {!function(string)=} opt_onError
+ * @param {!function(string)|!Object=} opt_onError
+ * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
  */
-p_json2json = function( json, onInstruction, opt_onError ){
+p_json2json = function( json, onInstruction, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
 
-    var errorHandler = opt_onError || function(){},
-        isTreeUpdated = false,
+    var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
+
+    var options      = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {},
+        keepComments = !!options[ 'keepComments' ],
+        attrPrefix   = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
+
+    var isTreeUpdated = false,
         isStaticWebPage = true;
 
     if( p_isArray( json ) ){
@@ -31,7 +37,8 @@ p_json2json = function( json, onInstruction, opt_onError ){
     function walkNode( currentJSONNode, parentJSONNode, myIndex ){
         var arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
-            attrIndex = 1, tagName = arg0, attrs, functionName, args, result;
+            attrIndex = 1, tagName = arg0, attrs,
+            functionName, args, result;
 
         switch( arg0 ){
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
@@ -43,6 +50,10 @@ p_json2json = function( json, onInstruction, opt_onError ){
             case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
                 break;
             case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
+                if( !keepComments && parentJSONNode ){
+                    parentJSONNode.splice( myIndex, 1 );
+                    return REMOVED;
+                };
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
                 walkChildNodes( currentJSONNode );
@@ -51,13 +62,8 @@ p_json2json = function( json, onInstruction, opt_onError ){
                 walkChildNodes( currentJSONNode );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
-                functionName = arg1;
-                args         = currentJSONNode.slice( 2 );
-                if( args.length ){
-                    result = onInstruction( functionName, args );
-                } else {
-                    result = onInstruction( functionName );
-                };
+                result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex );
+
                 if( result !== undefined ){
                     isTreeUpdated = true;
 
@@ -68,48 +74,13 @@ p_json2json = function( json, onInstruction, opt_onError ){
                             json.length = 0;
                             json.push( HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, '' );
                         };
+                        return REMOVED;
                     } else if( p_isStringOrNumber( result ) ){
-                        if( parentJSONNode ){
-                            parentJSONNode.splice( myIndex, 1, result );
-                        } else {
-                            json.length = 0;
-                            json.push( HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, result );
-                        };
+                        // just replaced
                     } else if( p_isArray( result ) ){
-                        result = /** @type {!Array} */ (result);
-
-                        if( result[ 0 ] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
-                            if( parentJSONNode ){
-                                result.shift();
-                                result.unshift( myIndex, 1 );
-                                // console.log( '>> ', myIndex, parentJSONNode )
-                                parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
-                                // console.log( '!!', myIndex, parentJSONNode )
-                                // console.log( '----' )
-                            } else {
-                                json.length = 0;
-                                json.push.apply( json, result ); // <= [ DOCUMENT_FRAGMENT_NODE, ...result ]
-                            };
-                        } else if( p_isArray( result[ 0 ] ) ){ // nodeType を省略した DOCUMENT_FRAGMENT_NODE
-                            if( parentJSONNode ){
-                                result.unshift( myIndex, 1 );
-                                parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
-                            } else {
-                                json.length = 0;
-                                json.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
-                                json.push.apply( json, result );
-                            };
-                        } else {
-                            if( parentJSONNode ){
-                                parentJSONNode.splice( myIndex, 1, result );
-                            } else {
-                                json.length = 0;
-                                json.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
-                            };
-                        };
                         return REMOVED;
                     } else if( DEFINE_HTML2JSON__DEBUG ){
-                        errorHandler( 'DynamicNode Error! [' + currentJSONNode + ']' );
+                        errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                     };
                 } else {
                     isStaticWebPage = false;
@@ -164,29 +135,18 @@ p_json2json = function( json, onInstruction, opt_onError ){
      * @param {!Object} attrs 
      */
     function walkAttributes( attrs ){
-        var name, originalName, value, isInstruction, functionName, args;
+        var name, originalName, value, isInstruction;
     
         for( name in attrs ){
             originalName = name;
             value = attrs[ name ];
-            isInstruction = name.charAt( 0 ) === ':';
-            isInstruction && ( name = name.substr( 1 ) );
+            isInstruction = p_isInstructionAttr( attrPrefix, name );
+            isInstruction && ( name = name.substr( attrPrefix.length ) );
             name === 'className' && ( name = 'class' );
 
             if( isInstruction ){
-                if( p_isArray( value ) && p_isString( value[ 0 ] ) ){
-                    functionName = value[ 0 ];
-                    args         = value.slice( 1 );
-                    if( args.length ){
-                        value = onInstruction( functionName, args );
-                    } else {
-                        value = onInstruction( functionName );
-                    };
-                } else if( p_isString( value ) ){
-                    value = onInstruction( value );
-                } else if( DEFINE_HTML2JSON__DEBUG ){
-                    errorHandler( 'Invalid dynamic attribute value! [' + originalName + '=' + value + ']' );
-                };
+                value = p_evaluteInstructionAttr( onInstruction, name, value, errorHandler );
+
                 if( value !== undefined ){
                     delete attrs[ originalName ];
                     if( p_isArray( value ) ){
