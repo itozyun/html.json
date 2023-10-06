@@ -38,7 +38,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
             arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
             attrIndex = 1, tagName = arg0, attrs,
-            result, functionName, args,
+            result,
             id, className, childNodesContents, isXMLRoot;
 
         switch( arg0 ){
@@ -56,7 +56,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                     htmlString += '</' + omittedCloseTagBefore + '>';
                     omittedCloseTagBefore = '';
                 };
-                htmlString += skipEscapeForHTML ? arg1 : escapeForHTML( arg1 );
+                htmlString += skipEscapeForHTML ? arg1 : escapeForHTML( '' + arg1 );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 if( p_isString( arg1 ) ){
@@ -204,9 +204,9 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
 
     function escapeForHTML( unsafeText ){
         return unsafeText
-                   .split( '&lt;' ).join( '<' )
+                   /** .split( '&lt;' ).join( '<' )
                    .split( '&gt;' ).join( '>' )
-                   .split( '&amp;' ).join( '&' )    // 既にエスケープ済かもしれないので、一旦エスケープの解除
+                   .split( '&amp;' ).join( '&' ) */ // 既にエスケープ済かもしれないので、一旦エスケープの解除
                    .split( '&' ).join( '&amp;' )    // エスケープ
                    .split( '<' ).join( '&lt;' )
                    .split( '>' ).join( '&gt;' );
