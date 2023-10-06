@@ -3,7 +3,7 @@ const gulp = require( 'gulp' );
 let gulpDPZ, ClosureCompiler;
 
 gulp.task(
-    'js',
+    'dist',
     gulp.series(
         function(){
             gulpDPZ         = gulpDPZ         || require( 'gulp-diamond-princess-zoning' );
@@ -19,10 +19,6 @@ gulp.task(
                 ).pipe(
                     gulpDPZ(
                         {
-                            /* packageGlobalArgs : [
-                                'undefined',
-                                'void 0'
-                            ], */
                             basePath          : [
                                 './src' // not ./src/js
                             ]
@@ -33,17 +29,7 @@ gulp.task(
                         {
                             externs           : [
                                 './src/js-externs/externs.js',
-                                './src/js-externs/tags-and-attributes.js',
-                                // './src/js-externs/nodejs/modules.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/globals.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/buffer.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/events.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/crypto.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/fs.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/http.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/net.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/https.js',
-                                // './node_modules/google-closure-compiler/contrib/nodejs/path.js'
+                                './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
                                 'DEFINE_HTML2JSON__DEBUG=true'
@@ -55,6 +41,46 @@ gulp.task(
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
                             js_output_file    : 'html2json.js'
+                        }
+                    )
+                ).pipe(
+                    gulp.dest( 'dist' )
+                );
+        },
+        function(){
+            return gulp.src(
+                    [
+                        './src/js/1_global.js',
+                        './src/js/2_packageGlobal.js',
+                        './src/js/3_moduleGlobal.js',
+                        './src/js/json2json.js'
+                    ]
+                ).pipe(
+                    gulpDPZ(
+                        {
+                            basePath          : [
+                                './src' // not ./src/js
+                            ]
+                        }
+                    )
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            externs           : [
+                                './src/js-externs/externs.js',
+                                './src/js-externs/tags-and-attributes.js'
+                            ],
+                            define            : [
+                                'DEFINE_HTML2JSON__DEBUG=true',
+                                'DEFINE_HTML2JSON__EXPORT_JSON2JSON=true'
+                            ],
+                            // compilation_level : 'ADVANCED',
+                            // compilation_level : 'WHITESPACE_ONLY',
+                            formatting        : 'PRETTY_PRINT',
+                            warning_level     : 'VERBOSE',
+                            // language_in       : 'ECMASCRIPT3',
+                            // language_out      : 'ECMASCRIPT3',
+                            js_output_file    : 'json2json.js'
                         }
                     )
                 ).pipe(

@@ -55,6 +55,8 @@ heppy-dom に依存する。
 
 ### 1.1. ProcessingInstruction
 
+* `html2json("<? funcName ?>")` は不可、必ず Element の下に書くこと！
+
 ~~~html
 <div id="side">
 <? createSidebar("",6,{}) ?>
@@ -92,22 +94,22 @@ heppy-dom に依存する。
 
 ## 2. json2json
 
-動的コンテンツの内、決定した値を `onReachDynamicContent` で埋め込むことが出来る。
+動的コンテンツの内、決定した値を `onInstruction` で埋め込むことが出来る。
 
 ~~~js
-json2json( json, onReachDynamicContent, opt_errorHandler );
+json2json( json, onInstruction, opt_onError );
 
-function onReachDynamicContent( methodName, args, currentHtmlJson ){
+function onInstruction( methodName, args, currentHtmlJson ){
     return undefined; // null or '' or string or number or html.json
 };
 ~~~
-### json2json の `onReachDynamicContent` の戻り値
+### json2json の `onInstruction` の戻り値
 
 * `undefiend` 何もしない
 * `null` or `""` 動的コンテンツを削除
 * `{string|number}` TEXT_NODE になる
 * strict な html.json `[ json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
+* 戻り値が `[json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onInstruction` で処理される。
 
 
 ## 3. json2html
@@ -115,40 +117,47 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 既に JSON パーサーがある環境では、json2html を用意するだけで、json データから html を生成できる。
 
 ~~~js
-json2html( json, onReachDynamicContent, opt_strictQuot, opt_useConmma );
+json2html( json, onInstruction, opt_strictQuot, opt_useConmma );
 
-function onReachDynamicContent( methodName, args, currentHtmlJson ){
+function onInstruction( methodName, args, currentHtmlJson ){
     return htmlString; // or [] html.json
 };
 ~~~
 
-### json2html の `onReachDynamicContent` の戻り値
+### json2html の `onInstruction` の戻り値
 
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
 * strict な html.json `[ json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', [ ... ] ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onReachDynamicContent` で処理される。
+* 戻り値が `[json2json.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, ]` も可能。このノードは再度 `onInstruction` で処理される。
 
 
 ## 4. HTML.Json 定義
 
-|                                  | 第1要素                     | 第2要素                               | 第3要素        | 第4要素      |
-|:---------------------------------|:----------------------------|:--------------------------------------|:---------------|:-------------|
-| DOCUMENT_NODE                    | `0`                         | `"<!DOCTYPE html>"` *5                | `...node` *7   | -            |
-| DOCUMENT_FRAGMENT_NODE           | `1`                         | `...node`                             | -              | -            |
-| HTML_ELEMENT *4                  | `2`                         | `"input"`                             | `{attributes}` | `...node`    |
-| タグ名(.class#id) *1, *2         | `"input"`, `"p.main#main"`  |`{type:"text",style:{color:"red"}}` *3 | `...node`      | -            |
-| TEXT_NODE                        | `3`                         | `textContent` *6                      | -              | -            |
-| COMMENT_NODE                     | `4`                         | `string`                              | -              | -            |
-| 下の階層が隠れる条件付きコメント | `5`                         | `"(IE)&(vml)"`                        | `...node`      | -            |
-| 下の階層が見える条件付きコメント | `6`                         | `"!(IE)"`                             | `...node`      | -            |
-| 動的コンテンツ                   | `7`                         | `"メソッド名"`                        | `...arguments` | -            |
+|                                  | 第1要素                     | 第2要素                | 第3要素        | 第4要素      |
+|:---------------------------------|:----------------------------|:-----------------------|:---------------|:-------------|
+| DOCUMENT_NODE                    | `0`                         | `"<!DOCTYPE html>"` *5 | `...node` *7   | -            |
+| DOCUMENT_FRAGMENT_NODE           | `1`                         | `...node`              | -              | -            |
+| HTML_ELEMENT *4                  | `2`                         | `"input"`              | `{attributes}` | `...node`    |
+| タグ名(.class#id) *1, *2         | `"input"`, `"p.main#main"`  |`{attributes}` *3       | `...node`      | -            |
+| TEXT_NODE *4                     | `3`                         | `textContent` *6       | -              | -            |
+| COMMENT_NODE                     | `4`                         | `string`               | -              | -            |
+| 下の階層が隠れる条件付きコメント | `5`                         | `"(IE)&(vml)"`         | `...node`      | -            |
+| 下の階層が見える条件付きコメント | `6`                         | `"!(IE)"`              | `...node`      | -            |
+| 動的コンテンツ                   | `7`                         | `"メソッド名"`         | `...arguments` | -            |
 
 1. タグ名は小文字
 2. クラス名, id どちらか、または両方を第2引数ではなくここで記述できる
-3. 省略が可能。値が `""` or `==null` では属性は追加されない。style 属性は ハッシュで記述する。`{style:{}}`
-4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onReachDynamicContentsCallback で使用
-5. XHTML では `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
+3. 属性
+   * 必ず tagName の直後に出現する
+      * 省略が可能
+   * 例
+      * `{type:"text",style:{color:"red"}}`
+   * 値が `""` or `==null` では属性は追加されない(json2html)
+   * style 属性はオブジェクトまたは文字列(`elm.style.cssText`)で記述する
+     * `{style:{}}`, `style:"color:red;font-size:2em"`
+4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onInstruction の戻り値で使用できる
+5. doctype 文字列。XHTML では `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
 6. `textContent` は `string` または Finite な `number`
 7. `...node` は `[ nodeType, ... ]`, `string` または Finite な `number`
 
@@ -214,7 +223,9 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 
 ~~~js
 [ 3, "Hello, World!" ] // Text Node
-[ 1, 2023 ] // Document Fragment Node
+[ 3, 2023 ] // Text Node
+[ 1, "Hello, World!" ] // Document Fragment Node + Text Node
+[ 1, 2023 ] // Document Fragment Node + Text Node
 ~~~
 
 
@@ -251,9 +262,9 @@ function onReachDynamicContent( methodName, args, currentHtmlJson ){
 ### html2json 処理時に合わせて実施します。
 
 1. テキストノードの空白文字の削除
-   * 改行文字を削除, タブは一つの半角スペースに
+   * 改行とタブは一つの半角スペースに
    * 2つ以上の半角スペースを1つの半角スペースへ
-   * 先頭と最後の半角スペースを削除
+   * 先頭と最後の半角スペースを削除、例外は `trimWhitespace` を参照
    * 半角スペースの保護
      * 先頭または最後、または連続する半角スペースの保護には `\u0020` を使う。この工程で半角スペースに変換される。
      * `&#32;` は jsdom で半角スペースに変換されてしまう為、`&#32;` を削除から保護することは出来ない。

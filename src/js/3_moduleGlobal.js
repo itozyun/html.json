@@ -45,3 +45,79 @@ function p_isNodeList( value ){
 function p_isNode( value ){
     return p_isArray( value ) && ( p_isNumber( value[ 0 ] ) || p_isString( value[ 0 ] ) );
 };
+
+function m_getNodeType( value ){
+    return p_isStringOrNumber( value )
+        ? HTML_DOT_JSON__NODE_TYPE.TEXT_NODE
+        : (
+            p_isArray( value )
+                ? p_isString( value[ 0 ] )
+                     ? HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE
+                     : value[ 0 ]
+                : -1
+        );
+};
+
+function p_isAttributes( value ){
+    return !p_isArray( value ) && p_isObject( value );
+};
+
+/**
+ * 
+ * @param {!Array} htmlJsonNode
+ * @return {number}
+ */
+function m_getChildNodeStartIndex( htmlJsonNode ){
+    var nodeType   = htmlJsonNode[ 0 ];
+    var isElement  = m_getNodeType( htmlJsonNode ) === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
+    var indexAttrs = nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ? 2 : 1;
+    var startIndex = isElement
+                        ? (
+                            p_isAttributes( htmlJsonNode[ indexAttrs ] )
+                                ? indexAttrs + 1
+                                : indexAttrs
+                            )
+                        : (
+                            nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE
+                                ? 1
+                                : 2
+                            );
+    return startIndex;
+};
+
+/**
+ * 連続する Text の結合
+ * @param {!Array} htmlJsonNode 
+ */
+function m_mergeTextNodes( htmlJsonNode ){
+    var startIndex = m_getChildNodeStartIndex( htmlJsonNode );
+
+    var node, nodeType, text = '', i;
+
+    if( startIndex < htmlJsonNode.length ){
+        for( i = startIndex; i < htmlJsonNode.length; ){
+            node     = htmlJsonNode[ i ];
+            nodeType = m_getNodeType( node );
+            if( nodeType === HTML_DOT_JSON__NODE_TYPE.TEXT_NODE ){
+                if( p_isStringOrNumber( node ) ){
+                    text += node;
+                } else {
+                    text += node[ 1 ];
+                };
+                htmlJsonNode.splice( i, 1 );
+            } else {
+                if( text ){
+                    htmlJsonNode.splice( i, 0, p_toNumber( text ) );
+                    text = '';
+                };
+                ++i;
+                if( nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ){
+                    m_mergeTextNodes( node );
+                };
+            };
+        };
+        if( text ){
+            htmlJsonNode[ i ] = p_toNumber( text );
+        };
+    };
+};

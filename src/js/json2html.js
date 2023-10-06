@@ -1,14 +1,14 @@
 /**
  * 
  * @param {!Array} json 
- * @param {*} onReachDynamicContent 
+ * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
  * @param {*} opt_useQuotAllways 
  * @param {*} opt_useConmma 
- * @param {*} opt_errorHandler 
+ * @param {!function(string)=} opt_onError
  * @return {string} html string
  */
-p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_useConmma, opt_errorHandler ){
-    var errorHandler = opt_errorHandler || function(){},
+p_json2html = function( json, onInstruction, opt_useQuotAllways, opt_useConmma, opt_onError ){
+    var errorHandler = opt_onError || function(){},
         omittedCloseTagBefore, isInXMLTree = false;
 
     if( p_isArray( json ) ){
@@ -65,11 +65,11 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
                 if( p_isArray( arg2 ) ){
-                    dynamicNode = onReachDynamicContent( arg1, arg2 );
+                    dynamicNode = onInstruction( arg1, arg2 );
                 } else if( array.length === 3 ){
-                    dynamicNode = onReachDynamicContent( arg1, [ arg2 ] );
+                    dynamicNode = onInstruction( arg1, [ arg2 ] );
                 } else {
-                    dynamicNode = onReachDynamicContent( arg1 );
+                    dynamicNode = onInstruction( arg1 );
                 };
                 if( dynamicNode !== undefined ){
                     if( dynamicNode === null || dynamicNode === '' ){
@@ -128,7 +128,7 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
                     if( 1 + offset <= array.length ){
                         arg1 = array[ 1 + offset ];
                         // attr
-                        if( p_isObject( arg1 ) && !p_isArray( arg1 ) ){
+                        if( p_isAttributes( arg1 ) ){
                             htmlString += ' ' + walkAttributes( arg1 );
                             arg1 = array[ 2 + offset ];
                         };
@@ -180,10 +180,10 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
     function walkChildNodes( childNodes, noOmitCloseTag, skipEscapeForHTML ){
         var htmlString = '', i, childNode, htmlPartString;
 
-        for( i = 0; i < childNodes.length; ++i ){ // HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION で配列の長さが変化する
+        for( i = 0; i < childNodes.length; ++i ){ // PROCESSING_INSTRUCTION で配列の長さが変化する
             childNode = childNodes[ i ];
 
-            if( p_isString( childNode ) ){
+            if( p_isStringOrNumber( childNode ) ){
                 htmlString += walkNode( [ HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, arg1 ], null, 0, noOmitCloseTag, skipEscapeForHTML );
             } else if( p_isArray( childNode ) ){
                 htmlPartString = walkNode( childNode, childNodes, i, noOmitCloseTag, skipEscapeForHTML );
@@ -223,12 +223,12 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
             if( isDynamic ){
                 if( p_isArray( value ) && p_isString( value[ 0 ] ) ){
                     if( p_isArray( value[ 1 ] ) ){
-                        value = onReachDynamicContent( value[ 0 ], value[ 1 ] );
+                        value = onInstruction( value[ 0 ], value[ 1 ] );
                     } else {
-                        value = onReachDynamicContent( value[ 0 ], [ value[ 1 ] ] );
+                        value = onInstruction( value[ 0 ], [ value[ 1 ] ] );
                     };
                 } else if( p_isString( value ) ){
-                    value = onReachDynamicContent( value );
+                    value = onInstruction( value );
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'Invalid DYNAMIC_ATTRIBUTE value! [:' + name + '=' + value + ']' );
                 };
@@ -306,12 +306,12 @@ p_json2html = function( json, onReachDynamicContent, opt_useQuotAllways, opt_use
 if( DEFINE_HTML2JSON__EXPORT_JSON2HTML ){
     module.exports = p_json2html;
 
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE                  = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
-    p_json2html.HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION         = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION;
+    p_json2html.DOCUMENT_NODE                  = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE;
+    p_json2html.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+    p_json2html.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
+    p_json2html.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
+    p_json2html.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
+    p_json2html.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
+    p_json2html.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
+    p_json2html.PROCESSING_INSTRUCTION         = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION;
 };
