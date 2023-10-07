@@ -16,13 +16,13 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
         useSingleQuot = !!options[ 'useSingleQuot' ],
         attrPrefix    = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
 
-    var omittedCloseTagBefore, isInXMLTree = false;
+    var omittedEndTagBefore, isXmlInHTML = m_isXMLDocument;
 
     if( p_isArray( json ) ){
         if( m_getNodeType( json ) === HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION ){
             json = [ HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, json ];
         };
-        return /** @type {string} */ (walkNode( json, null, 0, false, false ));
+        return /** @type {string} */ (walkNode( json, null, 0, m_noOmitEndTag || false, m_skipEscapeForHTML || false ));
     } else if( DEFINE_HTML2JSON__DEBUG ){
         errorHandler( 'Invalid html.json document!' );
     };
@@ -32,11 +32,11 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
      * @param {!Array} currentJSONNode 
      * @param {!Array|null} parentJSONNode 
      * @param {number} myIndex 
-     * @param {boolean} noOmitCloseTag 
+     * @param {boolean} noOmitEndTag 
      * @param {boolean} skipEscapeForHTML 
      * @return {string|number} html string
      */
-    function walkNode( currentJSONNode, parentJSONNode, myIndex, noOmitCloseTag, skipEscapeForHTML ){
+    function walkNode( currentJSONNode, parentJSONNode, myIndex, noOmitEndTag, skipEscapeForHTML ){
         var htmlString = '',
             arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
@@ -46,18 +46,18 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
 
         switch( arg0 ){
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
-                if( DEFINE_HTML2JSON__USE_XHTML && ( arg1.indexOf( '<?xml ' ) === 0 || 0 <= arg1.toUpperCase().indexOf( '<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ' ) ) ){
-                    isInXMLTree = true;
+                if( DEFINE_HTML2JSON__USE_XHTML && p_isXMLDocument( arg1 ) ){
+                    isXmlInHTML = true;
                 };
                 htmlString += arg1 + walkChildNodes( currentJSONNode, false, false );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                htmlString += walkChildNodes( currentJSONNode, noOmitCloseTag, skipEscapeForHTML );
+                htmlString += walkChildNodes( currentJSONNode, noOmitEndTag, skipEscapeForHTML );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
-                if( omittedCloseTagBefore ){
-                    htmlString += '</' + omittedCloseTagBefore + '>';
-                    omittedCloseTagBefore = '';
+                if( omittedEndTagBefore ){
+                    htmlString += '</' + omittedEndTagBefore + '>';
+                    omittedEndTagBefore = '';
                 };
                 htmlString += skipEscapeForHTML ? arg1 : p_escapeForHTML( '' + arg1 );
                 break;
@@ -75,7 +75,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'CONDITIONAL_COMMENT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, noOmitCloseTag, skipEscapeForHTML ) + '<![endif]-->';
+                htmlString += walkChildNodes( currentJSONNode, noOmitEndTag, skipEscapeForHTML ) + '<![endif]-->';
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 // 下の階層が見える条件付きコメント
@@ -84,7 +84,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'CONDITIONAL_COMMENT_SHOW_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, noOmitCloseTag, skipEscapeForHTML ) + '<!--<![endif]-->';
+                htmlString += walkChildNodes( currentJSONNode, noOmitEndTag, skipEscapeForHTML ) + '<!--<![endif]-->';
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
                 result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
@@ -106,14 +106,14 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 attrIndex = 2;
             default :
                 if( p_isString( tagName ) ){
-                    tagName   = parseTagName( tagName );
+                    tagName   = m_parseTagName( tagName );
                     id        = tagName[ 1 ];
                     className = tagName[ 2 ];
                     tagName   = tagName[ 0 ];
-                    if( omittedCloseTagBefore === 'p' && EXCLUDE_FROM_P[ tagName ] ){
+                    if( omittedEndTagBefore === 'p' && EXCLUDE_FROM_P[ tagName ] ){
                         htmlString += '</p>'
                     };
-                    omittedCloseTagBefore = '';
+                    omittedEndTagBefore = '';
 
                     htmlString += '<' + tagName;
 
@@ -125,8 +125,8 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                     };
 
                     // xml;
-                    if( !isInXMLTree ){
-                        isXMLRoot = isInXMLTree = isXML( tagName );
+                    if( !isXmlInHTML ){
+                        isXMLRoot = isXmlInHTML = isXML( tagName );
                     };
 
                     attrs = currentJSONNode[ attrIndex ];
@@ -135,23 +135,23 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                         htmlString += ' ' + walkAttributes( attrs );
                     };
                     // childNodes
-                    childNodesContents = walkChildNodes( currentJSONNode, noOmitCloseTag || NO_OMIT_CLOSE[ tagName ], skipEscapeForHTML || SKIP_HTML_ESCAPE[ tagName ] );
+                    childNodesContents = walkChildNodes( currentJSONNode, noOmitEndTag || NO_OMIT_END_TAG[ tagName ], skipEscapeForHTML || SKIP_HTML_ESCAPE[ tagName ] );
 
                     if( childNodesContents ){
                         htmlString += '>' + childNodesContents;
                     } else {
-                        htmlString += isInXMLTree ? '/>' : '>';
+                        htmlString += isXmlInHTML ? '/>' : '>';
                     };
 
-                    if( ( !isInXMLTree || childNodesContents ) && ( !OMIT_CLOSE_TAG[ tagName ] || noOmitCloseTag ) ){
+                    if( ( !isXmlInHTML || childNodesContents ) && ( !OMIT_END_TAG[ tagName ] || noOmitEndTag ) ){
                         htmlString += '</' + tagName + '>';
-                        omittedCloseTagBefore = '';
+                        omittedEndTagBefore = '';
                     } else {
-                        omittedCloseTagBefore = EMPTY_ELEMENTS[ tagName ] ? '' : tagName;
+                        omittedEndTagBefore = EMPTY_ELEMENTS[ tagName ] ? '' : tagName;
                     };
 
                     if( isXMLRoot ){
-                        isInXMLTree = false;
+                        isXmlInHTML = false;
                     };
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
@@ -166,22 +166,22 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
      * @return {boolean} 
      */
     function isXML( tagName ){
-        if( isInXMLTree ){
+        if( isXmlInHTML ){
             return true;
         } else if( IS_XML_ROOT[ tagName ] ){
             return true;
         };
-        return DEFINE_HTML2JSON__USE_XML_NS ? 0 < tagName.indexOf( ':' ) : false; // v: vml
+        return DEFINE_HTML2JSON__USE_XML_NS ? p_isNamespacedTag( tagName ) : false; // v: vml
     };
 
     /**
      * 
      * @param {!Array} currentJSONNode 
-     * @param {boolean} noOmitCloseTag 
+     * @param {boolean} noOmitEndTag 
      * @param {boolean} skipEscapeForHTML 
      * @return {string}
      */
-    function walkChildNodes( currentJSONNode, noOmitCloseTag, skipEscapeForHTML ){
+    function walkChildNodes( currentJSONNode, noOmitEndTag, skipEscapeForHTML ){
         var htmlString = '',
             i = m_getChildNodeStartIndex( currentJSONNode ),
             childNode, htmlPartString;
@@ -190,9 +190,9 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
             childNode = currentJSONNode[ i ];
 
             if( p_isStringOrNumber( childNode ) ){
-                htmlString += walkNode( [ HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, childNode ], null, 0, noOmitCloseTag, skipEscapeForHTML );
+                htmlString += walkNode( [ HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, childNode ], null, 0, noOmitEndTag, skipEscapeForHTML );
             } else if( p_isArray( childNode ) ){
-                htmlPartString = walkNode( childNode, currentJSONNode, i, noOmitCloseTag, skipEscapeForHTML );
+                htmlPartString = walkNode( childNode, currentJSONNode, i, noOmitEndTag, skipEscapeForHTML );
                 if( htmlPartString === REMOVED ){
                     --i;
                 } else {
@@ -250,37 +250,9 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
         for( name in styles ){
             value = styles[ name ];
             value === '0px' && ( value = 0 );
-            cssText += ';' + name + ':' + value;
+            cssText += ';' + p_toSnakeCase( name ) + ':' + p_escapeForHTML( '' + value );
         };
         return cssText.substr( 1 );
-    };
-
-    /**
-     * 
-     * @param {string} tagName 
-     * @return {!Array.<string>}
-     */
-    function parseTagName( tagName ){
-        var indexID = tagName.indexOf( '#' ),
-            indexClassName = tagName.indexOf( '.' ),
-            className, id;
-        
-        if( indexID < indexClassName ){
-            className = tagName.split( '.' )[ 1 ];
-            tagName   = tagName.split( '.' )[ 0 ];
-            if( 0 < indexID ){
-                id      = tagName.split( '#' )[ 1 ];
-                tagName = tagName.split( '#' )[ 0 ];
-            };
-        } else if( indexClassName < indexID ){
-            id      = tagName.split( '#' )[ 1 ];
-            tagName = tagName.split( '#' )[ 0 ];
-            if( 0 < indexClassName ){
-                className = tagName.split( '.' )[ 1 ];
-                tagName   = tagName.split( '.' )[ 0 ];
-            };
-        };
-        return [ tagName, id, className ];
     };
 };
 

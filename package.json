@@ -29,6 +29,7 @@
     "through": "^2.3.8"
   },
   "devDependencies": {
+    "@externs/nodejs": "^1.5.0",
     "aria-attributes": "^2.0.1",
     "ava": "^5.3.1",
     "google-closure-compiler": "^20230802.0.0",

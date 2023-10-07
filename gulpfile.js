@@ -2,6 +2,8 @@ const gulp = require( 'gulp' );
 
 let gulpDPZ, ClosureCompiler;
 
+let isDebug;
+
 gulp.task(
     'dist',
     gulp.series(
@@ -74,6 +76,7 @@ gulp.task(
                                 'DEFINE_HTML2JSON__DEBUG=true',
                                 'DEFINE_HTML2JSON__EXPORT_JSON2JSON=true'
                             ],
+                            env               : 'CUSTOM',
                             // compilation_level : 'ADVANCED',
                             // compilation_level : 'WHITESPACE_ONLY',
                             formatting        : 'PRETTY_PRINT',
@@ -98,6 +101,10 @@ gulp.task(
                 ).pipe(
                     gulpDPZ(
                         {
+                            packageGlobalArgs : [
+                                isDebug ? '' : 'undefined',
+                                isDebug ? '' : 'void 0'
+                            ],
                             basePath          : [
                                 './src' // not ./src/js
                             ]
@@ -114,6 +121,7 @@ gulp.task(
                                 'DEFINE_HTML2JSON__DEBUG=true',
                                 'DEFINE_HTML2JSON__EXPORT_JSON2HTML=true'
                             ],
+                            env               : 'CUSTOM',
                             // compilation_level : 'ADVANCED',
                             // compilation_level : 'WHITESPACE_ONLY',
                             formatting        : 'PRETTY_PRINT',
@@ -121,6 +129,62 @@ gulp.task(
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
                             js_output_file    : 'json2html.js'
+                        }
+                    )
+                ).pipe(
+                    gulp.dest( 'dist' )
+                );
+        },
+        function(){
+            return gulp.src(
+                    [
+                        './src/js/1_global.js',
+                        './src/js/2_packageGlobal.js',
+                        './src/js/3_moduleGlobal.js',
+                        './src/js/stream-json2html.js'
+                    ]
+                ).pipe(
+                    gulpDPZ(
+                        {
+                            packageGlobalArgs : [
+                                isDebug ? '' : 'require,Buffer,undefined',
+                                isDebug ? '' : 'require,Buffer,void 0'
+                            ],
+                            basePath          : [
+                                './src' // not ./src/js
+                            ]
+                        }
+                    )
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            externs           : [
+                                './src/js-externs/console.js',
+                                './node_modules/@externs/nodejs/v8/nodejs.js',
+                                './node_modules/@externs/nodejs/v8/global.js',
+                                //'./node_modules/@externs/nodejs/v8/fs.js',
+                               // './node_modules/@externs/nodejs/v8/http.js',
+                               // './node_modules/@externs/nodejs/v8/https.js',
+                               // './node_modules/@externs/nodejs/v8/net.js',
+                                './node_modules/@externs/nodejs/v8/events.js',
+                                './node_modules/@externs/nodejs/v8/global/buffer.js',
+                                './node_modules/@externs/nodejs/v8/stream.js',
+                                //'./node_modules/@externs/nodejs/v8/zlib.js',
+                                //'./node_modules/@externs/nodejs/v8/path.js',
+                                './src/js-externs/externs.js',
+                                './src/js-externs/tags-and-attributes.js'
+                            ],
+                            define            : [
+                                'DEFINE_HTML2JSON__DEBUG=true'
+                            ],
+                            env               : 'CUSTOM',
+                            // compilation_level : 'ADVANCED',
+                            // compilation_level : 'WHITESPACE_ONLY',
+                            formatting        : 'PRETTY_PRINT',
+                            warning_level     : 'VERBOSE',
+                            // language_in       : 'ECMASCRIPT3',
+                            // language_out      : 'ECMASCRIPT3',
+                            js_output_file    : 'stream-json2html.js'
                         }
                     )
                 ).pipe(

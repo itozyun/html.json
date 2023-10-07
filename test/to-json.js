@@ -50,6 +50,8 @@ test('whitespace', (t) => {
 });
 
 test('number-string', (t) => {
+    t.deepEqual( html2json('<var>.123'), ['var', '.123']);
+
     t.deepEqual( html2json('<p>1<p>2'), [['p',1],['p',2]]);
 
     t.deepEqual( html2json('<p title="1234567890123">1234567890123'), ['p', { title : 1234567890123 }, 1234567890123 ]);
