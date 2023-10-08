@@ -4,7 +4,14 @@ var m_EMPTY_ELEMENTS     = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,
     m_NEVER_OMIT_END_TAG = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
     m_IS_XML_ROOT        = {svg:!0, math:!0},
     // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-    m_EXCLUDE_FROM_P     = {table:!0,img:!0,svg:!0,picture:!0,object:!0,embed:!0,video:!0,audio:!0,blockquot:!0,form:!0,fieldset:!0},
+    m_EXCLUDE_FROM_P     = {
+        table:!0,form:!0,fieldset:!0,blockquot:!0,legend:!0, // block level
+
+        svg:!0,picture:!0,object:!0,embed:!0,video:!0,audio:!0,applet:!0,iframe:!0,
+        a:!0,abbr:!0,acronym:!0,b:!0,basefont:!0,bdo:!0,big:!0,br:!0,button:!0,cite:!0,code:!0,del:!0,dfn:!0,
+        em:!0,font:!0,i:!0,img:!0,input:!0,ins:!0,isindex:!0,kbd:!0,label:!0,q:!0,ruby:!0,s:!0,samp:!0,select:!0,
+        small:!0,span:!0,strike:!0,strong:!0,sub:!0,sup:!0,textarea:!0,time:!0,tt:!0,u:!0,var:!0,wbr:!0
+    },
     m_SKIP_HTML_ESCAPE   = {script:!0,style:!0,plaintext:!0,xmp:!0,noscript:!0};
 
 // stream-json2html => json2html で使用

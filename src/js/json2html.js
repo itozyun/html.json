@@ -55,10 +55,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 htmlString += walkChildNodes( currentJSONNode, neverOmitEndTag, skipEscapeForHTML );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
-                if( omittedEndTagBefore ){
-                    htmlString += '</' + omittedEndTagBefore + '>';
-                    omittedEndTagBefore = '';
-                };
+                appendOmittedEndTagBasedOnFollowingNode();
                 htmlString += skipEscapeForHTML ? arg1 : m_escapeForHTML( '' + arg1 );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION :
@@ -77,6 +74,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント
+                appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']>';
                 } else if( DEFINE_HTML2JSON__DEBUG ){
@@ -86,6 +84,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 // 下の階層が見える条件付きコメント
+                appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']><!-->';
                 } else if( DEFINE_HTML2JSON__DEBUG ){
@@ -165,6 +164,14 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 };
                 break;
         };
+
+        function appendOmittedEndTagBasedOnFollowingNode(){
+            if( omittedEndTagBefore ){
+                htmlString += '</' + omittedEndTagBefore + '>';
+                omittedEndTagBefore = '';
+            };
+        };
+
         return htmlString;
     };
 

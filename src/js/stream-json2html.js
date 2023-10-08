@@ -231,7 +231,7 @@ function onToken( token, value ){
                         const result = executeInstruction();
 
                         if( m_isArray( result ) ){
-                            m_neverOmitEndTag    = this._neverOmitEndTag;
+                            m_neverOmitEndTag   = this._neverOmitEndTag;
                             m_skipEscapeForHTML = this._skipEscapeForHTML;
                             m_isXMLDocument     = this._isXMLDocument || this._isXmlInHTML;
                             queue = p_json2html(
@@ -460,7 +460,7 @@ function onToken( token, value ){
         /** phase => expect */
             switch( phase ){
                 case DEFINE_HTML2JSON__PHASE.NODE_START : // [
-                    queue = closeParentStartTag();
+                    queue  = closeParentStartTag();
                     expect = DEFINE_HTML2JSON__EXPECT.NODE_TYPE;
                     break;
             /** <!DOCTYPE html> */
@@ -582,27 +582,27 @@ function onToken( token, value ){
                     break;
             /** <![CDATA[ ]]> */
                 case DEFINE_HTML2JSON__PHASE.CDATA_SECTION_START:
-                    queue = '<![CDATA[';
+                    queue  = '<![CDATA[';
                     expect = DEFINE_HTML2JSON__EXPECT.CDATA_SECTION_VALUE;
                     tree.push( HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION );
                     break;
                 case DEFINE_HTML2JSON__PHASE.CDATA_SECTION_VALUE:
-                    queue = value;
+                    queue  = value;
                     expect = DEFINE_HTML2JSON__EXPECT.END_OF_NODE;
                     break;
             /** <!-- --> */
                 case DEFINE_HTML2JSON__PHASE.COMMENT_NODE_START:
-                    queue = '<!--';
+                    queue  = '<!--';
                     expect = DEFINE_HTML2JSON__EXPECT.COMMENT_NODE_VALUE;
                     tree.push( HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE );
                     break;
                 case DEFINE_HTML2JSON__PHASE.COMMENT_NODE_VALUE:
-                    queue = value;
+                    queue  = value;
                     expect = DEFINE_HTML2JSON__EXPECT.END_OF_NODE;
                     break;
             /** <!--[if IE]> --> */
                 case DEFINE_HTML2JSON__PHASE.COMMENT_HIDE_LOWER_START :
-                    queue = '<!--[';
+                    queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
                     expect = DEFINE_HTML2JSON__EXPECT.COMMENT_HIDE_LOWER_FORMURA;
                     tree.push( HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER );
                     break;
@@ -612,12 +612,12 @@ function onToken( token, value ){
                     break;
             /** <!--[if IE]><!--> */
                 case DEFINE_HTML2JSON__PHASE.COMMENT_SHOW_LOWER_START :
-                    queue = '<!--[';
+                    queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
                     expect = DEFINE_HTML2JSON__EXPECT.COMMENT_SHOW_LOWER_FORMURA;
                     tree.push( HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER );
                     break;
                 case DEFINE_HTML2JSON__PHASE.COMMENT_SHOW_LOWER_FORMURA :
-                    queue = value + ']><!-->';
+                    queue  = value + ']><!-->';
                     expect = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;
                     break;
             /** <? func(...) ?> */
