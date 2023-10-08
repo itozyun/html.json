@@ -7,14 +7,15 @@ var exports;
 var happyDOM = { Window : function(){} };
 
 var NODE_TYPE = {
-    DOCUMENT_NODE                  : 0,
-    DOCUMENT_FRAGMENT_NODE         : 1,
-    ELEMENT_NODE                   : 2,
+    ELEMENT_NODE                   : 1,
     TEXT_NODE                      : 3,
-    COMMENT_NODE                   : 4,
-    CONDITIONAL_COMMENT_HIDE_LOWER : 5,
-    CONDITIONAL_COMMENT_SHOW_LOWER : 6,
-    PROCESSING_INSTRUCTION         : 7
+    CDATA_SECTION                  : 4,
+    PROCESSING_INSTRUCTION         : 7,
+    COMMENT_NODE                   : 8,
+    DOCUMENT_NODE                  : 9,
+    DOCUMENT_FRAGMENT_NODE         : 11,
+    CONDITIONAL_COMMENT_HIDE_LOWER : 13,
+    CONDITIONAL_COMMENT_SHOW_LOWER : 14
 };
 
 /**

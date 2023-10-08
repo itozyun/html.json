@@ -10,13 +10,8 @@ A compact and portable format that can be converted back to HTML in a lightweigh
      * Web サーバの動的コンテンツ
      * オフラインドキュメントのデータ形式
      * PJAX のデータ形式
-3. ~~`Stream` でコンテンツの動的生成~~
-4. ~~nodeType を一致させる~~
-5. ~~CDATA 追加, xhtml 対応~~
-6. TODO html.json DOM(予定)
-7. TODO `<? include ./sidebar.json ?>`
-8. ~~`<title>` 下のパース~~ 不要(JSDOM ではタイトル下のパースが出来なかった)
-9. ~~全角文字の間の改行を削除するオプション~~ (参考:[ブラウザの問題：半角スペース、全角スペース、改行コード、整形処理](https://web.archive.org/web/20190330184130/http://www.geocities.co.jp/SiliconValley-SanJose/2485/browsertrouble.html))
+3. TODO html.json DOM(予定)
+4. TODO `<? include ./sidebar.json ?>`
 
 ## 目次
 
@@ -33,6 +28,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 heppy-dom に依存する。
 
 * `trimWhitespace`
+* `keepCDataSection`
 * `keepComments`
 * `removeLineBreaksBetweenFullWidth`
 * `argumentBrackets`
@@ -113,7 +109,7 @@ function onInstruction( methodName, args, currentHtmlJson ){
 * `undefiend` 何もしない
 * `null` or `""` 動的コンテンツを削除
 * `{string|number}` TEXT_NODE になる
-* strict な html.json `[ json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 1, 'p', ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, ["p", "Hello, world!"]`, `[ 1, "p", ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
 * 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
 
 
@@ -133,24 +129,24 @@ function onInstruction( methodName, args, currentHtmlJson ){
 
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
-* strict な html.json `[ json2json.HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, [ [ 'P', "Hello, world!" ] ]`, `[ 2, 'p', [ ... ] ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, [ 'P', "Hello, world!" ]]`, `[2, 'p', ...`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
 * 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
 
 
 ## 4. HTML.Json 定義
 
-|                                  | 第1要素                     | 第2要素                | 第3要素        | 第4要素      |
-|:---------------------------------|:----------------------------|:-----------------------|:---------------|:-------------|
-| HTML_ELEMENT *4                  | `1`                         | `"input"`              | `{attributes}` | `...node`    |
-| タグ名(.class#id) *1, *2         | `"input"`, `"p.main#main"`  |`{attributes}` *3       | `...node`      | -            |
-| TEXT_NODE *4                     | `3`                         | `textContent` *6       | -              | -            |
-| CDATA_SECTION                    | `4`                         | `textContent` *6       | -              | -            |
-| PROCESSING_INSTRUCTION           | `7`                         | `"メソッド名"`         | `...arguments` | -            |
-| COMMENT_NODE                     | `8`                         | `textContent` *6       | -              | -            |
-| DOCUMENT_NODE                    | `9`                         | `"<!DOCTYPE html>"` *5 | `...node` *7   | -            |
-| DOCUMENT_FRAGMENT_NODE           | `11`                        | `...node`              | -              | -            |
-| 下の階層が隠れる条件付きコメント | `13`                        | `"(IE)&(vml)"`         | `...node`      | -            |
-| 下の階層が見える条件付きコメント | `14`                        | `"!(IE)"`              | `...node`      | -            |
+|                                  | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
+|:---------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
+| HTML_ELEMENT *4                  | `1`                         | `"input"`              | `{attributes}` *3 | `...nodes` |
+| タグ名(.class#id) *1, *2         | `"input"`, `"p.main#main"`  |`{attributes}` *3       | `...nodes`        | -          |
+| TEXT_NODE *4                     | `3`                         | `nodeValue` *6         | -                 | -          |
+| CDATA_SECTION                    | `4`                         | `nodeValue` *6         | -                 | -          |
+| PROCESSING_INSTRUCTION           | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
+| COMMENT_NODE                     | `8`                         | `nodeValue` *6         | -                 | -          |
+| DOCUMENT_NODE                    | `9`                         | `"<!DOCTYPE html>"` *5 | `...nodes` *7     | -          |
+| DOCUMENT_FRAGMENT_NODE           | `11`                        | `...nodes`             | -                 | -          |
+| 下の階層が隠れる条件付きコメント | `13`                        | `"(IE)&(vml)"`         | `...nodes`        | -          |
+| 下の階層が見える条件付きコメント | `14`                        | `"!(IE)"`              | `...nodes`        | -          |
 
 1. タグ名は小文字
 2. クラス名, id どちらか、または両方を第2引数ではなくここで記述できる
@@ -163,9 +159,9 @@ function onInstruction( methodName, args, currentHtmlJson ){
    * style 属性はオブジェクトまたは文字列(`elm.style.cssText`)で記述する
      * `{style:{}}`, `style:"color:red;font-size:2em"`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onInstruction の戻り値で使用できる
-5. doctype 文字列。XHTML では `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
-6. `textContent` は `string` または Finite な `number`
-7. `...node` は `[ nodeType, ... ]`, `string` または Finite な `number`
+5. doctype 文字列。XHTML では XML 宣言を含むこともある `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
+6. `nodeValue` は `string` または Finite な `number`
+7. `...nodes` は `[ nodeType, ... ]`, `string` または Finite な `number`
 
 
 ### 4.1. ドキュメント
