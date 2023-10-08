@@ -75,7 +75,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'CONDITIONAL_COMMENT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, noOmitEndTag, skipEscapeForHTML ) + '<![endif]-->';
+                htmlString += walkChildNodes( currentJSONNode, true, skipEscapeForHTML ) + '<![endif]-->';
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 // 下の階層が見える条件付きコメント
@@ -84,7 +84,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'CONDITIONAL_COMMENT_SHOW_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, noOmitEndTag, skipEscapeForHTML ) + '<!--<![endif]-->';
+                htmlString += walkChildNodes( currentJSONNode, true, skipEscapeForHTML ) + '<!--<![endif]-->';
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
                 result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
