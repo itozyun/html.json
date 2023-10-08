@@ -166,7 +166,9 @@ function onToken( token, value ){
         for( let i = 0, l = tree.length; i < l; ++i ){
             const tagName = tree[ i ];
 
-            if( p_isString( tagName ) ){
+            if( tagName === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || tagName === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ){
+                self._noOmitEndTag = true;
+            } else if( p_isString( tagName ) ){
                 if( NO_OMIT_END_TAG[ tagName ] ){
                     self._noOmitEndTag = true;
                 };
@@ -227,7 +229,7 @@ function onToken( token, value ){
                         } else {
                             queue = p_isStringOrNumber( result ) ? '' + result : '';
                         };
-                        expect = EXPECT.END_OF_NODE;
+                        createEndTag( !!queue );
                         break;
                     };
                 case /* Parser.C. */RIGHT_BRACE : // }
@@ -586,6 +588,7 @@ function onToken( token, value ){
                     tree.push( HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION );
                     break;
                 case PHASE.PROCESSING_INSTRUCTION_NAME :
+                    this._functionName = value;
                     expect = EXPECT.PROCESSING_INSTRUCTION_ARGS;
                     break;
 
