@@ -71,4 +71,6 @@ test('re-parse', (t) => {
 
 test('processing-instruction', (t) => {
     t.deepEqual( html2json('<p><? random ?>'), ["p", [ 7, "random" ]] );
+
+    t.deepEqual( html2json('<p><? person(777, "ADMIN") ?>'), ["p", [ 7, "person", 777, "ADMIN" ]] );
 });

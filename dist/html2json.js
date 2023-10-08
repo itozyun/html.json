@@ -136,7 +136,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
       }
       function q(a) {
         var e = a.indexOf(P), f = F(-1 === e ? a : a.substr(0, e), " ");
-        a = -1 === e ? [] : JSON.parse("[" + a.substring(e + P.length, a.lastIndexOf(X)) + "]");
+        a = -1 === e ? [] : JSON.parse("[" + a.substring(e + P.length, a.lastIndexOf(X) - 2) + "]");
         return a.length ? {name:f, args:a} : {name:f};
       }
       function z(a, e, f, k) {

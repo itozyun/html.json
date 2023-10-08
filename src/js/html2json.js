@@ -267,9 +267,9 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
      * @return {{ name : string, args : (!Array|void) }} 
      */
     function codeToObject( string ){
-        var from = string.indexOf( argOpeningBracket ),
-            name = trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ), // 先頭と最後の半角スペースを削除
-            args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, string.lastIndexOf( argClosingBracket ) ) + ']' ));
+        var from = string.indexOf( argOpeningBracket );
+        var name = trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ); // 先頭と最後の半角スペースを削除
+        var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, string.lastIndexOf( argClosingBracket ) - 2 ) + ']' ));
 
         if( args.length ){
             return { name : name, args : args };
