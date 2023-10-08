@@ -1,90 +1,10 @@
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js
 
-const Parser = require( 'jsonparse' );
+// const Parser = require( 'jsonparse' );
 
-const through = require( 'through' );
+// const through = require( 'through' );
 
 const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
-
-/**
- * @enum {number}
- */
-const EXPECT = {
-    ERROR                          : HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE - 2,
-    NODE_START                     : HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE - 1,
-
-    DOCUMENT_NODE_VALUE            : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  1,
-    TEXT_NODE_VALUE                : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  2,
-    COMMENT_NODE_VALUE             : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  3,
-    COMMENT_HIDE_LOWER_FORMURA     : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  4,
-    COMMENT_SHOW_LOWER_FORMURA     : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  5,
-    PROCESSING_INSTRUCTION_NAME    : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  6,
-
-    TAG_NAME                       : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  7,
-
-    ATTRIBUTES_START               : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  8,
-    ATTRIBUTE_PROPERTY             : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION +  9,
-    ATTRIBUTE_VALUE                : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 10,
-
-    STYLES_START                   : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 11,
-    CSS_PROPERTY                   : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 12,
-    CSS_VALUE                      : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 13,
-    
-    IN_INSTRUCTION_ATTRIBUTE       : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 14,
-
-    END_OF_NODE                    : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 15,
-
-    NODE_TYPE                      : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 16,
-    PROCESSING_INSTRUCTION_ARGS    : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 17,
-    INSTRUCTION_ATTRIBUTE_START    : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 18,
-    CHILD_NODES_START              : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 19,
-    IN_CHILD_NODES                 : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 20,
-    END_OF_DOCUMENT                : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 21
-};
-
-/**
- * @enum {number}
- */
-const PHASE = {
-    ERROR                          : EXPECT.ERROR,
-    NODE_START                     : EXPECT.NODE_START,//
-
-    DOCUMENT_NODE_START            : HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, //
-    DOCUMENT_FRAGMENT_NODE_START   : HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, //
-    ELEMENT_NODE_START             : HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, //
-    TEXT_NODE_START                : HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, //
-    COMMENT_NODE_START             : HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, //
-    COMMENT_HIDE_LOWER_START       : HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, //
-    COMMENT_SHOW_LOWER_START       : HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, //
-    PROCESSING_INSTRUCTION_START   : HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, //
-
-    DOCUMENT_NODE_VALUE            : EXPECT.DOCUMENT_NODE_VALUE, //
-    TEXT_NODE_VALUE                : EXPECT.TEXT_NODE_VALUE, //
-    COMMENT_NODE_VALUE             : EXPECT.COMMENT_NODE_VALUE, //
-    COMMENT_HIDE_LOWER_FORMURA     : EXPECT.COMMENT_HIDE_LOWER_FORMURA, //
-    COMMENT_SHOW_LOWER_FORMURA     : EXPECT.COMMENT_SHOW_LOWER_FORMURA, //
-    PROCESSING_INSTRUCTION_NAME    : EXPECT.PROCESSING_INSTRUCTION_NAME, //
-
-    TAG_NAME                       : EXPECT.TAG_NAME, //
-
-    ATTRIBUTES_START               : EXPECT.ATTRIBUTES_START, //
-    ATTRIBUTE_PROPERTY             : EXPECT.ATTRIBUTE_PROPERTY,
-    ATTRIBUTE_VALUE                : EXPECT.ATTRIBUTE_VALUE,
-
-    STYLES_START                   : EXPECT.STYLES_START,
-    CSS_PROPERTY                   : EXPECT.CSS_PROPERTY, //
-    CSS_VALUE                      : EXPECT.CSS_VALUE, //
-
-    IN_INSTRUCTION_ATTRIBUTE       : EXPECT.IN_INSTRUCTION_ATTRIBUTE,
-
-    END_OF_NODE                    : EXPECT.END_OF_NODE, //
-
-    CLOSE_EMPTY_ELEMENT            : EXPECT.END_OF_NODE + 1, //
-    END_OF_ATTRIBUTES              : EXPECT.END_OF_NODE + 2, //
-    END_OF_STYLES                  : EXPECT.END_OF_NODE + 3, //
-    TEXT_DATA                      : EXPECT.END_OF_NODE + 4, //
-    INSTRUCTION_ATTRIBUTE_NAME     : EXPECT.END_OF_NODE + 5
-};
 
 /**
  * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
@@ -93,7 +13,7 @@ const PHASE = {
  * @return {!Through}
  */
 module.exports = function( onInstruction, opt_onError, opt_options ){
-    const parser  = /** @type {!JSONParser} */ (new Parser());
+    const parser  = new Parser();
     const stream  = /** @type {!Through} */ (through( writeHandler, endHandler ));
     const options = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {};
 
@@ -144,7 +64,7 @@ function endHandler( data ){
 };
 
 /**
- * @this {!JSONParser}
+ * @this {Parser}
  * @param {!Error} err 
  */
 function onError( err ){
@@ -157,12 +77,12 @@ function onError( err ){
 
 
 /**
- * @this {JSONParser}
+ * @this {Parser}
  * @param {number} token 
  * @param {*} value 
  */
 function onToken( token, value ){
-    if( token === Parser.C.COLON || token === Parser.C.COMMA ){
+    if( token === /* Parser.C. */COLON || token === /* Parser.C. */COMMA ){
         if( this.stack.length ){
             this._createValue( token, value );
         };
@@ -281,11 +201,11 @@ function onToken( token, value ){
     switch( expect ){
         case EXPECT.PROCESSING_INSTRUCTION_ARGS :
             switch( token ){
-                case Parser.C.LEFT_BRACKET : // [
-                case Parser.C.LEFT_BRACE   : // {
+                case /* Parser.C. */LEFT_BRACKET : // [
+                case /* Parser.C. */LEFT_BRACE   : // {
                     this._createValue( token, value );
                     return;
-                case Parser.C.RIGHT_BRACKET : // ]
+                case /* Parser.C. */RIGHT_BRACKET : // ]
                     if( this.stack.length === 0 ){ // end of arguments
                         const result = executeInstruction();
 
@@ -310,7 +230,7 @@ function onToken( token, value ){
                         expect = EXPECT.END_OF_NODE;
                         break;
                     };
-                case Parser.C.RIGHT_BRACE : // }
+                case /* Parser.C. */RIGHT_BRACE : // }
                     if( this.stack.length === 1 ){
                         this._args.push( this.value );
                         this.value = null;
@@ -318,11 +238,11 @@ function onToken( token, value ){
                         this._createValue( token, value );
                     };
                     return;
-                case Parser.C.STRING :
-                case Parser.C.NUMBER :
-                case Parser.C.TRUE   :
-                case Parser.C.FALSE  :
-                case Parser.C.NULL   :
+                case /* Parser.C. */STRING :
+                case /* Parser.C. */NUMBER :
+                case /* Parser.C. */TRUE   :
+                case /* Parser.C. */FALSE  :
+                case /* Parser.C. */NULL   :
                     if( this.stack.length ){
                         this._createValue( token, value );
                     } else {
@@ -336,18 +256,18 @@ function onToken( token, value ){
             break;
         case EXPECT.IN_INSTRUCTION_ATTRIBUTE :
             switch( token ){
-                case Parser.C.LEFT_BRACKET : // [
-                case Parser.C.LEFT_BRACE   : // {
+                case /* Parser.C. */LEFT_BRACKET : // [
+                case /* Parser.C. */LEFT_BRACE   : // {
                     this._createValue( token, value );
                     return;
-                case Parser.C.RIGHT_BRACKET : // ]
+                case /* Parser.C. */RIGHT_BRACKET : // ]
                     if( this.stack.length === 0 ){ // end of arguments
                         // !_functionName => error
                         queue  = createAttributeNodeString( executeInstruction() );
                         expect = EXPECT.ATTRIBUTE_PROPERTY;
                         break;
                     };
-                case Parser.C.RIGHT_BRACE   : // }
+                case /* Parser.C. */RIGHT_BRACE   : // }
                     if( this.stack.length === 1 ){
                         this._args.push( this.value );
                         this.value = null;
@@ -355,16 +275,16 @@ function onToken( token, value ){
                         this._createValue( token, value );
                     };
                     return;
-                case Parser.C.STRING :
+                case /* Parser.C. */STRING :
                     if( this.stack.length === 0 && !this._functionName ){
                         // _args.length => error
                         this._functionName = value;
                         return;
                     };
-                case Parser.C.NUMBER :
-                case Parser.C.TRUE :
-                case Parser.C.FALSE :
-                case Parser.C.NULL   :
+                case /* Parser.C. */NUMBER :
+                case /* Parser.C. */TRUE :
+                case /* Parser.C. */FALSE :
+                case /* Parser.C. */NULL   :
                     if( this.stack.length ){
                         this._createValue( token, value );
                     } else {
@@ -379,7 +299,7 @@ function onToken( token, value ){
         default :
         /** expect => phase */
             switch( token ){
-                case Parser.C.LEFT_BRACKET : // [
+                case /* Parser.C. */LEFT_BRACKET : // [
                     switch( expect ){
                         case EXPECT.ATTRIBUTES_START  :
                         case EXPECT.CHILD_NODES_START :
@@ -396,28 +316,28 @@ function onToken( token, value ){
                             break;
                     };
                     break;
-                case Parser.C.RIGHT_BRACKET : // ]
+                case /* Parser.C. */RIGHT_BRACKET : // ]
                     phase = expect === EXPECT.ATTRIBUTES_START || expect === EXPECT.CHILD_NODES_START
                                 ? PHASE.CLOSE_EMPTY_ELEMENT
                           : expect === EXPECT.IN_CHILD_NODES || expect === EXPECT.END_OF_NODE
                                 ? PHASE.END_OF_NODE
                                 : PHASE.ERROR;
                     break;
-                case Parser.C.LEFT_BRACE : // {
+                case /* Parser.C. */LEFT_BRACE : // {
                     phase = expect === EXPECT.ATTRIBUTES_START
                                 ? PHASE.ATTRIBUTES_START
                           : expect === EXPECT.STYLES_START
                                 ? PHASE.STYLES_START
                                 : PHASE.ERROR;
                     break;
-                case Parser.C.RIGHT_BRACE : // }
+                case /* Parser.C. */RIGHT_BRACE : // }
                     phase = expect === EXPECT.ATTRIBUTE_PROPERTY
                                 ? PHASE.END_OF_ATTRIBUTES
                           : expect === EXPECT.CSS_PROPERTY
                                 ? PHASE.END_OF_STYLES
                                 : PHASE.ERROR;
                     break;
-                case Parser.C.STRING :
+                case /* Parser.C. */STRING :
                     switch( expect ){
                         case EXPECT.NODE_TYPE :
                         case EXPECT.TAG_NAME  :
@@ -470,7 +390,7 @@ function onToken( token, value ){
                             break;
                     };
                     break;
-                case Parser.C.NUMBER :
+                case /* Parser.C. */NUMBER :
                     switch( expect ){
                         case EXPECT.NODE_TYPE :
                             phase = value; // nodeType
@@ -496,9 +416,9 @@ function onToken( token, value ){
                             break;
                     };
                     break;
-                case Parser.C.TRUE :
-                case Parser.C.FALSE :
-                case Parser.C.NULL   :
+                case /* Parser.C. */TRUE :
+                case /* Parser.C. */FALSE :
+                case /* Parser.C. */NULL   :
                     phase = expect === EXPECT.ATTRIBUTE_VALUE
                             ? PHASE.ATTRIBUTE_VALUE
                             : PHASE.ERROR;

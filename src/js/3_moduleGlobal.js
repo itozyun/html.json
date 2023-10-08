@@ -48,7 +48,7 @@ function p_isString( str ){
  * @return {boolean}
  */
 function p_isNumber( n ){
-    return n === /** @type {number} */ (n) - 0;
+    return n === + n;
 };
 
 /**
@@ -116,7 +116,9 @@ function m_getNodeType( value ){
             p_isArray( value )
                 ? p_isString( value[ 0 ] )
                      ? HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE
-                     : value[ 0 ]
+                : p_isNumber( value[ 0 ] )
+                     ? value[ 0 ]
+                     : -1
                 : -1
         );
 };
@@ -300,11 +302,13 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
                                 ? indexAttrs + 1
                                 : indexAttrs
                             )
-                        : (
-                            nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE
+                        : nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE
                                 ? 1
-                                : 2
-                            );
+                        : nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE
+                       || nodeType === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
+                       || nodeType === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
+                                ? 2
+                                : Infinity;
     return startIndex;
 };
 

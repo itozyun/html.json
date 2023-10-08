@@ -2,7 +2,8 @@ const gulp = require( 'gulp' );
 
 let gulpDPZ, ClosureCompiler;
 
-let isDebug;
+let isDebug = false;
+let isPrettify = false;
 
 gulp.task(
     'dist',
@@ -36,9 +37,8 @@ gulp.task(
                             define            : [
                                 'DEFINE_HTML2JSON__DEBUG=true'
                             ],
-                            // compilation_level : 'ADVANCED',
-                            // compilation_level : 'WHITESPACE_ONLY',
-                            formatting        : 'PRETTY_PRINT',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
@@ -60,6 +60,10 @@ gulp.task(
                 ).pipe(
                     gulpDPZ(
                         {
+                            packageGlobalArgs : [
+                                isDebug ? '' : 'parseInt',
+                                isDebug ? '' : 'parseInt'
+                            ],
                             basePath          : [
                                 './src' // not ./src/js
                             ]
@@ -77,9 +81,8 @@ gulp.task(
                                 'DEFINE_HTML2JSON__EXPORT_JSON2JSON=true'
                             ],
                             env               : 'CUSTOM',
-                            // compilation_level : 'ADVANCED',
-                            // compilation_level : 'WHITESPACE_ONLY',
-                            formatting        : 'PRETTY_PRINT',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
@@ -122,9 +125,8 @@ gulp.task(
                                 'DEFINE_HTML2JSON__EXPORT_JSON2HTML=true'
                             ],
                             env               : 'CUSTOM',
-                            // compilation_level : 'ADVANCED',
-                            // compilation_level : 'WHITESPACE_ONLY',
-                            formatting        : 'PRETTY_PRINT',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
@@ -138,6 +140,9 @@ gulp.task(
         function(){
             return gulp.src(
                     [
+                        './node_modules/jsonparse/jsonparse.js',
+                        './node_modules/through/index.js',
+
                         './src/js/1_global.js',
                         './src/js/2_packageGlobal.js',
                         './src/js/3_moduleGlobal.js',
@@ -147,11 +152,13 @@ gulp.task(
                     gulpDPZ(
                         {
                             packageGlobalArgs : [
-                                isDebug ? '' : 'require,Buffer,undefined',
-                                isDebug ? '' : 'require,Buffer,void 0'
+                                isDebug ? '' : 'require,String,Buffer,JSON,undefined',
+                                isDebug ? '' : 'require,String,Buffer,JSON,void 0'
                             ],
                             basePath          : [
-                                './src' // not ./src/js
+                                './src', // not ./src/js
+                                './node_modules/jsonparse',
+                                './node_modules/through/'
                             ]
                         }
                     )
@@ -178,9 +185,8 @@ gulp.task(
                                 'DEFINE_HTML2JSON__DEBUG=true'
                             ],
                             env               : 'CUSTOM',
-                            // compilation_level : 'ADVANCED',
-                            // compilation_level : 'WHITESPACE_ONLY',
-                            formatting        : 'PRETTY_PRINT',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',

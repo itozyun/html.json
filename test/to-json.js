@@ -68,3 +68,7 @@ test('re-parse', (t) => {
 
     t.deepEqual( html2json('<!--[if IE lte 9]>ie &lt;= 9<![endif]-->'), [5, 'if IE lte 9', 'ie <= 9'] );
 });
+
+test('processing-instruction', (t) => {
+    t.deepEqual( html2json('<p><? random ?>'), ["p", [ 7, "random" ]] );
+});

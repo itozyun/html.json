@@ -37,8 +37,8 @@ p_json2json = function( json, onInstruction, opt_onError, opt_options ){
     function walkNode( currentJSONNode, parentJSONNode, myIndex ){
         var arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
-            attrIndex = 1, tagName = arg0, attrs,
-            functionName, args, result;
+            attrIndex = 1, tagName = arg0,
+            attrs, result;
 
         switch( arg0 ){
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
