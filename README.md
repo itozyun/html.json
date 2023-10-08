@@ -28,7 +28,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 heppy-dom に依存する。
 
 * `trimWhitespace`
-* `keepCDataSection`
+* `keepCDATASections`
 * `keepComments`
 * `removeLineBreaksBetweenFullWidth`
 * `argumentBrackets`

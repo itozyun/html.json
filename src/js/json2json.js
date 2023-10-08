@@ -14,7 +14,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
     var options          = m_isObject( opt_onError ) ? opt_onError : opt_options || {},
-        keepCDataSection = options[ 'keepCDataSection'      ] !== false,
+        keepCDATASections = options[ 'keepCDATASections'      ] !== false,
         keepComments     = options[ 'keepComments'          ] !== false,
         attrPrefix       = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
 
@@ -53,7 +53,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
             case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION :
-                if( !keepCDataSection && parentJSONNode ){
+                if( !keepCDATASections && parentJSONNode ){
                     parentJSONNode.splice( myIndex, 1 );
                     return REMOVED;
                 };

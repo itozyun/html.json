@@ -17,7 +17,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         
         options           = opt_selector && typeof opt_selector === 'object' ? opt_selector : opt_options || {},
         trimWhitespace    = options[ 'trimWhitespace' ],
-        keepCDataSection  = !!options[ 'keepCDataSection' ],
+        keepCDATASections  = !!options[ 'keepCDATASections' ],
         keepComments      = !!options[ 'keepComments' ],
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
@@ -191,7 +191,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 };
                 break;
             case 4 :
-                if( keepCDataSection ){
+                if( keepCDATASections ){
                     // HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE
                     parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, m_tryToNumber( textContent ) ] );
                 };

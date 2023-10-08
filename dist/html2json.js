@@ -177,7 +177,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
         }
         return a;
       }
-      var t = [], p = "string" === typeof d ? d : "", v = d && "object" === typeof d ? d : m || {}, u = v.trimWhitespace, W = !!v.keepCDataSection, X = !!v.keepComments;
+      var t = [], p = "string" === typeof d ? d : "", v = d && "object" === typeof d ? d : m || {}, u = v.trimWhitespace, W = !!v.keepCDATASections, X = !!v.keepComments;
       d = v.argumentBrackets || "()";
       var P = d.substr(0, d.length / 2), Y = d.substr(d.length), T = v.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX, V = "agressive" === u;
       m = (new R()).document;

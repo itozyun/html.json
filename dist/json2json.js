@@ -149,7 +149,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
       }, u = "function" === typeof g ? g : function(c) {
       };
       d = g && "object" === typeof g ? g : k || {};
-      var H = !1 !== d.keepCDataSection, I = !1 !== d.keepComments, G = d.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX, F = !1, y = !0;
+      var H = !1 !== d.keepCDATASections, I = !1 !== d.keepComments, G = d.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX, F = !1, y = !0;
       if (p(a)) {
         return w(a, null, 0), F && D(a), y;
       }
