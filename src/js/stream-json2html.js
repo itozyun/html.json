@@ -108,7 +108,7 @@ function onToken( token, value ){
 
     const self = this;
 
-    function evaluteInstruction(){
+    function executeInstruction(){
         const result = self._args.length
                      ? self._onInstruction.call( self._stream, self._functionName, self._args )
                      : self._onInstruction.call( self._stream, self._functionName );
@@ -228,7 +228,7 @@ function onToken( token, value ){
                     return;
                 case /* Parser.C. */RIGHT_BRACKET : // ]
                     if( this.stack.length === 0 ){ // end of arguments
-                        const result = evaluteInstruction();
+                        const result = executeInstruction();
 
                         if( m_isArray( result ) ){
                             m_neverOmitEndTag    = this._neverOmitEndTag;
@@ -283,7 +283,7 @@ function onToken( token, value ){
                 case /* Parser.C. */RIGHT_BRACKET : // ]
                     if( this.stack.length === 0 ){ // end of arguments
                         // !_functionName => error
-                        queue  = createAttributeNodeString( evaluteInstruction() );
+                        queue  = createAttributeNodeString( executeInstruction() );
                         expect = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
                         break;
                     };
@@ -529,7 +529,7 @@ function onToken( token, value ){
                     break;
                 case DEFINE_HTML2JSON__PHASE.INSTRUCTION_ATTRIBUTE_NAME :
                     this._functionName = value;
-                    value = evaluteInstruction();
+                    value = executeInstruction();
                 case DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE :
                     queue  = createAttributeNodeString( value );
                     expect = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;

@@ -71,7 +71,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                 walkChildNodes( currentJSONNode );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
-                result = m_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
+                result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
 
                 if( result !== undefined ){
                     isTreeUpdated = true;
@@ -154,7 +154,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
             name === 'className' && ( name = 'class' );
 
             if( isInstruction ){
-                value = m_evaluteInstructionAttr( onInstruction, name, value, errorHandler );
+                value = m_executeInstructionAttr( onInstruction, name, value, errorHandler );
 
                 if( value !== undefined ){
                     delete attrs[ originalName ];

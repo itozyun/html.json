@@ -148,7 +148,7 @@ function m_isInstructionAttr( prefix, name ){
  * @param {!function(string)} errorHandler 
  * @return {!Array|string|number|null|void}
  */
-function m_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler ){
+function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler ){
     var functionName = /** @type {string} */ (currentJSONNode[ 1 ]);
     var args         = currentJSONNode.slice( 2 );
     var result;
@@ -212,7 +212,7 @@ function m_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJ
  * @param {!function(string)} errorHandler 
  * @return {!Array|string|number|null|void}
  */
-function m_evaluteInstructionAttr( onInstruction, name, value, errorHandler ){
+function m_executeInstructionAttr( onInstruction, name, value, errorHandler ){
     var result;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
