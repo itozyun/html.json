@@ -1,11 +1,12 @@
-var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON = !1, DEFINE_HTML2JSON__DEBUG = !0, DEFINE_HTML2JSON__USE_XML_NS = !0, DEFINE_HTML2JSON__USE_XHTML = !0, DEFINE_INSTRUCTION_ATTR_PREFIX = ":", HTML_DOT_JSON__NODE_TYPE = {ELEMENT_NODE:1, TEXT_NODE:3, CDATA_SECTION:4, PROCESSING_INSTRUCTION:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_FRAGMENT_NODE:11, CONDITIONAL_COMMENT_HIDE_LOWER:13, CONDITIONAL_COMMENT_SHOW_LOWER:14, NETSCAPE4_CONDITIONAL_COMMENT:15};
-const PHASE = {ERROR:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 2, NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 1, ELEMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, TEXT_NODE_START:HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, CDATA_SECTION_START:HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, PROCESSING_INSTRUCTION_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, COMMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, DOCUMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, 
-COMMENT_HIDE_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, COMMENT_SHOW_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, NETSCAPE4_CONDITIONAL_COMMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT, DOCUMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 1, TEXT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 2, CDATA_SECTION_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 3, COMMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
-4, COMMENT_HIDE_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 5, COMMENT_SHOW_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 6, PROCESSING_INSTRUCTION_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 7, TAG_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 8, ATTRIBUTES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 9, ATTRIBUTE_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 10, ATTRIBUTE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
-11, STYLES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 12, CSS_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 13, CSS_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 14, IN_INSTRUCTION_ATTRIBUTE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 15, END_OF_NODE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 16, CLOSE_EMPTY_ELEMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 17, END_OF_ATTRIBUTES:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
-18, END_OF_STYLES:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 19, TEXT_DATA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 20, INSTRUCTION_ATTRIBUTE_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 21}, EXPECT = {ERROR:PHASE.ERROR, NODE_START:PHASE.NODE_START, DOCUMENT_NODE_VALUE:PHASE.DOCUMENT_NODE_VALUE, TEXT_NODE_VALUE:PHASE.TEXT_NODE_VALUE, CDATA_SECTION_VALUE:PHASE.CDATA_SECTION_VALUE, COMMENT_NODE_VALUE:PHASE.COMMENT_NODE_VALUE, COMMENT_HIDE_LOWER_FORMURA:PHASE.COMMENT_HIDE_LOWER_FORMURA, 
-COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCTION_NAME:PHASE.PROCESSING_INSTRUCTION_NAME, TAG_NAME:PHASE.TAG_NAME, ATTRIBUTES_START:PHASE.ATTRIBUTES_START, ATTRIBUTE_PROPERTY:PHASE.ATTRIBUTE_PROPERTY, ATTRIBUTE_VALUE:PHASE.ATTRIBUTE_VALUE, STYLES_START:PHASE.STYLES_START, CSS_PROPERTY:PHASE.CSS_PROPERTY, CSS_VALUE:PHASE.CSS_VALUE, IN_INSTRUCTION_ATTRIBUTE:PHASE.IN_INSTRUCTION_ATTRIBUTE, END_OF_NODE:PHASE.END_OF_NODE, NODE_TYPE:PHASE.END_OF_NODE + 1, PROCESSING_INSTRUCTION_ARGS:PHASE.END_OF_NODE + 
-2, INSTRUCTION_ATTRIBUTE_START:PHASE.END_OF_NODE + 3, CHILD_NODES_START:PHASE.END_OF_NODE + 4, IN_CHILD_NODES:PHASE.END_OF_NODE + 5, END_OF_DOCUMENT:PHASE.END_OF_NODE + 6};
+var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON = !1, DEFINE_HTML2JSON__DEBUG = !0, DEFINE_HTML2JSON__USE_XML_NS = !0, DEFINE_HTML2JSON__USE_XHTML = !0, DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX = ":", HTML_DOT_JSON__NODE_TYPE = {ELEMENT_NODE:1, TEXT_NODE:3, CDATA_SECTION:4, PROCESSING_INSTRUCTION:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_FRAGMENT_NODE:11, CONDITIONAL_COMMENT_HIDE_LOWER:13, CONDITIONAL_COMMENT_SHOW_LOWER:14, NETSCAPE4_CONDITIONAL_COMMENT:15};
+const DEFINE_HTML2JSON__PHASE = {ERROR:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 2, NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 1, ELEMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, TEXT_NODE_START:HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, CDATA_SECTION_START:HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, PROCESSING_INSTRUCTION_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, COMMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, DOCUMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, 
+DOCUMENT_FRAGMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, COMMENT_HIDE_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, COMMENT_SHOW_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, NETSCAPE4_CONDITIONAL_COMMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT, DOCUMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 1, TEXT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 2, CDATA_SECTION_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
+3, COMMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 4, COMMENT_HIDE_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 5, COMMENT_SHOW_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 6, PROCESSING_INSTRUCTION_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 7, TAG_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 8, ATTRIBUTES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 9, ATTRIBUTE_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
+10, ATTRIBUTE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 11, STYLES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 12, CSS_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 13, CSS_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 14, IN_INSTRUCTION_ATTRIBUTE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 15, END_OF_NODE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 16, CLOSE_EMPTY_ELEMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
+17, END_OF_ATTRIBUTES:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 18, END_OF_STYLES:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 19, TEXT_DATA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 20, INSTRUCTION_ATTRIBUTE_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 21}, DEFINE_HTML2JSON__EXPECT = {ERROR:DEFINE_HTML2JSON__PHASE.ERROR, NODE_START:DEFINE_HTML2JSON__PHASE.NODE_START, DOCUMENT_NODE_VALUE:DEFINE_HTML2JSON__PHASE.DOCUMENT_NODE_VALUE, TEXT_NODE_VALUE:DEFINE_HTML2JSON__PHASE.TEXT_NODE_VALUE, 
+CDATA_SECTION_VALUE:DEFINE_HTML2JSON__PHASE.CDATA_SECTION_VALUE, COMMENT_NODE_VALUE:DEFINE_HTML2JSON__PHASE.COMMENT_NODE_VALUE, COMMENT_HIDE_LOWER_FORMURA:DEFINE_HTML2JSON__PHASE.COMMENT_HIDE_LOWER_FORMURA, COMMENT_SHOW_LOWER_FORMURA:DEFINE_HTML2JSON__PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCTION_NAME:DEFINE_HTML2JSON__PHASE.PROCESSING_INSTRUCTION_NAME, TAG_NAME:DEFINE_HTML2JSON__PHASE.TAG_NAME, ATTRIBUTES_START:DEFINE_HTML2JSON__PHASE.ATTRIBUTES_START, ATTRIBUTE_PROPERTY:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_PROPERTY, 
+ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTML2JSON__PHASE.STYLES_START, CSS_PROPERTY:DEFINE_HTML2JSON__PHASE.CSS_PROPERTY, CSS_VALUE:DEFINE_HTML2JSON__PHASE.CSS_VALUE, IN_INSTRUCTION_ATTRIBUTE:DEFINE_HTML2JSON__PHASE.IN_INSTRUCTION_ATTRIBUTE, END_OF_NODE:DEFINE_HTML2JSON__PHASE.END_OF_NODE, NODE_TYPE:DEFINE_HTML2JSON__PHASE.END_OF_NODE + 1, PROCESSING_INSTRUCTION_ARGS:DEFINE_HTML2JSON__PHASE.END_OF_NODE + 2, INSTRUCTION_ATTRIBUTE_START:DEFINE_HTML2JSON__PHASE.END_OF_NODE + 
+3, CHILD_NODES_START:DEFINE_HTML2JSON__PHASE.END_OF_NODE + 4, IN_CHILD_NODES:DEFINE_HTML2JSON__PHASE.END_OF_NODE + 5, END_OF_DOCUMENT:DEFINE_HTML2JSON__PHASE.END_OF_NODE + 6};
 (function() {
   function w() {
     this.tState = A;
@@ -421,7 +422,7 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
     }
     function F(b) {
       b && this.write(b);
-      this._parser._expect !== EXPECT.END_OF_DOCUMENT && this.emit("error", "Invalid html.json");
+      this._parser._expect !== DEFINE_HTML2JSON__EXPECT.END_OF_DOCUMENT && this.emit("error", "Invalid html.json");
       this.queue(null);
       this._parser = this._parser._stream = null;
     }
@@ -438,11 +439,11 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
         return n;
       }
       function m(n) {
-        return "" !== n && null !== n ? " " + k._attribute + "=" + q(n, k._useSingleQuot, k._quotAlways) : "";
+        return "" !== n && null !== n ? t[k._attribute] ? " " + k._attribute : " " + k._attribute + "=" + q(n, k._useSingleQuot, k._quotAlways) : "";
       }
       function x(n) {
         const z = p.pop();
-        f = p.length ? EXPECT.IN_CHILD_NODES : EXPECT.END_OF_DOCUMENT;
+        f = p.length ? DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES : DEFINE_HTML2JSON__EXPECT.END_OF_DOCUMENT;
         switch(z) {
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER:
             l = "<![endif]--\x3e";
@@ -457,14 +458,14 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
             l = "--\x3e";
             break;
           default:
-            c(z) && (l = n ? "" : k._isXMLDocument || k._isXmlInHTML ? " />" : ">", (k._isXMLDocument || k._isXmlInHTML) && !n || va[z] && !k._noOmitEndTag ? k._omittedEndTagBefore = t[z] ? "" : z : (l += "</" + z + ">", k._omittedEndTagBefore = ""), X());
+            c(z) && (l = n ? "" : k._isXMLDocument || k._isXmlInHTML ? " />" : ">", (k._isXMLDocument || k._isXmlInHTML) && !n || va[z] && !k._neverOmitEndTag ? k._omittedEndTagBefore = wa[z] ? "" : z : (l += "</" + z + ">", k._omittedEndTagBefore = ""), X());
         }
       }
       function X() {
-        k._noOmitEndTag = k._skipEscapeForHTML = k._isXmlInHTML = !1;
+        k._neverOmitEndTag = k._skipEscapeForHTML = k._isXmlInHTML = !1;
         for (let n = 0, z = p.length; n < z; ++n) {
           const D = p[n];
-          D === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || D === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? k._noOmitEndTag = !0 : c(D) && (oa[D] && (k._noOmitEndTag = !0), pa[D] && (k._skipEscapeForHTML = !0), wa[D] || 0 < D.indexOf(":")) && (k._isXmlInHTML = !0);
+          D === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || D === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? k._neverOmitEndTag = !0 : c(D) && (oa[D] && (k._neverOmitEndTag = !0), pa[D] && (k._skipEscapeForHTML = !0), xa[D] || 0 < D.indexOf(":")) && (k._isXmlInHTML = !0);
         }
       }
       function qa() {
@@ -477,7 +478,7 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
       } else {
         var p = this._tree, f = this._expect, H = !1, k = this;
         switch(f) {
-          case EXPECT.PROCESSING_INSTRUCTION_ARGS:
+          case DEFINE_HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_ARGS:
             switch(b) {
               case J:
               case I:
@@ -485,7 +486,13 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
                 return;
               case G:
                 if (0 === this.stack.length) {
-                  var l = (d = r()) && d.pop === [].pop ? (void 0)(d, this._onInstruction, this._onerror, {quotAlways:this._quotAlways, useSingleQuot:this._useSingleQuot, instructionAttrPrefix:this._attrPrefix}) : c(d) || d === +d ? "" + d : "";
+                  if ((d = r()) && d.pop === [].pop) {
+                    a = this._isXMLDocument || this._isXmlInHTML;
+                    var l = (void 0)(d, this._onInstruction, this._onerror, {quotAlways:this._quotAlways, useSingleQuot:this._useSingleQuot, instructionAttrPrefix:this._attrPrefix});
+                    a = !1;
+                  } else {
+                    l = c(d) || d === +d ? "" + d : "";
+                  }
                   x(!!l);
                   break;
                 }
@@ -501,9 +508,9 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
                 this.stack.length ? this._createValue(b, d) : this._args.push(d);
                 return;
               default:
-                f = EXPECT.ERROR;
+                f = DEFINE_HTML2JSON__EXPECT.ERROR;
             }break;
-          case EXPECT.IN_INSTRUCTION_ATTRIBUTE:
+          case DEFINE_HTML2JSON__EXPECT.IN_INSTRUCTION_ATTRIBUTE:
             switch(b) {
               case J:
               case I:
@@ -512,7 +519,7 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
               case G:
                 if (0 === this.stack.length) {
                   l = m(r());
-                  f = EXPECT.ATTRIBUTE_PROPERTY;
+                  f = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
                   break;
                 }
               case B:
@@ -531,267 +538,268 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
                 this.stack.length ? this._createValue(b, d) : this._args.push(d);
                 return;
               default:
-                f = EXPECT.ERROR;
+                f = DEFINE_HTML2JSON__EXPECT.ERROR;
             }break;
           default:
             switch(b) {
               case J:
                 switch(f) {
-                  case EXPECT.ATTRIBUTES_START:
-                  case EXPECT.CHILD_NODES_START:
+                  case DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START:
+                  case DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START:
                     H = !0;
-                  case EXPECT.NODE_START:
-                  case EXPECT.IN_CHILD_NODES:
-                    b = PHASE.NODE_START;
+                  case DEFINE_HTML2JSON__EXPECT.NODE_START:
+                  case DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES:
+                    b = DEFINE_HTML2JSON__PHASE.NODE_START;
                     break;
-                  case EXPECT.INSTRUCTION_ATTRIBUTE_START:
-                    b = PHASE.IN_INSTRUCTION_ATTRIBUTE;
+                  case DEFINE_HTML2JSON__EXPECT.INSTRUCTION_ATTRIBUTE_START:
+                    b = DEFINE_HTML2JSON__PHASE.IN_INSTRUCTION_ATTRIBUTE;
                     break;
                   default:
-                    b = PHASE.ERROR;
+                    b = DEFINE_HTML2JSON__PHASE.ERROR;
                 }break;
               case G:
-                b = f === EXPECT.ATTRIBUTES_START || f === EXPECT.CHILD_NODES_START ? PHASE.CLOSE_EMPTY_ELEMENT : f === EXPECT.IN_CHILD_NODES || f === EXPECT.END_OF_NODE ? PHASE.END_OF_NODE : PHASE.ERROR;
+                b = f === DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START || f === DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START ? DEFINE_HTML2JSON__PHASE.CLOSE_EMPTY_ELEMENT : f === DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES || f === DEFINE_HTML2JSON__EXPECT.END_OF_NODE ? DEFINE_HTML2JSON__PHASE.END_OF_NODE : DEFINE_HTML2JSON__PHASE.ERROR;
                 break;
               case I:
-                b = f === EXPECT.ATTRIBUTES_START ? PHASE.ATTRIBUTES_START : f === EXPECT.STYLES_START ? PHASE.STYLES_START : PHASE.ERROR;
+                b = f === DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START ? DEFINE_HTML2JSON__PHASE.ATTRIBUTES_START : f === DEFINE_HTML2JSON__EXPECT.STYLES_START ? DEFINE_HTML2JSON__PHASE.STYLES_START : DEFINE_HTML2JSON__PHASE.ERROR;
                 break;
               case B:
-                b = f === EXPECT.ATTRIBUTE_PROPERTY ? PHASE.END_OF_ATTRIBUTES : f === EXPECT.CSS_PROPERTY ? PHASE.END_OF_STYLES : PHASE.ERROR;
+                b = f === DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY ? DEFINE_HTML2JSON__PHASE.END_OF_ATTRIBUTES : f === DEFINE_HTML2JSON__EXPECT.CSS_PROPERTY ? DEFINE_HTML2JSON__PHASE.END_OF_STYLES : DEFINE_HTML2JSON__PHASE.ERROR;
                 break;
               case C:
                 switch(f) {
-                  case EXPECT.NODE_TYPE:
-                  case EXPECT.TAG_NAME:
-                    b = PHASE.TAG_NAME;
+                  case DEFINE_HTML2JSON__EXPECT.NODE_TYPE:
+                  case DEFINE_HTML2JSON__EXPECT.TAG_NAME:
+                    b = DEFINE_HTML2JSON__PHASE.TAG_NAME;
                     break;
-                  case EXPECT.DOCUMENT_NODE_VALUE:
-                    b = PHASE.DOCUMENT_NODE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.DOCUMENT_NODE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.DOCUMENT_NODE_VALUE;
                     break;
-                  case EXPECT.TEXT_NODE_VALUE:
-                    b = PHASE.TEXT_NODE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.TEXT_NODE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.TEXT_NODE_VALUE;
                     break;
-                  case EXPECT.CDATA_SECTION_VALUE:
-                    b = PHASE.CDATA_SECTION_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.CDATA_SECTION_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.CDATA_SECTION_VALUE;
                     break;
-                  case EXPECT.COMMENT_NODE_VALUE:
-                    b = PHASE.COMMENT_NODE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.COMMENT_NODE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.COMMENT_NODE_VALUE;
                     break;
-                  case EXPECT.COMMENT_HIDE_LOWER_FORMURA:
-                    b = PHASE.COMMENT_HIDE_LOWER_FORMURA;
+                  case DEFINE_HTML2JSON__EXPECT.COMMENT_HIDE_LOWER_FORMURA:
+                    b = DEFINE_HTML2JSON__PHASE.COMMENT_HIDE_LOWER_FORMURA;
                     break;
-                  case EXPECT.COMMENT_SHOW_LOWER_FORMURA:
-                    b = PHASE.COMMENT_SHOW_LOWER_FORMURA;
+                  case DEFINE_HTML2JSON__EXPECT.COMMENT_SHOW_LOWER_FORMURA:
+                    b = DEFINE_HTML2JSON__PHASE.COMMENT_SHOW_LOWER_FORMURA;
                     break;
-                  case EXPECT.ATTRIBUTE_PROPERTY:
-                    b = PHASE.ATTRIBUTE_PROPERTY;
+                  case DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY:
+                    b = DEFINE_HTML2JSON__PHASE.ATTRIBUTE_PROPERTY;
                     break;
-                  case EXPECT.ATTRIBUTE_VALUE:
-                    b = PHASE.ATTRIBUTE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE;
                     break;
-                  case EXPECT.STYLES_START:
-                    b = PHASE.STYLES_START;
+                  case DEFINE_HTML2JSON__EXPECT.STYLES_START:
+                    b = DEFINE_HTML2JSON__PHASE.STYLES_START;
                     break;
-                  case EXPECT.CSS_PROPERTY:
-                    b = PHASE.CSS_PROPERTY;
+                  case DEFINE_HTML2JSON__EXPECT.CSS_PROPERTY:
+                    b = DEFINE_HTML2JSON__PHASE.CSS_PROPERTY;
                     break;
-                  case EXPECT.CSS_VALUE:
-                    b = PHASE.CSS_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.CSS_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.CSS_VALUE;
                     break;
-                  case EXPECT.ATTRIBUTES_START:
-                  case EXPECT.CHILD_NODES_START:
+                  case DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START:
+                  case DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START:
                     H = !0;
-                  case EXPECT.IN_CHILD_NODES:
-                    b = PHASE.TEXT_DATA;
+                  case DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES:
+                    b = DEFINE_HTML2JSON__PHASE.TEXT_DATA;
                     break;
-                  case EXPECT.PROCESSING_INSTRUCTION_NAME:
-                    b = PHASE.PROCESSING_INSTRUCTION_NAME;
+                  case DEFINE_HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_NAME:
+                    b = DEFINE_HTML2JSON__PHASE.PROCESSING_INSTRUCTION_NAME;
                     break;
-                  case EXPECT.INSTRUCTION_ATTRIBUTE_START:
-                    b = PHASE.INSTRUCTION_ATTRIBUTE_NAME;
+                  case DEFINE_HTML2JSON__EXPECT.INSTRUCTION_ATTRIBUTE_START:
+                    b = DEFINE_HTML2JSON__PHASE.INSTRUCTION_ATTRIBUTE_NAME;
                     break;
                   default:
-                    b = PHASE.ERROR;
+                    b = DEFINE_HTML2JSON__PHASE.ERROR;
                 }break;
               case P:
                 switch(f) {
-                  case EXPECT.NODE_TYPE:
+                  case DEFINE_HTML2JSON__EXPECT.NODE_TYPE:
                     b = d;
                     break;
-                  case EXPECT.ATTRIBUTE_VALUE:
-                    b = PHASE.ATTRIBUTE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE;
                     break;
-                  case EXPECT.CSS_VALUE:
-                    b = PHASE.CSS_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.CSS_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.CSS_VALUE;
                     break;
-                  case EXPECT.TEXT_NODE_VALUE:
-                    b = PHASE.TEXT_NODE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.TEXT_NODE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.TEXT_NODE_VALUE;
                     break;
-                  case EXPECT.ATTRIBUTES_START:
-                  case EXPECT.CHILD_NODES_START:
+                  case DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START:
+                  case DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START:
                     H = !0;
-                  case EXPECT.IN_CHILD_NODES:
-                    b = PHASE.TEXT_DATA;
+                  case DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES:
+                    b = DEFINE_HTML2JSON__PHASE.TEXT_DATA;
                     d += "";
                     break;
-                  case EXPECT.CDATA_SECTION_VALUE:
-                    b = PHASE.CDATA_SECTION_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.CDATA_SECTION_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.CDATA_SECTION_VALUE;
                     d += "";
                     break;
-                  case EXPECT.COMMENT_NODE_VALUE:
-                    b = PHASE.COMMENT_NODE_VALUE;
+                  case DEFINE_HTML2JSON__EXPECT.COMMENT_NODE_VALUE:
+                    b = DEFINE_HTML2JSON__PHASE.COMMENT_NODE_VALUE;
                     d += "";
                     break;
                   default:
-                    b = PHASE.ERROR;
+                    b = DEFINE_HTML2JSON__PHASE.ERROR;
                 }break;
               case M:
               case N:
               case O:
-                b = f === EXPECT.ATTRIBUTE_VALUE ? PHASE.ATTRIBUTE_VALUE : PHASE.ERROR;
+                b = f === DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_VALUE ? DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE : DEFINE_HTML2JSON__PHASE.ERROR;
                 break;
               default:
-                b = PHASE.ERROR;
+                b = DEFINE_HTML2JSON__PHASE.ERROR;
             }switch(b) {
-              case PHASE.NODE_START:
+              case DEFINE_HTML2JSON__PHASE.NODE_START:
                 l = H && c(p[p.length - 1]) ? ">" : "";
-                f = EXPECT.NODE_TYPE;
+                f = DEFINE_HTML2JSON__EXPECT.NODE_TYPE;
                 break;
-              case PHASE.DOCUMENT_NODE_START:
-                f = EXPECT.DOCUMENT_NODE_VALUE;
+              case DEFINE_HTML2JSON__PHASE.DOCUMENT_NODE_START:
+                f = DEFINE_HTML2JSON__EXPECT.DOCUMENT_NODE_VALUE;
                 p.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE);
                 break;
-              case PHASE.DOCUMENT_NODE_VALUE:
+              case DEFINE_HTML2JSON__PHASE.DOCUMENT_NODE_VALUE:
                 DEFINE_HTML2JSON__USE_XHTML && (this._isXMLDocument = a(d));
                 l = d;
-                f = EXPECT.CHILD_NODES_START;
+                f = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;
                 break;
-              case PHASE.DOCUMENT_FRAGMENT_NODE_START:
-                f = EXPECT.CHILD_NODES_START;
+              case DEFINE_HTML2JSON__PHASE.DOCUMENT_FRAGMENT_NODE_START:
+                f = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;
                 p.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE);
                 break;
-              case PHASE.ELEMENT_NODE_START:
-                f = EXPECT.TAG_NAME;
+              case DEFINE_HTML2JSON__PHASE.ELEMENT_NODE_START:
+                f = DEFINE_HTML2JSON__EXPECT.TAG_NAME;
                 break;
-              case PHASE.TAG_NAME:
+              case DEFINE_HTML2JSON__PHASE.TAG_NAME:
                 d = y(d);
                 b = d[1];
                 const n = d[2];
                 d = d[0];
-                l = ("p" === this._omittedEndTagBefore && xa[d] ? "</p>" : "") + "<" + d;
+                l = ("p" === this._omittedEndTagBefore && ya[d] ? "</p>" : "") + "<" + d;
                 this._omittedEndTagBefore = "";
                 b && (l += " id=" + q(b, this._useSingleQuot, this._quotAlways));
                 n && (l += " class=" + q(n, this._useSingleQuot, this._quotAlways));
-                this._noOmitEndTag || (this._noOmitEndTag = !!oa[d]);
+                this._neverOmitEndTag || (this._neverOmitEndTag = !!oa[d]);
                 this._skipEscapeForHTML || (this._skipEscapeForHTML = !!pa[d]);
                 p.push(d);
                 X();
-                f = EXPECT.ATTRIBUTES_START;
+                f = DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START;
                 break;
-              case PHASE.ATTRIBUTES_START:
-                f = EXPECT.ATTRIBUTE_PROPERTY;
+              case DEFINE_HTML2JSON__PHASE.ATTRIBUTES_START:
+                f = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
                 break;
-              case PHASE.ATTRIBUTE_PROPERTY:
-                0 === d.indexOf(this._attrPrefix) ? (this._attribute = d.substr(this._attrPrefix.length), f = EXPECT.INSTRUCTION_ATTRIBUTE_START) : (this._attribute = d, f = "style" === d ? EXPECT.STYLES_START : EXPECT.ATTRIBUTE_VALUE);
+              case DEFINE_HTML2JSON__PHASE.ATTRIBUTE_PROPERTY:
+                0 === d.indexOf(this._attrPrefix) ? (this._attribute = d.substr(this._attrPrefix.length), f = DEFINE_HTML2JSON__EXPECT.INSTRUCTION_ATTRIBUTE_START) : (this._attribute = d, f = "style" === d ? DEFINE_HTML2JSON__EXPECT.STYLES_START : DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_VALUE);
                 break;
-              case PHASE.IN_INSTRUCTION_ATTRIBUTE:
-                f = EXPECT.IN_INSTRUCTION_ATTRIBUTE;
+              case DEFINE_HTML2JSON__PHASE.IN_INSTRUCTION_ATTRIBUTE:
+                f = DEFINE_HTML2JSON__EXPECT.IN_INSTRUCTION_ATTRIBUTE;
                 break;
-              case PHASE.INSTRUCTION_ATTRIBUTE_NAME:
+              case DEFINE_HTML2JSON__PHASE.INSTRUCTION_ATTRIBUTE_NAME:
                 this._functionName = d, d = r();
-              case PHASE.ATTRIBUTE_VALUE:
+              case DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE:
                 l = m(d);
-                f = EXPECT.ATTRIBUTE_PROPERTY;
+                f = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
                 break;
-              case PHASE.END_OF_ATTRIBUTES:
-                f = EXPECT.CHILD_NODES_START;
+              case DEFINE_HTML2JSON__PHASE.END_OF_ATTRIBUTES:
+                f = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;
                 break;
-              case PHASE.STYLES_START:
-                f = EXPECT.CSS_PROPERTY;
+              case DEFINE_HTML2JSON__PHASE.STYLES_START:
+                f = DEFINE_HTML2JSON__EXPECT.CSS_PROPERTY;
                 break;
-              case PHASE.CSS_PROPERTY:
+              case DEFINE_HTML2JSON__PHASE.CSS_PROPERTY:
                 this._cssPropety = d;
-                f = EXPECT.CSS_VALUE;
+                f = DEFINE_HTML2JSON__EXPECT.CSS_VALUE;
                 break;
-              case PHASE.CSS_VALUE:
+              case DEFINE_HTML2JSON__PHASE.CSS_VALUE:
                 "" !== d && null !== d && (this._cssText += ";" + this._cssPropety + ":" + d);
-                f = EXPECT.CSS_PROPERTY;
+                f = DEFINE_HTML2JSON__EXPECT.CSS_PROPERTY;
                 break;
-              case PHASE.END_OF_STYLES:
+              case DEFINE_HTML2JSON__PHASE.END_OF_STYLES:
                 this._cssText && (l = m(this._cssText.substr(1)), this._cssText = "");
-                f = EXPECT.ATTRIBUTE_PROPERTY;
+                f = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
                 break;
-              case PHASE.END_OF_NODE:
+              case DEFINE_HTML2JSON__PHASE.END_OF_NODE:
                 x(!0);
                 break;
-              case PHASE.CLOSE_EMPTY_ELEMENT:
+              case DEFINE_HTML2JSON__PHASE.CLOSE_EMPTY_ELEMENT:
                 x(!1);
                 break;
-              case PHASE.TEXT_NODE_START:
-                f = EXPECT.TEXT_NODE_VALUE;
+              case DEFINE_HTML2JSON__PHASE.TEXT_NODE_START:
+                f = DEFINE_HTML2JSON__EXPECT.TEXT_NODE_VALUE;
                 p.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE);
                 break;
-              case PHASE.TEXT_NODE_VALUE:
+              case DEFINE_HTML2JSON__PHASE.TEXT_NODE_VALUE:
                 l = qa() + (k._skipEscapeForHTML ? "" + d : e("" + d));
-                f = EXPECT.END_OF_NODE;
+                f = DEFINE_HTML2JSON__EXPECT.END_OF_NODE;
                 break;
-              case PHASE.TEXT_DATA:
+              case DEFINE_HTML2JSON__PHASE.TEXT_DATA:
                 l = (H && c(p[p.length - 1]) ? ">" : "") + qa() + (k._skipEscapeForHTML ? "" + d : e("" + d));
-                f = EXPECT.IN_CHILD_NODES;
+                f = DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES;
                 break;
-              case PHASE.CDATA_SECTION_START:
+              case DEFINE_HTML2JSON__PHASE.CDATA_SECTION_START:
                 l = "<![CDATA[";
-                f = EXPECT.CDATA_SECTION_VALUE;
+                f = DEFINE_HTML2JSON__EXPECT.CDATA_SECTION_VALUE;
                 p.push(HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION);
                 break;
-              case PHASE.CDATA_SECTION_VALUE:
+              case DEFINE_HTML2JSON__PHASE.CDATA_SECTION_VALUE:
                 l = d;
-                f = EXPECT.END_OF_NODE;
+                f = DEFINE_HTML2JSON__EXPECT.END_OF_NODE;
                 break;
-              case PHASE.COMMENT_NODE_START:
+              case DEFINE_HTML2JSON__PHASE.COMMENT_NODE_START:
                 l = "\x3c!--";
-                f = EXPECT.COMMENT_NODE_VALUE;
+                f = DEFINE_HTML2JSON__EXPECT.COMMENT_NODE_VALUE;
                 p.push(HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE);
                 break;
-              case PHASE.COMMENT_NODE_VALUE:
+              case DEFINE_HTML2JSON__PHASE.COMMENT_NODE_VALUE:
                 l = d;
-                f = EXPECT.END_OF_NODE;
+                f = DEFINE_HTML2JSON__EXPECT.END_OF_NODE;
                 break;
-              case PHASE.COMMENT_HIDE_LOWER_START:
+              case DEFINE_HTML2JSON__PHASE.COMMENT_HIDE_LOWER_START:
                 l = "\x3c!--[";
-                f = EXPECT.COMMENT_HIDE_LOWER_FORMURA;
+                f = DEFINE_HTML2JSON__EXPECT.COMMENT_HIDE_LOWER_FORMURA;
                 p.push(HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER);
                 break;
-              case PHASE.COMMENT_HIDE_LOWER_FORMURA:
+              case DEFINE_HTML2JSON__PHASE.COMMENT_HIDE_LOWER_FORMURA:
                 l = d + "]>";
-                f = EXPECT.CHILD_NODES_START;
+                f = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;
                 break;
-              case PHASE.COMMENT_SHOW_LOWER_START:
+              case DEFINE_HTML2JSON__PHASE.COMMENT_SHOW_LOWER_START:
                 l = "\x3c!--[";
-                f = EXPECT.COMMENT_SHOW_LOWER_FORMURA;
+                f = DEFINE_HTML2JSON__EXPECT.COMMENT_SHOW_LOWER_FORMURA;
                 p.push(HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER);
                 break;
-              case PHASE.COMMENT_SHOW_LOWER_FORMURA:
+              case DEFINE_HTML2JSON__PHASE.COMMENT_SHOW_LOWER_FORMURA:
                 l = d + "]>\x3c!--\x3e";
-                f = EXPECT.CHILD_NODES_START;
+                f = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;
                 break;
-              case PHASE.PROCESSING_INSTRUCTION_START:
-                f = EXPECT.PROCESSING_INSTRUCTION_NAME;
+              case DEFINE_HTML2JSON__PHASE.PROCESSING_INSTRUCTION_START:
+                f = DEFINE_HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_NAME;
                 p.push(HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION);
                 break;
-              case PHASE.PROCESSING_INSTRUCTION_NAME:
+              case DEFINE_HTML2JSON__PHASE.PROCESSING_INSTRUCTION_NAME:
                 this._functionName = d;
-                f = EXPECT.PROCESSING_INSTRUCTION_ARGS;
+                f = DEFINE_HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_ARGS;
                 break;
               default:
-                f = EXPECT.ERROR;
+                f = DEFINE_HTML2JSON__EXPECT.ERROR;
             }
         }
-        f === EXPECT.ERROR ? (this._onerror("Not html.json format!"), this._stream.emit("error", "Not html.json format!")) : (this._expect = f, l && this._stream.queue(l));
+        f === DEFINE_HTML2JSON__EXPECT.ERROR ? (this._onerror("Not html.json format!"), this._stream.emit("error", "Not html.json format!")) : (this._expect = f, l && this._stream.queue(l));
       }
     }
-    var t = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0}, va = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0, col:!0}, oa = {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, wa = {svg:!0, math:!0}, xa = {table:!0, img:!0, svg:!0, picture:!0, object:!0, embed:!0, video:!0, audio:!0, blockquot:!0, form:!0, fieldset:!0}, pa = {script:!0, style:!0, 
-    plaintext:!0, xmp:!0, noscript:!0};
+    var t = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, wa = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0}, va = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0, col:!0}, oa = {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, xa = 
+    {svg:!0, math:!0}, ya = {table:!0, img:!0, svg:!0, picture:!0, object:!0, embed:!0, video:!0, audio:!0, blockquot:!0, form:!0, fieldset:!0}, pa = {script:!0, style:!0, plaintext:!0, xmp:!0, noscript:!0};
+    a = !1;
     const ua = Buffer.from && Buffer.from !== Uint8Array.from;
     module.exports = function(b, d, r) {
       const m = new w(), x = Q(R, F);
@@ -800,7 +808,7 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
       m._createValue = m.onToken;
       m.onToken = g;
       m.onError = S;
-      m._expect = EXPECT.NODE_START;
+      m._expect = DEFINE_HTML2JSON__EXPECT.NODE_START;
       m._tree = [];
       m._args = [];
       m._onInstruction = b;
@@ -808,7 +816,7 @@ COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCT
       };
       m._quotAlways = !!r.quotAlways;
       m._useSingleQuot = !!r.useSingleQuot;
-      m._attrPrefix = r.instructionAttrPrefix || DEFINE_INSTRUCTION_ATTR_PREFIX;
+      m._attrPrefix = r.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
       m._cssText = "";
       return m._stream = x;
     };

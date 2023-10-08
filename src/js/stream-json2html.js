@@ -120,7 +120,11 @@ function onToken( token, value ){
 
     function createAttributeNodeString( value ){
         if( value !== '' && value !== null ){
-            return ' ' + self._attribute + '=' + m_quotAttributeValue( value, self._useSingleQuot, self._quotAlways );
+            if( m_ATTRS_NO_VALUE[ self._attribute ] ){
+                return ' ' + self._attribute;
+            } else {
+                return ' ' + self._attribute + '=' + m_quotAttributeValue( value, self._useSingleQuot, self._quotAlways );
+            };
         };
         return '';
     };

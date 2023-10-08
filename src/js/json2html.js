@@ -231,7 +231,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 value = m_evaluteInstructionAttr( onInstruction, name, value, errorHandler );
             };
 
-            if( m_ATTR_NO_VALUE[ name ] || value !== '' && value != null ){
+            if( value !== '' && value != null ){
                 attrText += ' ' + name;
 
                 if( !m_ATTRS_NO_VALUE[ name ] ){
