@@ -642,8 +642,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 break;
               default:
                 b = PHASE.ERROR;
-            }console.log(". " + b);
-            switch(b) {
+            }switch(b) {
               case PHASE.NODE_START:
                 l = H && c(q[q.length - 1]) ? ">" : "";
                 f = EXPECT.NODE_TYPE;
@@ -769,7 +768,6 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 f = EXPECT.ERROR;
             }
         }
-        console.log("- " + l, f, this._tree);
         f === EXPECT.ERROR ? (this._onerror("Not html.json format!"), this._stream.emit("error", "Not html.json format!")) : (this._expect = f, l && this._stream.queue(l));
       }
     }

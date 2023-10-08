@@ -426,7 +426,7 @@ function onToken( token, value ){
                 default :
                     phase = PHASE.ERROR;
             };
-            console.log( '. ' + phase );
+            // console.log( '. ' + phase );
         /** phase => expect */
             switch( phase ){
                 case PHASE.NODE_START : // [
@@ -596,7 +596,7 @@ function onToken( token, value ){
             };
     };
 
-    console.log( '- ' + queue, expect, this._tree );
+    // console.log( '- ' + queue, expect, this._tree );
 
     if( expect === EXPECT.ERROR ){
         this._onerror( 'Not html.json format!' );

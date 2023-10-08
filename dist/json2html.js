@@ -52,18 +52,18 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
     var K = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, M = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0}, N = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0, col:!0}, O = {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, P = {svg:!0, 
     math:!0}, Q = {table:!0, img:!0, svg:!0, picture:!0, object:!0, embed:!0, video:!0, audio:!0, blockquot:!0, form:!0, fieldset:!0}, R = {script:!0, style:!0, plaintext:!0, xmp:!0, noscript:!0};
     q = function(a, r, p, S) {
-      function F(c, g, h, l, b) {
+      function F(c, g, h, m, b) {
         var e = "", v = c[0], k = c[1], z = 1, d = v;
         switch(v) {
           case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE:
-            if (l = DEFINE_HTML2JSON__USE_XHTML) {
-              l = 0 === k.indexOf("<?xml ") || 0 <= k.toUpperCase().indexOf('<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ');
+            if (m = DEFINE_HTML2JSON__USE_XHTML) {
+              m = 0 === k.indexOf("<?xml ") || 0 <= k.toUpperCase().indexOf('<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ');
             }
-            l && (x = !0);
+            m && (x = !0);
             e += k + B(c, !1, !1);
             break;
           case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
-            e += B(c, l, b);
+            e += B(c, m, b);
             break;
           case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE:
             y && (e += "</" + y + ">", y = "");
@@ -74,19 +74,19 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
             break;
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER:
             u(k) ? e += "\x3c!--[" + k + "]>" : DEFINE_HTML2JSON__DEBUG && w("CONDITIONAL_COMMENT_HIDE_LOWER Error! [" + c + "]");
-            e += B(c, l, b) + "<![endif]--\x3e";
+            e += B(c, !0, b) + "<![endif]--\x3e";
             break;
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER:
             u(k) ? e += "\x3c!--[" + k + "]>\x3c!--\x3e" : DEFINE_HTML2JSON__DEBUG && w("CONDITIONAL_COMMENT_SHOW_LOWER Error! [" + c + "]");
-            e += B(c, l, b) + "\x3c!--<![endif]--\x3e";
+            e += B(c, !0, b) + "\x3c!--<![endif]--\x3e";
             break;
           case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION:
-            l = w;
+            m = w;
             b = c[1];
             var A = c.slice(2);
             b = A.length ? r(b, A) : r(b);
             void 0 !== b && null !== b && "" !== b && (C(b) ? g ? g.splice(h, 1, b) : (c.length = 0, c.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, c)) : t(b) ? b[0] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? g ? (b.shift(), b.unshift(h, 1), g.splice.apply(g, b)) : (c.length = 0, c.push.apply(c, b)) : t(b[0]) ? g ? (b.unshift(h, 1), g.splice.apply(g, b)) : (c.length = 0, c.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE), c.push.apply(c, b)) : g ? g.splice(h, 1, b) : (c.length = 0, c.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, 
-            b)) : DEFINE_HTML2JSON__DEBUG && l("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(c) + "]"));
+            b)) : DEFINE_HTML2JSON__DEBUG && m("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(c) + "]"));
             if (void 0 !== b && null !== b && "" !== b && (C(b) || t(b))) {
               return -1;
             }
@@ -119,12 +119,12 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
               x || (A = x ? !0 : P[d] ? !0 : DEFINE_HTML2JSON__USE_XML_NS ? 0 < d.indexOf(":") : !1, A = x = A);
               z = c[z];
               if (J(z)) {
-                var m;
+                var l;
                 g = "";
-                for (m in z) {
-                  if (f = z[m], (h = 0 === m.indexOf(L)) && (m = m.substr(L.length)), "className" === m && (m = "class"), h && (n = void 0, h = r, k = m, v = w, t(f) && u(f[0]) ? (n = f[0], f = f.slice(1), n = f.length ? h(n, f) : h(n)) : u(f) ? n = h(f) : DEFINE_HTML2JSON__DEBUG && v("Invalid InstructionAttr value! [" + k + "=" + f + "]"), f = n), K[m] || "" !== f && null != f) {
-                    if (g += " " + m, !K[m]) {
-                      if ("style" === m && f && "object" === typeof f) {
+                for (l in z) {
+                  if (f = z[l], (h = 0 === l.indexOf(L)) && (l = l.substr(L.length)), "className" === l && (l = "class"), h && (n = void 0, h = r, k = l, v = w, t(f) && u(f[0]) ? (n = f[0], f = f.slice(1), n = f.length ? h(n, f) : h(n)) : u(f) ? n = h(f) : DEFINE_HTML2JSON__DEBUG && v("Invalid InstructionAttr value! [" + k + "=" + f + "]"), f = n), K[l] || "" !== f && null != f) {
+                    if (g += " " + l, !K[l]) {
+                      if ("style" === l && f && "object" === typeof f) {
                         h = void 0;
                         n = f;
                         k = "";
@@ -140,11 +140,11 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                     }
                   }
                 }
-                m = g.substr(1);
-                e += " " + m;
+                l = g.substr(1);
+                e += " " + l;
               }
-              e = (c = B(c, l || O[d], b || R[d])) ? e + (">" + c) : e + (x ? "/>" : ">");
-              x && !c || N[d] && !l ? y = M[d] ? "" : d : (e += "</" + d + ">", y = "");
+              e = (c = B(c, m || O[d], b || R[d])) ? e + (">" + c) : e + (x ? "/>" : ">");
+              x && !c || N[d] && !m ? y = M[d] ? "" : d : (e += "</" + d + ">", y = "");
               A && (x = !1);
             } else {
               DEFINE_HTML2JSON__DEBUG && w("Not html.json! [" + c + "]");
@@ -153,13 +153,13 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
         return e;
       }
       function B(c, g, h) {
-        var l = "";
+        var m = "";
         var b = c[0];
         var e = I(c) === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, v = b === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ? 2 : 1;
         for (b = e ? J(c[v]) ? v + 1 : v : b === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? 1 : b === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE || b === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || b === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? 2 : Infinity; b < c.length; ++b) {
-          e = c[b], C(e) ? l += F([HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, e], null, 0, g, h) : t(e) ? (e = F(e, c, b, g, h), -1 === e ? --b : l += e) : DEFINE_HTML2JSON__DEBUG && w("Invalid html.json! [" + e + "]");
+          e = c[b], C(e) ? m += F([HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, e], null, 0, g, h) : t(e) ? (e = F(e, c, b, g, h), -1 === e ? --b : m += e) : DEFINE_HTML2JSON__DEBUG && w("Invalid html.json! [" + e + "]");
         }
-        return l;
+        return m;
       }
       var w = "function" === typeof p ? p : function(c) {
       };
