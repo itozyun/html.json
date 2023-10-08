@@ -146,6 +146,7 @@ gulp.task(
                         './src/js/1_global.js',
                         './src/js/2_packageGlobal.js',
                         './src/js/3_moduleGlobal.js',
+                        './src/js/json2html.js',
                         './src/js/stream-json2html.js'
                     ]
                 ).pipe(
