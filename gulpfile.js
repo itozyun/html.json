@@ -2,8 +2,8 @@ const gulp = require( 'gulp' );
 
 let gulpDPZ, ClosureCompiler;
 
-let isDebug = false;
-let isPrettify = false;
+let isDebug = true;
+let isPrettify = true;
 
 gulp.task(
     'dist',

@@ -278,7 +278,7 @@ function p_quotAttributeValue( value, useSingleQuot, quotAlways ){
     } else if( quotAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
         // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
         // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
-        strValue += ( useSingleQuot ? '"' : "'" ) + p_escapeForHTML( strValue ) + ( useSingleQuot ? '"' : "'" );
+        strValue = ( useSingleQuot ? '"' : "'" ) + p_escapeForHTML( strValue ) + ( useSingleQuot ? '"' : "'" );
     };
     return strValue;
 };

@@ -89,7 +89,7 @@ function onToken( token, value ){
         return;
     };
 
-    console.log( '> ' + token + ' : ' + value, this._expect, this._tree );
+    // console.log( '> ' + token + ' : ' + value, this._expect, this._tree, this._args );
 
     const tree = this._tree;
     let expect = this._expect;
@@ -236,9 +236,8 @@ function onToken( token, value ){
                     if( this.stack.length === 1 ){
                         this._args.push( this.value );
                         this.value = null;
-                    } else {
-                        this._createValue( token, value );
                     };
+                    this._createValue( token, value );
                     return;
                 case /* Parser.C. */STRING :
                 case /* Parser.C. */NUMBER :
@@ -273,9 +272,8 @@ function onToken( token, value ){
                     if( this.stack.length === 1 ){
                         this._args.push( this.value );
                         this.value = null;
-                    } else {
-                        this._createValue( token, value );
                     };
+                    this._createValue( token, value );
                     return;
                 case /* Parser.C. */STRING :
                     if( this.stack.length === 0 && !this._functionName ){
