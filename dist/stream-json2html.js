@@ -486,13 +486,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 return;
               case G:
                 if (0 === this.stack.length) {
-                  if ((d = r()) && d.pop === [].pop) {
-                    a = this._isXMLDocument || this._isXmlInHTML;
-                    var l = (void 0)(d, this._onInstruction, this._onerror, {quotAlways:this._quotAlways, useSingleQuot:this._useSingleQuot, instructionAttrPrefix:this._attrPrefix});
-                    a = !1;
-                  } else {
-                    l = c(d) || d === +d ? "" + d : "";
-                  }
+                  var l = (d = r()) && d.pop === [].pop ? (void 0)(d, this._onInstruction, this._onerror, {quotAlways:this._quotAlways, useSingleQuot:this._useSingleQuot, instructionAttrPrefix:this._attrPrefix}) : c(d) || d === +d ? "" + d : "";
                   x(!!l);
                   break;
                 }
@@ -799,7 +793,6 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
     }
     var t = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, wa = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0}, va = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0, col:!0}, oa = {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, xa = 
     {svg:!0, math:!0}, ya = {table:!0, img:!0, svg:!0, picture:!0, object:!0, embed:!0, video:!0, audio:!0, blockquot:!0, form:!0, fieldset:!0}, pa = {script:!0, style:!0, plaintext:!0, xmp:!0, noscript:!0};
-    a = !1;
     const ua = Buffer.from && Buffer.from !== Uint8Array.from;
     module.exports = function(b, d, r) {
       const m = new w(), x = Q(R, F);

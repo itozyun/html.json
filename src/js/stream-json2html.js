@@ -470,7 +470,7 @@ function onToken( token, value ){
                     break;
                 case DEFINE_HTML2JSON__PHASE.DOCUMENT_NODE_VALUE :
                     if( DEFINE_HTML2JSON__USE_XHTML ){
-                        this._isXMLDocument = m_isXMLDocument( value );
+                        this._isXMLDocument = m_isXML( value );
                     };
                     queue  = value;
                     expect = DEFINE_HTML2JSON__EXPECT.CHILD_NODES_START;

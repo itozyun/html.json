@@ -68,10 +68,10 @@ function m_isNumberString( v ){
 
 /**
  * 
- * @param {*} v 
- * @return {*}
+ * @param {string} v 
+ * @return {number|string}
  */
-function m_toNumber( v ){
+function m_tryToNumber( v ){
     return m_isNumberString( v ) ? + v : v;
 };
 
@@ -93,7 +93,7 @@ function m_isStrictNode( value ){
     return m_isArray( value ) && ( m_isNumber( value[ 0 ] ) || m_isString( value[ 0 ] ) );
 };
 
-function m_isXMLDocument( xmlDeclarationAndDocumentType ){
+function m_isXML( xmlDeclarationAndDocumentType ){
     return xmlDeclarationAndDocumentType.indexOf( '<?xml ' ) === 0 || 0 <= xmlDeclarationAndDocumentType.toUpperCase().indexOf( '<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ' );
 };
 
@@ -331,7 +331,7 @@ function m_mergeTextNodes( htmlJsonNode ){
                 htmlJsonNode.splice( i, 1 );
             } else {
                 if( text ){
-                    htmlJsonNode.splice( i, 0, m_toNumber( text ) );
+                    htmlJsonNode.splice( i, 0, m_tryToNumber( text ) );
                     text = '';
                 };
                 ++i;
@@ -341,7 +341,7 @@ function m_mergeTextNodes( htmlJsonNode ){
             };
         };
         if( text ){
-            htmlJsonNode[ i ] = m_toNumber( text );
+            htmlJsonNode[ i ] = m_tryToNumber( text );
         };
     };
 };

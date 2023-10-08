@@ -46,7 +46,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
 
         switch( arg0 ){
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
-                if( DEFINE_HTML2JSON__USE_XHTML && m_isXMLDocument( arg1 ) ){
+                if( DEFINE_HTML2JSON__USE_XHTML && m_isXML( arg1 ) ){
                     isXmlInHTML = true;
                 };
                 htmlString += arg1 + walkChildNodes( currentJSONNode, false, false );

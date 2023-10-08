@@ -187,13 +187,13 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     };
                 };
                 if( textContent ){
-                    parentJSONNode.push( m_toNumber( textContent ) );
+                    parentJSONNode.push( m_tryToNumber( textContent ) );
                 };
                 break;
             case 4 :
                 if( keepCDataSection ){
                     // HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, m_toNumber( textContent ) ] );
+                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, m_tryToNumber( textContent ) ] );
                 };
                 break;
             case 8 :
@@ -240,7 +240,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     };
                 } else if( keepComments ){
                     // HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, m_toNumber( textContent ) ] );
+                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, m_tryToNumber( textContent ) ] );
                 };
                 break;
             case 10 :
