@@ -1,13 +1,14 @@
-var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON = !1, DEFINE_HTML2JSON__DEBUG = !0, DEFINE_HTML2JSON__USE_XML_NS = !0, DEFINE_HTML2JSON__USE_XHTML = !0, DEFINE_INSTRUCTION_ATTR_PREFIX = ":", HTML_DOT_JSON__NODE_TYPE = {DOCUMENT_NODE:0, DOCUMENT_FRAGMENT_NODE:1, ELEMENT_NODE:2, TEXT_NODE:3, COMMENT_NODE:4, CONDITIONAL_COMMENT_HIDE_LOWER:5, CONDITIONAL_COMMENT_SHOW_LOWER:6, PROCESSING_INSTRUCTION:7};
-const EXPECT = {ERROR:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE - 2, NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE - 1, DOCUMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 1, TEXT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 2, COMMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 3, COMMENT_HIDE_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 4, COMMENT_SHOW_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 5, PROCESSING_INSTRUCTION_NAME:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 
-6, TAG_NAME:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 7, ATTRIBUTES_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 8, ATTRIBUTE_PROPERTY:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 9, ATTRIBUTE_VALUE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 10, STYLES_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 11, CSS_PROPERTY:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 12, CSS_VALUE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 13, IN_INSTRUCTION_ATTRIBUTE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 
-14, END_OF_NODE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 15, NODE_TYPE:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 16, PROCESSING_INSTRUCTION_ARGS:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 17, INSTRUCTION_ATTRIBUTE_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 18, CHILD_NODES_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 19, IN_CHILD_NODES:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 20, END_OF_DOCUMENT:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION + 
-21}, PHASE = {ERROR:EXPECT.ERROR, NODE_START:EXPECT.NODE_START, DOCUMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, TEXT_NODE_START:HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, COMMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, COMMENT_HIDE_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, COMMENT_SHOW_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, 
-PROCESSING_INSTRUCTION_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, DOCUMENT_NODE_VALUE:EXPECT.DOCUMENT_NODE_VALUE, TEXT_NODE_VALUE:EXPECT.TEXT_NODE_VALUE, COMMENT_NODE_VALUE:EXPECT.COMMENT_NODE_VALUE, COMMENT_HIDE_LOWER_FORMURA:EXPECT.COMMENT_HIDE_LOWER_FORMURA, COMMENT_SHOW_LOWER_FORMURA:EXPECT.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCTION_NAME:EXPECT.PROCESSING_INSTRUCTION_NAME, TAG_NAME:EXPECT.TAG_NAME, ATTRIBUTES_START:EXPECT.ATTRIBUTES_START, ATTRIBUTE_PROPERTY:EXPECT.ATTRIBUTE_PROPERTY, 
-ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PROPERTY:EXPECT.CSS_PROPERTY, CSS_VALUE:EXPECT.CSS_VALUE, IN_INSTRUCTION_ATTRIBUTE:EXPECT.IN_INSTRUCTION_ATTRIBUTE, END_OF_NODE:EXPECT.END_OF_NODE, CLOSE_EMPTY_ELEMENT:EXPECT.END_OF_NODE + 1, END_OF_ATTRIBUTES:EXPECT.END_OF_NODE + 2, END_OF_STYLES:EXPECT.END_OF_NODE + 3, TEXT_DATA:EXPECT.END_OF_NODE + 4, INSTRUCTION_ATTRIBUTE_NAME:EXPECT.END_OF_NODE + 5};
+var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON = !1, DEFINE_HTML2JSON__DEBUG = !0, DEFINE_HTML2JSON__USE_XML_NS = !0, DEFINE_HTML2JSON__USE_XHTML = !0, DEFINE_INSTRUCTION_ATTR_PREFIX = ":", HTML_DOT_JSON__NODE_TYPE = {ELEMENT_NODE:1, TEXT_NODE:3, CDATA_SECTION:4, PROCESSING_INSTRUCTION:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_FRAGMENT_NODE:11, CONDITIONAL_COMMENT_HIDE_LOWER:13, CONDITIONAL_COMMENT_SHOW_LOWER:14, NETSCAPE4_CONDITIONAL_COMMENT:15};
+const PHASE = {ERROR:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 2, NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 1, ELEMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, TEXT_NODE_START:HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, CDATA_SECTION_START:HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, PROCESSING_INSTRUCTION_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, COMMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, DOCUMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, DOCUMENT_FRAGMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, 
+COMMENT_HIDE_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, COMMENT_SHOW_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, NETSCAPE4_CONDITIONAL_COMMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT, DOCUMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 1, TEXT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 2, CDATA_SECTION_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 3, COMMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
+4, COMMENT_HIDE_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 5, COMMENT_SHOW_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 6, PROCESSING_INSTRUCTION_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 7, TAG_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 8, ATTRIBUTES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 9, ATTRIBUTE_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 10, ATTRIBUTE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
+11, STYLES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 12, CSS_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 13, CSS_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 14, IN_INSTRUCTION_ATTRIBUTE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 15, END_OF_NODE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 16, CLOSE_EMPTY_ELEMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 17, END_OF_ATTRIBUTES:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
+18, END_OF_STYLES:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 19, TEXT_DATA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 20, INSTRUCTION_ATTRIBUTE_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 21}, EXPECT = {ERROR:PHASE.ERROR, NODE_START:PHASE.NODE_START, DOCUMENT_NODE_VALUE:PHASE.DOCUMENT_NODE_VALUE, TEXT_NODE_VALUE:PHASE.TEXT_NODE_VALUE, CDATA_SECTION_VALUE:PHASE.CDATA_SECTION_VALUE, COMMENT_NODE_VALUE:PHASE.COMMENT_NODE_VALUE, COMMENT_HIDE_LOWER_FORMURA:PHASE.COMMENT_HIDE_LOWER_FORMURA, 
+COMMENT_SHOW_LOWER_FORMURA:PHASE.COMMENT_SHOW_LOWER_FORMURA, PROCESSING_INSTRUCTION_NAME:PHASE.PROCESSING_INSTRUCTION_NAME, TAG_NAME:PHASE.TAG_NAME, ATTRIBUTES_START:PHASE.ATTRIBUTES_START, ATTRIBUTE_PROPERTY:PHASE.ATTRIBUTE_PROPERTY, ATTRIBUTE_VALUE:PHASE.ATTRIBUTE_VALUE, STYLES_START:PHASE.STYLES_START, CSS_PROPERTY:PHASE.CSS_PROPERTY, CSS_VALUE:PHASE.CSS_VALUE, IN_INSTRUCTION_ATTRIBUTE:PHASE.IN_INSTRUCTION_ATTRIBUTE, END_OF_NODE:PHASE.END_OF_NODE, NODE_TYPE:PHASE.END_OF_NODE + 1, PROCESSING_INSTRUCTION_ARGS:PHASE.END_OF_NODE + 
+2, INSTRUCTION_ATTRIBUTE_START:PHASE.END_OF_NODE + 3, CHILD_NODES_START:PHASE.END_OF_NODE + 4, IN_CHILD_NODES:PHASE.END_OF_NODE + 5, END_OF_DOCUMENT:PHASE.END_OF_NODE + 6};
 (function() {
   function w() {
-    this.tState = z;
+    this.tState = A;
     this.string = this.value = void 0;
     this.stringBuffer = Buffer.alloc ? Buffer.alloc(65536) : new Buffer(65536);
     this.stringBufferOffset = 0;
@@ -19,7 +20,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
     this.offset = -1;
   }
   function Q(c, a, e) {
-    function p() {
+    function q() {
       for (; F.length && !g.paused;) {
         var t = F.shift();
         if (null === t) {
@@ -48,7 +49,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
       }
       null === t && (S = !0);
       F.push(t);
-      p();
+      q();
       return g;
     };
     g.on("end", function() {
@@ -74,16 +75,16 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
     };
     g.resume = function() {
       g.paused && (g.paused = !1, g.emit("resume"));
-      p();
+      q();
       g.paused || g.emit("drain");
       return g;
     };
     return g;
   }
-  var h = {}, I = h.LEFT_BRACE = 1, A = h.RIGHT_BRACE = 2, J = h.LEFT_BRACKET = 3, G = h.RIGHT_BRACKET = 4, K = h.COLON = 5, L = h.COMMA = 6, M = h.TRUE = 7, N = h.FALSE = 8, O = h.NULL = 9, B = h.STRING = 10, P = h.NUMBER = 11, z = h.START = 17, Y = h.STOP = 18, Z = h.TRUE1 = 33, aa = h.TRUE2 = 34, ba = h.TRUE3 = 35, ca = h.FALSE1 = 49, da = h.FALSE2 = 50, ea = h.FALSE3 = 51, fa = h.FALSE4 = 52, ha = h.NULL1 = 65, ia = h.NULL2 = 66, ja = h.NULL3 = 67, ka = h.NUMBER1 = 81, V = h.NUMBER3 = 83, v = 
+  var h = {}, I = h.LEFT_BRACE = 1, B = h.RIGHT_BRACE = 2, J = h.LEFT_BRACKET = 3, G = h.RIGHT_BRACKET = 4, K = h.COLON = 5, L = h.COMMA = 6, M = h.TRUE = 7, N = h.FALSE = 8, O = h.NULL = 9, C = h.STRING = 10, P = h.NUMBER = 11, A = h.START = 17, Y = h.STOP = 18, Z = h.TRUE1 = 33, aa = h.TRUE2 = 34, ba = h.TRUE3 = 35, ca = h.FALSE1 = 49, da = h.FALSE2 = 50, ea = h.FALSE3 = 51, fa = h.FALSE4 = 52, ha = h.NULL1 = 65, ia = h.NULL2 = 66, ja = h.NULL3 = 67, ka = h.NUMBER1 = 81, V = h.NUMBER3 = 83, v = 
   h.STRING1 = 97, la = h.STRING2 = 98, ma = h.STRING3 = 99, sa = h.STRING4 = 100, ta = h.STRING5 = 101, na = h.STRING6 = 102, E = h.VALUE = 113, W = h.KEY = 114, T = h.OBJECT = 129, U = h.ARRAY = 130;
   w.toknam = function(c) {
-    for (var a = Object.keys(h), e = 0, p = a.length; e < p; e++) {
+    for (var a = Object.keys(h), e = 0, q = a.length; e < q; e++) {
       var y = a[e];
       if (h[y] === c) {
         return y;
@@ -104,21 +105,21 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
     this.stringBuffer[this.stringBufferOffset++] = c;
   };
   u.appendStringBuf = function(c, a, e) {
-    var p = c.length;
-    "number" === typeof a && (p = "number" === typeof e ? 0 > e ? c.length - a + e : e - a : c.length - a);
-    0 > p && (p = 0);
-    65536 < this.stringBufferOffset + p && (this.string += this.stringBuffer.toString("utf8", 0, this.stringBufferOffset), this.stringBufferOffset = 0);
+    var q = c.length;
+    "number" === typeof a && (q = "number" === typeof e ? 0 > e ? c.length - a + e : e - a : c.length - a);
+    0 > q && (q = 0);
+    65536 < this.stringBufferOffset + q && (this.string += this.stringBuffer.toString("utf8", 0, this.stringBufferOffset), this.stringBufferOffset = 0);
     c.copy(this.stringBuffer, this.stringBufferOffset, a, e);
-    this.stringBufferOffset += p;
+    this.stringBufferOffset += q;
   };
   u.write = function(c) {
     "string" === typeof c && (c = new Buffer(c));
-    for (var a, e = 0, p = c.length; e < p; e++) {
-      if (this.tState === z) {
+    for (var a, e = 0, q = c.length; e < q; e++) {
+      if (this.tState === A) {
         if (a = c[e], this.offset++, 123 === a) {
           this.onToken(I, "{");
         } else if (125 === a) {
-          this.onToken(A, "}");
+          this.onToken(B, "}");
         } else if (91 === a) {
           this.onToken(J, "[");
         } else if (93 === a) {
@@ -169,7 +170,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
             this.appendStringBuf(c, e, e + this.bytes_in_sequence), e = e + this.bytes_in_sequence - 1;
           }
         } else if (34 === a) {
-          this.tState = z, this.string += this.stringBuffer.toString("utf8", 0, this.stringBufferOffset), this.stringBufferOffset = 0, this.onToken(B, this.string), this.offset += Buffer.byteLength(this.string, "utf8") + 1, this.string = void 0;
+          this.tState = A, this.string += this.stringBuffer.toString("utf8", 0, this.stringBufferOffset), this.stringBufferOffset = 0, this.onToken(C, this.string), this.offset += Buffer.byteLength(this.string, "utf8") + 1, this.string = void 0;
         } else if (92 === a) {
           this.tState = la;
         } else if (32 <= a) {
@@ -227,13 +228,13 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
             this.tState = V;
             break;
           default:
-            this.tState = z;
+            this.tState = A;
             a = Number(this.string);
             if (isNaN(a)) {
               return this.charError(c, e);
             }
             if (this.string.match(/[0-9]+/) == this.string && a.toString() != this.string) {
-              this.onToken(B, this.string);
+              this.onToken(C, this.string);
             } else {
               this.onToken(P, a);
             }
@@ -255,7 +256,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
         }
       } else if (this.tState === ba) {
         if (101 === c[e]) {
-          this.tState = z, this.onToken(M, !0), this.offset += 3;
+          this.tState = A, this.onToken(M, !0), this.offset += 3;
         } else {
           return this.charError(c, e);
         }
@@ -279,7 +280,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
         }
       } else if (this.tState === fa) {
         if (101 === c[e]) {
-          this.tState = z, this.onToken(N, !1), this.offset += 4;
+          this.tState = A, this.onToken(N, !1), this.offset += 4;
         } else {
           return this.charError(c, e);
         }
@@ -297,7 +298,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
         }
       } else if (this.tState === ja) {
         if (108 === c[e]) {
-          this.tState = z, this.onToken(O, null), this.offset += 3;
+          this.tState = A, this.onToken(O, null), this.offset += 3;
         } else {
           return this.charError(c, e);
         }
@@ -329,13 +330,13 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
   };
   u.onToken = function(c, a) {
     if (this.state === E) {
-      if (c === B || c === P || c === M || c === N || c === O) {
+      if (c === C || c === P || c === M || c === N || c === O) {
         this.value && (this.value[this.key] = a), this.emit(a);
       } else if (c === I) {
         this.push(), this.value = this.value ? this.value[this.key] = {} : {}, this.key = void 0, this.state = W, this.mode = T;
       } else if (c === J) {
         this.push(), this.value = this.value ? this.value[this.key] = [] : [], this.key = 0, this.mode = U, this.state = E;
-      } else if (c === A) {
+      } else if (c === B) {
         if (this.mode === T) {
           this.pop();
         } else {
@@ -351,9 +352,9 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
         return this.parseError(c, a);
       }
     } else if (this.state === W) {
-      if (c === B) {
+      if (c === C) {
         this.key = a, this.state = K;
-      } else if (c === A) {
+      } else if (c === B) {
         this.pop();
       } else {
         return this.parseError(c, a);
@@ -367,7 +368,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
     } else if (this.state === L) {
       if (c === L) {
         this.mode === U ? (this.key++, this.state = E) : this.mode === T && (this.state = W);
-      } else if (c === G && this.mode === U || c === A && this.mode === T) {
+      } else if (c === G && this.mode === U || c === B && this.mode === T) {
         this.pop();
       } else {
         return this.parseError(c, a);
@@ -391,12 +392,12 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
     function e(b) {
       return b.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
     }
-    function p(b, d, r) {
+    function q(b, d, r) {
       b = e("" + b);
       if (b.match('"')) {
         b = b.match("'") ? d ? "'" + b.split("&apos;").join("'").split("'").join("&apos;") + "'" : '"' + b.split("&quot;").join('"').split('"').join("&quot;") + '"' : "'" + b + "'";
       } else if (r || b.match(/[^0-9a-z\.\-]/g) || 72 < b.length) {
-        b = (d ? '"' : "'") + e(b) + (d ? '"' : "'");
+        b = (d ? "'" : '"') + e(b) + (d ? "'" : '"');
       }
       return b;
     }
@@ -437,34 +438,32 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
         return n;
       }
       function m(n) {
-        return "" !== n && null !== n ? " " + k._attribute + "=" + p(n, k._useSingleQuot, k._quotAlways) : "";
+        return "" !== n && null !== n ? " " + k._attribute + "=" + q(n, k._useSingleQuot, k._quotAlways) : "";
       }
       function x(n) {
-        const C = q.pop();
-        f = q.length ? EXPECT.IN_CHILD_NODES : EXPECT.END_OF_DOCUMENT;
-        switch(C) {
-          case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE:
-          case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
-          case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE:
-          case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION:
-            break;
+        const z = p.pop();
+        f = p.length ? EXPECT.IN_CHILD_NODES : EXPECT.END_OF_DOCUMENT;
+        switch(z) {
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER:
             l = "<![endif]--\x3e";
             break;
           case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER:
             l = "\x3c!--<![endif]--\x3e";
             break;
+          case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION:
+            l = "]]\x3e";
+            break;
           case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE:
             l = "--\x3e";
             break;
           default:
-            l = n ? "" : k._isXMLDocument || k._isXmlInHTML ? " />" : ">", (k._isXMLDocument || k._isXmlInHTML) && !n || va[C] && !k._noOmitEndTag ? k._omittedEndTagBefore = t[C] ? "" : C : (l += "</" + C + ">", k._omittedEndTagBefore = ""), X();
+            c(z) && (l = n ? "" : k._isXMLDocument || k._isXmlInHTML ? " />" : ">", (k._isXMLDocument || k._isXmlInHTML) && !n || va[z] && !k._noOmitEndTag ? k._omittedEndTagBefore = t[z] ? "" : z : (l += "</" + z + ">", k._omittedEndTagBefore = ""), X());
         }
       }
       function X() {
         k._noOmitEndTag = k._skipEscapeForHTML = k._isXmlInHTML = !1;
-        for (let n = 0, C = q.length; n < C; ++n) {
-          const D = q[n];
+        for (let n = 0, z = p.length; n < z; ++n) {
+          const D = p[n];
           D === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || D === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? k._noOmitEndTag = !0 : c(D) && (oa[D] && (k._noOmitEndTag = !0), pa[D] && (k._skipEscapeForHTML = !0), wa[D] || 0 < D.indexOf(":")) && (k._isXmlInHTML = !0);
         }
       }
@@ -476,7 +475,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
       if (b === K || b === L) {
         this.stack.length && this._createValue(b, d);
       } else {
-        var q = this._tree, f = this._expect, H = !1, k = this;
+        var p = this._tree, f = this._expect, H = !1, k = this;
         switch(f) {
           case EXPECT.PROCESSING_INSTRUCTION_ARGS:
             switch(b) {
@@ -490,11 +489,11 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                   x(!!l);
                   break;
                 }
-              case A:
+              case B:
                 1 === this.stack.length && (this._args.push(this.value), this.value = null);
                 this._createValue(b, d);
                 return;
-              case B:
+              case C:
               case P:
               case M:
               case N:
@@ -516,11 +515,11 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                   f = EXPECT.ATTRIBUTE_PROPERTY;
                   break;
                 }
-              case A:
+              case B:
                 1 === this.stack.length && (this._args.push(this.value), this.value = null);
                 this._createValue(b, d);
                 return;
-              case B:
+              case C:
                 if (0 === this.stack.length && !this._functionName) {
                   this._functionName = d;
                   return;
@@ -557,10 +556,10 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
               case I:
                 b = f === EXPECT.ATTRIBUTES_START ? PHASE.ATTRIBUTES_START : f === EXPECT.STYLES_START ? PHASE.STYLES_START : PHASE.ERROR;
                 break;
-              case A:
+              case B:
                 b = f === EXPECT.ATTRIBUTE_PROPERTY ? PHASE.END_OF_ATTRIBUTES : f === EXPECT.CSS_PROPERTY ? PHASE.END_OF_STYLES : PHASE.ERROR;
                 break;
-              case B:
+              case C:
                 switch(f) {
                   case EXPECT.NODE_TYPE:
                   case EXPECT.TAG_NAME:
@@ -571,6 +570,9 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                     break;
                   case EXPECT.TEXT_NODE_VALUE:
                     b = PHASE.TEXT_NODE_VALUE;
+                    break;
+                  case EXPECT.CDATA_SECTION_VALUE:
+                    b = PHASE.CDATA_SECTION_VALUE;
                     break;
                   case EXPECT.COMMENT_NODE_VALUE:
                     b = PHASE.COMMENT_NODE_VALUE;
@@ -632,6 +634,14 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                     b = PHASE.TEXT_DATA;
                     d += "";
                     break;
+                  case EXPECT.CDATA_SECTION_VALUE:
+                    b = PHASE.CDATA_SECTION_VALUE;
+                    d += "";
+                    break;
+                  case EXPECT.COMMENT_NODE_VALUE:
+                    b = PHASE.COMMENT_NODE_VALUE;
+                    d += "";
+                    break;
                   default:
                     b = PHASE.ERROR;
                 }break;
@@ -644,12 +654,12 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 b = PHASE.ERROR;
             }switch(b) {
               case PHASE.NODE_START:
-                l = H && c(q[q.length - 1]) ? ">" : "";
+                l = H && c(p[p.length - 1]) ? ">" : "";
                 f = EXPECT.NODE_TYPE;
                 break;
               case PHASE.DOCUMENT_NODE_START:
                 f = EXPECT.DOCUMENT_NODE_VALUE;
-                q.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE);
+                p.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE);
                 break;
               case PHASE.DOCUMENT_NODE_VALUE:
                 DEFINE_HTML2JSON__USE_XHTML && (this._isXMLDocument = a(d));
@@ -658,7 +668,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 break;
               case PHASE.DOCUMENT_FRAGMENT_NODE_START:
                 f = EXPECT.CHILD_NODES_START;
-                q.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE);
+                p.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE);
                 break;
               case PHASE.ELEMENT_NODE_START:
                 f = EXPECT.TAG_NAME;
@@ -670,11 +680,11 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 d = d[0];
                 l = ("p" === this._omittedEndTagBefore && xa[d] ? "</p>" : "") + "<" + d;
                 this._omittedEndTagBefore = "";
-                b && (l += " id=" + p(b, this._useSingleQuot, this._quotAlways));
-                n && (l += " class=" + p(n, this._useSingleQuot, this._quotAlways));
+                b && (l += " id=" + q(b, this._useSingleQuot, this._quotAlways));
+                n && (l += " class=" + q(n, this._useSingleQuot, this._quotAlways));
                 this._noOmitEndTag || (this._noOmitEndTag = !!oa[d]);
                 this._skipEscapeForHTML || (this._skipEscapeForHTML = !!pa[d]);
-                q.push(d);
+                p.push(d);
                 X();
                 f = EXPECT.ATTRIBUTES_START;
                 break;
@@ -719,20 +729,29 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 break;
               case PHASE.TEXT_NODE_START:
                 f = EXPECT.TEXT_NODE_VALUE;
-                q.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE);
+                p.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE);
                 break;
               case PHASE.TEXT_NODE_VALUE:
                 l = qa() + (k._skipEscapeForHTML ? "" + d : e("" + d));
                 f = EXPECT.END_OF_NODE;
                 break;
               case PHASE.TEXT_DATA:
-                l = (H && c(q[q.length - 1]) ? ">" : "") + qa() + (k._skipEscapeForHTML ? "" + d : e("" + d));
+                l = (H && c(p[p.length - 1]) ? ">" : "") + qa() + (k._skipEscapeForHTML ? "" + d : e("" + d));
                 f = EXPECT.IN_CHILD_NODES;
+                break;
+              case PHASE.CDATA_SECTION_START:
+                l = "<![CDATA[";
+                f = EXPECT.CDATA_SECTION_VALUE;
+                p.push(HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION);
+                break;
+              case PHASE.CDATA_SECTION_VALUE:
+                l = d;
+                f = EXPECT.END_OF_NODE;
                 break;
               case PHASE.COMMENT_NODE_START:
                 l = "\x3c!--";
                 f = EXPECT.COMMENT_NODE_VALUE;
-                q.push(HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE);
+                p.push(HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE);
                 break;
               case PHASE.COMMENT_NODE_VALUE:
                 l = d;
@@ -741,7 +760,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
               case PHASE.COMMENT_HIDE_LOWER_START:
                 l = "\x3c!--[";
                 f = EXPECT.COMMENT_HIDE_LOWER_FORMURA;
-                q.push(HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER);
+                p.push(HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER);
                 break;
               case PHASE.COMMENT_HIDE_LOWER_FORMURA:
                 l = d + "]>";
@@ -750,7 +769,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
               case PHASE.COMMENT_SHOW_LOWER_START:
                 l = "\x3c!--[";
                 f = EXPECT.COMMENT_SHOW_LOWER_FORMURA;
-                q.push(HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER);
+                p.push(HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER);
                 break;
               case PHASE.COMMENT_SHOW_LOWER_FORMURA:
                 l = d + "]>\x3c!--\x3e";
@@ -758,7 +777,7 @@ ATTRIBUTE_VALUE:EXPECT.ATTRIBUTE_VALUE, STYLES_START:EXPECT.STYLES_START, CSS_PR
                 break;
               case PHASE.PROCESSING_INSTRUCTION_START:
                 f = EXPECT.PROCESSING_INSTRUCTION_NAME;
-                q.push(HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION);
+                p.push(HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION);
                 break;
               case PHASE.PROCESSING_INSTRUCTION_NAME:
                 this._functionName = d;
