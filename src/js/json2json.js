@@ -13,15 +13,15 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
 
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
-    var options          = p_isObject( opt_onError ) ? opt_onError : opt_options || {},
+    var options          = m_isObject( opt_onError ) ? opt_onError : opt_options || {},
         keepCDataSection = options[ 'keepCDataSection'      ] !== false,
         keepComments     = options[ 'keepComments'          ] !== false,
-        attrPrefix       = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
+        attrPrefix       = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
 
     var isTreeUpdated = false,
         isStaticWebPage = true;
 
-    if( p_isArray( json ) ){
+    if( m_isArray( json ) ){
         walkNode( json, null, 0 );
         if( isTreeUpdated ){
             m_mergeTextNodes( json );
@@ -71,7 +71,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                 walkChildNodes( currentJSONNode );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
-                result = p_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
+                result = m_evaluteProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
 
                 if( result !== undefined ){
                     isTreeUpdated = true;
@@ -84,9 +84,9 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                             json.push( HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, '' );
                         };
                         return REMOVED;
-                    } else if( p_isStringOrNumber( result ) ){
+                    } else if( m_isStringOrNumber( result ) ){
                         // just replaced
-                    } else if( p_isArray( result ) ){
+                    } else if( m_isArray( result ) ){
                         return REMOVED;
                     // } else if( DEFINE_HTML2JSON__DEBUG ){
                         // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
@@ -99,11 +99,11 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                 tagName   = arg1;
                 attrIndex = 2;
             default :
-                if( p_isString( tagName ) ){
+                if( m_isString( tagName ) ){
                     if( 1 + attrIndex <= currentJSONNode.length ){
                         attrs = currentJSONNode[ attrIndex ];
                         // attr
-                        if( p_isAttributes( attrs ) ){
+                        if( m_isAttributes( attrs ) ){
                             walkAttributes( attrs );
                             if( Object.keys( attrs ).length === 0 ){
                                 currentJSONNode.splice( attrIndex, 1 );
@@ -128,9 +128,9 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
         for( ; i < currentJSONNode.length; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
             childNode = currentJSONNode[ i ];
 
-            if( p_isStringOrNumber( childNode ) ){
+            if( m_isStringOrNumber( childNode ) ){
 
-            } else if( p_isArray( childNode ) ){
+            } else if( m_isArray( childNode ) ){
                 if( walkNode( childNode, currentJSONNode, i ) === REMOVED ){
                     --i; // node replaced
                 };
@@ -149,17 +149,17 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
         for( name in attrs ){
             originalName = name;
             value = attrs[ name ];
-            isInstruction = p_isInstructionAttr( attrPrefix, name );
+            isInstruction = m_isInstructionAttr( attrPrefix, name );
             isInstruction && ( name = name.substr( attrPrefix.length ) );
             name === 'className' && ( name = 'class' );
 
             if( isInstruction ){
-                value = p_evaluteInstructionAttr( onInstruction, name, value, errorHandler );
+                value = m_evaluteInstructionAttr( onInstruction, name, value, errorHandler );
 
                 if( value !== undefined ){
                     delete attrs[ originalName ];
-                    if( p_isArray( value ) ){
-                        if( p_isString( value[ 0 ] ) ){
+                    if( m_isArray( value ) ){
+                        if( m_isString( value[ 0 ] ) ){
                             attrs[ originalName ] = value;
                             isStaticWebPage = false;
                         } else if( DEFINE_HTML2JSON__DEBUG ){

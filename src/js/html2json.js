@@ -22,7 +22,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
         argClosingBracket = argumentBrackets.substr( argumentBrackets.length ),
-        attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX,
+        attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX,
 
         isTrimAgressive   = trimWhitespace === 'agressive',
 
@@ -56,7 +56,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
             currentVNode = currentVNode.nextSibling;
         };
         if( !document.doctype && !returnByNodeList ){
-            if( p_isStringOrNumber( json[ 0 ] ) ){
+            if( m_isStringOrNumber( json[ 0 ] ) ){
                 json.unshift( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ); // Document Fragment
             } else if( json.length === 1 ){
                 json = json[ 0 ];
@@ -90,7 +90,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 for( i = 0, l = numAttrs; i < l ; ++i ){
                     attribute = vdomAttrs.item( i ),
                     attrName  = attribute.name,
-                    attrValue = p_ATTR_NO_VALUE[ attrName ] ? 1 : attribute.value;
+                    attrValue = m_ATTRS_NO_VALUE[ attrName ] ? 1 : attribute.value;
 
                     if( attrName === 'id' ){
                         tagName += '#' + attrValue;
@@ -109,7 +109,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         } else {
                             attrValue = functionNameAndArgs.name;
                         };
-                    } else if( p_isNumberString( attrValue ) ){
+                    } else if( m_isNumberString( attrValue ) ){
                         attrValue = + attrValue;
                     };
                     attributes[ attrName ] = attrValue;
@@ -187,13 +187,13 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     };
                 };
                 if( textContent ){
-                    parentJSONNode.push( p_toNumber( textContent ) );
+                    parentJSONNode.push( m_toNumber( textContent ) );
                 };
                 break;
             case 4 :
                 if( keepCDataSection ){
                     // HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, p_toNumber( textContent ) ] );
+                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, m_toNumber( textContent ) ] );
                 };
                 break;
             case 8 :
@@ -215,9 +215,9 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     childNodeList = p_html2json( extractStringBetween( textContent, '>', '<![endif]', true ), options );
                     returnByNodeList = parentTreeIsInPreTag = false;
 
-                    if( childNodeList.length || p_isNumber( childNodeList ) ){
+                    if( childNodeList.length || m_isNumber( childNodeList ) ){
                         currentJSONNode = [ HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, getIECondition( textContent ) ];
-                        p_isArray( childNodeList )
+                        m_isArray( childNodeList )
                             ? currentJSONNode.push.apply( currentJSONNode, childNodeList )
                             : currentJSONNode.push( childNodeList );  // conditional, unescapedText
                         parentJSONNode.push( currentJSONNode );
@@ -240,7 +240,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     };
                 } else if( keepComments ){
                     // HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, p_toNumber( textContent ) ] );
+                    parentJSONNode.push( [ HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, m_toNumber( textContent ) ] );
                 };
                 break;
             case 10 :
