@@ -1,17 +1,19 @@
 /**
  * @param {!Array} json
- * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {!function(string, ...*):(!Array|string|number|null|void)} opt_onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
  */
-p_json2json = function( json, onInstruction, opt_onError, opt_options ){
+p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
 
+    var onInstruction = typeof opt_onInstruction === 'function' ? opt_onInstruction : function( funcName, args ){};
+
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
-    var options      = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {},
+    var options      = p_isObject( opt_onError ) ? opt_onError : opt_options || {},
         keepComments = !!options[ 'keepComments' ],
         attrPrefix   = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
 
