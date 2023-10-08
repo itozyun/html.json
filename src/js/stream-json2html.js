@@ -121,41 +121,46 @@ function onToken( token, value ){
         expect = tree.length ? EXPECT.IN_CHILD_NODES : EXPECT.END_OF_DOCUMENT;
 
         switch( currentNode ){
-            case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
-            case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+            //case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
+            //case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 // expect = EXPECT.END_OF_DOCUMENT;
-            case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
-            case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
-                break;
+            //case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
+            //case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
+                //break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
                 queue = '<![endif]-->';
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 queue = '<!--<![endif]-->';
                 break;
+            case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION :
+                queue = ']]>';
+                break;
             case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 queue = '-->';
                 break;
             default :
-                const tagName = currentNode;
+                if( p_isString( currentNode ) ){
+                    const tagName = currentNode;
 
-                if( !childNodesContents ){
-                    queue = self._isXMLDocument || self._isXmlInHTML ? ' />' : '>';
-                } else {
-                    queue = '';
+                    if( !childNodesContents ){
+                        queue = self._isXMLDocument || self._isXmlInHTML ? ' />' : '>';
+                    } else {
+                        queue = '';
+                    };
+                    if(
+                        ( !( self._isXMLDocument || self._isXmlInHTML ) || childNodesContents ) // XML ではない、または、子を持つ
+                        &&
+                        ( !OMIT_END_TAG[ tagName ] || self._noOmitEndTag ) // 閉じタグを省略しない、または親要素によって省略できない
+                    ){
+                        queue += '</' + tagName + '>';
+                        self._omittedEndTagBefore = '';
+                    } else {
+                        self._omittedEndTagBefore = EMPTY_ELEMENTS[ tagName ] ? '' : tagName;
+                    };
+                    // update flags
+                    updateFlags();
                 };
-                if(
-                    ( !( self._isXMLDocument || self._isXmlInHTML ) || childNodesContents ) // XML ではない、または、子を持つ
-                    &&
-                    ( !OMIT_END_TAG[ tagName ] || self._noOmitEndTag ) // 閉じタグを省略しない、または親要素によって省略できない
-                ){
-                    queue += '</' + tagName + '>';
-                    self._omittedEndTagBefore = '';
-                } else {
-                    self._omittedEndTagBefore = EMPTY_ELEMENTS[ tagName ] ? '' : tagName;
-                };
-                // update flags
-                updateFlags();
                 break;
         };
     };
@@ -349,6 +354,9 @@ function onToken( token, value ){
                         case EXPECT.TEXT_NODE_VALUE :
                             phase = PHASE.TEXT_NODE_VALUE;
                             break;
+                        case EXPECT.CDATA_SECTION_VALUE :
+                            phase = PHASE.CDATA_SECTION_VALUE;
+                            break;
                         case EXPECT.COMMENT_NODE_VALUE:
                             phase = PHASE.COMMENT_NODE_VALUE;
                             break;
@@ -409,6 +417,14 @@ function onToken( token, value ){
                             closeStartTag = true;
                         case EXPECT.IN_CHILD_NODES    :
                             phase = PHASE.TEXT_DATA;
+                            value += '';
+                            break;
+                        case EXPECT.CDATA_SECTION_VALUE :
+                            phase = PHASE.CDATA_SECTION_VALUE;
+                            value += '';
+                            break;
+                        case EXPECT.COMMENT_NODE_VALUE:
+                            phase = PHASE.COMMENT_NODE_VALUE;
                             value += '';
                             break;
                         default :
@@ -549,6 +565,16 @@ function onToken( token, value ){
                 case PHASE.TEXT_DATA :
                     queue  = closeParentStartTag() + appendOmittedEndTagBasedOnFollowingNode() + escapeTextNodeValue( value );
                     expect = EXPECT.IN_CHILD_NODES;
+                    break;
+            /** <![CDATA[ ]]> */
+                case PHASE.CDATA_SECTION_START:
+                    queue = '<![CDATA[';
+                    expect = EXPECT.CDATA_SECTION_VALUE;
+                    tree.push( HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION );
+                    break;
+                case PHASE.CDATA_SECTION_VALUE:
+                    queue = value;
+                    expect = EXPECT.END_OF_NODE;
                     break;
             /** <!-- --> */
                 case PHASE.COMMENT_NODE_START:

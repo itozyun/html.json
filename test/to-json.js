@@ -6,7 +6,7 @@ test('simple', (t) => {
 
     t.deepEqual(JSON.stringify(html2json('<!DOCTYPE html><html><head></head><body><p>Hello,World!'), null, '    '),
 `[
-    0,
+    9,
     "<!DOCTYPE html>",
     [
         "html",
@@ -29,9 +29,9 @@ t.deepEqual( html2json('<noscript><p>js disabled!</p></noscript><p>This is appli
 });
 
 test('text', (t) => {
-    t.deepEqual( html2json('<!-- -->html<!-- -->.json'), [1, 'html.json']);
+    t.deepEqual( html2json('<!-- -->html<!-- -->.json'), [11, 'html.json']);
 
-    t.deepEqual( html2json('12<!-- -->34<!-- -->56'), [1, 123456]);
+    t.deepEqual( html2json('12<!-- -->34<!-- -->56'), [11, 123456]);
 
     t.deepEqual( html2json('<span>1,100<!-- --> yen</span>'), ['span', '1,100 yen']);
 });
@@ -60,17 +60,21 @@ test('number-string', (t) => {
 test('escape', (t) => {
     t.deepEqual( html2json('<p title="&lt;&gt;">&lt;&gt;'), ['p', { title : '<>' }, '<>' ]);
 
-    t.deepEqual( html2json('<!--&lt;&gt;-->', { keepComments : true }), [4, '<>' ]);
+    t.deepEqual( html2json('<!--&lt;&gt;-->', { keepComments : true }), [8, '<>' ]);
 });
 
 test('re-parse', (t) => {
-    t.deepEqual( html2json('<!--[if IE]><p>Hello, IE</p><![endif]-->'), [5, 'if IE', ['p', 'Hello, IE']] );
+    t.deepEqual( html2json('<!--[if IE]><p>Hello, IE</p><![endif]-->'), [13, 'if IE', ['p', 'Hello, IE']] );
 
-    t.deepEqual( html2json('<!--[if IE lte 9]>ie &lt;= 9<![endif]-->'), [5, 'if IE lte 9', 'ie <= 9'] );
+    t.deepEqual( html2json('<!--[if IE lte 9]>ie &lt;= 9<![endif]-->'), [13, 'if IE lte 9', 'ie <= 9'] );
 });
 
 test('processing-instruction', (t) => {
     t.deepEqual( html2json('<p><? random ?>'), ["p", [ 7, "random" ]] );
 
     t.deepEqual( html2json('<p><? person(777, "ADMIN") ?>'), ["p", [ 7, "person", 777, "ADMIN" ]] );
+});
+
+test('id-class', (t) => {
+    t.deepEqual( html2json('<div id=app class="app nojs"></div>'), ['div#app.app nojs']);
 });

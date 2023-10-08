@@ -27,3 +27,14 @@ test('simple',
         );
     }
 );
+
+test('id-class',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'div#app.app nojs', 'Hello, Application!' ]
+            ),
+            '<div id=app class="app nojs">Hello, Application!</div>'
+        );
+    }
+);

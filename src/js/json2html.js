@@ -61,6 +61,13 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                 };
                 htmlString += skipEscapeForHTML ? arg1 : p_escapeForHTML( '' + arg1 );
                 break;
+            case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION :
+                if( p_isString( arg1 ) ){
+                    htmlString += '<![CDATA[' + arg1 + ']]>';
+                } else if( DEFINE_HTML2JSON__DEBUG ){
+                    errorHandler( 'CDATA_SECTION Error! [' + currentJSONNode + ']' );
+                };
+                break;
             case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 if( p_isString( arg1 ) ){
                     htmlString += '<!--' + arg1 + '-->';
@@ -263,6 +270,7 @@ if( DEFINE_HTML2JSON__EXPORT_JSON2HTML ){
     p_json2html.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
     p_json2html.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
     p_json2html.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
+    p_json2html.CDATA_SECTION                  = HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION;
     p_json2html.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
     p_json2html.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
     p_json2html.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;

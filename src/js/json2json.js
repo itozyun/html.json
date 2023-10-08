@@ -13,9 +13,10 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
 
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
-    var options      = p_isObject( opt_onError ) ? opt_onError : opt_options || {},
-        keepComments = !!options[ 'keepComments' ],
-        attrPrefix   = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
+    var options          = p_isObject( opt_onError ) ? opt_onError : opt_options || {},
+        keepCDataSection = options[ 'keepCDataSection'      ] !== false,
+        keepComments     = options[ 'keepComments'          ] !== false,
+        attrPrefix       = options[ 'instructionAttrPrefix' ] || DEFINE_INSTRUCTION_ATTR_PREFIX;
 
     var isTreeUpdated = false,
         isStaticWebPage = true;
@@ -50,6 +51,12 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                 walkChildNodes( currentJSONNode );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
+                break;
+            case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION :
+                if( !keepCDataSection && parentJSONNode ){
+                    parentJSONNode.splice( myIndex, 1 );
+                    return REMOVED;
+                };
                 break;
             case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
                 if( !keepComments && parentJSONNode ){
@@ -176,6 +183,7 @@ if( DEFINE_HTML2JSON__EXPORT_JSON2JSON ){
     p_json2json.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
     p_json2json.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
     p_json2json.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
+    p_json2json.CDATA_SECTION                  = HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION;
     p_json2json.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
     p_json2json.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
     p_json2json.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
