@@ -8,7 +8,9 @@ var
 /** @define {boolean} */
     DEFINE_HTML2JSON__USE_XML_NS       = true,
 /** @define {boolean} */
-    DEFINE_HTML2JSON__USE_XHTML        = true;
+    DEFINE_HTML2JSON__USE_XHTML        = true,
+/** @define {boolean} */
+    DEFINE_HTML2JSON__GULP_PULGIN      = false;
 
 /** @define {string} */
 var DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX = ':';

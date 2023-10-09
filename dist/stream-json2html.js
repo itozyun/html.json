@@ -1,4 +1,4 @@
-var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON = !1, DEFINE_HTML2JSON__DEBUG = !0, DEFINE_HTML2JSON__USE_XML_NS = !0, DEFINE_HTML2JSON__USE_XHTML = !0, DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX = ":", HTML_DOT_JSON__NODE_TYPE = {ELEMENT_NODE:1, TEXT_NODE:3, CDATA_SECTION:4, PROCESSING_INSTRUCTION:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_FRAGMENT_NODE:11, CONDITIONAL_COMMENT_HIDE_LOWER:13, CONDITIONAL_COMMENT_SHOW_LOWER:14, NETSCAPE4_CONDITIONAL_COMMENT:15};
+var DEFINE_HTML2JSON__EXPORT_JSON2HTML = !1, DEFINE_HTML2JSON__EXPORT_JSON2JSON = !1, DEFINE_HTML2JSON__DEBUG = !0, DEFINE_HTML2JSON__USE_XML_NS = !0, DEFINE_HTML2JSON__USE_XHTML = !0, DEFINE_HTML2JSON__GULP_PULGIN = !1, DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX = ":", HTML_DOT_JSON__NODE_TYPE = {ELEMENT_NODE:1, TEXT_NODE:3, CDATA_SECTION:4, PROCESSING_INSTRUCTION:7, COMMENT_NODE:8, DOCUMENT_NODE:9, DOCUMENT_FRAGMENT_NODE:11, CONDITIONAL_COMMENT_HIDE_LOWER:13, CONDITIONAL_COMMENT_SHOW_LOWER:14, NETSCAPE4_CONDITIONAL_COMMENT:15};
 const DEFINE_HTML2JSON__PHASE = {ERROR:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 2, NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE - 1, ELEMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, TEXT_NODE_START:HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, CDATA_SECTION_START:HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, PROCESSING_INSTRUCTION_START:HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, COMMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, DOCUMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, 
 DOCUMENT_FRAGMENT_NODE_START:HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, COMMENT_HIDE_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, COMMENT_SHOW_LOWER_START:HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, NETSCAPE4_CONDITIONAL_COMMENT:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT, DOCUMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 1, TEXT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 2, CDATA_SECTION_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
 3, COMMENT_NODE_VALUE:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 4, COMMENT_HIDE_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 5, COMMENT_SHOW_LOWER_FORMURA:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 6, PROCESSING_INSTRUCTION_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 7, TAG_NAME:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 8, ATTRIBUTES_START:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 9, ATTRIBUTE_PROPERTY:HTML_DOT_JSON__NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 
@@ -492,14 +492,14 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
             p = "--\x3e";
             break;
           default:
-            b(l) && (p = u ? "" : m._isXMLDocument || m._isXmlInHTML ? " />" : ">", (m._isXMLDocument || m._isXmlInHTML) && !u || Ga[l] && !m._neverOmitEndTag ? m._omittedEndTagBefore = Ha[l] ? "" : l : (p += "</" + l + ">", m._omittedEndTagBefore = ""), F());
+            b(l) && (p = u ? "" : m._isXMLDocument || m._isXmlInHTML ? " />" : ">", (m._isXMLDocument || m._isXmlInHTML) && !u || Ga[l] && !m._endTagRequired ? m._omittedEndTagBefore = Ha[l] ? "" : l : (p += "</" + l + ">", m._omittedEndTagBefore = ""), F());
         }
       }
       function F() {
-        m._neverOmitEndTag = m._skipEscapeForHTML = m._isXmlInHTML = !1;
+        m._endTagRequired = m._escapeForHTMLDisabled = m._isXmlInHTML = !1;
         for (let u = 0, l = t.length; u < l; ++u) {
           const x = t[u];
-          x === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || x === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? m._neverOmitEndTag = !0 : b(x) && (ka[x] && (m._neverOmitEndTag = !0), la[x] && (m._skipEscapeForHTML = !0), Ia[x] || 0 < x.indexOf(":")) && (m._isXmlInHTML = !0);
+          x === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || x === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? m._endTagRequired = !0 : b(x) && (ka[x] && (m._endTagRequired = !0), la[x] && (m._escapeForHTMLDisabled = !0), Ia[x] || DEFINE_HTML2JSON__USE_XML_NS && 0 < x.indexOf(":")) && (m._isXmlInHTML = !0);
         }
       }
       function M() {
@@ -522,8 +522,8 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 if (0 === this.stack.length) {
                   d = n();
                   if (c(d)) {
-                    ma = this._neverOmitEndTag;
-                    na = this._skipEscapeForHTML;
+                    ma = this._endTagRequired;
+                    na = this._escapeForHTMLDisabled;
                     oa = this._isXMLDocument || this._isXmlInHTML;
                     var p = E(d, this._onInstruction, this._onerror, {quotAlways:this._quotAlways, useSingleQuot:this._useSingleQuot, instructionAttrPrefix:this._attrPrefix});
                     ma = na = oa = !1;
@@ -722,12 +722,12 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 a = d[1];
                 const u = d[2];
                 d = d[0];
-                p = ("p" === this._omittedEndTagBefore && Ja[d] ? "</p>" : "") + "<" + d;
+                p = ("p" !== this._omittedEndTagBefore || Ja[d] ? "" : "</p>") + "<" + d;
                 this._omittedEndTagBefore = "";
                 a && (p += " id=" + g(a, this._useSingleQuot, this._quotAlways));
                 u && (p += " class=" + g(u, this._useSingleQuot, this._quotAlways));
-                this._neverOmitEndTag || (this._neverOmitEndTag = !!ka[d]);
-                this._skipEscapeForHTML || (this._skipEscapeForHTML = !!la[d]);
+                this._endTagRequired || (this._endTagRequired = !!ka[d]);
+                this._escapeForHTMLDisabled || (this._escapeForHTMLDisabled = !!la[d]);
                 t.push(d);
                 F();
                 f = DEFINE_HTML2JSON__EXPECT.ATTRIBUTES_START;
@@ -776,11 +776,11 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 t.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE);
                 break;
               case DEFINE_HTML2JSON__PHASE.TEXT_NODE_VALUE:
-                p = M() + (m._skipEscapeForHTML ? "" + d : L("" + d));
+                p = M() + (m._escapeForHTMLDisabled ? "" + d : L("" + d));
                 f = DEFINE_HTML2JSON__EXPECT.END_OF_NODE;
                 break;
               case DEFINE_HTML2JSON__PHASE.TEXT_DATA:
-                p = (I && b(t[t.length - 1]) ? ">" : "") + M() + (m._skipEscapeForHTML ? "" + d : L("" + d));
+                p = (I && b(t[t.length - 1]) ? ">" : "") + M() + (m._escapeForHTMLDisabled ? "" + d : L("" + d));
                 f = DEFINE_HTML2JSON__EXPECT.IN_CHILD_NODES;
                 break;
               case DEFINE_HTML2JSON__PHASE.CDATA_SECTION_START:
@@ -834,9 +834,9 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
         f === DEFINE_HTML2JSON__EXPECT.ERROR ? (this._onerror("Not html.json format!"), this._stream.emit("error", "Not html.json format!")) : (this._expect = f, p && this._stream.queue(p));
       }
     }
-    var Fa = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, Ha = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0}, Ga = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0, col:!0}, ka = {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, Ia = 
-    {svg:!0, math:!0}, Ja = {table:!0, form:!0, fieldset:!0, blockquot:!0, legend:!0, svg:!0, picture:!0, object:!0, embed:!0, video:!0, audio:!0, applet:!0, iframe:!0, a:!0, abbr:!0, acronym:!0, b:!0, basefont:!0, bdo:!0, big:!0, br:!0, button:!0, cite:!0, code:!0, del:!0, dfn:!0, em:!0, font:!0, i:!0, img:!0, input:!0, ins:!0, isindex:!0, kbd:!0, label:!0, q:!0, ruby:!0, s:!0, samp:!0, select:!0, small:!0, span:!0, strike:!0, strong:!0, sub:!0, sup:!0, textarea:!0, time:!0, tt:!0, u:!0, var:!0, 
-    wbr:!0}, la = {script:!0, style:!0, plaintext:!0, xmp:!0, noscript:!0}, ma = !1, na = !1, oa = !1;
+    var Fa = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, Ha = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0, track:!0, wbr:!0, command:!0, basefont:!0, frame:!0, isindex:!0, bgsound:!0}, Ga = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0}, ka = 
+    {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, Ia = {svg:!0, math:!0}, Ja = {address:!0, article:!0, aside:!0, blockquote:!0, canvas:!0, details:!0, div:!0, dl:!0, fieldset:!0, figcaption:!0, figure:!0, footer:!0, form:!0, h1:!0, h2:!0, h3:!0, h4:!0, h5:!0, h6:!0, header:!0, hgroup:!0, hr:!0, legend:!0, main:!0, menu:!0, nav:!0, noscript:!0, ol:!0, p:!0, pre:!0, section:!0, ul:!0, center:!0, dir:!0, noframes:!0, marquee:!0}, la = {script:!0, style:!0, plaintext:!0, xmp:!0}, 
+    ma = !1, na = !1, oa = !1;
     E = function(a, d, n, q) {
       function B(l, x, y, v, h) {
         function w() {
@@ -885,7 +885,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
               x = z[1];
               y = z[2];
               z = z[0];
-              "p" === p && Ja[z] && (r += "</p>");
+              "p" !== p || Ja[z] || (r += "</p>");
               p = "";
               r += "<" + z;
               x && (r += " id=" + g(x, I, f));

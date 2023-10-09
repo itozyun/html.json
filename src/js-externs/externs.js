@@ -2,7 +2,7 @@ var require = function( name ){};
 
 var module = { exports : function(){} };
 
-var exports;
+var exports = { gulp : function( options ){} };
 
 var happyDOM = { Window : function(){} };
 

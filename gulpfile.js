@@ -31,11 +31,24 @@ gulp.task(
                     ClosureCompiler(
                         {
                             externs           : [
+                                //'./src/js-externs/console.js',
+                                './node_modules/@externs/nodejs/v8/nodejs.js',
+                                './node_modules/@externs/nodejs/v8/global.js',
+                                //'./node_modules/@externs/nodejs/v8/fs.js',
+                               // './node_modules/@externs/nodejs/v8/http.js',
+                               // './node_modules/@externs/nodejs/v8/https.js',
+                               // './node_modules/@externs/nodejs/v8/net.js',
+                                //'./node_modules/@externs/nodejs/v8/events.js',
+                                './node_modules/@externs/nodejs/v8/global/buffer.js',
+                                //'./node_modules/@externs/nodejs/v8/stream.js',
+                                //'./node_modules/@externs/nodejs/v8/zlib.js',
+                                //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'DEFINE_HTML2JSON__DEBUG=true'
+                                'DEFINE_HTML2JSON__DEBUG=true',
+                                'DEFINE_HTML2JSON__GULP_PULGIN=true'
                             ],
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
@@ -55,6 +68,7 @@ gulp.task(
                         './src/js/1_global.js',
                         './src/js/2_packageGlobal.js',
                         './src/js/3_moduleGlobal.js',
+                        './src/js/json2html.js',
                         './src/js/json2json.js'
                     ]
                 ).pipe(
@@ -73,12 +87,25 @@ gulp.task(
                     ClosureCompiler(
                         {
                             externs           : [
+                                './src/js-externs/console.js',
+                               // './node_modules/@externs/nodejs/v8/nodejs.js',
+                               // './node_modules/@externs/nodejs/v8/global.js',
+                                //'./node_modules/@externs/nodejs/v8/fs.js',
+                               // './node_modules/@externs/nodejs/v8/http.js',
+                               // './node_modules/@externs/nodejs/v8/https.js',
+                               // './node_modules/@externs/nodejs/v8/net.js',
+                                //'./node_modules/@externs/nodejs/v8/events.js',
+                                './node_modules/@externs/nodejs/v8/global/buffer.js',
+                                //'./node_modules/@externs/nodejs/v8/stream.js',
+                                //'./node_modules/@externs/nodejs/v8/zlib.js',
+                                //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
                                 'DEFINE_HTML2JSON__DEBUG=true',
-                                'DEFINE_HTML2JSON__EXPORT_JSON2JSON=true'
+                                'DEFINE_HTML2JSON__EXPORT_JSON2JSON=true',
+                                'DEFINE_HTML2JSON__GULP_PULGIN=true'
                             ],
                             env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */

@@ -6,6 +6,20 @@ var TRIM_LINEBREAKS = { script : !0, style : !0, textarea : !0 };
 var returnByNodeList     = false;
 var parentTreeIsInPreTag = false;
 
+// https://github.com/capricorn86/happy-dom/wiki/Settings
+// https://github.com/capricorn86/happy-dom/blob/master/packages/happy-dom/src/window/IHappyDOMOptions.ts
+var HappyDOMOptions = {
+    /* 'settings': {
+        'disableJavaScriptFileLoading'  : false,
+        'disableJavaScriptEvaluation'   : false,
+        'disableCSSFileLoading'         : false,
+        'disableIframePageLoading'      : false,
+        'disableComputedStyleRendering' : false,
+        'disableErrorCapturing'         : false,
+        'enableFileSystemHttpRequests'  : false
+     } */
+ }
+
 /**
  * @param {string} htmlString
  * @param {string|!Object=} opt_selector
@@ -26,7 +40,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
 
         isTrimAgressive   = trimWhitespace === 'agressive',
 
-        window            = new happyDOMWindow(),
+        window            = new happyDOMWindow( HappyDOMOptions ),
         document          = window.document,
 
         removeLineBreaksBetweenFullWidth
@@ -153,6 +167,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                     textContent = toNoLineBreaksBetweenFullWidth( textContent );
                 };
                 if( !insidePreTag && trimWhitespace ){
+                    textContent = textContent.split( '\r\n' ).join( '\n' );
                     if( lineBreaksTrimmed ){
                         // 先頭と最後の改行文字を削除
                         textContent = trimChar( textContent, '\n' );
@@ -164,10 +179,19 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                             // <b>1</b> / <b>3</b>
                             //         ^^^ / の両隣のスペースを削除するか？は改行の有無で判断する
                             var trimWhitespaceAggressively =
-                                    // 先頭に改行がある場合 前方の全ての空白文字を削除
+                                    // 先頭に改行がある場合
                                     textContent.charAt( 0 ) === '\n' &&
                                     // 最期が改行+空白文字の場合 後方の全ての空白文字を削除    
+                                    3 <= textContent.split( '\n' ).length &&
                                     !textContent.split( '\n' ).pop().split( ' ' ).join( '' );
+                            // <p>XXXXXXXXXXX
+                            // <p>XXXXXXXXXXX
+                            if(
+                                textContent.charAt( 0 ) !== '\n' && textContent.charAt( 0 ) !== ' ' &&
+                                textContent.charAt( textContent.length - 1 ) === '\n'
+                            ){
+                                trimWhitespaceAggressively = true;
+                            };
                         };
 
                         // 改行文字を一つの半角スペースに
@@ -377,3 +401,49 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
 };
 
 module.exports = p_html2json;
+
+if( DEFINE_HTML2JSON__GULP_PULGIN ){
+    p_html2json.gulp = function( opt_selector, opt_options ){
+        const PluginError = require( 'plugin-error' ),
+              through     = require( 'through2'     ),
+              pluginName  = 'html2json',
+              options     = opt_selector && typeof opt_selector === 'object'
+                              ? opt_selector
+                          : opt_options && typeof opt_options === 'object'
+                              ? opt_options
+                              : {};
+
+        return through.obj(
+            function( file, encoding, callback ){
+                if( file.isNull() ) return callback();
+        
+                if( file.isStream() ){
+                    this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
+                    return callback();
+                };
+                const now = performance.now();
+                if( file.extname === '.html' || file.extname === '.htm' || file.extname === '.xhtml' || file.extname === '.php' ){
+                    try {
+                        file.contents = Buffer.from(
+                            JSON.stringify(
+                                p_html2json( file.contents.toString( encoding ), opt_selector, opt_options ),
+                                null,
+                                options[ 'prettify' ] ? '    ' : ''
+                            )
+                        );
+                        console.log( file.path.split( process.cwd() )[ 1 ].split( '\\' ).join( '/' ), performance.now() - now )
+                        // .html => .html.json
+                        // file.stem += file.extname;
+                        file.extname = '.json';
+                        this.push( file );
+                    } catch( O_o ) {
+                        this.emit( 'error', new PluginError( pluginName, O_o ) );
+                    };
+                } else {
+                    this.push( file );
+                };
+                callback();
+            }
+        );
+    };
+};

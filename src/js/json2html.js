@@ -185,7 +185,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
         } else if( m_IS_XML_ROOT[ tagName ] ){
             return true;
         };
-        return DEFINE_HTML2JSON__USE_XML_NS ? m_isNamespacedTag( tagName ) : false; // v: vml
+        return m_isNamespacedTag( tagName ); // v: vml
     };
 
     /**
