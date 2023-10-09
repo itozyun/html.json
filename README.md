@@ -12,6 +12,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
      * PJAX のデータ形式
 3. TODO html.json DOM(予定)
 4. TODO `<? include ./sidebar.json ?>`
+5. TODO sort attrs
 
 ## 目次
 
@@ -20,7 +21,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
    2. 動的属性
 2. json2json
 3. json2html
-4. HTML.Json 定義
+4. HTML.JSON 定義
 5. HTML の最小化
 
 ## 1. html2json

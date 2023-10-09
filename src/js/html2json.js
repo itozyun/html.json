@@ -17,7 +17,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         
         options           = opt_selector && typeof opt_selector === 'object' ? opt_selector : opt_options || {},
         trimWhitespace    = options[ 'trimWhitespace' ],
-        keepCDATASections  = !!options[ 'keepCDATASections' ],
+        keepCDATASections = !!options[ 'keepCDATASections' ],
         keepComments      = !!options[ 'keepComments' ],
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
@@ -70,10 +70,10 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
      * 
      * @param {!Node} currentVNode 
      * @param {!Array} parentJSONNode 
-     * @param {boolean} inPreTag 
-     * @param {boolean} trimLineBreaks
+     * @param {boolean} insidePreTag 
+     * @param {boolean} lineBreaksTrimmed
      */
-    function walkNode( currentVNode, parentJSONNode, inPreTag, trimLineBreaks ){
+    function walkNode( currentVNode, parentJSONNode, insidePreTag, lineBreaksTrimmed ){
         var textContent = currentVNode.data,
             functionNameAndArgs, currentJSONNode, childNodeList, nextNode;
             // console.log( currentVNode )
@@ -143,17 +143,17 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 currentJSONNode = numAttrs ? [ tagName, attributes ] : [ tagName ];
 
                 for( i = 0; i < vChildNodes.length; ++i ){
-                    walkNode( vChildNodes[ i ], currentJSONNode, isPreTag || inPreTag, TRIM_LINEBREAKS[ tagName ] );
+                    walkNode( vChildNodes[ i ], currentJSONNode, isPreTag || insidePreTag, TRIM_LINEBREAKS[ tagName ] );
                 };
                 parentJSONNode.push( currentJSONNode );
                 break;
             // case 2 :
             case 3 :
-                if( !inPreTag && !trimLineBreaks /** pre, script, style, textarea には実施しない */ && removeLineBreaksBetweenFullWidth ){
+                if( !insidePreTag && !lineBreaksTrimmed /** pre, script, style, textarea には実施しない */ && removeLineBreaksBetweenFullWidth ){
                     textContent = toNoLineBreaksBetweenFullWidth( textContent );
                 };
-                if( !inPreTag && trimWhitespace ){
-                    if( trimLineBreaks ){
+                if( !insidePreTag && trimWhitespace ){
+                    if( lineBreaksTrimmed ){
                         // 先頭と最後の改行文字を削除
                         textContent = trimChar( textContent, '\n' );
                     } else {
@@ -210,7 +210,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 } else if( textContent.indexOf( '[if' ) === 0 && 0 < textContent.indexOf( '<![endif]' ) ){
                     // HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
                     returnByNodeList     = true;
-                    parentTreeIsInPreTag = inPreTag;
+                    parentTreeIsInPreTag = insidePreTag;
                     // console.log( extractStringBetween( textContent, '>', '<![endif]' ) )
                     childNodeList = p_html2json( extractStringBetween( textContent, '>', '<![endif]', true ), options );
                     returnByNodeList = parentTreeIsInPreTag = false;
@@ -232,7 +232,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                             nextNode.remove();
                             break;
                         };
-                        walkNode( nextNode, currentJSONNode, inPreTag, trimLineBreaks );
+                        walkNode( nextNode, currentJSONNode, insidePreTag, lineBreaksTrimmed );
                         nextNode.remove();
                     };
                     if( 2 < currentJSONNode.length ){

@@ -165,12 +165,12 @@ function onToken( token, value ){
                     if(
                         ( !( self._isXMLDocument || self._isXmlInHTML ) || childNodesContents ) // XML ではない、または、子を持つ
                         &&
-                        ( !m_OMIT_END_TAG[ tagName ] || self._neverOmitEndTag ) // 閉じタグを省略しない、または親要素によって省略できない
+                        ( !m_OMITTABLE_END_TAGS[ tagName ] || self._endTagRequired ) // 閉じタグを省略しない、または親要素によって省略できない
                     ){
                         queue += '</' + tagName + '>';
                         self._omittedEndTagBefore = '';
                     } else {
-                        self._omittedEndTagBefore = m_EMPTY_ELEMENTS[ tagName ] ? '' : tagName;
+                        self._omittedEndTagBefore = m_NO_CHILD_ELEMENTS[ tagName ] ? '' : tagName;
                     };
                     // update flags
                     updateFlags();
@@ -180,19 +180,19 @@ function onToken( token, value ){
     };
 
     function updateFlags(){
-        self._neverOmitEndTag = self._skipEscapeForHTML = self._isXmlInHTML = false;
+        self._endTagRequired = self._escapeForHTMLDisabled = self._isXmlInHTML = false;
 
         for( let i = 0, l = tree.length; i < l; ++i ){
             const tagName = tree[ i ];
 
             if( tagName === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || tagName === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ){
-                self._neverOmitEndTag = true;
+                self._endTagRequired = true;
             } else if( m_isString( tagName ) ){
-                if( m_NEVER_OMIT_END_TAG[ tagName ] ){
-                    self._neverOmitEndTag = true;
+                if( m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ] ){
+                    self._endTagRequired = true;
                 };
-                if( m_SKIP_HTML_ESCAPE[ tagName ] ){
-                    self._skipEscapeForHTML = true;
+                if( m_UNESCAPED_TAGS[ tagName ] ){
+                    self._escapeForHTMLDisabled = true;
                 };
                 if( m_IS_XML_ROOT[ tagName ] || m_isNamespacedTag( tagName ) ){
                     self._isXmlInHTML = true;
@@ -216,7 +216,7 @@ function onToken( token, value ){
     };
 
     function escapeTextNodeValue( value ){
-        return self._skipEscapeForHTML ? '' + value : m_escapeForHTML( '' + value );
+        return self._escapeForHTMLDisabled ? '' + value : m_escapeForHTML( '' + value );
     };
 
     switch( expect ){
@@ -231,8 +231,8 @@ function onToken( token, value ){
                         const result = executeInstruction();
 
                         if( m_isArray( result ) ){
-                            m_neverOmitEndTag   = this._neverOmitEndTag;
-                            m_skipEscapeForHTML = this._skipEscapeForHTML;
+                            m_endTagRequired   = this._endTagRequired;
+                            m_escapeForHTMLDisabled = this._escapeForHTMLDisabled;
                             m_isXMLDocument     = this._isXMLDocument || this._isXmlInHTML;
                             queue = p_json2html(
                                 result,
@@ -244,7 +244,7 @@ function onToken( token, value ){
                                     'instructionAttrPrefix' : this._attrPrefix
                                 }
                             );
-                            m_neverOmitEndTag = m_skipEscapeForHTML = m_isXMLDocument = false;
+                            m_endTagRequired = m_escapeForHTMLDisabled = m_isXMLDocument = false;
                         } else {
                             queue = m_isStringOrNumber( result ) ? '' + result : '';
                         };
@@ -490,7 +490,7 @@ function onToken( token, value ){
                     const className = tagName[ 2 ];
                     tagName = tagName[ 0 ];
                 
-                    queue = ( this._omittedEndTagBefore === 'p'&& m_EXCLUDE_FROM_P[ tagName ] ? '</p>' : '' ) + '<' + tagName;
+                    queue = ( this._omittedEndTagBefore === 'p'&& !m_P_END_TAG_LESS_TAGS[ tagName ] ? '</p>' : '' ) + '<' + tagName;
 
                     this._omittedEndTagBefore = '';
 
@@ -501,11 +501,11 @@ function onToken( token, value ){
                         queue += ' class=' + m_quotAttributeValue( className, this._useSingleQuot, this._quotAlways );;
                     };
 
-                    if( !this._neverOmitEndTag ){
-                        this._neverOmitEndTag = !!m_NEVER_OMIT_END_TAG[ tagName ];
+                    if( !this._endTagRequired ){
+                        this._endTagRequired = !!m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ];
                     };
-                    if( !this._skipEscapeForHTML ){
-                        this._skipEscapeForHTML = !!m_SKIP_HTML_ESCAPE[ tagName ];
+                    if( !this._escapeForHTMLDisabled ){
+                        this._escapeForHTMLDisabled = !!m_UNESCAPED_TAGS[ tagName ];
                     };
                     tree.push( tagName );
                     updateFlags();

@@ -13,10 +13,10 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
 
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
-    var options          = m_isObject( opt_onError ) ? opt_onError : opt_options || {},
-        keepCDATASections = options[ 'keepCDATASections'      ] !== false,
-        keepComments     = options[ 'keepComments'          ] !== false,
-        attrPrefix       = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
+    var options           = m_isObject( opt_onError ) ? opt_onError : opt_options || {},
+        keepCDATASections = options[ 'keepCDATASections'     ] !== false,
+        keepComments      = options[ 'keepComments'          ] !== false,
+        attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
 
     var isTreeUpdated = false,
         isStaticWebPage = true;

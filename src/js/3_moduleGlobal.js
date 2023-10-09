@@ -1,22 +1,29 @@
-var m_ATTRS_NO_VALUE     = {checked:!0,compact:!0,declare:!0,defer:!0,disabled:!0,ismap:!0,multiple:!0,nohref:!0,noresize:!0,noshade:!0,nowrap:!0,readonly:!0,selected:!0};
-var m_EMPTY_ELEMENTS     = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base:!0,col:!0,embed:!0,keygen:!0,param:!0/* ,source:!0 */}, // TODO Opera 9 support
-    m_OMIT_END_TAG       = {p:!0,dt:!0,dd:!0,li:!0,option:!0,thead:!0,tfoot:!0,th:!0,tr:!0,td:!0,rt:!0,rp:!0,optgroup:!0,caption:!0,colgroup:!0,col:!0},
-    m_NEVER_OMIT_END_TAG = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
-    m_IS_XML_ROOT        = {svg:!0, math:!0},
-    // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-    m_EXCLUDE_FROM_P     = {
-        table:!0,form:!0,fieldset:!0,blockquot:!0,legend:!0, // block level
+var m_ATTRS_NO_VALUE      = {checked:!0,compact:!0,declare:!0,defer:!0,disabled:!0,ismap:!0,multiple:!0,nohref:!0,noresize:!0,noshade:!0,nowrap:!0,readonly:!0,selected:!0};
 
-        svg:!0,picture:!0,object:!0,embed:!0,video:!0,audio:!0,applet:!0,iframe:!0,
-        a:!0,abbr:!0,acronym:!0,b:!0,basefont:!0,bdo:!0,big:!0,br:!0,button:!0,cite:!0,code:!0,del:!0,dfn:!0,
-        em:!0,font:!0,i:!0,img:!0,input:!0,ins:!0,isindex:!0,kbd:!0,label:!0,q:!0,ruby:!0,s:!0,samp:!0,select:!0,
-        small:!0,span:!0,strike:!0,strong:!0,sub:!0,sup:!0,textarea:!0,time:!0,tt:!0,u:!0,var:!0,wbr:!0
-    },
-    m_SKIP_HTML_ESCAPE   = {script:!0,style:!0,plaintext:!0,xmp:!0,noscript:!0};
+    // 子を持たない要素の一覧
+var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base:!0,col:!0,embed:!0,keygen:!0,param:!0, /* ,source:!0 */ // for Opera 9
+                            track:!0,wbr:!0,command:!0,basefont:!0,frame:!0,isindex:!0,bgsound:!0},
+    // 終了タグを省略できるタグの一覧
+    m_OMITTABLE_END_TAGS  = {p:!0,dt:!0,dd:!0,li:!0,option:!0,thead:!0,tfoot:!0,th:!0,tr:!0,td:!0,rt:!0,rp:!0,optgroup:!0,caption:!0,colgroup:!0,col:!0},
+    // 子孫が終了タグを省略できないタグの一覧
+    m_CHILDREN_MUST_HAVE_END_TAGS
+                          = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
+    m_IS_XML_ROOT         = {svg:!0,math:!0},
+    
+    m_P_END_TAG_LESS_TAGS = {
+                                address:!0,article:!0,aside:!0,blockquote:!0,canvas:!0,details:!0,div:!0,dl:!0,fieldset:!0,figcaption:!0,figure:!0,
+                                footer:!0,form:!0,h1:!0,h2:!0,h3:!0,h4:!0,h5:!0,h6:!0,header:!0,hgroup:!0,hr:!0,legend:!0,
+                                main:!0,menu:!0,nav:!0,noscript:!0,ol:!0,p:!0,pre:!0,section:!0,
+                                /* table:!0, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                                ul:!0,
+                                center:!0,dir:!0,noframes:!0,marquee:!0
+                            },
+    // HTML エスケープをしない要素の一覧
+    m_UNESCAPED_TAGS      = {script:!0,style:!0,plaintext:!0,xmp:!0};
 
 // stream-json2html => json2html で使用
-var m_neverOmitEndTag   = false;
-var m_skipEscapeForHTML = false;
+var m_endTagRequired   = false;
+var m_escapeForHTMLDisabled = false;
 var m_isXMLDocument     = false;
 
 /**
