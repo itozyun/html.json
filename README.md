@@ -13,6 +13,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 3. TODO html.json DOM(予定)
 4. TODO `<? include ./sidebar.json ?>`
 5. TODO sort attrs
+6. TODO 実際のソースコード(HTML)に沿った空白除去ルールの決定
 
 ## 目次
 

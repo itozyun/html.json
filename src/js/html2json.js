@@ -163,34 +163,49 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 break;
             // case 2 :
             case 3 :
-                if( !insidePreTag && !lineBreaksTrimmed /** pre, script, style, textarea には実施しない */ && removeLineBreaksBetweenFullWidth ){
-                    textContent = toNoLineBreaksBetweenFullWidth( textContent );
-                };
                 if( !insidePreTag && trimWhitespace ){
-                    textContent = textContent.split( '\r\n' ).join( '\n' );
                     if( lineBreaksTrimmed ){
                         // 先頭と最後の改行文字を削除
                         textContent = trimChar( textContent, '\n' );
                     } else {
+                        textContent = textContent.split( '\r\n' ).join( '\n' );
+                        if( removeLineBreaksBetweenFullWidth ){
+                            textContent = toNoLineBreaksBetweenFullWidth( textContent );
+                        };
+
                         // タブは一つの半角スペースに
                         textContent = textContent.split( '\t' ).join( ' ' );
 
+                        // 2つ以上の改行を1つの半角スペースへ
+                        while( 0 <= textContent.indexOf( '\n\n' ) ){
+                            textContent = textContent.split( '\n\n' ).join( '\n' );
+                        };
+
                         if( isTrimAgressive ){
+                            var firstChar = textContent.charAt( 0 );
                             // <b>1</b> / <b>3</b>
                             //         ^^^ / の両隣のスペースを削除するか？は改行の有無で判断する
                             var trimWhitespaceAggressively =
                                     // 先頭に改行がある場合
-                                    textContent.charAt( 0 ) === '\n' &&
+                                    firstChar === '\n' &&
                                     // 最期が改行+空白文字の場合 後方の全ての空白文字を削除    
-                                    3 <= textContent.split( '\n' ).length &&
-                                    !textContent.split( '\n' ).pop().split( ' ' ).join( '' );
+                                    /\n[ ]*$/.test( textContent );
                             // <p>XXXXXXXXXXX
                             // <p>XXXXXXXXXXX
                             if(
-                                textContent.charAt( 0 ) !== '\n' && textContent.charAt( 0 ) !== ' ' &&
+                                firstChar !== '\n' && firstChar !== ' ' &&
                                 textContent.charAt( textContent.length - 1 ) === '\n'
                             ){
                                 trimWhitespaceAggressively = true;
+                            };
+                        };
+
+                        if( !trimWhitespaceAggressively ){
+                            if(
+                                textContent.charAt( textContent.length - 2 ) !== ' ' &&
+                                textContent.charAt( textContent.length - 1 ) === '\n'
+                            ){
+                                textContent = textContent.substr( 0, textContent.length - 1 );
                             };
                         };
 
