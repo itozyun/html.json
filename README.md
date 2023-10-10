@@ -14,6 +14,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 4. TODO `<? include ./sidebar.json ?>`
 5. TODO sort attrs
 6. TODO 実際のソースコード(HTML)に沿った空白除去ルールの決定
+7. TODO [jsonml / Add support for Processing instructions](https://github.com/mckamey/jsonml/pull/14)
 
 ## 目次
 
