@@ -1,6 +1,6 @@
 /**
  * @param {!Array} json
- * @param {!function(string, ...*):(!Array|string|number|null|void)} opt_onInstruction
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} opt_onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
@@ -154,7 +154,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
             name === 'className' && ( name = 'class' );
 
             if( isInstruction ){
-                value = m_executeInstructionAttr( onInstruction, name, value, errorHandler );
+                value = m_executeInstructionAttr( false, onInstruction, name, value, errorHandler );
 
                 if( value !== undefined ){
                     delete attrs[ originalName ];
@@ -165,7 +165,9 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                         } else if( DEFINE_HTML2JSON__DEBUG ){
                             errorHandler( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
                         };
-                    } else if( value !== null && value !== '' ){
+                    } else if( m_ATTRS_NO_VALUE[ name ] && value === false ){
+
+                    } else if( value !== null ){
                         attrs[ name ] = value;
                     };
                 } else {

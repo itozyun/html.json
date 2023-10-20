@@ -1,6 +1,6 @@
 /**
  * @param {!Array} json
- * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {string|void} html string
@@ -124,10 +124,10 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                     htmlString += '<' + tagName;
 
                     if( id ){
-                        htmlString += ' id=' + m_quotAttributeValue( id, useSingleQuot, quotAlways );
+                        htmlString += ' id=' + m_quoteAttributeValue( id, useSingleQuot, quotAlways );
                     };
                     if( className ){
-                        htmlString += ' class=' + m_quotAttributeValue( className, useSingleQuot, quotAlways );;
+                        htmlString += ' class=' + m_quoteAttributeValue( className, useSingleQuot, quotAlways );;
                     };
 
                     // xml;
@@ -235,10 +235,10 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
             name === 'className' && ( name = 'class' );
 
             if( isInstruction ){
-                value = m_executeInstructionAttr( onInstruction, name, value, errorHandler );
+                value = m_executeInstructionAttr( true, onInstruction, name, value, errorHandler );
             };
 
-            if( value !== '' && value != null ){
+            if( value != null && ( !m_ATTRS_NO_VALUE[ name ] || value !== false ) ){
                 attrText += ' ' + name;
 
                 if( !m_ATTRS_NO_VALUE[ name ] ){
@@ -246,7 +246,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
                         value = toCSSTest( value );
                         if( !value ) continue;
                     };
-                    attrText += '=' + m_quotAttributeValue( value, useSingleQuot, quotAlways );
+                    attrText += '=' + m_quoteAttributeValue( value, useSingleQuot, quotAlways );
                 };
             };
         };

@@ -7,7 +7,7 @@
 const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
 
 /**
- * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {!Through}
@@ -108,7 +108,7 @@ function onToken( token, value ){
 
     const self = this;
 
-    function executeInstruction(){
+    function executeProcessingInstruction(){
         const result = self._args.length
                      ? self._onInstruction.call( self._stream, self._functionName, self._args )
                      : self._onInstruction.call( self._stream, self._functionName );
@@ -118,12 +118,24 @@ function onToken( token, value ){
         return result;
     };
 
+    function executeInstructionAttr(){
+        self._args.unshift( self._functionName );
+
+        const result = m_executeInstructionAttr( true, self._onInstruction.bind( self._stream ), self._attribute, self._args, self._onerror );
+
+        self._functionName = null;
+        self._args.length  = 0;
+        return result;
+    };
+
     function createAttributeNodeString( value ){
-        if( value !== '' && value !== null ){
+        if( value != null ){
             if( m_ATTRS_NO_VALUE[ self._attribute ] ){
-                return ' ' + self._attribute;
+                if( value !== false ){
+                    return ' ' + self._attribute;
+                };
             } else {
-                return ' ' + self._attribute + '=' + m_quotAttributeValue( value, self._useSingleQuot, self._quotAlways );
+                return ' ' + self._attribute + '=' + m_quoteAttributeValue( value, self._useSingleQuot, self._quotAlways );
             };
         };
         return '';
@@ -228,7 +240,7 @@ function onToken( token, value ){
                     return;
                 case /* Parser.C. */RIGHT_BRACKET : // ]
                     if( this.stack.length === 0 ){ // end of arguments
-                        const result = executeInstruction();
+                        const result = executeProcessingInstruction();
 
                         if( m_isArray( result ) ){
                             m_endTagRequired   = this._endTagRequired;
@@ -283,7 +295,7 @@ function onToken( token, value ){
                 case /* Parser.C. */RIGHT_BRACKET : // ]
                     if( this.stack.length === 0 ){ // end of arguments
                         // !_functionName => error
-                        queue  = createAttributeNodeString( executeInstruction() );
+                        queue  = createAttributeNodeString( executeInstructionAttr() );
                         expect = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
                         break;
                     };
@@ -495,10 +507,10 @@ function onToken( token, value ){
                     this._omittedEndTagBefore = '';
 
                     if( id ){
-                        queue += ' id=' + m_quotAttributeValue( id, this._useSingleQuot, this._quotAlways );
+                        queue += ' id=' + m_quoteAttributeValue( id, this._useSingleQuot, this._quotAlways );
                     };
                     if( className ){
-                        queue += ' class=' + m_quotAttributeValue( className, this._useSingleQuot, this._quotAlways );;
+                        queue += ' class=' + m_quoteAttributeValue( className, this._useSingleQuot, this._quotAlways );;
                     };
 
                     if( !this._endTagRequired ){
@@ -529,7 +541,7 @@ function onToken( token, value ){
                     break;
                 case DEFINE_HTML2JSON__PHASE.INSTRUCTION_ATTRIBUTE_NAME :
                     this._functionName = value;
-                    value = executeInstruction();
+                    value = executeInstructionAttr();
                 case DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE :
                     queue  = createAttributeNodeString( value );
                     expect = DEFINE_HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;

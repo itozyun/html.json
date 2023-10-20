@@ -109,12 +109,23 @@ function onInstruction( methodName, args, currentHtmlJson ){
 ~~~
 ### json2json の `onInstruction` の戻り値
 
+json2html と微妙に異なる点に注意
+
+#### `InstructionNode`
+
 * `undefiend` 何もしない
-* `null` or `""` 動的コンテンツを削除
+* `null` or `""` : `InstructionNode`を削除
 * `{string|number}` TEXT_NODE になる
 * strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, ["p", "Hello, world!"]`, `[ 1, "p", ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
 * 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
 
+#### `InstructionAttr`
+
+* `undefiend` 何もしない
+* `null` : `InstructionAttr` を削除
+* `m_ATTRS_NO_VALUE` なプロパティであり属性値が `false` の場合、属性を追加しない
+* 戻り値が配列の場合、`InstructionAttr` のまま(json2html では必ず属性値を返すこと)
+* これ以外は属性値になる
 
 ## 3. json2html
 
@@ -130,11 +141,21 @@ function onInstruction( methodName, args, currentHtmlJson ){
 
 ### json2html の `onInstruction` の戻り値
 
+json2json と微妙に異なる点に注意
+
+#### `InstructionNode`
+
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
 * strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, [ 'P', "Hello, world!" ]]`, `[2, 'p', ...`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
 * 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
 
+#### `InstructionAttr`
+
+* `undefiend` or `null` 属性を追加しない
+* `m_ATTRS_NO_VALUE` なプロパティであり属性値が `false` の場合、属性を追加しない
+* 戻り値が配列の場合、このノードは再度 `onInstruction` で処理される(無限ループにならず属性値を返すこと)
+* これ以外は属性値になる
 
 ## 4. HTML.Json 定義
 

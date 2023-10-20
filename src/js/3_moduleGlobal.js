@@ -155,12 +155,12 @@ function m_isInstructionAttr( prefix, name ){
 
 /**
  * 
- * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {!Array} currentJSONNode 
  * @param {!Array|null} parentJSONNode 
  * @param {number} myIndex
  * @param {!function(string)} errorHandler 
- * @return {!Array|string|number|null|void}
+ * @return {!Array|string|number|boolean|null|void}
  */
 function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler ){
     var functionName = /** @type {string} */ (currentJSONNode[ 1 ]);
@@ -220,16 +220,18 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
 
 /**
  * 
- * @param {!function(string, ...*):(!Array|string|number|null|void)} onInstruction
+ * @param {boolean} recursion
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {string} name 
- * @param {string} value 
+ * @param {!Array|string} value 
  * @param {!function(string)} errorHandler 
- * @return {!Array|string|number|null|void}
+ * @return {!Array|string|number|boolean|null|void}
  */
-function m_executeInstructionAttr( onInstruction, name, value, errorHandler ){
+function m_executeInstructionAttr( recursion, onInstruction, name, value, errorHandler ){
     var result;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
+        value = /** @type {!Array} */ (value);
         var functionName = /** @type {string} */ (value[ 0 ]);
         var args         = value.slice( 1 );
 
@@ -239,9 +241,15 @@ function m_executeInstructionAttr( onInstruction, name, value, errorHandler ){
             result = onInstruction( functionName );
         };
     } else if( m_isString( value ) ){
-        result = onInstruction( value );
+        result = onInstruction( /** @type {string} */ (value) );
     } else if( DEFINE_HTML2JSON__DEBUG ){
         errorHandler( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
+    };
+
+    if( recursion && m_isArray( result ) ){
+        result = /** @type {!Array} */ (result);
+
+        return m_executeInstructionAttr( true, onInstruction, name, result, errorHandler );
     };
     return result;
 };
@@ -263,12 +271,12 @@ function m_escapeForHTML( unsafeText ){
 
 /**
  * 
- * @param {string} value 
+ * @param {string|number|boolean} value 
  * @param {boolean} useSingleQuot 
  * @param {boolean} quotAlways 
  * @return {string}
  */
-function m_quotAttributeValue( value, useSingleQuot, quotAlways ){
+function m_quoteAttributeValue( value, useSingleQuot, quotAlways ){
     var strValue = m_escapeForHTML( '' + value );
     var containDoubleQuot = strValue.match( '"' );
 
