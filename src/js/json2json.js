@@ -223,7 +223,7 @@ if( DEFINE_HTML2JSON__EXPORT_JSON2JSON ){
                                 file.extname = '.' + file.stem.split( '.' ).pop();
                                 file.stem    = file.stem.substr( 0, file.stem.length - file.extname.length );
                             } else {
-                                content = JSON.stringify( null, options[ 'prettify' ] ? '    ' : '' );
+                                content = JSON.stringify( json, null, options[ 'prettify' ] ? '    ' : '' );
                             };
                             
                             file.contents = Buffer.from( content );
