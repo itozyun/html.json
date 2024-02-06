@@ -13,7 +13,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 3. TODO html.json DOM(予定)
 4. TODO `<? include ./sidebar.json ?>`
 5. TODO sort attrs
-6. TODO 実際のソースコード(HTML)に沿った空白除去ルールの決定
+6. TODO ソースコード(HTML)の実際に沿った空白除去ルールの決定
 7. TODO [jsonml / Add support for Processing instructions](https://github.com/mckamey/jsonml/pull/14)
 
 ## 目次
@@ -308,6 +308,11 @@ json2json と微妙に異なる点に注意
    * 条件付きコメント以外を削除します。
    * コメントノードのキープ
    * 参考 [IEでコメントノードを事前に除去し速度を稼ぐ](https://uupaa.hatenadiary.org/entry/20091203/1259820356), [コメントがフロートの位置をずらす](https://web.archive.org/web/20110519022142/http://css-bug.jp/win/ie/ver6/0424/)
+5. 連続するテキストノードのマージ
+
+### json2json 処理時に合わせて実施します。
+
+1. 連続するテキストノードのマージ
 
 ### 5.1. 公開用 HTML の為の機械処理
 

@@ -18,7 +18,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
         keepComments      = options[ 'keepComments'          ] !== false,
         attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
 
-    var isTreeUpdated = false,
+    var isTreeUpdated   = false,
         isStaticWebPage = true;
 
     if( m_isArray( json ) ){
@@ -26,7 +26,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
         if( isTreeUpdated ){
             m_mergeTextNodes( json );
         };
-        return isStaticWebPage; // TODO 連続する Text の結合
+        return isStaticWebPage;
     } else if( DEFINE_HTML2JSON__DEBUG ){
         errorHandler( 'Invalid html.json document!' );
     };

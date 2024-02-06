@@ -9,7 +9,7 @@ var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0
     m_CHILDREN_MUST_HAVE_END_TAGS
                           = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
     m_IS_XML_ROOT         = {svg:!0,math:!0},
-    
+    // </p> を省略できる後続のタグの一覧
     m_P_END_TAG_LESS_TAGS = {
                                 address:!0,article:!0,aside:!0,blockquote:!0,canvas:!0,details:!0,div:!0,dl:!0,fieldset:!0,figcaption:!0,figure:!0,
                                 footer:!0,form:!0,h1:!0,h2:!0,h3:!0,h4:!0,h5:!0,h6:!0,header:!0,hgroup:!0,hr:!0,legend:!0,
@@ -22,9 +22,9 @@ var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0
     m_UNESCAPED_TAGS      = {script:!0,style:!0,plaintext:!0,xmp:!0};
 
 // stream-json2html => json2html で使用
-var m_endTagRequired   = false;
+var m_endTagRequired        = false;
 var m_escapeForHTMLDisabled = false;
-var m_isXMLDocument     = false;
+var m_isXMLDocument         = false;
 
 /**
  * 
