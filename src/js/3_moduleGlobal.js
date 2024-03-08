@@ -302,8 +302,25 @@ function m_quoteAttributeValue( value, useSingleQuot, quotAlways ){
     return strValue;
 };
 
+/**
+ * 
+ * @param {string} str 
+ * @return {string}
+ */
 function m_toSnakeCase( cssProperty ){
-    return cssProperty; // TODO
+    var result = [],
+        chars  = cssProperty.split( '' ),
+        i      = chars.length,
+        chr;
+
+    while( i ){
+        chr = chars[ --i ];
+        if( 'A' <= chr && chr <= 'Z' ){
+            chr = '-' + chr.toLowerCase();
+        };
+        result[ i ] = chr;
+    };
+    return result.join( '' );
 };
 
 /**
