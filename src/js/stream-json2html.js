@@ -206,7 +206,7 @@ function onToken( token, value ){
                 if( m_UNESCAPED_TAGS[ tagName ] ){
                     self._escapeForHTMLDisabled = true;
                 };
-                if( m_IS_XML_ROOT[ tagName ] || m_isNamespacedTag( tagName ) ){
+                if( m_TAGNAME_TO_NAMESPACE[ tagName ] || m_isNamespacedTag( tagName ) ){
                     self._isXmlInHTML = true;
                 };
             };

@@ -8,7 +8,11 @@ var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0
     // 子孫が終了タグを省略できないタグの一覧
     m_CHILDREN_MUST_HAVE_END_TAGS
                           = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
-    m_IS_XML_ROOT         = {svg:!0,math:!0},
+    m_TAGNAME_TO_NAMESPACE= {
+        xml:  'http://www.w3.org/1999/xhtml',
+        svg:  'http://www.w3.org/2000/svg',
+        math: 'http://www.w3.org/1998/Math/MathML'
+    },
     // </p> を省略できる後続のタグの一覧
     m_P_END_TAG_LESS_TAGS = {
                                 address:!0,article:!0,aside:!0,blockquote:!0,canvas:!0,details:!0,div:!0,dl:!0,fieldset:!0,figcaption:!0,figure:!0,
@@ -304,7 +308,7 @@ function m_quoteAttributeValue( value, useSingleQuot, quotAlways ){
 
 /**
  * 
- * @param {string} str 
+ * @param {string} cssProperty 
  * @return {string}
  */
 function m_toSnakeCase( cssProperty ){

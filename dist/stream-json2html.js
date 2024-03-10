@@ -36,7 +36,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
     b = b || function() {
       this.queue(null);
     };
-    var J = !1, T = !1, Q = [], R = !1, h = new La();
+    var J = !1, T = !1, Q = [], R = !1, h = new Ma();
     h.readable = h.writable = !0;
     h.paused = !1;
     h.autoDestroy = !(e && !1 === e.autoDestroy);
@@ -82,12 +82,12 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
     };
     return h;
   }
-  var m = {}, U = m.LEFT_BRACE = 1, M = m.RIGHT_BRACE = 2, V = m.LEFT_BRACKET = 3, S = m.RIGHT_BRACKET = 4, W = m.COLON = 5, X = m.COMMA = 6, Y = m.TRUE = 7, Z = m.FALSE = 8, aa = m.NULL = 9, N = m.STRING = 10, ba = m.NUMBER = 11, L = m.START = 17, qa = m.STOP = 18, ra = m.TRUE1 = 33, sa = m.TRUE2 = 34, ta = m.TRUE3 = 35, ua = m.FALSE1 = 49, va = m.FALSE2 = 50, wa = m.FALSE3 = 51, xa = m.FALSE4 = 52, ya = m.NULL1 = 65, za = m.NULL2 = 66, Aa = m.NULL3 = 67, Ba = m.NUMBER1 = 81, ha = m.NUMBER3 = 83, 
-  H = m.STRING1 = 97, Ca = m.STRING2 = 98, Da = m.STRING3 = 99, Ma = m.STRING4 = 100, Na = m.STRING5 = 101, Ea = m.STRING6 = 102, P = m.VALUE = 113, ia = m.KEY = 114, ea = m.OBJECT = 129, fa = m.ARRAY = 130;
+  var n = {}, U = n.LEFT_BRACE = 1, M = n.RIGHT_BRACE = 2, V = n.LEFT_BRACKET = 3, S = n.RIGHT_BRACKET = 4, W = n.COLON = 5, X = n.COMMA = 6, Y = n.TRUE = 7, Z = n.FALSE = 8, aa = n.NULL = 9, N = n.STRING = 10, ba = n.NUMBER = 11, L = n.START = 17, qa = n.STOP = 18, ra = n.TRUE1 = 33, sa = n.TRUE2 = 34, ta = n.TRUE3 = 35, ua = n.FALSE1 = 49, va = n.FALSE2 = 50, wa = n.FALSE3 = 51, xa = n.FALSE4 = 52, ya = n.NULL1 = 65, za = n.NULL2 = 66, Aa = n.NULL3 = 67, Ba = n.NUMBER1 = 81, ha = n.NUMBER3 = 83, 
+  H = n.STRING1 = 97, Ca = n.STRING2 = 98, Da = n.STRING3 = 99, Na = n.STRING4 = 100, Oa = n.STRING5 = 101, Ea = n.STRING6 = 102, P = n.VALUE = 113, ia = n.KEY = 114, ea = n.OBJECT = 129, fa = n.ARRAY = 130;
   I.toknam = function(c) {
-    for (var b = Object.keys(m), e = 0, C = b.length; e < C; e++) {
+    for (var b = Object.keys(n), e = 0, C = b.length; e < C; e++) {
       var J = b[e];
-      if (m[J] === c) {
+      if (n[J] === c) {
         return J;
       }
     }
@@ -201,7 +201,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
         } else {
           return this.charError(c, e);
         }
-      } else if (this.tState === Da || this.tState === Ma || this.tState === Na || this.tState === Ea) {
+      } else if (this.tState === Da || this.tState === Na || this.tState === Oa || this.tState === Ea) {
         if (b = c[e], 48 <= b && 64 > b || 64 < b && 70 >= b || 96 < b && 102 >= b) {
           this.unicode += String.fromCharCode(b), this.tState++ === Ea && (b = parseInt(this.unicode, 16), this.unicode = void 0, void 0 !== this.highSurrogate && 56320 <= b && 57344 > b ? (this.appendStringBuf(new Buffer(String.fromCharCode(this.highSurrogate, b))), this.highSurrogate = void 0) : void 0 === this.highSurrogate && 55296 <= b && 56320 > b ? this.highSurrogate = b : (void 0 !== this.highSurrogate && (this.appendStringBuf(new Buffer(String.fromCharCode(this.highSurrogate))), this.highSurrogate = 
           void 0), this.appendStringBuf(new Buffer(String.fromCharCode(b)))), this.tState = H);
@@ -378,9 +378,9 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
       return this.parseError(c, b);
     }
   };
-  I.C = m;
+  I.C = n;
   module.exports = I;
-  var La = require("stream");
+  var Ma = require("stream");
   exports = module.exports = da;
   da.through = da;
   var F;
@@ -417,38 +417,46 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
     function T(a) {
       return !c(a) && !(!a || "object" !== typeof a);
     }
-    function Q(a, d, n, l, z) {
+    function Q(a, d, m, l, z) {
       var u = d[1], O = d.slice(2);
       a = O.length ? a(u, O) : a(u);
-      void 0 !== a && null !== a && "" !== a && (e(a) ? n ? n.splice(l, 1, a) : (d.length = 0, d.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, d)) : c(a) ? a[0] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? n ? (a.shift(), a.unshift(l, 1), n.splice.apply(n, a)) : (d.length = 0, d.push.apply(d, a)) : c(a[0]) ? n ? (a.unshift(l, 1), n.splice.apply(n, a)) : (d.length = 0, d.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE), d.push.apply(d, a)) : n ? n.splice(l, 1, a) : (d.length = 0, d.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, 
+      void 0 !== a && null !== a && "" !== a && (e(a) ? m ? m.splice(l, 1, a) : (d.length = 0, d.push(HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, d)) : c(a) ? a[0] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? m ? (a.shift(), a.unshift(l, 1), m.splice.apply(m, a)) : (d.length = 0, d.push.apply(d, a)) : c(a[0]) ? m ? (a.unshift(l, 1), m.splice.apply(m, a)) : (d.length = 0, d.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE), d.push.apply(d, a)) : m ? m.splice(l, 1, a) : (d.length = 0, d.push(HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, 
       a)) : DEFINE_HTML2JSON__DEBUG && z("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(d) + "]"));
       return a;
     }
-    function R(a, d, n, l, z) {
+    function R(a, d, m, l, z) {
       if (c(l) && b(l[0])) {
         var u = l[0];
         l = l.slice(1);
         u = l.length ? d(u, l) : d(u);
       } else {
-        b(l) ? u = d(l) : DEFINE_HTML2JSON__DEBUG && z("Invalid InstructionAttr value! [" + n + "=" + l + "]");
+        b(l) ? u = d(l) : DEFINE_HTML2JSON__DEBUG && z("Invalid InstructionAttr value! [" + m + "=" + l + "]");
       }
-      return a && c(u) ? R(!0, d, n, u, z) : u;
+      return a && c(u) ? R(!0, d, m, u, z) : u;
     }
     function h(a) {
       return a.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
     }
-    function y(a, d, n) {
+    function y(a, d, m) {
       a = h("" + a);
       if (a.match('"')) {
         a = a.match("'") ? d ? "'" + a.split("&apos;").join("'").split("'").join("&apos;") + "'" : '"' + a.split("&quot;").join('"').split('"').join("&quot;") + '"' : "'" + a + "'";
-      } else if (n || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length) {
+      } else if (m || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length) {
         a = (d ? "'" : '"') + h(a) + (d ? "'" : '"');
       }
       return a;
     }
     function Fa(a) {
-      var d = a.indexOf("#"), n = a.indexOf(".");
-      if (d < n) {
+      var d = [];
+      a = a.split("");
+      for (var m = a.length, l; m;) {
+        l = a[--m], "A" <= l && "Z" >= l && (l = "-" + l.toLowerCase()), d[m] = l;
+      }
+      return d.join("");
+    }
+    function Ga(a) {
+      var d = a.indexOf("#"), m = a.indexOf(".");
+      if (d < m) {
         var l = a.split(".")[1];
         a = a.split(".")[0];
         if (0 < d) {
@@ -456,27 +464,27 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
           a = a.split("#")[0];
         }
       } else {
-        n < d && (z = a.split("#")[1], a = a.split("#")[0], 0 < n && (l = a.split(".")[1], a = a.split(".")[0]));
+        m < d && (z = a.split("#")[1], a = a.split("#")[0], 0 < m && (l = a.split(".")[1], a = a.split(".")[0]));
       }
       return [a, z, l];
     }
-    function Oa(a) {
-      "string" === typeof a && (a = Pa ? Buffer.from(a) : new Buffer(a));
+    function Pa(a) {
+      "string" === typeof a && (a = Qa ? Buffer.from(a) : new Buffer(a));
       this._parser.write(a);
     }
-    function Qa(a) {
+    function Ra(a) {
       a && this.write(a);
       this._parser._expect !== DEFINE_HTML2JSON__EXPECT.END_OF_DOCUMENT && this.emit("error", "Invalid html.json");
       this.queue(null);
       this._parser = this._parser._stream = null;
     }
-    function Ra(a) {
+    function Sa(a) {
       -1 < a.message.indexOf("at position") && (a.message = "Invalid JSON (" + a.message + ")");
       this._onerror(a.message);
       this._stream.emit("error", a);
     }
-    function Sa(a, d) {
-      function n() {
+    function Ta(a, d) {
+      function m() {
         const k = g._args.length ? g._onInstruction.call(g._stream, g._functionName, g._args) : g._onInstruction.call(g._stream, g._functionName);
         g._functionName = null;
         g._args.length = 0;
@@ -518,14 +526,14 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
             p = "--\x3e";
             break;
           default:
-            b(w) && (p = k ? "" : g._isXMLDocument || g._isXmlInHTML ? " />" : ">", (g._isXMLDocument || g._isXmlInHTML) && !k || Ga[w] && !g._endTagRequired ? g._omittedEndTagBefore = Ha[w] ? "" : w : (p += "</" + w + ">", g._omittedEndTagBefore = ""), O());
+            b(w) && (p = k ? "" : g._isXMLDocument || g._isXmlInHTML ? " />" : ">", (g._isXMLDocument || g._isXmlInHTML) && !k || Ha[w] && !g._endTagRequired ? g._omittedEndTagBefore = Ia[w] ? "" : w : (p += "</" + w + ">", g._omittedEndTagBefore = ""), O());
         }
       }
       function O() {
         g._endTagRequired = g._escapeForHTMLDisabled = g._isXmlInHTML = !1;
         for (let k = 0, w = v.length; k < w; ++k) {
           const r = v[k];
-          r === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || r === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? g._endTagRequired = !0 : b(r) && (ka[r] && (g._endTagRequired = !0), la[r] && (g._escapeForHTMLDisabled = !0), Ia[r] || DEFINE_HTML2JSON__USE_XML_NS && 0 < r.indexOf(":")) && (g._isXmlInHTML = !0);
+          r === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || r === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ? g._endTagRequired = !0 : b(r) && (ka[r] && (g._endTagRequired = !0), la[r] && (g._escapeForHTMLDisabled = !0), Ja[r] || DEFINE_HTML2JSON__USE_XML_NS && 0 < r.indexOf(":")) && (g._isXmlInHTML = !0);
         }
       }
       function D() {
@@ -546,7 +554,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 return;
               case S:
                 if (0 === this.stack.length) {
-                  d = n();
+                  d = m();
                   if (c(d)) {
                     ma = this._endTagRequired;
                     na = this._escapeForHTMLDisabled;
@@ -744,11 +752,11 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 f = DEFINE_HTML2JSON__EXPECT.TAG_NAME;
                 break;
               case DEFINE_HTML2JSON__PHASE.TAG_NAME:
-                d = Fa(d);
+                d = Ga(d);
                 a = d[1];
                 const k = d[2];
                 d = d[0];
-                p = ("p" !== this._omittedEndTagBefore || Ja[d] ? "" : "</p>") + "<" + d;
+                p = ("p" !== this._omittedEndTagBefore || Ka[d] ? "" : "</p>") + "<" + d;
                 this._omittedEndTagBefore = "";
                 a && (p += " id=" + y(a, this._useSingleQuot, this._quotAlways));
                 k && (p += " class=" + y(k, this._useSingleQuot, this._quotAlways));
@@ -784,7 +792,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
                 f = DEFINE_HTML2JSON__EXPECT.CSS_VALUE;
                 break;
               case DEFINE_HTML2JSON__PHASE.CSS_VALUE:
-                "" !== d && null !== d && (this._cssText += ";" + this._cssPropety + ":" + d);
+                "" !== d && null !== d && (this._cssText += ";" + Fa(this._cssPropety) + ":" + d);
                 f = DEFINE_HTML2JSON__EXPECT.CSS_PROPERTY;
                 break;
               case DEFINE_HTML2JSON__PHASE.END_OF_STYLES:
@@ -860,16 +868,16 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
         f === DEFINE_HTML2JSON__EXPECT.ERROR ? (this._onerror("Not html.json format!"), this._stream.emit("error", "Not html.json format!")) : (this._expect = f, p && this._stream.queue(p));
       }
     }
-    var ja = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, Ha = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0, track:!0, wbr:!0, command:!0, basefont:!0, frame:!0, isindex:!0, bgsound:!0}, Ga = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0}, ka = 
-    {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, Ia = {svg:!0, math:!0}, Ja = {address:!0, article:!0, aside:!0, blockquote:!0, canvas:!0, details:!0, div:!0, dl:!0, fieldset:!0, figcaption:!0, figure:!0, footer:!0, form:!0, h1:!0, h2:!0, h3:!0, h4:!0, h5:!0, h6:!0, header:!0, hgroup:!0, hr:!0, legend:!0, main:!0, menu:!0, nav:!0, noscript:!0, ol:!0, p:!0, pre:!0, section:!0, ul:!0, center:!0, dir:!0, noframes:!0, marquee:!0}, la = {script:!0, style:!0, plaintext:!0, xmp:!0}, 
-    ma = !1, na = !1, oa = !1;
-    F = function(a, d, n, l) {
+    var ja = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, Ia = {link:!0, meta:!0, br:!0, hr:!0, img:!0, input:!0, area:!0, base:!0, col:!0, embed:!0, keygen:!0, param:!0, track:!0, wbr:!0, command:!0, basefont:!0, frame:!0, isindex:!0, bgsound:!0}, Ha = {p:!0, dt:!0, dd:!0, li:!0, option:!0, thead:!0, tfoot:!0, th:!0, tr:!0, td:!0, rt:!0, rp:!0, optgroup:!0, caption:!0, colgroup:!0}, ka = 
+    {a:!0, audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, Ja = {xml:"http://www.w3.org/1999/xhtml", svg:"http://www.w3.org/2000/svg", math:"http://www.w3.org/1998/Math/MathML"}, Ka = {address:!0, article:!0, aside:!0, blockquote:!0, canvas:!0, details:!0, div:!0, dl:!0, fieldset:!0, figcaption:!0, figure:!0, footer:!0, form:!0, h1:!0, h2:!0, h3:!0, h4:!0, h5:!0, h6:!0, header:!0, hgroup:!0, hr:!0, legend:!0, main:!0, menu:!0, nav:!0, noscript:!0, ol:!0, p:!0, pre:!0, section:!0, ul:!0, 
+    center:!0, dir:!0, noframes:!0, marquee:!0}, la = {script:!0, style:!0, plaintext:!0, xmp:!0}, ma = !1, na = !1, oa = !1;
+    F = function(a, d, m, l) {
       function z(k, w, r, x, q) {
         function B() {
           g && (t += "</" + g + ">", g = "");
         }
-        var t = "", Ka = k[0], G = k[1], ca = 1, A = Ka;
-        switch(Ka) {
+        var t = "", La = k[0], G = k[1], ca = 1, A = La;
+        switch(La) {
           case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE:
             DEFINE_HTML2JSON__USE_XHTML && C(G) && (p = !0);
             t += G + u(k, !1, !1);
@@ -907,23 +915,23 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
             A = k[1], ca = 2;
           default:
             if (b(A)) {
-              A = Fa(A);
+              A = Ga(A);
               w = A[1];
               r = A[2];
               A = A[0];
-              "p" !== g || Ja[A] || (t += "</p>");
+              "p" !== g || Ka[A] || (t += "</p>");
               g = "";
               t += "<" + A;
               w && (t += " id=" + y(w, f, v));
               r && (t += " class=" + y(r, f, v));
               if (!p) {
-                var pa = p ? !0 : Ia[A] ? !0 : DEFINE_HTML2JSON__USE_XML_NS ? 0 < A.indexOf(":") : !1;
+                var pa = p ? !0 : Ja[A] ? !0 : DEFINE_HTML2JSON__USE_XML_NS ? 0 < A.indexOf(":") : !1;
                 pa = p = pa;
               }
               ca = k[ca];
               T(ca) && (t += " " + O(ca));
               t = (k = u(k, x || ka[A], q || la[A])) ? t + (">" + k) : t + (p ? "/>" : ">");
-              p && !k || Ga[A] && !x ? g = Ha[A] ? "" : A : (t += "</" + A + ">", g = "");
+              p && !k || Ha[A] && !x ? g = Ia[A] ? "" : A : (t += "</" + A + ">", g = "");
               pa && (p = !1);
             } else {
               DEFINE_HTML2JSON__DEBUG && D("Not html.json! [" + k + "]");
@@ -952,7 +960,7 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
               x = void 0;
               var B = q, t = "";
               for (x in B) {
-                q = B[x], "0px" === q && (q = 0), t += ";" + x + ":" + h("" + q);
+                q = B[x], "0px" === q && (q = 0), t += ";" + Fa(x) + ":" + h("" + q);
               }
               q = t.substr(1);
               if (!q) {
@@ -964,10 +972,10 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
         }
         return w.substr(1);
       }
-      var D = "function" === typeof n ? n : function(k) {
+      var D = "function" === typeof m ? m : function(k) {
       };
-      n = n && "object" === typeof n ? n : l || {};
-      var v = !!n.quotAlways, f = !!n.useSingleQuot, K = n.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX, g, p = oa;
+      m = m && "object" === typeof m ? m : l || {};
+      var v = !!m.quotAlways, f = !!m.useSingleQuot, K = m.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX, g, p = oa;
       if (c(a)) {
         return J(a) === HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION && (a = [HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, a]), z(a, null, 0, ma || !1, na || !1);
       }
@@ -975,23 +983,23 @@ ATTRIBUTE_VALUE:DEFINE_HTML2JSON__PHASE.ATTRIBUTE_VALUE, STYLES_START:DEFINE_HTM
     };
     DEFINE_HTML2JSON__EXPORT_JSON2HTML && (module.exports = F, F.DOCUMENT_NODE = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE, F.DOCUMENT_FRAGMENT_NODE = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, F.ELEMENT_NODE = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE, F.TEXT_NODE = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, F.CDATA_SECTION = HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION, F.COMMENT_NODE = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE, F.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, 
     F.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, F.PROCESSING_INSTRUCTION = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION);
-    const Pa = Buffer.from && Buffer.from !== Uint8Array.from;
-    module.exports = function(a, d, n) {
-      const l = new I(), z = da(Oa, Qa);
-      n = d && "object" === typeof d ? d : n || {};
+    const Qa = Buffer.from && Buffer.from !== Uint8Array.from;
+    module.exports = function(a, d, m) {
+      const l = new I(), z = da(Pa, Ra);
+      m = d && "object" === typeof d ? d : m || {};
       z._parser = l;
       l._createValue = l.onToken;
-      l.onToken = Sa;
-      l.onError = Ra;
+      l.onToken = Ta;
+      l.onError = Sa;
       l._expect = DEFINE_HTML2JSON__EXPECT.NODE_START;
       l._tree = [];
       l._args = [];
       l._onInstruction = a;
       l._onerror = "function" === typeof d ? d : function(u) {
       };
-      l._quotAlways = !!n.quotAlways;
-      l._useSingleQuot = !!n.useSingleQuot;
-      l._attrPrefix = n.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
+      l._quotAlways = !!m.quotAlways;
+      l._useSingleQuot = !!m.useSingleQuot;
+      l._attrPrefix = m.instructionAttrPrefix || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
       l._cssText = "";
       return l._stream = z;
     };

@@ -182,7 +182,7 @@ p_json2html = function( json, onInstruction, opt_onError, opt_options ){
     function isXML( tagName ){
         if( isXmlInHTML ){
             return true;
-        } else if( m_IS_XML_ROOT[ tagName ] ){
+        } else if( m_TAGNAME_TO_NAMESPACE[ tagName ] ){
             return true;
         };
         return m_isNamespacedTag( tagName ); // v: vml

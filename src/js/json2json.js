@@ -220,7 +220,7 @@ if( DEFINE_HTML2JSON__EXPORT_JSON2JSON ){
                             let content;
 
                             if( isStaticWebPage && options[ 'outputStaticPagesAsHTML' ] ){
-                                content = p_json2html( json, opt_onInstruction, opt_onError, opt_options );
+                                content = p_json2html( /** @type {!Array} */ (json), opt_onInstruction, opt_onError, opt_options );
                                 // .html <= .html.json
                                 file.extname = '.' + file.stem.split( '.' ).pop();
                                 file.stem    = file.stem.substr( 0, file.stem.length - file.extname.length );

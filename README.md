@@ -8,13 +8,15 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 2. json から html への変換時に処理を追加できる
    * HTML を予め json 化しておけば、実行環境に HTML パーサーが不要になる
      * Web サーバの動的コンテンツ
-     * オフラインドキュメントのデータ形式
-     * PJAX のデータ形式
+     * オフラインドキュメントのコンテンツデータ
+     * PJAX のコンテンツデータ
+     * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ, Eインク端末のブラウザも
 3. TODO html.json DOM(予定)
 4. TODO `<? include ./sidebar.json ?>`
 5. TODO sort attrs
 6. TODO ソースコード(HTML)の実際に沿った空白除去ルールの決定
 7. TODO [jsonml / Add support for Processing instructions](https://github.com/mckamey/jsonml/pull/14)
+8. TODO json2dom
 
 ## 目次
 
