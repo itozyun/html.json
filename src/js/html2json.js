@@ -114,7 +114,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         className = '.' + attrValue;
                         --numAttrs;
                         continue;
-                    } else if( attrName.indexOf( attrPrefix ) === 0 ){
+                    } else if( attrName.startsWith( attrPrefix ) ){
                         functionNameAndArgs = codeToObject( attrValue );
 
                         if( functionNameAndArgs.args ){
@@ -237,7 +237,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                 break;
             case 8 :
                 // console.log( textContent )
-                if( textContent.indexOf( '?' ) === 0 && textContent.charAt( textContent.length - 1 ) === '?' ){
+                if( textContent.startsWith( '?' ) && textContent.charAt( textContent.length - 1 ) === '?' ){
                     functionNameAndArgs = codeToObject( extractStringBetween( textContent, '?', '?', true ) );
 
                     currentJSONNode = [ HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
@@ -246,7 +246,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         currentJSONNode.push.apply( currentJSONNode, functionNameAndArgs.args );
                     };
                     parentJSONNode.push( currentJSONNode );
-                } else if( textContent.indexOf( '[if' ) === 0 && 0 < textContent.indexOf( '<![endif]' ) ){
+                } else if( textContent.startsWith( '[if' ) && 0 < textContent.indexOf( '<![endif]' ) ){
                     // HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
                     returnByNodeList     = true;
                     parentTreeIsInPreTag = insidePreTag;
@@ -261,7 +261,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                             : currentJSONNode.push( childNodeList );  // conditional, unescapedText
                         parentJSONNode.push( currentJSONNode );
                     };
-                } else if( textContent.indexOf( '[if' ) === 0 && 0 < textContent.indexOf( '><!' ) ){
+                } else if( textContent.startsWith( '[if' ) && 0 < textContent.indexOf( '><!' ) ){
                     // HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
                     // 8:"[if !(IE)]><!"
                     currentJSONNode = [ HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, getIECondition( textContent ) ];
