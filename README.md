@@ -7,10 +7,10 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 1. html を json で表現する(変換する)
 2. json から html への変換時に処理を追加できる
    * HTML を予め json 化しておけば、実行環境に HTML パーサーが不要になる
-     * Web サーバの動的コンテンツ
+     * Web サーバ側での動的生成のソース
      * オフラインドキュメントのコンテンツデータ
      * PJAX のコンテンツデータ
-     * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ, Eインク端末のブラウザも
+     * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ
 3. TODO html.json DOM(予定)
 4. TODO `<? include ./sidebar.json ?>`
 5. TODO sort attrs
@@ -41,9 +41,17 @@ heppy-dom に依存する。
 
 ### `trimWhitespace`
 
-1. `trimWhitespace:"agressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する、但し次の条件から外れる場合は、其々に一つの半角スペースを残す
-   1. テキストノードの先頭が改行、かつ、後ろが改行と空白文字の場合、
-2. 空白文字を保護したい場合 `\u0020` を使う
+1. `removeLineBreaksBetweenFullWidth` オプションが `true` の場合、全角文字の間の改行文字を削除する
+2. タブ文字を半角スペースに置換
+3. 連続する改行を1つの改行へ
+4. テキストノードの最後の連続する改行を削除
+5. `trimWhitespace:"agressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
+   * 但し次のいずれかを満たす場合、前後に一つの半角スペースを残す
+     1. テキストノードの先頭が改行ではない
+     2. 後ろが改行と空白文字ではない
+6. 改行を半角スペースに置換
+7. 連続する半角スペースを1つ半角スペースへ
+8. 半角スペースを保護したい場合 `\u0020` を使う
 
 #### `trimWhitespace:"agressive"` でテキストノードの前後の空白文字をすべて削除する
 
@@ -53,10 +61,18 @@ heppy-dom に依存する。
     <div>
 ~~~
 
+~~~json
+[ [ "div" ], "html.json", [ "div" ] ]
+~~~
+
 #### `trimWhitespace:"agressive"` でもテキストノードの前後の空白文字を1つだけ残す
 
 ~~~html
 <b>1</b> / <b>10</b>
+~~~
+
+~~~json
+[ [ "b", 1 ], " / ", [ "b", 10 ] ]
 ~~~
 
 ### 1.1. ProcessingInstruction

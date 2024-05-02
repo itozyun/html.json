@@ -136,9 +136,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         if( !removeWhitespace( textNode.data ) ){
                             textNode.remove();
                         } else {
-                            textContent = textNode.data;
-                            while( textContent.charAt( 0 ) === '\n' ){ textContent = textContent.substr( 1 ); };
-                            textNode.data = textContent;
+                            textNode.data = trimFirstChar( textNode.data, '\n' );
                             break;
                         };
                     };
@@ -146,9 +144,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         if( !removeWhitespace( textNode.data ) ){
                             textNode.remove();
                         } else {
-                            textContent = textNode.data;
-                            while( textContent.charAt( textContent.length - 1 ) === '\n' ){ textContent = textContent.substr( 0, textContent.length - 1 ); };
-                            textNode.data = textContent;
+                            textNode.data = trimLastChar( textNode.data, '\n' );
                             break;
                         };
                     };
@@ -176,37 +172,22 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
                         // タブは一つの半角スペースに
                         textContent = textContent.split( '\t' ).join( ' ' );
 
-                        // 2つ以上の改行を1つの半角スペースへ
+                        // 2つ以上の改行を1つの改行へ
                         while( 0 <= textContent.indexOf( '\n\n' ) ){
                             textContent = textContent.split( '\n\n' ).join( '\n' );
                         };
 
-                        if( isTrimAgressive ){
-                            var firstChar = textContent.charAt( 0 );
-                            // <b>1</b> / <b>3</b>
-                            //         ^^^ / の両隣のスペースを削除するか？は改行の有無で判断する
-                            var trimWhitespaceAggressively =
-                                    // 先頭に改行がある場合
-                                    firstChar === '\n' &&
-                                    // 最期が改行+空白文字の場合 後方の全ての空白文字を削除    
-                                    /\n[ ]*$/.test( textContent );
-                            // <p>XXXXXXXXXXX
-                            // <p>XXXXXXXXXXX
-                            if(
-                                firstChar !== '\n' && firstChar !== ' ' &&
-                                textContent.charAt( textContent.length - 1 ) === '\n'
-                            ){
-                                trimWhitespaceAggressively = true;
-                            };
-                        };
+                        // 最後の改行を削除
+                        textContent = trimLastChar( textContent, '\n' );
 
-                        if( !trimWhitespaceAggressively ){
-                            if(
-                                textContent.charAt( textContent.length - 2 ) !== ' ' &&
-                                textContent.charAt( textContent.length - 1 ) === '\n'
-                            ){
-                                textContent = textContent.substr( 0, textContent.length - 1 );
-                            };
+                        if( isTrimAgressive ){
+                            var trimWhitespaceAggressively =
+                                // <b>1</b> / <b>3</b>
+                                //         ^^^ / の両隣のスペースを削除するか？は改行の有無で判断する
+                                    // 先頭が改行、かつ
+                                    textContent.charAt( 0 ) === '\n' &&
+                                    // 最後が改行+空白文字の場合  
+                                    /\n[ ]*$/.test( textContent );
                         };
 
                         // 改行文字を一つの半角スペースに
@@ -393,7 +374,26 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
      * @return {string} 
      */
     function trimChar( string, chr ){
+        return trimLastChar( trimFirstChar( string, chr ), chr );
+    };
+
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
+    function trimFirstChar( string, chr ){
         while( string.charAt( 0 ) === chr ){ string = string.substr( 1 ); };
+
+        return string;
+    };
+
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
+    function trimLastChar( string, chr ){
         while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };
 
         return string;
