@@ -1,28 +1,40 @@
 /**
  * @param {!Array} json
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} opt_onInstruction
+ * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)=} opt_onInstruction
+ * @param {!function(*)|!Object=} opt_onReachElement
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
  */
-p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
+p_json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
-
-    var onInstruction = typeof opt_onInstruction === 'function' ? opt_onInstruction : function( funcName, args ){};
-
-    var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
-
-    var options           = m_isObject( opt_onError ) ? opt_onError : opt_options || {},
-        keepCDATASections = options[ 'keepCDATASections'     ] !== false,
-        keepComments      = options[ 'keepComments'          ] !== false,
-        attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
+    /** @const */
+    var onInstruction     = typeof opt_onInstruction === 'function' ? opt_onInstruction : function( funcName, args ){};
+    /** @const */
+    var onReachElement    = typeof opt_onReachElement === 'function' ? opt_onReachElement : function( elementLike ){};
+    /** @const */
+    var errorHandler      = typeof opt_onError === 'function' ? opt_onError : function( error ){};
+    /** @const */
+    var options           = m_isObject( opt_onInstruction )
+                              ? opt_onInstruction
+                          : m_isObject( opt_onReachElement )
+                              ? opt_onReachElement
+                          : m_isObject( opt_onError )
+                              ? opt_onError
+                              : opt_options || {};
+    /** @const */
+    var keepCDATASections = options[ 'keepCDATASections'     ] !== false;
+    /** @const */
+    var keepComments      = options[ 'keepComments'          ] !== false;
+    /** @const */
+    var attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
 
     var isTreeUpdated   = false,
         isStaticWebPage = true;
 
     if( m_isArray( json ) ){
-        walkNode( json, null, 0 );
+        walkNode( json, null, 0, [] );
         if( isTreeUpdated ){
             m_mergeTextNodes( json );
         };
@@ -36,8 +48,10 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
      * @param {!Array} currentJSONNode 
      * @param {!Array|null} parentJSONNode 
      * @param {number} myIndex
+     * @param {!Array.<!Array>} ancestorJSONNodes 
+     * @return {number} Node Increase/Decrease
      */
-    function walkNode( currentJSONNode, parentJSONNode, myIndex ){
+    function walkNode( currentJSONNode, parentJSONNode, myIndex, ancestorJSONNodes ){
         var arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
             attrIndex = 1, tagName = arg0,
@@ -45,10 +59,10 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
 
         switch( arg0 ){
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
-                walkChildNodes( currentJSONNode );
+                walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                walkChildNodes( currentJSONNode );
+                walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
                 break;
@@ -65,10 +79,10 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                 };
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
-                walkChildNodes( currentJSONNode );
+                walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
-                walkChildNodes( currentJSONNode );
+                walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
             case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
                 result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
@@ -104,56 +118,63 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                         attrs = currentJSONNode[ attrIndex ];
                         // attr
                         if( m_isAttributes( attrs ) ){
-                            walkAttributes( attrs );
-                            if( Object.keys( attrs ).length === 0 ){
+                            if( walkAttributes( attrs ) === 0 ){
                                 currentJSONNode.splice( attrIndex, 1 );
                             };
                         };
                         // childNodes
-                        walkChildNodes( currentJSONNode );
+                        walkChildNodes( currentJSONNode, ancestorJSONNodes );
                     };
                 } else if( DEFINE_HTML2JSON__DEBUG ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
                 };
         };
+        return 0;
     };
 
     /**
      * 
      * @param {!Array} currentJSONNode 
+     * @param {!Array.<!Array>} ancestorJSONNodes 
      */
-    function walkChildNodes( currentJSONNode ){
-        var i = m_getChildNodeStartIndex( currentJSONNode ), childNode;
+    function walkChildNodes( currentJSONNode, ancestorJSONNodes ){
+        var i = m_getChildNodeStartIndex( currentJSONNode ), childNode, nodeIncreaseOrDecrease;
+
+        ancestorJSONNodes.push( currentJSONNode );
 
         for( ; i < currentJSONNode.length; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
             childNode = currentJSONNode[ i ];
 
             if( m_isStringOrNumber( childNode ) ){
-
+                // TEXT_NODE
             } else if( m_isArray( childNode ) ){
-                if( walkNode( childNode, currentJSONNode, i ) === REMOVED ){
-                    --i; // node replaced
+                nodeIncreaseOrDecrease = walkNode( childNode, currentJSONNode, i, ancestorJSONNodes );
+                if( nodeIncreaseOrDecrease ){
+                    i += nodeIncreaseOrDecrease; // Node Increase/Decrease
                 };
             } else if( DEFINE_HTML2JSON__DEBUG ){
                 errorHandler( 'Invalid html.json! [' + childNode + ']' );
             };
         };
+
+        ancestorJSONNodes.pop();
     };
 
     /**
-     * @param {!Object} attrs 
+     * @param {!Object} attrs
+     * @return {number} = attributes.length
      */
     function walkAttributes( attrs ){
-        var name, originalName, value, isInstruction;
+        var numAttributes = 0, name, originalName, value, isInstruction;
     
         for( name in attrs ){
             originalName = name;
             value = attrs[ name ];
             isInstruction = m_isInstructionAttr( attrPrefix, name );
-            isInstruction && ( name = name.substr( attrPrefix.length ) );
-            name === 'className' && ( name = 'class' );
 
             if( isInstruction ){
+                name = name.substr( attrPrefix.length );
+                name === 'className' && ( name = 'class' );
                 value = m_executeInstructionAttr( false, onInstruction, name, value, errorHandler );
 
                 if( value !== undefined ){
@@ -162,6 +183,7 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
                         if( m_isString( value[ 0 ] ) ){
                             attrs[ originalName ] = value;
                             isStaticWebPage = false;
+                            ++numAttributes;
                         } else if( DEFINE_HTML2JSON__DEBUG ){
                             errorHandler( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
                         };
@@ -169,10 +191,14 @@ p_json2json = function( json, opt_onInstruction, opt_onError, opt_options ){
 
                     } else if( value !== null ){
                         attrs[ name ] = value;
+                        ++numAttributes;
                     };
                 } else {
                     isStaticWebPage = false;
+                    ++numAttributes;
                 };
+            } else {
+                ++numAttributes;
             };
         };
     };

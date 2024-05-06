@@ -119,7 +119,7 @@ heppy-dom に依存する。
 動的コンテンツの内、決定した値を `onInstruction` で埋め込むことが出来る。
 
 ~~~js
-json2json( json, onInstruction, opt_onError );
+json2json( json, onInstruction, opt_onReachElement, opt_onError, opt_options );
 
 function onInstruction( methodName, args, currentHtmlJson ){
     return undefined; // null or '' or string or number or html.json
@@ -145,6 +145,17 @@ json2html と微妙に異なる点に注意
 * 戻り値が配列の場合、`InstructionAttr` のまま(json2html では必ず属性値を返すこと)
 * これ以外は属性値になる
 
+### `opt_onReachElement`
+
+* Element に到達したときにコールバックされる
+* 引数は DOM ライクに要素を操作できるオブジェクト
+* 但し、文書ツリーの操作が出来るのは次に限る
+  * 現在の Element の属性の操作
+  * 現在の Element の子孫の操作
+  * 現在の Element の直前への挿入
+  * 現在の Element の直後への挿入
+  * 現在の Element を Element で wrap する
+
 ## 3. json2html
 
 既に JSON パーサーがある環境では、json2html を用意するだけで、json データから html を生成できる。
@@ -165,8 +176,8 @@ json2json と微妙に異なる点に注意
 
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
-* strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, [ 'P', "Hello, world!" ]]`, `[2, 'p', ...`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
+* strict な html.json `[json2html.DOCUMENT_FRAGMENT_NODE, [ 'P', "Hello, world!" ]]`, `[2, 'p', ...`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* 戻り値が `[json2html.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
 
 #### `InstructionAttr`
 
