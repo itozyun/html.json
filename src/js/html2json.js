@@ -1,10 +1,10 @@
 // var JSDOM = require( 'jsdom' ).JSDOM,
 var happyDOMWindow = require( 'happy-dom' ).Window;
 
-var TRIM_LINEBREAKS = { script : !0, style : !0, textarea : !0 };
-    
-var returnByNodeList     = false;
-var parentTreeIsInPreTag = false;
+const TRIM_LINEBREAKS = { script : !0, style : !0, textarea : !0 };
+
+let returnByNodeList     = false;
+let parentTreeIsInPreTag = false;
 
 // https://github.com/capricorn86/happy-dom/wiki/Settings
 // https://github.com/capricorn86/happy-dom/blob/master/packages/happy-dom/src/window/IHappyDOMOptions.ts
@@ -17,8 +17,8 @@ var HappyDOMOptions = {
         'disableComputedStyleRendering' : false,
         'disableErrorCapturing'         : false,
         'enableFileSystemHttpRequests'  : false
-     } */
- }
+    } */
+};
 
 /**
  * @param {string} htmlString
@@ -26,11 +26,13 @@ var HappyDOMOptions = {
  * @param {!Object=} opt_options
  */
 p_html2json = function( htmlString, opt_selector, opt_options ){
-    var json              = [],
-        selector          = typeof opt_selector === 'string' ? opt_selector : '',
-        
+    let json              = [],
+        selector          = typeof opt_selector === 'string' ? opt_selector : '';
+
+    const
         options           = opt_selector && typeof opt_selector === 'object' ? opt_selector : opt_options || {},
-        trimWhitespace    = options[ 'trimWhitespace' ],
+        trimWhitespace    = [ 'none', false ].indexOf( options[ 'trimWhitespace' ] ) === -1,
+        isTrimAgressive   = options[ 'trimWhitespace' ] === 'agressive',
         keepCDATASections = !!options[ 'keepCDATASections' ],
         keepComments      = !!options[ 'keepComments' ],
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
@@ -38,16 +40,13 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
         argClosingBracket = argumentBrackets.substr( argumentBrackets.length ),
         attrPrefix        = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX,
 
-        isTrimAgressive   = trimWhitespace === 'agressive',
-
         window            = new happyDOMWindow( HappyDOMOptions ),
         document          = window.document,
 
         removeLineBreaksBetweenFullWidth
-                          = !!options[ 'removeLineBreaksBetweenFullWidth' ],
-        currentVNode, targetNodes, i = 0, l;
+                          = !!options[ 'removeLineBreaksBetweenFullWidth' ];
 
-    trimWhitespace = trimWhitespace !== 'none' && trimWhitespace !== false;
+    let currentVNode, targetNodes, i = 0, l;
 
     // https://github.com/capricorn86/happy-dom-performance-test/blob/3f1fd6c5d814e66c4a27ce21ed14c56799fb2de0/lib/happy-dom.test.js#L15
     document.write( htmlString );
