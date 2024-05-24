@@ -64,7 +64,7 @@ test('escape', (t) => {
 });
 
 test('conditional-comment', (t) => {
-    t.deepEqual( html2json('<!--[if IE lte 9]>ie &lt;= 9<![endif]-->'), [13, 'if IE lte 9', 'ie <= 9'] );
+    t.deepEqual( html2json('<!--[if lte IE 9]>ie &lt;= 9<![endif]-->'), [13, 'if lte IE 9', 'ie <= 9'] );
 
     t.deepEqual( html2json('<!--[if !IE]><!--><p>Hello, Not IE</p><!--<![endif]-->'), [14, 'if !IE', ['p', 'Hello, Not IE']] );
 });

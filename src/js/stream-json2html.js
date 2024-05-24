@@ -622,7 +622,7 @@ function onToken( token, value ){
                     queue = value + ']>';
                     expect = HTML2JSON__EXPECT.CHILD_NODES_START;
                     break;
-            /** <!--[if IE]><!--> */
+            /** <!--[if !IE]><!--> */
                 case HTML2JSON__PHASE.COMMENT_SHOW_LOWER_START :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
                     expect = HTML2JSON__EXPECT.COMMENT_SHOW_LOWER_FORMURA;
