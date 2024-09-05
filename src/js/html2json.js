@@ -76,7 +76,7 @@ p_html2json = function( htmlString, opt_selector, opt_options ){
             };
         };
     };
-    m_mergeTextNodes( json );
+    m_normalizeTextNodes( json );
     return json;
 
     /**

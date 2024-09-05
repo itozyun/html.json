@@ -356,7 +356,7 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
  * 連続する Text の結合
  * @param {!Array} htmlJsonNode 
  */
-function m_mergeTextNodes( htmlJsonNode ){
+function m_normalizeTextNodes( htmlJsonNode ){
     var startIndex = m_getChildNodeStartIndex( htmlJsonNode );
 
     var node, nodeType, text = '', i;
@@ -379,7 +379,7 @@ function m_mergeTextNodes( htmlJsonNode ){
                 };
                 ++i;
                 if( nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ){
-                    m_mergeTextNodes( node );
+                    m_normalizeTextNodes( node );
                 };
             };
         };

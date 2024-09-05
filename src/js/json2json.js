@@ -36,7 +36,7 @@ p_json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError
     if( m_isArray( json ) ){
         walkNode( json, null, 0, [] );
         if( isTreeUpdated ){
-            m_mergeTextNodes( json );
+            m_normalizeTextNodes( json );
         };
         return isStaticWebPage;
     } else if( DEFINE_HTML2JSON__DEBUG ){
