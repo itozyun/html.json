@@ -24,7 +24,6 @@
     "ssr"
   ],
   "dependencies": {
-    "happy-dom": "^12.2.1",
     "plugin-error": "^2.0.1",
     "through2": "^4.0.2"
   },

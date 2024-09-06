@@ -1,35 +1,27 @@
 const gulp = require( 'gulp' );
 
-let gulpDPZ, ClosureCompiler;
+let ClosureCompiler;
 
-let isDebug = true;
+ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
+
+let isDebug = false;
 let isPrettify = true;
 
 gulp.task(
     'dist',
     gulp.series(
-        function(){
-            gulpDPZ         = gulpDPZ         || require( 'gulp-diamond-princess-zoning' );
+        /* function(){
             ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
 
             return gulp.src(
                     [
-                        './src/js/1_global.js',
-                        './src/js/2_packageGlobal.js',
-                        './src/js/3_moduleGlobal.js',
-                        './src/js/html2json.js'
+                        './src/closure-primitives/base.js', './src/js/** /*.js'
                     ]
-                ).pipe(
-                    gulpDPZ(
-                        {
-                            basePath          : [
-                                './src' // not ./src/js
-                            ]
-                        }
-                    )
                 ).pipe(
                     ClosureCompiler(
                         {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:html2json.gulp',
                             externs           : [
                                 //'./src/js-externs/console.js',
                                 './node_modules/@externs/nodejs/v8/nodejs.js',
@@ -47,10 +39,10 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'DEFINE_HTML2JSON__DEBUG=true',
-                                'DEFINE_HTML2JSON__GULP_PULGIN=true'
+                                'goog.DEBUG=true'
                             ],
-                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            env               : 'CUSTOM',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
@@ -61,33 +53,19 @@ gulp.task(
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
-        },
+        }, */
         function(){
             return gulp.src(
                     [
-                        './src/js/1_global.js',
-                        './src/js/2_packageGlobal.js',
-                        './src/js/3_moduleGlobal.js',
-                        './src/js/json2html.js',
-                        './src/js/json2json.js'
+                        './src/closure-primitives/base.js', './src/js/**/*.js'
                     ]
-                ).pipe(
-                    gulpDPZ(
-                        {
-                            packageGlobalArgs : [
-                                isDebug ? '' : 'parseInt',
-                                isDebug ? '' : 'parseInt'
-                            ],
-                            basePath          : [
-                                './src' // not ./src/js
-                            ]
-                        }
-                    )
                 ).pipe(
                     ClosureCompiler(
                         {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:json2json.gulp',
                             externs           : [
-                                './src/js-externs/console.js',
+                                // './src/js-externs/console.js',
                                // './node_modules/@externs/nodejs/v8/nodejs.js',
                                // './node_modules/@externs/nodejs/v8/global.js',
                                 //'./node_modules/@externs/nodejs/v8/fs.js',
@@ -103,11 +81,9 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'DEFINE_HTML2JSON__DEBUG=true',
-                                'DEFINE_HTML2JSON__EXPORT_JSON2JSON=true',
-                                'DEFINE_HTML2JSON__GULP_PULGIN=true'
+                                'goog.DEBUG=true'
                             ],
-                            env               : 'CUSTOM',
+                            // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
@@ -123,35 +99,33 @@ gulp.task(
         function(){
             return gulp.src(
                     [
-                        './src/js/1_global.js',
-                        './src/js/2_packageGlobal.js',
-                        './src/js/3_moduleGlobal.js',
-                        './src/js/json2html.js'
+                        './src/closure-primitives/base.js', './src/js/**/*.js'
                     ]
-                ).pipe(
-                    gulpDPZ(
-                        {
-                            packageGlobalArgs : [
-                                isDebug ? '' : 'undefined',
-                                isDebug ? '' : 'void 0'
-                            ],
-                            basePath          : [
-                                './src' // not ./src/js
-                            ]
-                        }
-                    )
                 ).pipe(
                     ClosureCompiler(
                         {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:json2html.gulp',
                             externs           : [
+                                // './src/js-externs/console.js',
+                               // './node_modules/@externs/nodejs/v8/nodejs.js',
+                               // './node_modules/@externs/nodejs/v8/global.js',
+                                //'./node_modules/@externs/nodejs/v8/fs.js',
+                               // './node_modules/@externs/nodejs/v8/http.js',
+                               // './node_modules/@externs/nodejs/v8/https.js',
+                               // './node_modules/@externs/nodejs/v8/net.js',
+                                //'./node_modules/@externs/nodejs/v8/events.js',
+                                './node_modules/@externs/nodejs/v8/global/buffer.js',
+                                //'./node_modules/@externs/nodejs/v8/stream.js',
+                                //'./node_modules/@externs/nodejs/v8/zlib.js',
+                                //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'DEFINE_HTML2JSON__DEBUG=true',
-                                'DEFINE_HTML2JSON__EXPORT_JSON2HTML=true'
+                                'goog.DEBUG=true'
                             ],
-                            env               : 'CUSTOM',
+                            // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
@@ -163,36 +137,20 @@ gulp.task(
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
-        },
+        } /*,
         function(){
             return gulp.src(
                     [
+                        './src/closure-primitives/base.js',
                         './node_modules/jsonparse/jsonparse.js',
                         './node_modules/through/index.js',
-
-                        './src/js/1_global.js',
-                        './src/js/2_packageGlobal.js',
-                        './src/js/3_moduleGlobal.js',
-                        './src/js/json2html.js',
-                        './src/js/stream-json2html.js'
+                        './src/js/** /*.js'
                     ]
-                ).pipe(
-                    gulpDPZ(
-                        {
-                            packageGlobalArgs : [
-                                isDebug ? '' : 'require,String,Buffer,JSON,undefined',
-                                isDebug ? '' : 'require,String,Buffer,JSON,void 0'
-                            ],
-                            basePath          : [
-                                './src', // not ./src/js
-                                './node_modules/jsonparse',
-                                './node_modules/through/'
-                            ]
-                        }
-                    )
                 ).pipe(
                     ClosureCompiler(
                         {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:htmljson.streamjson2html.gulp',
                             externs           : [
                                 './src/js-externs/console.js',
                                 './node_modules/@externs/nodejs/v8/nodejs.js',
@@ -210,21 +168,29 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'DEFINE_HTML2JSON__DEBUG=true'
+                                'goog.DEBUG=true'
                             ],
                             env               : 'CUSTOM',
-                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
-                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
+                            compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
+                            output_wrapper    : isDebug ? '(function(require,String,Buffer,JSON,undefined){\n%output%\n})(require,String,Buffer,JSON,void 0);' : '%output%'
+                        }
+                    )
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            compilation_level : isDebug ? 'WHITESPACE_ONLY' : 'SIMPLE_OPTIMIZATIONS',
+                            formatting        : isPrettify ? 'PRETTY_PRINT' : 'SINGLE_QUOTES',
+                            warning_level     : 'QUIET',
                             js_output_file    : 'stream-json2html.js'
                         }
                     )
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
-        }
+        } */
     )
 );
 

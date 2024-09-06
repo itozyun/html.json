@@ -1,3 +1,11 @@
+goog.provide( 'htmljson.streamjson2html' );
+
+goog.require( 'htmljson.NODE_TYPE' );
+goog.require( 'htmljson.PHASE' );
+goog.require( 'htmljson.EXPECT' );
+goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
+goog.require( 'htmljson.DEFINE.USE_XHTML' );
+
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js
 
 // const Parser = require( 'jsonparse' );
@@ -22,28 +30,28 @@ module.exports = function( onInstruction, opt_onError, opt_options ){
     parser._createValue   = parser.onToken;
     parser.onToken        = onToken;
     parser.onError        = onError;
-    parser._expect        = HTML2JSON__EXPECT.NODE_START;
+    parser._expect        = htmljson.EXPECT.NODE_START;
     parser._tree          = [];
     parser._args          = [];
     parser._onInstruction = onInstruction;
     parser._onerror       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
     parser._quotAlways    = !!options[ 'quotAlways' ],
     parser._useSingleQuot = !!options[ 'useSingleQuot' ],
-    parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || DEFINE_HTML2JSON__INSTRUCTION_ATTR_PREFIX;
+    parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
     parser._cssText       = '';
 
     return parser._stream = stream;
 };
 
-module.exports.DOCUMENT_NODE                  = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE;
-module.exports.DOCUMENT_FRAGMENT_NODE         = HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-module.exports.ELEMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
-module.exports.TEXT_NODE                      = HTML_DOT_JSON__NODE_TYPE.TEXT_NODE;
-module.exports.CDATA_SECTION                  = HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION;
-module.exports.COMMENT_NODE                   = HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE;
-module.exports.CONDITIONAL_COMMENT_HIDE_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
-module.exports.CONDITIONAL_COMMENT_SHOW_LOWER = HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
-module.exports.PROCESSING_INSTRUCTION         = HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION;
+module.exports.DOCUMENT_NODE                  = htmljson.NODE_TYPE.DOCUMENT_NODE;
+module.exports.DOCUMENT_FRAGMENT_NODE         = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+module.exports.ELEMENT_NODE                   = htmljson.NODE_TYPE.ELEMENT_NODE;
+module.exports.TEXT_NODE                      = htmljson.NODE_TYPE.TEXT_NODE;
+module.exports.CDATA_SECTION                  = htmljson.NODE_TYPE.CDATA_SECTION;
+module.exports.COMMENT_NODE                   = htmljson.NODE_TYPE.COMMENT_NODE;
+module.exports.CONDITIONAL_COMMENT_HIDE_LOWER = htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
+module.exports.CONDITIONAL_COMMENT_SHOW_LOWER = htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
+module.exports.PROCESSING_INSTRUCTION         = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
 
 /**
  * @this {!Through}
@@ -64,7 +72,7 @@ function endHandler( data ){
     if( data ){
         this.write( data );
     };
-    if( this._parser._expect !== HTML2JSON__EXPECT.END_OF_DOCUMENT ){
+    if( this._parser._expect !== htmljson.EXPECT.END_OF_DOCUMENT ){
         this.emit( 'error', 'Invalid html.json' );
     };
 
@@ -144,25 +152,25 @@ function onToken( token, value ){
     function createEndTag( childNodesContents ){
         const currentNode = tree.pop();
         
-        expect = tree.length ? HTML2JSON__EXPECT.IN_CHILD_NODES : HTML2JSON__EXPECT.END_OF_DOCUMENT;
+        expect = tree.length ? htmljson.EXPECT.IN_CHILD_NODES : htmljson.EXPECT.END_OF_DOCUMENT;
 
         switch( currentNode ){
-            //case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE :
-            //case HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                // expect = HTML2JSON__EXPECT.END_OF_DOCUMENT;
-            //case HTML_DOT_JSON__NODE_TYPE.TEXT_NODE :
-            //case HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION :
+            //case htmljson.NODE_TYPE.DOCUMENT_NODE :
+            //case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+                // expect = htmljson.EXPECT.END_OF_DOCUMENT;
+            //case htmljson.NODE_TYPE.TEXT_NODE :
+            //case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                 //break;
-            case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
                 queue = '<![endif]-->';
                 break;
-            case HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
+            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
                 queue = '<!--<![endif]-->';
                 break;
-            case HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION :
+            case htmljson.NODE_TYPE.CDATA_SECTION :
                 queue = ']]>';
                 break;
-            case HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE :
+            case htmljson.NODE_TYPE.COMMENT_NODE :
                 queue = '-->';
                 break;
             default :
@@ -197,7 +205,7 @@ function onToken( token, value ){
         for( let i = 0, l = tree.length; i < l; ++i ){
             const tagName = tree[ i ];
 
-            if( tagName === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || tagName === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ){
+            if( tagName === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || tagName === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ){
                 self._endTagRequired = true;
             } else if( m_isString( tagName ) ){
                 if( m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ] ){
@@ -232,7 +240,7 @@ function onToken( token, value ){
     };
 
     switch( expect ){
-        case HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_ARGS :
+        case htmljson.EXPECT.PROCESSING_INSTRUCTION_ARGS :
             switch( token ){
                 case /* Parser.C. */LEFT_BRACKET : // [
                 case /* Parser.C. */LEFT_BRACE   : // {
@@ -282,11 +290,11 @@ function onToken( token, value ){
                     };
                     return;
                 default :
-                    expect = HTML2JSON__EXPECT.ERROR;
+                    expect = htmljson.EXPECT.ERROR;
                     break;
             };
             break;
-        case HTML2JSON__EXPECT.IN_INSTRUCTION_ATTRIBUTE :
+        case htmljson.EXPECT.IN_INSTRUCTION_ATTRIBUTE :
             switch( token ){
                 case /* Parser.C. */LEFT_BRACKET : // [
                 case /* Parser.C. */LEFT_BRACE   : // {
@@ -296,7 +304,7 @@ function onToken( token, value ){
                     if( this.stack.length === 0 ){ // end of arguments
                         // !_functionName => error
                         queue  = createAttributeNodeString( executeInstructionAttr() );
-                        expect = HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
+                        expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
                         break;
                     };
                 case /* Parser.C. */RIGHT_BRACE   : // }
@@ -323,7 +331,7 @@ function onToken( token, value ){
                     };
                     return;
                 default :
-                    expect = HTML2JSON__EXPECT.ERROR;
+                    expect = htmljson.EXPECT.ERROR;
                     break;
             };
             break;
@@ -332,171 +340,171 @@ function onToken( token, value ){
             switch( token ){
                 case /* Parser.C. */LEFT_BRACKET : // [
                     switch( expect ){
-                        case HTML2JSON__EXPECT.ATTRIBUTES_START  :
-                        case HTML2JSON__EXPECT.CHILD_NODES_START :
+                        case htmljson.EXPECT.ATTRIBUTES_START  :
+                        case htmljson.EXPECT.CHILD_NODES_START :
                             closeStartTag = true;
-                        case HTML2JSON__EXPECT.NODE_START     :
-                        case HTML2JSON__EXPECT.IN_CHILD_NODES :
-                            phase = HTML2JSON__PHASE.NODE_START;
+                        case htmljson.EXPECT.NODE_START     :
+                        case htmljson.EXPECT.IN_CHILD_NODES :
+                            phase = htmljson.PHASE.NODE_START;
                             break;
-                        case HTML2JSON__EXPECT.INSTRUCTION_ATTRIBUTE_START :
-                            phase = HTML2JSON__PHASE.IN_INSTRUCTION_ATTRIBUTE;
+                        case htmljson.EXPECT.INSTRUCTION_ATTRIBUTE_START :
+                            phase = htmljson.PHASE.IN_INSTRUCTION_ATTRIBUTE;
                             break;
                         default :
-                            phase = HTML2JSON__PHASE.ERROR;
+                            phase = htmljson.PHASE.ERROR;
                             break;
                     };
                     break;
                 case /* Parser.C. */RIGHT_BRACKET : // ]
-                    phase = expect === HTML2JSON__EXPECT.ATTRIBUTES_START || expect === HTML2JSON__EXPECT.CHILD_NODES_START
-                                ? HTML2JSON__PHASE.CLOSE_EMPTY_ELEMENT
-                          : expect === HTML2JSON__EXPECT.IN_CHILD_NODES || expect === HTML2JSON__EXPECT.END_OF_NODE
-                                ? HTML2JSON__PHASE.END_OF_NODE
-                                : HTML2JSON__PHASE.ERROR;
+                    phase = expect === htmljson.EXPECT.ATTRIBUTES_START || expect === htmljson.EXPECT.CHILD_NODES_START
+                                ? htmljson.PHASE.CLOSE_EMPTY_ELEMENT
+                          : expect === htmljson.EXPECT.IN_CHILD_NODES || expect === htmljson.EXPECT.END_OF_NODE
+                                ? htmljson.PHASE.END_OF_NODE
+                                : htmljson.PHASE.ERROR;
                     break;
                 case /* Parser.C. */LEFT_BRACE : // {
-                    phase = expect === HTML2JSON__EXPECT.ATTRIBUTES_START
-                                ? HTML2JSON__PHASE.ATTRIBUTES_START
-                          : expect === HTML2JSON__EXPECT.STYLES_START
-                                ? HTML2JSON__PHASE.STYLES_START
-                                : HTML2JSON__PHASE.ERROR;
+                    phase = expect === htmljson.EXPECT.ATTRIBUTES_START
+                                ? htmljson.PHASE.ATTRIBUTES_START
+                          : expect === htmljson.EXPECT.STYLES_START
+                                ? htmljson.PHASE.STYLES_START
+                                : htmljson.PHASE.ERROR;
                     break;
                 case /* Parser.C. */RIGHT_BRACE : // }
-                    phase = expect === HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY
-                                ? HTML2JSON__PHASE.END_OF_ATTRIBUTES
-                          : expect === HTML2JSON__EXPECT.CSS_PROPERTY
-                                ? HTML2JSON__PHASE.END_OF_STYLES
-                                : HTML2JSON__PHASE.ERROR;
+                    phase = expect === htmljson.EXPECT.ATTRIBUTE_PROPERTY
+                                ? htmljson.PHASE.END_OF_ATTRIBUTES
+                          : expect === htmljson.EXPECT.CSS_PROPERTY
+                                ? htmljson.PHASE.END_OF_STYLES
+                                : htmljson.PHASE.ERROR;
                     break;
                 case /* Parser.C. */STRING :
                     switch( expect ){
-                        case HTML2JSON__EXPECT.NODE_TYPE :
-                        case HTML2JSON__EXPECT.TAG_NAME  :
-                            phase = HTML2JSON__PHASE.TAG_NAME;
+                        case htmljson.EXPECT.NODE_TYPE :
+                        case htmljson.EXPECT.TAG_NAME  :
+                            phase = htmljson.PHASE.TAG_NAME;
                             break;
-                        case HTML2JSON__EXPECT.DOCUMENT_NODE_VALUE :
-                            phase = HTML2JSON__PHASE.DOCUMENT_NODE_VALUE;
+                        case htmljson.EXPECT.DOCUMENT_NODE_VALUE :
+                            phase = htmljson.PHASE.DOCUMENT_NODE_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.TEXT_NODE_VALUE :
-                            phase = HTML2JSON__PHASE.TEXT_NODE_VALUE;
+                        case htmljson.EXPECT.TEXT_NODE_VALUE :
+                            phase = htmljson.PHASE.TEXT_NODE_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.CDATA_SECTION_VALUE :
-                            phase = HTML2JSON__PHASE.CDATA_SECTION_VALUE;
+                        case htmljson.EXPECT.CDATA_SECTION_VALUE :
+                            phase = htmljson.PHASE.CDATA_SECTION_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.COMMENT_NODE_VALUE:
-                            phase = HTML2JSON__PHASE.COMMENT_NODE_VALUE;
+                        case htmljson.EXPECT.COMMENT_NODE_VALUE:
+                            phase = htmljson.PHASE.COMMENT_NODE_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.COMMENT_HIDE_LOWER_FORMURA:
-                            phase = HTML2JSON__PHASE.COMMENT_HIDE_LOWER_FORMURA;
+                        case htmljson.EXPECT.COMMENT_HIDE_LOWER_FORMURA:
+                            phase = htmljson.PHASE.COMMENT_HIDE_LOWER_FORMURA;
                             break;
-                        case HTML2JSON__EXPECT.COMMENT_SHOW_LOWER_FORMURA:
-                            phase = HTML2JSON__PHASE.COMMENT_SHOW_LOWER_FORMURA;
+                        case htmljson.EXPECT.COMMENT_SHOW_LOWER_FORMURA:
+                            phase = htmljson.PHASE.COMMENT_SHOW_LOWER_FORMURA;
                             break;
-                        case HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY :
-                            phase = HTML2JSON__PHASE.ATTRIBUTE_PROPERTY;
+                        case htmljson.EXPECT.ATTRIBUTE_PROPERTY :
+                            phase = htmljson.PHASE.ATTRIBUTE_PROPERTY;
                             break;
-                        case HTML2JSON__EXPECT.ATTRIBUTE_VALUE :
-                            phase = HTML2JSON__PHASE.ATTRIBUTE_VALUE;
+                        case htmljson.EXPECT.ATTRIBUTE_VALUE :
+                            phase = htmljson.PHASE.ATTRIBUTE_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.STYLES_START :
-                            phase = HTML2JSON__PHASE.STYLES_START;
+                        case htmljson.EXPECT.STYLES_START :
+                            phase = htmljson.PHASE.STYLES_START;
                             break;
-                        case HTML2JSON__EXPECT.CSS_PROPERTY :
-                            phase = HTML2JSON__PHASE.CSS_PROPERTY;
+                        case htmljson.EXPECT.CSS_PROPERTY :
+                            phase = htmljson.PHASE.CSS_PROPERTY;
                             break;
-                        case HTML2JSON__EXPECT.CSS_VALUE :
-                            phase = HTML2JSON__PHASE.CSS_VALUE;
+                        case htmljson.EXPECT.CSS_VALUE :
+                            phase = htmljson.PHASE.CSS_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.ATTRIBUTES_START  :
-                        case HTML2JSON__EXPECT.CHILD_NODES_START :
+                        case htmljson.EXPECT.ATTRIBUTES_START  :
+                        case htmljson.EXPECT.CHILD_NODES_START :
                             closeStartTag = true;
-                        case HTML2JSON__EXPECT.IN_CHILD_NODES :
-                            phase = HTML2JSON__PHASE.TEXT_DATA;
+                        case htmljson.EXPECT.IN_CHILD_NODES :
+                            phase = htmljson.PHASE.TEXT_DATA;
                             break;
-                        case HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_NAME :
-                            phase = HTML2JSON__PHASE.PROCESSING_INSTRUCTION_NAME;
+                        case htmljson.EXPECT.PROCESSING_INSTRUCTION_NAME :
+                            phase = htmljson.PHASE.PROCESSING_INSTRUCTION_NAME;
                             break;
-                        case HTML2JSON__EXPECT.INSTRUCTION_ATTRIBUTE_START :
-                            phase = HTML2JSON__PHASE.INSTRUCTION_ATTRIBUTE_NAME;
+                        case htmljson.EXPECT.INSTRUCTION_ATTRIBUTE_START :
+                            phase = htmljson.PHASE.INSTRUCTION_ATTRIBUTE_NAME;
                             break;
                         default :
-                            phase = HTML2JSON__PHASE.ERROR;
+                            phase = htmljson.PHASE.ERROR;
                             break;
                     };
                     break;
                 case /* Parser.C. */NUMBER :
                     switch( expect ){
-                        case HTML2JSON__EXPECT.NODE_TYPE :
+                        case htmljson.EXPECT.NODE_TYPE :
                             phase = value; // nodeType
                             break;
-                        case HTML2JSON__EXPECT.ATTRIBUTE_VALUE :
-                            phase = HTML2JSON__PHASE.ATTRIBUTE_VALUE;
+                        case htmljson.EXPECT.ATTRIBUTE_VALUE :
+                            phase = htmljson.PHASE.ATTRIBUTE_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.CSS_VALUE :
-                            phase = HTML2JSON__PHASE.CSS_VALUE;
+                        case htmljson.EXPECT.CSS_VALUE :
+                            phase = htmljson.PHASE.CSS_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.TEXT_NODE_VALUE :
-                            phase = HTML2JSON__PHASE.TEXT_NODE_VALUE;
+                        case htmljson.EXPECT.TEXT_NODE_VALUE :
+                            phase = htmljson.PHASE.TEXT_NODE_VALUE;
                             break;
-                        case HTML2JSON__EXPECT.ATTRIBUTES_START  :
-                        case HTML2JSON__EXPECT.CHILD_NODES_START :
+                        case htmljson.EXPECT.ATTRIBUTES_START  :
+                        case htmljson.EXPECT.CHILD_NODES_START :
                             closeStartTag = true;
-                        case HTML2JSON__EXPECT.IN_CHILD_NODES    :
-                            phase = HTML2JSON__PHASE.TEXT_DATA;
+                        case htmljson.EXPECT.IN_CHILD_NODES    :
+                            phase = htmljson.PHASE.TEXT_DATA;
                             value += '';
                             break;
-                        case HTML2JSON__EXPECT.CDATA_SECTION_VALUE :
-                            phase = HTML2JSON__PHASE.CDATA_SECTION_VALUE;
+                        case htmljson.EXPECT.CDATA_SECTION_VALUE :
+                            phase = htmljson.PHASE.CDATA_SECTION_VALUE;
                             value += '';
                             break;
-                        case HTML2JSON__EXPECT.COMMENT_NODE_VALUE:
-                            phase = HTML2JSON__PHASE.COMMENT_NODE_VALUE;
+                        case htmljson.EXPECT.COMMENT_NODE_VALUE:
+                            phase = htmljson.PHASE.COMMENT_NODE_VALUE;
                             value += '';
                             break;
                         default :
-                            phase = HTML2JSON__PHASE.ERROR;
+                            phase = htmljson.PHASE.ERROR;
                             break;
                     };
                     break;
                 case /* Parser.C. */TRUE :
                 case /* Parser.C. */FALSE :
                 case /* Parser.C. */NULL   :
-                    phase = expect === HTML2JSON__EXPECT.ATTRIBUTE_VALUE
-                            ? HTML2JSON__PHASE.ATTRIBUTE_VALUE
-                            : HTML2JSON__PHASE.ERROR;
+                    phase = expect === htmljson.EXPECT.ATTRIBUTE_VALUE
+                            ? htmljson.PHASE.ATTRIBUTE_VALUE
+                            : htmljson.PHASE.ERROR;
                     break;
                 default :
-                    phase = HTML2JSON__PHASE.ERROR;
+                    phase = htmljson.PHASE.ERROR;
             };
             // console.log( '. ' + phase );
         /** phase => expect */
             switch( phase ){
-                case HTML2JSON__PHASE.NODE_START : // [
+                case htmljson.PHASE.NODE_START : // [
                     queue  = closeParentStartTag();
-                    expect = HTML2JSON__EXPECT.NODE_TYPE;
+                    expect = htmljson.EXPECT.NODE_TYPE;
                     break;
             /** <!DOCTYPE html> */
-                case HTML2JSON__PHASE.DOCUMENT_NODE_START:
-                    expect = HTML2JSON__EXPECT.DOCUMENT_NODE_VALUE;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE );
+                case htmljson.PHASE.DOCUMENT_NODE_START:
+                    expect = htmljson.EXPECT.DOCUMENT_NODE_VALUE;
+                    tree.push( htmljson.NODE_TYPE.DOCUMENT_NODE );
                     break;
-                case HTML2JSON__PHASE.DOCUMENT_NODE_VALUE :
-                    if( DEFINE_HTML2JSON__USE_XHTML ){
+                case htmljson.PHASE.DOCUMENT_NODE_VALUE :
+                    if( htmljson.DEFINE.USE_XHTML ){
                         this._isXMLDocument = m_isXML( value );
                     };
                     queue  = value;
-                    expect = HTML2JSON__EXPECT.CHILD_NODES_START;
+                    expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** DocumentFragment */
-                case HTML2JSON__PHASE.DOCUMENT_FRAGMENT_NODE_START :
-                    expect = HTML2JSON__EXPECT.CHILD_NODES_START ;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+                case htmljson.PHASE.DOCUMENT_FRAGMENT_NODE_START :
+                    expect = htmljson.EXPECT.CHILD_NODES_START ;
+                    tree.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
                     break;
             /** Element */
-                case HTML2JSON__PHASE.ELEMENT_NODE_START :
-                    expect = HTML2JSON__EXPECT.TAG_NAME;
+                case htmljson.PHASE.ELEMENT_NODE_START :
+                    expect = htmljson.EXPECT.TAG_NAME;
                     break;
-                case HTML2JSON__PHASE.TAG_NAME :
+                case htmljson.PHASE.TAG_NAME :
                     let tagName = m_parseTagName( /** @type {string} */ (value) );
                     const id        = tagName[ 1 ];
                     const className = tagName[ 2 ];
@@ -521,136 +529,136 @@ function onToken( token, value ){
                     };
                     tree.push( tagName );
                     updateFlags();
-                    expect = HTML2JSON__EXPECT.ATTRIBUTES_START;
+                    expect = htmljson.EXPECT.ATTRIBUTES_START;
                     break;
             /** Attribute */
-                case HTML2JSON__PHASE.ATTRIBUTES_START :
-                    expect = HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
+                case htmljson.PHASE.ATTRIBUTES_START :
+                    expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
                     break;
-                case HTML2JSON__PHASE.ATTRIBUTE_PROPERTY :
+                case htmljson.PHASE.ATTRIBUTE_PROPERTY :
                     if( m_isInstructionAttr( this._attrPrefix, /** @type {string} */ (value) ) ){
                         this._attribute = value.substr( this._attrPrefix.length );
-                        expect = HTML2JSON__EXPECT.INSTRUCTION_ATTRIBUTE_START;
+                        expect = htmljson.EXPECT.INSTRUCTION_ATTRIBUTE_START;
                     } else {
                         this._attribute = value;
-                        expect = value === 'style' ? HTML2JSON__EXPECT.STYLES_START : HTML2JSON__EXPECT.ATTRIBUTE_VALUE;
+                        expect = value === 'style' ? htmljson.EXPECT.STYLES_START : htmljson.EXPECT.ATTRIBUTE_VALUE;
                     };
                     break;
-                case HTML2JSON__PHASE.IN_INSTRUCTION_ATTRIBUTE :
-                    expect = HTML2JSON__EXPECT.IN_INSTRUCTION_ATTRIBUTE;
+                case htmljson.PHASE.IN_INSTRUCTION_ATTRIBUTE :
+                    expect = htmljson.EXPECT.IN_INSTRUCTION_ATTRIBUTE;
                     break;
-                case HTML2JSON__PHASE.INSTRUCTION_ATTRIBUTE_NAME :
+                case htmljson.PHASE.INSTRUCTION_ATTRIBUTE_NAME :
                     this._functionName = value;
                     value = executeInstructionAttr();
-                case HTML2JSON__PHASE.ATTRIBUTE_VALUE :
+                case htmljson.PHASE.ATTRIBUTE_VALUE :
                     queue  = createAttributeNodeString( value );
-                    expect = HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
+                    expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
                     break;
-                case HTML2JSON__PHASE.END_OF_ATTRIBUTES :
-                    expect = HTML2JSON__EXPECT.CHILD_NODES_START;
+                case htmljson.PHASE.END_OF_ATTRIBUTES :
+                    expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** style */
-                case HTML2JSON__PHASE.STYLES_START :
-                    expect = HTML2JSON__EXPECT.CSS_PROPERTY;
+                case htmljson.PHASE.STYLES_START :
+                    expect = htmljson.EXPECT.CSS_PROPERTY;
                     break;
-                case HTML2JSON__PHASE.CSS_PROPERTY :
+                case htmljson.PHASE.CSS_PROPERTY :
                     this._cssPropety = value;
-                    expect = HTML2JSON__EXPECT.CSS_VALUE;
+                    expect = htmljson.EXPECT.CSS_VALUE;
                     break;
-                case HTML2JSON__PHASE.CSS_VALUE :
+                case htmljson.PHASE.CSS_VALUE :
                     if( value !== '' && value !== null ){
                         this._cssText += ';' + m_toSnakeCase( this._cssPropety ) + ':' + value;
                     };
-                    expect = HTML2JSON__EXPECT.CSS_PROPERTY;
+                    expect = htmljson.EXPECT.CSS_PROPERTY;
                     break;
-                case HTML2JSON__PHASE.END_OF_STYLES :
+                case htmljson.PHASE.END_OF_STYLES :
                     if( this._cssText ){
                         queue = createAttributeNodeString( this._cssText.substr( 1 ) );
                         this._cssText = '';
                     };
-                    expect = HTML2JSON__EXPECT.ATTRIBUTE_PROPERTY;
+                    expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
                     break;
             /** </endtag> */
-                case HTML2JSON__PHASE.END_OF_NODE :
+                case htmljson.PHASE.END_OF_NODE :
                     createEndTag( true );
                     break;
-                case HTML2JSON__PHASE.CLOSE_EMPTY_ELEMENT :
+                case htmljson.PHASE.CLOSE_EMPTY_ELEMENT :
                     createEndTag( false );
                     break;
 
             /** Text Node */
-                case HTML2JSON__PHASE.TEXT_NODE_START:
-                    expect = HTML2JSON__EXPECT.TEXT_NODE_VALUE;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.TEXT_NODE );
+                case htmljson.PHASE.TEXT_NODE_START:
+                    expect = htmljson.EXPECT.TEXT_NODE_VALUE;
+                    tree.push( htmljson.NODE_TYPE.TEXT_NODE );
                     break;
-                case HTML2JSON__PHASE.TEXT_NODE_VALUE :
+                case htmljson.PHASE.TEXT_NODE_VALUE :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + escapeTextNodeValue( value );
-                    expect = HTML2JSON__EXPECT.END_OF_NODE;
+                    expect = htmljson.EXPECT.END_OF_NODE;
                     break;
                 /** Text */
-                case HTML2JSON__PHASE.TEXT_DATA :
+                case htmljson.PHASE.TEXT_DATA :
                     queue  = closeParentStartTag() + appendOmittedEndTagBasedOnFollowingNode() + escapeTextNodeValue( value );
-                    expect = HTML2JSON__EXPECT.IN_CHILD_NODES;
+                    expect = htmljson.EXPECT.IN_CHILD_NODES;
                     break;
             /** <![CDATA[ ]]> */
-                case HTML2JSON__PHASE.CDATA_SECTION_START:
+                case htmljson.PHASE.CDATA_SECTION_START:
                     queue  = '<![CDATA[';
-                    expect = HTML2JSON__EXPECT.CDATA_SECTION_VALUE;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.CDATA_SECTION );
+                    expect = htmljson.EXPECT.CDATA_SECTION_VALUE;
+                    tree.push( htmljson.NODE_TYPE.CDATA_SECTION );
                     break;
-                case HTML2JSON__PHASE.CDATA_SECTION_VALUE:
+                case htmljson.PHASE.CDATA_SECTION_VALUE:
                     queue  = value;
-                    expect = HTML2JSON__EXPECT.END_OF_NODE;
+                    expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!-- --> */
-                case HTML2JSON__PHASE.COMMENT_NODE_START:
+                case htmljson.PHASE.COMMENT_NODE_START:
                     queue  = '<!--';
-                    expect = HTML2JSON__EXPECT.COMMENT_NODE_VALUE;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.COMMENT_NODE );
+                    expect = htmljson.EXPECT.COMMENT_NODE_VALUE;
+                    tree.push( htmljson.NODE_TYPE.COMMENT_NODE );
                     break;
-                case HTML2JSON__PHASE.COMMENT_NODE_VALUE:
+                case htmljson.PHASE.COMMENT_NODE_VALUE:
                     queue  = value;
-                    expect = HTML2JSON__EXPECT.END_OF_NODE;
+                    expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!--[if IE]> --> */
-                case HTML2JSON__PHASE.COMMENT_HIDE_LOWER_START :
+                case htmljson.PHASE.COMMENT_HIDE_LOWER_START :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
-                    expect = HTML2JSON__EXPECT.COMMENT_HIDE_LOWER_FORMURA;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER );
+                    expect = htmljson.EXPECT.COMMENT_HIDE_LOWER_FORMURA;
+                    tree.push( htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER );
                     break;
-                case HTML2JSON__PHASE.COMMENT_HIDE_LOWER_FORMURA :
+                case htmljson.PHASE.COMMENT_HIDE_LOWER_FORMURA :
                     queue = value + ']>';
-                    expect = HTML2JSON__EXPECT.CHILD_NODES_START;
+                    expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** <!--[if !IE]><!--> */
-                case HTML2JSON__PHASE.COMMENT_SHOW_LOWER_START :
+                case htmljson.PHASE.COMMENT_SHOW_LOWER_START :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
-                    expect = HTML2JSON__EXPECT.COMMENT_SHOW_LOWER_FORMURA;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER );
+                    expect = htmljson.EXPECT.COMMENT_SHOW_LOWER_FORMURA;
+                    tree.push( htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER );
                     break;
-                case HTML2JSON__PHASE.COMMENT_SHOW_LOWER_FORMURA :
+                case htmljson.PHASE.COMMENT_SHOW_LOWER_FORMURA :
                     queue  = value + ']><!-->';
-                    expect = HTML2JSON__EXPECT.CHILD_NODES_START;
+                    expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** <? func(...) ?> */
-                case HTML2JSON__PHASE.PROCESSING_INSTRUCTION_START :
-                    expect = HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_NAME;
-                    tree.push( HTML_DOT_JSON__NODE_TYPE.PROCESSING_INSTRUCTION );
+                case htmljson.PHASE.PROCESSING_INSTRUCTION_START :
+                    expect = htmljson.EXPECT.PROCESSING_INSTRUCTION_NAME;
+                    tree.push( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION );
                     break;
-                case HTML2JSON__PHASE.PROCESSING_INSTRUCTION_NAME :
+                case htmljson.PHASE.PROCESSING_INSTRUCTION_NAME :
                     this._functionName = value;
-                    expect = HTML2JSON__EXPECT.PROCESSING_INSTRUCTION_ARGS;
+                    expect = htmljson.EXPECT.PROCESSING_INSTRUCTION_ARGS;
                     break;
 
                 default :
-                    expect = HTML2JSON__EXPECT.ERROR;
+                    expect = htmljson.EXPECT.ERROR;
                     break;
             };
     };
 
     // console.log( '- ' + queue, expect, this._tree );
 
-    if( expect === HTML2JSON__EXPECT.ERROR ){
+    if( expect === htmljson.EXPECT.ERROR ){
         this._onerror( 'Not html.json format!' );
         this._stream.emit( 'error', 'Not html.json format!' );
     } else {

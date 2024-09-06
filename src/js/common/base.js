@@ -1,3 +1,8 @@
+goog.provide( 'htmljson.base' );
+
+goog.require( 'htmljson.NODE_TYPE' );
+goog.require( 'htmljson.DEFINE.USE_XML_NS' );
+
 var m_ATTRS_NO_VALUE      = {checked:!0,compact:!0,declare:!0,defer:!0,disabled:!0,ismap:!0,multiple:!0,nohref:!0,noresize:!0,noshade:!0,nowrap:!0,readonly:!0,selected:!0};
 
     // 子を持たない要素の一覧
@@ -116,21 +121,21 @@ function m_isXML( xmlDeclarationAndDocumentType ){
 };
 
 function m_isNamespacedTag( tagName ){
-    return DEFINE_HTML2JSON__USE_XML_NS ? 0 < tagName.indexOf( ':' ) : false;
+    return htmljson.DEFINE.USE_XML_NS ? 0 < tagName.indexOf( ':' ) : false;
 };
 
 /**
  * 
  * @param {*} value 
- * @return {number} nodeType(HTML_DOT_JSON__NODE_TYPE)
+ * @return {number} nodeType(htmljson.NODE_TYPE)
  */
 function m_getNodeType( value ){
     return m_isStringOrNumber( value )
-        ? HTML_DOT_JSON__NODE_TYPE.TEXT_NODE
+        ? htmljson.NODE_TYPE.TEXT_NODE
         : (
             m_isArray( value )
                 ? m_isString( value[ 0 ] )
-                     ? HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE
+                     ? htmljson.NODE_TYPE.ELEMENT_NODE
                 : m_isNumber( value[ 0 ] )
                      ? value[ 0 ]
                      : -1
@@ -184,12 +189,12 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
                 parentJSONNode.splice( myIndex, 1, result );
             } else {
                 currentJSONNode.length = 0;
-                currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.TEXT_NODE, currentJSONNode );
+                currentJSONNode.push( htmljson.NODE_TYPE.TEXT_NODE, currentJSONNode );
             };
         } else if( m_isArray( result ) ){
             result = /** @type {!Array} */ (result);
 
-            if( result[ 0 ] === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            if( result[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
                 if( parentJSONNode ){
                     result.shift();
                     result.unshift( myIndex, 1 );
@@ -204,7 +209,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
                     parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
                 } else {
                     currentJSONNode.length = 0;
-                    currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+                    currentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
                     currentJSONNode.push.apply( currentJSONNode, result );
                 };
             } else {
@@ -212,10 +217,10 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
                     parentJSONNode.splice( myIndex, 1, result );
                 } else {
                     currentJSONNode.length = 0;
-                    currentJSONNode.push( HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
+                    currentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
                 };
             };
-        } else if( DEFINE_HTML2JSON__DEBUG ){
+        } else if( goog.DEBUG ){
             errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
         };
     };
@@ -246,7 +251,7 @@ function m_executeInstructionAttr( recursion, onInstruction, name, value, errorH
         };
     } else if( m_isString( value ) ){
         result = onInstruction( /** @type {string} */ (value) );
-    } else if( DEFINE_HTML2JSON__DEBUG ){
+    } else if( goog.DEBUG ){
         errorHandler( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
     };
 
@@ -334,19 +339,19 @@ function m_toSnakeCase( cssProperty ){
  */
 function m_getChildNodeStartIndex( htmlJsonNode ){
     var nodeType   = htmlJsonNode[ 0 ];
-    var isElement  = m_getNodeType( htmlJsonNode ) === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE;
-    var indexAttrs = nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ? 2 : 1;
+    var isElement  = m_getNodeType( htmlJsonNode ) === htmljson.NODE_TYPE.ELEMENT_NODE;
+    var indexAttrs = nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ? 2 : 1;
     var startIndex = isElement
                         ? (
                             m_isAttributes( htmlJsonNode[ indexAttrs ] )
                                 ? indexAttrs + 1
                                 : indexAttrs
                             )
-                        : nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_FRAGMENT_NODE
+                        : nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE
                                 ? 1
-                        : nodeType === HTML_DOT_JSON__NODE_TYPE.DOCUMENT_NODE
-                       || nodeType === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
-                       || nodeType === HTML_DOT_JSON__NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
+                        : nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE
+                       || nodeType === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
+                       || nodeType === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
                                 ? 2
                                 : Infinity;
     return startIndex;
@@ -365,7 +370,7 @@ function m_normalizeTextNodes( htmlJsonNode ){
         for( i = startIndex; i < htmlJsonNode.length; ){
             node     = htmlJsonNode[ i ];
             nodeType = m_getNodeType( node );
-            if( nodeType === HTML_DOT_JSON__NODE_TYPE.TEXT_NODE ){
+            if( nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
                 if( m_isStringOrNumber( node ) ){
                     text += node;
                 } else {
@@ -378,7 +383,7 @@ function m_normalizeTextNodes( htmlJsonNode ){
                     text = '';
                 };
                 ++i;
-                if( nodeType === HTML_DOT_JSON__NODE_TYPE.ELEMENT_NODE ){
+                if( nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ){
                     m_normalizeTextNodes( node );
                 };
             };
