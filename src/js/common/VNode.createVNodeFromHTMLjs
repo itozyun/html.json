@@ -76,17 +76,17 @@ Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
 };
 
 Handler.prototype.onParseText = function( text ){
-    this._currentNode.insertTextLast( text );
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, text );
 };
 
 Handler.prototype.onParseComment = function( comment ){
-    this._currentNode.insertCommentLast( comment );
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.COMMENT_NODE, comment );
 };
 
 Handler.prototype.onParseCDATASection = function( data ){
-    this._currentNode.insertCDATASectionLast( data );
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.CDATA_SECTION, data );
 };
 
 Handler.prototype.onParseProcessingInstruction = function( data ){
-    this._currentNode.insertProcessingInstructionLast( data );
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, data );
 };

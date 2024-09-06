@@ -14,6 +14,8 @@ htmljson.VNode = VNode;
  * @param {!Object=} opt_attrs 
  */
 function VNode( parent, insertPosition, nodeType, opt_tagOrData, opt_attrs ){
+    var childNodes;
+
     /** @type {!VNode | null} */
     this._parent = parent;
     /** @type {number} */
@@ -21,8 +23,8 @@ function VNode( parent, insertPosition, nodeType, opt_tagOrData, opt_attrs ){
 
     if( parent ){
         /** @type {!Array.<VNode>} */
-        var childNodes = parent._childNodes = parent._childNodes || [];
-        if( 0 <= insertPosition ){
+        childNodes = parent._childNodes = parent._childNodes || [];
+        if( 0 <= insertPosition && insertPosition < childNodes.length ){
             childNodes.splice( index, 0, this );
         } else {
             childNodes.push( this );
@@ -239,7 +241,7 @@ VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textC
     var element = new VNode( this, index, htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs );
 
     if( opt_textContent != null ){
-        element.insertTextFirst( opt_textContent );
+        element.insertNodeFirst( htmljson.NODE_TYPE.TEXT_NODE, opt_textContent );
     };
     return element;
 };
@@ -263,158 +265,44 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
 
 /*=============================================================================
  *
- *  insertText*
+ *  insertNode*
  *
  */
 
 /**
- * @param {string | number} textContent
+ * @param {number} nodeType
+ * @param {string | number} nodeValue
  * @return {!VNode | null} */
-VNode.prototype.insertTextBefore = function( textContent ){
-    return this._parent ? this._parent.insertTextAt( this.getMyIndex(), textContent ) : null;
+VNode.prototype.insertNodeBefore = function( nodeType, nodeValue ){
+    return this._parent ? this._parent.insertNodeAt( this.getMyIndex(), nodeType, nodeValue ) : null;
 };
 /**
- * @param {string | number} textContent
+ * @param {number} nodeType
+ * @param {string | number} nodeValue
  * @return {!VNode} */
-VNode.prototype.insertTextFirst = function( textContent ){
-    return this.insertTextAt( 0, textContent );
+VNode.prototype.insertNodeFirst = function( nodeValue, nodeValue ){
+    return this.insertNodeAt( 0, nodeValue, nodeValue );
 };
 /**
+ * 
  * @param {number} index
- * @param {string | number} textContent
+ * @param {number} nodeType
+ * @param {string | number} nodeValue
  * @return {!VNode} */
-VNode.prototype.insertTextAt = function( index, textContent ){
-    return new VNode( this, index, htmljson.NODE_TYPE.TEXT_NODE, textContent );
+VNode.prototype.insertNodeAt = function( index, nodeValue, nodeValue ){
+    return new VNode( this, index, htmljson.NODE_TYPE.TEXT_NODE, nodeValue, nodeValue );
 };
 /**
- * @param {string | number} textContent
+ * @param {number} nodeType
+ * @param {string | number} nodeValue
  * @return {!VNode} */
-VNode.prototype.insertTextLast = function( textContent ){
-    return this.insertTextAt( this.getChildNodeLength(), textContent );
+VNode.prototype.insertNodeLast = function( nodeValue, nodeValue ){
+    return this.insertNodeAt( this.getChildNodeLength(), nodeValue, nodeValue );
 };
 /**
- * @param {string | number} textContent
+ * @param {number} nodeType
+ * @param {string | number} nodeValue
  * @return {!VNode | null} */
-VNode.prototype.insertTextAfter = function( textContent ){
-    return this._parent ? this._parent.insertTextAt( this.getMyIndex() + 1, textContent ) : null;
-};
-
-/*=============================================================================
- *
- *  insertComment*
- *
- */
-
-/**
- * @param {string | number} data
- * @return {!VNode | null} */
-VNode.prototype.insertCommentBefore = function( data ){
-    return this._parent ? this._parent.insertCommentAt( this.getMyIndex(), data ) : null;
-};
-/**
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertCommentFirst = function( data ){
-    return this.insertCommentAt( 0, data );
-};
-/**
- * @param {number} index
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertCommentAt = function( index, data ){
-    return new VNode( this, index, htmljson.NODE_TYPE.COMMENT_NODE, data );
-};
-/**
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertCommentLast = function( data ){
-    return this.insertCommentAt( this.getChildNodeLength(), data );
-};
-/**
- * @param {string | number} data
- * @return {!VNode | null} */
-VNode.prototype.insertCommentAfter = function( data ){
-    return this._parent ? this._parent.insertCommentAt( this.getMyIndex() + 1, data ) : null;
-};
-
-
-/*=============================================================================
- *
- *  insertCDATASection*
- *
- */
-
-/**
- * @param {string | number} data
- * @return {!VNode | null} */
-VNode.prototype.insertCDATASectionBefore = function( data ){
-    return this._parent ? this._parent.insertCDATASectionAt( this.getMyIndex(), data ) : null;
-};
-/**
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertCDATASectionFirst = function( data ){
-    return this.insertCDATASectionAt( 0, data );
-};
-/**
- * @param {number} index
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertCDATASectionAt = function( index, data ){
-    return new VNode( this, index, htmljson.NODE_TYPE.CDATA_SECTION, data );
-};
-/**
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertCDATASectionLast = function( data ){
-    return this.insertCDATASectionAt( this.getChildNodeLength(), data );
-};
-/**
- * @param {string | number} data
- * @return {!VNode | null} */
-VNode.prototype.insertCDATASectionAfter = function( data ){
-    return this._parent ? this._parent.insertCDATASectionAt( this.getMyIndex() + 1, data ) : null;
-};
-
-
-/*=============================================================================
- *
- *  insertProcessingInstruction*
- *
- */
-
-/**
- * @param {string | number} data
- * @return {!VNode | null} */
-VNode.prototype.insertProcessingInstructionBefore = function( data ){
-    return this._parent ? this._parent.insertProcessingInstructionAt( this.getMyIndex(), data ) : null;
-};
-
-/**
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertProcessingInstructionFirst = function( data ){
-    return this.insertProcessingInstructionAt( 0, data );
-};
-
-/**
- * @param {number} index
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertProcessingInstructionAt = function( index, data ){
-    return new VNode( this, index, htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, data );
-};
-
-/**
- * @param {string | number} data
- * @return {!VNode} */
-VNode.prototype.insertProcessingInstructionLast = function( data ){
-    return this.insertProcessingInstructionAt( this.getChildNodeLength(), data );
-};
-
-/**
- * @param {string | number} data
- * @return {!VNode | null} */
-VNode.prototype.insertProcessingInstructionAfter = function( data ){
-    return this._parent ? this._parent.insertProcessingInstructionAt( this.getMyIndex() + 1, data ) : null;
+VNode.prototype.insertNodeAfter = function( nodeValue, nodeValue ){
+    return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeValue, nodeValue ) : null;
 };

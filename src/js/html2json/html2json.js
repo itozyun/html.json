@@ -49,7 +49,7 @@ html2json = function( htmlString, opt_options ){
             functionNameAndArgs, currentJSONNode, childNodeList, nextNode;
             // console.log( currentVNode )
         switch( currentVNode.getNodeType() ){
-            case 1 :
+            case htmljson.NODE_TYPE.ELEMENT_NODE :
                 var attributes  = {},
                     tagName     = currentVNode.getTagName().toLowerCase(),
                     isPreTag    = tagName === 'pre',
@@ -112,8 +112,7 @@ html2json = function( htmlString, opt_options ){
                 };
                 parentJSONNode.push( currentJSONNode );
                 break;
-            // case 2 :
-            case 3 :
+            case htmljson.NODE_TYPE.TEXT_NODE :
                 if( !insidePreTag && trimWhitespace ){
                     if( lineBreaksTrimmed ){
                         // 先頭と最後の改行文字を削除
@@ -165,24 +164,25 @@ html2json = function( htmlString, opt_options ){
                     parentJSONNode.push( m_tryToNumber( textContent ) );
                 };
                 break;
-            case 4 :
+            case htmljson.NODE_TYPE.CDATA_SECTION :
                 if( keepCDATASections ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
                     parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToNumber( textContent ) ] );
                 };
                 break;
-            case 8 :
+            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+                functionNameAndArgs = codeToObject( extractStringBetween( textContent, '?', '?', true ) );
+
+                currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
+
+                if( functionNameAndArgs.args ){
+                    currentJSONNode.push.apply( currentJSONNode, functionNameAndArgs.args );
+                };
+                parentJSONNode.push( currentJSONNode );
+                break;
+            case htmljson.NODE_TYPE.COMMENT_NODE :
                 // console.log( textContent )
-                if( textContent.startsWith( '?' ) && textContent.charAt( textContent.length - 1 ) === '?' ){
-                    functionNameAndArgs = codeToObject( extractStringBetween( textContent, '?', '?', true ) );
-
-                    currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
-
-                    if( functionNameAndArgs.args ){
-                        currentJSONNode.push.apply( currentJSONNode, functionNameAndArgs.args );
-                    };
-                    parentJSONNode.push( currentJSONNode );
-                } else if( textContent.startsWith( '[if' ) && 0 < textContent.indexOf( '<![endif]' ) ){
+                if( textContent.startsWith( '[if' ) && 0 < textContent.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
                     returnByNodeList     = true;
                     parentTreeIsInPreTag = insidePreTag;
@@ -218,7 +218,7 @@ html2json = function( htmlString, opt_options ){
                     parentJSONNode.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToNumber( textContent ) ] );
                 };
                 break;
-            case 10 :
+            case htmljson.NODE_TYPE.DOCUMENT_NODE :
                 var xmlDeclarationAndDocumentType =
                         htmlString.substr( 0, htmlString.indexOf( '>', htmlString.indexOf( '<!DOCTYPE ' ) ) + 1 );
                 
