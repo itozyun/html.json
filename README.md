@@ -353,3 +353,9 @@ json2json と微妙に異なる点に注意
 2. [HTMLソースの整形処理](https://web.archive.org/web/20190331001728/http://www.geocities.co.jp/SiliconValley-SanJose/2485/reform.html)
 3. [Google HTML/CSS Style Guide まとめ](https://qiita.com/Sugima/items/785644372397595644ba)
 4. [Another HTML-lint 結果の解説 > <TAG> の ATTR の属性値 `XXXX` は引用符で囲まなければなりません](http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value)
+
+## License
+
+[HTML.JSON](https://github.com/itozyun/html.json) is licensed under MIT license.
+
+(C) 2024 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
