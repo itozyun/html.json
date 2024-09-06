@@ -15,7 +15,9 @@ gulp.task(
 
             return gulp.src(
                     [
-                        './src/closure-primitives/base.js', './src/js/** /*.js'
+                        './src/closure-primitives/base.js',
+                        './.submodules/htmlparser/src/** /*.js', 
+                        './src/js/** /*.js'
                     ]
                 ).pipe(
                     ClosureCompiler(

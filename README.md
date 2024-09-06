@@ -127,7 +127,7 @@ function onInstruction( methodName, args, currentHtmlJson ){
 ~~~
 ### json2json の `onInstruction` の戻り値
 
-json2html と微妙に異なる点に注意
+json2html と微妙に異なる点に注意!
 
 #### `InstructionNode`
 
@@ -139,7 +139,7 @@ json2html と微妙に異なる点に注意
 
 #### `InstructionAttr`
 
-* `undefiend` 何もしない
+* `undefiend` : 何もしない
 * `null` : `InstructionAttr` を削除
 * `m_ATTRS_NO_VALUE` なプロパティであり属性値が `false` の場合、属性を追加しない
 * 戻り値が配列の場合、`InstructionAttr` のまま(json2html では必ず属性値を返すこと)
@@ -170,7 +170,7 @@ function onInstruction( methodName, args, currentHtmlJson ){
 
 ### json2html の `onInstruction` の戻り値
 
-json2json と微妙に異なる点に注意
+json2json と微妙に異なる点に注意!
 
 #### `InstructionNode`
 
@@ -188,21 +188,22 @@ json2json と微妙に異なる点に注意
 
 ## 4. HTML.Json 定義
 
-|                                            | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
-|:-------------------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
-| HTML_ELEMENT *4                            | `1`                         | `"input"`              | `{attributes}` *3 | `...nodes` |
-| タグ名(.class#id) *1, *2                   | `"input"`, `"p.main#main"`  |`{attributes}` *3       | `...nodes`        | -          |
-| TEXT_NODE *4                               | `3`                         | `nodeValue` *6         | -                 | -          |
-| CDATA_SECTION                              | `4`                         | `nodeValue` *6         | -                 | -          |
-| PROCESSING_INSTRUCTION                     | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
-| COMMENT_NODE                               | `8`                         | `nodeValue` *6         | -                 | -          |
-| DOCUMENT_NODE                              | `9`                         | `"<!DOCTYPE html>"` *5 | `...nodes` *7     | -          |
-| DOCUMENT_FRAGMENT_NODE                     | `11`                        | `...nodes`             | -                 | -          |
-| 下の階層が隠れる条件付きコメント *8        | `13`                        | `"(IE)&(vml)"`         | `...nodes`        | -          |
-| 下の階層が見える条件付きコメント *8        | `14`                        | `"!(IE)"`              | `...nodes`        | -          |
-| RAW_TEXT                                   | `15`                        | `"</div>"` *9          | -                 | -          |
-| 下の階層が見える条件付きコメントの開始タグ | `16`                        | `"!(IE 7)"`            | -                 | -          |
-| 下の階層が見える条件付きコメントの終了タグ | `17`                        | -                      | -                 | -          |
+|                                               | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
+|:----------------------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
+| HTML_ELEMENT *4                               | `1`                         | `"input"`              | `{attributes}` *3 | `...nodes` |
+| タグ名(.class#id) *1, *2                      | `"input"`, `"p.main#main"`  |`{attributes}` *3       | `...nodes`        | -          |
+| TEXT_NODE *4                                  | `3`                         | `nodeValue` *6         | -                 | -          |
+| CDATA_SECTION                                 | `4`                         | `nodeValue` *6         | -                 | -          |
+| PROCESSING_INSTRUCTION                        | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
+| COMMENT_NODE                                  | `8`                         | `nodeValue` *6         | -                 | -          |
+| DOCUMENT_NODE                                 | `9`                         | `"<!DOCTYPE html>"` *5 | `...nodes` *7     | -          |
+| DOCUMENT_FRAGMENT_NODE                        | `11`                        | `...nodes`             | -                 | -          |
+| 下の階層が隠れる条件付きコメント *8           | `13`                        | `"(IE)&(vml)"`         | `...nodes`        | -          |
+| 下の階層が見える条件付きコメントの開始タグ    | `14`                        | `"!(IE 7)"`            | -                 | -          |
+| 下の階層が見える条件付きコメントの終了タグ    | `15`                        | -                      | -                 | -          |
+| Netscape4用 下の階層が隠れる条件付コメント *8 | `16`                        | `"true"`               | `...nodes`        | -          |
+| HTML_ELEMENT(開始タグのみ) *9                 | `17`                        | `"div"`                | `{attributes}` *3 | `...nodes` |
+| HTML_ELEMENT(閉じタグのみ) *9                 | `18`                        | `"div"`                | -                 | -          |
 
 1. タグ名は小文字
 2. クラス名, id どちらか、または両方を第2引数ではなくここで記述できる
@@ -211,15 +212,15 @@ json2json と微妙に異なる点に注意
       * 省略が可能
    * 例
       * `{type:"text",style:{color:"red"}}`
-   * 値が `""` or `==null` では属性は追加されない(json2html)
+   * 値が `===false` or `===null` or `==undefined` では属性は追加されない(json2html)
    * style 属性はオブジェクトまたは文字列(`elm.style.cssText`)で記述する
      * `{style:{}}`, `style:"color:red;font-size:2em"`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onInstruction の戻り値で使用できる
 5. doctype 文字列。XHTML では XML 宣言を含むこともある `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
 6. `nodeValue` は `string` または Finite な `number`
 7. `...nodes` は `[ nodeType, ... ]`, `string` または Finite な `number`
-8. 開始タグと終了タグが同一階層に出現する
-9. 条件付きコメントの中に出現する壊れた HTML 文字列
+8. 壊れた HTML ツリーを子にもつことがある
+9. 下の階層が隠れる条件付きコメントの中に出現する壊れた HTML ツリーを表現する為の nodeType
 
 ### 4.1. ドキュメント
 

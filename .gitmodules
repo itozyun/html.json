@@ -1,0 +1,3 @@
+[submodule ".submodules/htmlparser"]
+	path = .submodules/htmlparser
+	url = https://github.com/ECMAScript2/htmlparser.git

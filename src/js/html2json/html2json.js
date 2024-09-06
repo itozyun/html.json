@@ -1,7 +1,7 @@
 goog.provide( 'html2json' );
 
 goog.requireType( 'htmljson.VNode' );
-goog.require( 'htmljson.getVNodeTreeFromHTML' );
+goog.require( 'htmljson.VNode.createVNodeFromHTML' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -18,7 +18,7 @@ let parentTreeIsInPreTag = false;
 html2json = function( htmlString, opt_options ){
     const
         json              = [],
-        vnode             = htmljson.getVNodeTreeFromHTML( htmlString ),
+        vnode             = htmljson.createVNodeFromHTML( htmlString ),
         options           = opt_options || {},
         trimWhitespace    = [ 'none', false ].indexOf( options[ 'trimWhitespace' ] ) === -1,
         isTrimAgressive   = options[ 'trimWhitespace' ] === 'agressive',

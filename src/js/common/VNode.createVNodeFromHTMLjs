@@ -1,7 +1,8 @@
-goog.require( 'htmljson.VNode.getVNodeTreeFromHTML' );
+goog.require( 'htmljson.VNode.createVNodeFromHTML' );
 
 goog.require( 'htmlparser.exec' );
 goog.requireType( 'htmlparser.typedef.Handler' );
+
 goog.require( 'htmljson.VNode' );
 goog.require( 'htmljson.NODE_TYPE' );
 
@@ -10,7 +11,7 @@ goog.require( 'htmljson.NODE_TYPE' );
  * @param {string} html 
  * @return {!VNode}
  */
-htmljson.VNode.getVNodeTreeFromHTML = function getVNodeTreeFromHTML( html ){
+htmljson.VNode.createVNodeFromHTML = function( html ){
     var handler = new Handler;
 
     htmlparser.exec( html, handler );
