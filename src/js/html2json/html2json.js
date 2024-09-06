@@ -45,7 +45,7 @@ html2json = function( htmlString, opt_options ){
      * @param {boolean} lineBreaksTrimmed
      */
     function walkNode( currentVNode, parentJSONNode, insidePreTag, lineBreaksTrimmed ){
-        var textContent = currentVNode.getData(),
+        var nodeValue = currentVNode.getData(),
             functionNameAndArgs, currentJSONNode, childNodeList, nextNode;
             // console.log( currentVNode )
         switch( currentVNode.getNodeType() ){
@@ -116,62 +116,62 @@ html2json = function( htmlString, opt_options ){
                 if( !insidePreTag && trimWhitespace ){
                     if( lineBreaksTrimmed ){
                         // 先頭と最後の改行文字を削除
-                        textContent = trimChar( textContent, '\n' );
+                        nodeValue = trimChar( nodeValue, '\n' );
                     } else {
-                        textContent = textContent.split( '\r\n' ).join( '\n' );
+                        nodeValue = nodeValue.split( '\r\n' ).join( '\n' );
                         if( removeLineBreaksBetweenFullWidth ){
-                            textContent = toNoLineBreaksBetweenFullWidth( textContent );
+                            nodeValue = toNoLineBreaksBetweenFullWidth( nodeValue );
                         };
 
                         // タブは一つの半角スペースに
-                        textContent = textContent.split( '\t' ).join( ' ' );
+                        nodeValue = nodeValue.split( '\t' ).join( ' ' );
 
                         // 2つ以上の改行を1つの改行へ
-                        while( 0 <= textContent.indexOf( '\n\n' ) ){
-                            textContent = textContent.split( '\n\n' ).join( '\n' );
+                        while( 0 <= nodeValue.indexOf( '\n\n' ) ){
+                            nodeValue = nodeValue.split( '\n\n' ).join( '\n' );
                         };
 
                         // 最後の改行を削除
-                        textContent = trimLastChar( textContent, '\n' );
+                        nodeValue = trimLastChar( nodeValue, '\n' );
 
                         if( isTrimAgressive ){
                             var trimWhitespaceAggressively =
                                 // <b>1</b> / <b>3</b>
                                 //         ^^^ / の両隣のスペースを削除するか？は改行の有無で判断する
                                     // 先頭が改行、かつ
-                                    textContent.charAt( 0 ) === '\n' &&
+                                    nodeValue.charAt( 0 ) === '\n' &&
                                     // 最後が改行+空白文字の場合  
-                                    /\n[ ]*$/.test( textContent );
+                                    /\n[ ]*$/.test( nodeValue );
                         };
 
                         // 改行文字を一つの半角スペースに
-                        textContent = textContent.split( '\n' ).join( ' ' );
+                        nodeValue = nodeValue.split( '\n' ).join( ' ' );
 
                         // 2つ以上の半角スペースを1つの半角スペースへ
-                        while( 0 <= textContent.indexOf( '  ' ) ){
-                            textContent = textContent.split( '  ' ).join( ' ' );
+                        while( 0 <= nodeValue.indexOf( '  ' ) ){
+                            nodeValue = nodeValue.split( '  ' ).join( ' ' );
                         };
 
                         if( trimWhitespaceAggressively ){
                             // 先頭と最後の半角スペースを削除
-                            textContent = trimChar( textContent, ' ' );
+                            nodeValue = trimChar( nodeValue, ' ' );
                         };
                         // 先頭または最後の半角スペースの保護には \u0020 を使う
-                        textContent = textContent.split( '\\u0020' ).join( ' ' );
+                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' );
                     };
                 };
-                if( textContent ){
-                    parentJSONNode.push( m_tryToNumber( textContent ) );
+                if( nodeValue ){
+                    parentJSONNode.push( m_tryToNumber( nodeValue ) );
                 };
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
                 if( keepCDATASections ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToNumber( textContent ) ] );
+                    parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToNumber( nodeValue ) ] );
                 };
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                functionNameAndArgs = codeToObject( extractStringBetween( textContent, '?', '?', true ) );
+                functionNameAndArgs = codeToObject( extractStringBetween( nodeValue, '?', '?', true ) );
 
                 currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
 
@@ -181,26 +181,26 @@ html2json = function( htmlString, opt_options ){
                 parentJSONNode.push( currentJSONNode );
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
-                // console.log( textContent )
-                if( textContent.startsWith( '[if' ) && 0 < textContent.indexOf( '<![endif]' ) ){
+                // console.log( nodeValue )
+                if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
                     returnByNodeList     = true;
                     parentTreeIsInPreTag = insidePreTag;
-                    // console.log( extractStringBetween( textContent, '>', '<![endif]' ) )
-                    childNodeList = html2json( extractStringBetween( textContent, '>', '<![endif]', true ), options );
+                    // console.log( extractStringBetween( nodeValue, '>', '<![endif]' ) )
+                    childNodeList = html2json( extractStringBetween( nodeValue, '>', '<![endif]', true ), options );
                     returnByNodeList = parentTreeIsInPreTag = false;
 
                     if( childNodeList.length || m_isNumber( childNodeList ) ){
-                        currentJSONNode = [ htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, getIECondition( textContent ) ];
+                        currentJSONNode = [ htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, getIECondition( nodeValue ) ];
                         m_isArray( childNodeList )
                             ? currentJSONNode.push.apply( currentJSONNode, childNodeList )
                             : currentJSONNode.push( childNodeList );  // conditional, unescapedText
                         parentJSONNode.push( currentJSONNode );
                     };
-                } else if( textContent.startsWith( '[if' ) && 0 < textContent.indexOf( '><!' ) ){
+                } else if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '><!' ) ){
                     // htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
                     // 8:"[if !(IE)]><!"
-                    currentJSONNode = [ htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, getIECondition( textContent ) ];
+                    currentJSONNode = [ htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, getIECondition( nodeValue ) ];
 
                     while( nextNode = currentVNode.getNextNode() ){
                         if( nextNode.getNodeType() === 8 && nextNode.getData() === '<![endif]' ){
@@ -215,32 +215,30 @@ html2json = function( htmlString, opt_options ){
                     };
                 } else if( keepComments ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToNumber( textContent ) ] );
+                    parentJSONNode.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToNumber( nodeValue ) ] );
                 };
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                var xmlDeclarationAndDocumentType =
-                        htmlString.substr( 0, htmlString.indexOf( '>', htmlString.indexOf( '<!DOCTYPE ' ) ) + 1 );
-                
                 if( trimWhitespace ){
-                    xmlDeclarationAndDocumentType = xmlDeclarationAndDocumentType
-                        .split( '\n' ).join( ' ' )      // 宣言中の改行を半角スペースに
-                        .split( '  ' ).join( ' ' )      // 2つ以上の半角スペースをスペースに
-                        .split( '> <' ).join( '>\n<' ); // xml 宣言と doctype 宣言の間は改行
+                    nodeValue = nodeValue
+                        .split( '\n' ).join( ' ' )  // 宣言中の改行を半角スペースに
+                        .split( '  ' ).join( ' ' ); // 2つ以上の半角スペースをスペースに
                 };
-
-                parentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_NODE, xmlDeclarationAndDocumentType );
+                parentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_NODE, nodeValue );
+                break;
+            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+                parentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
                 break;
         };
     };
 
     /**
      * 
-     * @param {string} textContent 
+     * @param {string} nodeValue 
      * @return {string} 
      */
-    function getIECondition( textContent ){
-        return extractStringBetween( textContent, '[', ']', false );
+    function getIECondition( nodeValue ){
+        return extractStringBetween( nodeValue, '[', ']', false );
     };
 
     /**

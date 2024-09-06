@@ -29,15 +29,13 @@ function Handler(){
     this._rootNode = new VNode( null, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
     /** @type {!VNode} */
     this._current = this._rootNode;
-    /** @const {!Array.<!VNode>} */
-    this._stack = [];
 };
 
 Handler.prototype.onParseError = function( msg ){ throw msg; };
 
 Handler.prototype.onParseDocType = function( doctype ){
     this._rootNode.setNodeType( htmljson.NODE_TYPE.DOCUMENT_NODE );
-    this._rootNode.setData( '<!DOCTYPE ' + doctype + '>' );
+    this._rootNode.setData( doctype );
 };
 
 Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
@@ -58,7 +56,6 @@ Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
     vnode = this._currentNode.insertElementLast( tag, attrObj );
 
     if( !empty ){
-        stack.push( this._currentNode );
         this._currentNode = vnode;
     };
 };
@@ -68,7 +65,7 @@ Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
         this._currentNode.insertNoEscapeTextLast( '</' + tag + '>' );
     } else if( !missingEndTag ){
         if( tag === this._currentNode.getTagName() ){
-            this._currentNode = stack.pop();
+            this._currentNode = this._currentNode.getParent();
         } else {
             // error
         };
