@@ -52,7 +52,7 @@ html2json = function( htmlString, opt_options ){
             case htmljson.NODE_TYPE.ELEMENT_NODE :
                 var attributes  = {},
                     tagName     = currentVNode.getTagName().toLowerCase(),
-                    isPreTag    = tagName === 'pre',
+                    isPreTag    = tagName === 'pre' || tagName === 'listing',
                     attributes  = currentVNode.getAttributes(),
                     numAttrs    = 0,
                     i, l, attrName, attrValue, className = '', textNode;
