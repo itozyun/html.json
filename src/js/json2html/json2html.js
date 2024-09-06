@@ -30,7 +30,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
             json = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, json ];
         };
         return /** @type {string} */ (walkNode( json, null, 0, m_endTagRequired || false, m_escapeForHTMLDisabled || false ));
-    } else if( goog.DEBUG ){
+    } else if( htmljson.DEFINE.DEBUG ){
         errorHandler( 'Invalid html.json document!' );
     };
 
@@ -68,14 +68,14 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
             case htmljson.NODE_TYPE.CDATA_SECTION :
                 if( m_isString( arg1 ) ){
                     htmlString += '<![CDATA[' + arg1 + ']]>';
-                } else if( goog.DEBUG ){
+                } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'CDATA_SECTION Error! [' + currentJSONNode + ']' );
                 };
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--' + arg1 + '-->';
-                } else if( goog.DEBUG ){
+                } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'COMMENT_NODE Error! [' + currentJSONNode + ']' );
                 };
                 break;
@@ -84,7 +84,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']>';
-                } else if( goog.DEBUG ){
+                } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'CONDITIONAL_COMMENT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
                 htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
@@ -94,7 +94,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']><!-->';
-                } else if( goog.DEBUG ){
+                } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'CONDITIONAL_COMMENT_SHOW_LOWER Error! [' + currentJSONNode + ']' );
                 };
                 htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<!--<![endif]-->';
@@ -109,7 +109,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                         return REMOVED;
                     } else if( m_isArray( result ) ){
                         return REMOVED;
-                    // } else if( goog.DEBUG ){
+                    // } else if( htmljson.DEFINE.DEBUG ){
                         // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                     };
                 };
@@ -166,7 +166,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                     if( isXMLRoot ){
                         isXmlInHTML = false;
                     };
-                } else if( goog.DEBUG ){
+                } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
                 };
                 break;
@@ -219,7 +219,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else {
                     htmlString += htmlPartString;
                 };
-            } else if( goog.DEBUG ){
+            } else if( htmljson.DEFINE.DEBUG ){
                 errorHandler( 'Invalid html.json! [' + childNode + ']' );
             };
         };

@@ -6,6 +6,17 @@ goog.require( 'htmljson.NODE_TYPE' );
 htmljson.VNode = VNode;
 
 /**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _canHasChildren( vnode ){
+    return vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
+           vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE ||
+           vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+};
+
+/**
  * 
  * @param {!VNode | null} parent 
  * @param {number} insertPosition
@@ -16,12 +27,28 @@ htmljson.VNode = VNode;
 function VNode( parent, insertPosition, nodeType, opt_tagOrData, opt_attrs ){
     var childNodes;
 
+    if( htmljson.DEFINE.DEBUG ){
+        switch( parent._nodeType ){
+            case htmljson.NODE_TYPE.TEXT_NODE              :
+            case htmljson.NODE_TYPE.COMMENT_NODE           :
+            case htmljson.NODE_TYPE.CDATA_SECTION          :
+            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+                throw 'nodeType:' + parent._nodeType + ' は親になることが出来ません!';
+        };
+    };
+
     /** @type {!VNode | null} */
     this._parent = parent;
     /** @type {number} */
     this._nodeType = nodeType;
 
     if( parent ){
+        if( htmljson.DEFINE.DEBUG ){
+            if( nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE || nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+                throw '子になることのできない nodeType です!';
+            };
+        };
+
         /** @type {!Array.<VNode>} */
         childNodes = parent._childNodes = parent._childNodes || [];
         if( 0 <= insertPosition && insertPosition < childNodes.length ){
@@ -93,6 +120,11 @@ VNode.prototype.getNodeType = function(){
  * @param {number} nodeType
  */
 VNode.prototype.setNodeType = function( nodeType ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( nodeType !== htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            throw 'nodeType の変更は DOCUMENT_FRAGMENT_NODE -> DOCUMENT_NODE だけをサポートします!';
+        };
+    };
     this._nodeType = nodeType;
 };
 
@@ -108,6 +140,10 @@ VNode.prototype.getData = function(){
         case htmljson.NODE_TYPE.COMMENT_NODE           :
         case htmljson.NODE_TYPE.DOCUMENT_NODE          :
             return this._data;
+        default :
+            if( htmljson.DEFINE.DEBUG ){
+                throw 'getData() をサポートしない nodeType です!'
+            };
     };
 };
 
@@ -124,6 +160,10 @@ VNode.prototype.setData = function( data ){
         case htmljson.NODE_TYPE.DOCUMENT_NODE          :
             this._data = data;
             break;
+        default :
+            if( htmljson.DEFINE.DEBUG ){
+                throw 'setData() をサポートしない nodeType です!'
+            };
     };
 };
 
@@ -132,6 +172,11 @@ VNode.prototype.setData = function( data ){
  * @return {!Object | null}
  */
 VNode.prototype.getAttributes = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE ){
+            throw 'getAttributes() をサポートしない nodeType です!';
+        };
+    };
     return m_isAttributes( this._attrs ) ? this._attrs : null;
 };
 
@@ -140,6 +185,11 @@ VNode.prototype.getAttributes = function(){
  * @return {string}
  */
 VNode.prototype.getTagName = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE ){
+            throw 'getTagName() をサポートしない nodeType です!';
+        };
+    };
     return this._tagName;
 };
 
@@ -156,6 +206,11 @@ VNode.prototype.getParent = function(){
  * @return {!VNode | null}
  */
 VNode.prototype.getNextNode = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            throw 'getNextNode() をサポートしない nodeType です!';
+        };
+    };
     return this._parent && this._parent.getChildNodeAt( this.getMyIndex() + 1 ) || null;
 };
 
@@ -164,6 +219,11 @@ VNode.prototype.getNextNode = function(){
  * @return {number}
  */
 VNode.prototype.getChildNodeLength = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !_canHasChildren( this ) ){
+            throw 'getChildNodeLength() をサポートしない nodeType です!';
+        };
+    };
     return this._childNodes && this._childNodes.length;
 };
 
@@ -171,6 +231,11 @@ VNode.prototype.getChildNodeLength = function(){
  * @return {!VNode | null}
  */
 VNode.prototype.getFirstChild = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !_canHasChildren( this ) ){
+            throw 'getFirstChild() をサポートしない nodeType です!';
+        };
+    };
     return this.getChildNodeAt( 0 );
 };
 
@@ -178,6 +243,11 @@ VNode.prototype.getFirstChild = function(){
  * @return {!VNode | null}
  */
 VNode.prototype.getLastChild = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !_canHasChildren( this ) ){
+            throw 'getLastChild() をサポートしない nodeType です!';
+        };
+    };
     return this.getChildNodeAt( this.getChildNodeLength() - 1 );
 };
 
@@ -186,6 +256,11 @@ VNode.prototype.getLastChild = function(){
  * @return {!VNode | null}
  */
 VNode.prototype.getChildNodeAt = function( index ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !_canHasChildren( this ) ){
+            throw 'getChildNodeAt() をサポートしない nodeType です!';
+        };
+    };
     return this._childNodes && this._childNodes[ index ] || null;
 };
 
@@ -194,6 +269,11 @@ VNode.prototype.getChildNodeAt = function( index ){
  * @return {number}
  */
 VNode.prototype.getMyIndex = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            throw 'getMyIndex() をサポートしない nodeType です!';
+        };
+    };
     return this._parent ? this._parent._childNodes.indexOf( this ) : -1;
 };
 
@@ -201,11 +281,36 @@ VNode.prototype.getMyIndex = function(){
  * 
  */
 VNode.prototype.remove = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            throw 'remove() をサポートしない nodeType です!';
+        };
+    };
     var index = this.getMyIndex();
 
     if( 0 <= index ){
         this._parent._childNodes.splice( index, 1 );
         this._parent = null;
+    };
+};
+
+/**
+ * @param {number}
+ * @return {!VNode | null}
+ */
+VNode.prototype.empty = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !_canHasChildren( this ) ){
+            throw 'empty() をサポートしない nodeType です!';
+        };
+    };
+
+    var childNodes = this._childNodes, i, l;
+
+    if( childNodes ){
+        for( i = childNodes.length; i; ){
+            childNodes[ --i ].remove();
+        };
     };
 };
 

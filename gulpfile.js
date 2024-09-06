@@ -41,7 +41,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'goog.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=true'
                             ],
                             env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
@@ -83,7 +83,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'goog.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=true'
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
@@ -125,7 +125,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'goog.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=true'
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
@@ -170,7 +170,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'goog.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=true'
                             ],
                             env               : 'CUSTOM',
                             compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'

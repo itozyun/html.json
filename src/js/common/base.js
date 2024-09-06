@@ -220,7 +220,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
                     currentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
                 };
             };
-        } else if( goog.DEBUG ){
+        } else if( htmljson.DEFINE.DEBUG ){
             errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
         };
     };
@@ -251,7 +251,7 @@ function m_executeInstructionAttr( recursion, onInstruction, name, value, errorH
         };
     } else if( m_isString( value ) ){
         result = onInstruction( /** @type {string} */ (value) );
-    } else if( goog.DEBUG ){
+    } else if( htmljson.DEFINE.DEBUG ){
         errorHandler( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
     };
 

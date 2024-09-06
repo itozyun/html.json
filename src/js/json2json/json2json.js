@@ -45,7 +45,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
             m_normalizeTextNodes( json );
         };
         return isStaticWebPage;
-    } else if( goog.DEBUG ){
+    } else if( htmljson.DEFINE.DEBUG ){
         errorHandler( 'Invalid html.json document!' );
     };
 
@@ -108,7 +108,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                         // just replaced
                     } else if( m_isArray( result ) ){
                         return REMOVED;
-                    // } else if( goog.DEBUG ){
+                    // } else if( htmljson.DEFINE.DEBUG ){
                         // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                     };
                 } else {
@@ -131,7 +131,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                         // childNodes
                         walkChildNodes( currentJSONNode, ancestorJSONNodes );
                     };
-                } else if( goog.DEBUG ){
+                } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
                 };
         };
@@ -158,7 +158,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                 if( nodeIncreaseOrDecrease ){
                     i += nodeIncreaseOrDecrease; // Node Increase/Decrease
                 };
-            } else if( goog.DEBUG ){
+            } else if( htmljson.DEFINE.DEBUG ){
                 errorHandler( 'Invalid html.json! [' + childNode + ']' );
             };
         };
@@ -190,7 +190,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                             attrs[ originalName ] = value;
                             isStaticWebPage = false;
                             ++numAttributes;
-                        } else if( goog.DEBUG ){
+                        } else if( htmljson.DEFINE.DEBUG ){
                             errorHandler( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
                         };
                     } else if( m_ATTRS_NO_VALUE[ name ] && value === false ){
