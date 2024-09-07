@@ -39,7 +39,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'htmljson.DEFINE.DEBUG=true',
+                                'htmljson.DEFINE.DEBUG=' + isDebug,
 
                                 'htmlparser.DEFINE.useXML=' + true,
                                 'htmlparser.DEFINE.useDocTypeNode=' + true,
@@ -89,7 +89,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'htmljson.DEFINE.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=' + isDebug
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
@@ -131,7 +131,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'htmljson.DEFINE.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=' + isDebug
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
@@ -145,20 +145,20 @@ gulp.task(
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
-        } /*,
+        },
         function(){
             return gulp.src(
                     [
                         './src/closure-primitives/base.js',
-                        './node_modules/jsonparse/jsonparse.js',
-                        './node_modules/through/index.js',
-                        './src/js/** /*.js'
+                        // './node_modules/jsonparse/jsonparse.js',
+                        // './node_modules/through/index.js',
+                        './src/js/**/*.js'
                     ]
                 ).pipe(
                     ClosureCompiler(
                         {
                             dependency_mode   : 'PRUNE',
-                            entry_point       : 'goog:htmljson.streamjson2html.gulp',
+                            entry_point       : 'goog:json2html.stream',
                             externs           : [
                                 './src/js-externs/console.js',
                                 './node_modules/@externs/nodejs/v8/nodejs.js',
@@ -176,7 +176,7 @@ gulp.task(
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'htmljson.DEFINE.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=' + isDebug
                             ],
                             env               : 'CUSTOM',
                             compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
@@ -192,13 +192,13 @@ gulp.task(
                             compilation_level : isDebug ? 'WHITESPACE_ONLY' : 'SIMPLE_OPTIMIZATIONS',
                             formatting        : isPrettify ? 'PRETTY_PRINT' : 'SINGLE_QUOTES',
                             warning_level     : 'QUIET',
-                            js_output_file    : 'stream-json2html.js'
+                            js_output_file    : 'json2html.stream.js'
                         }
                     )
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
-        } */
+        }
     )
 );
 

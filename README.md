@@ -17,6 +17,9 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 ~~~sh
 npm run make
 npm run test
+
+# Do when the node module is updated
+gulp externs
 ~~~
 
 ## 目次
@@ -220,6 +223,15 @@ json2json と微妙に異なる点に注意!
 7. `...nodes` は `[ nodeType, ... ]`, `string` または Finite な `number`
 8. 壊れた HTML ツリーを子にもつことがある
 9. 下の階層が隠れる条件付きコメントの中に出現する壊れた HTML ツリーを表現する為の nodeType
+10. [Conditional Comments for Netscape 4](https://web.archive.org/web/20050308074844/http://www.dithered.com/css_filters/html_only/conditional_comments_ns4.html)
+
+~~~html
+<!--&{true};
+   <style type="text/css">
+   /*<![CDATA[*/ #testElement {color: #00cc00;} /*]]>*/
+   </style>
+-->
+~~~
 
 ### 4.1. ドキュメント
 

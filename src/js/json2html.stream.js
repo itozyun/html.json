@@ -1,16 +1,17 @@
-goog.provide( 'streamjson2html' );
+goog.provide( 'json2html.stream' );
 
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmljson.DEFINE.USE_XHTML' );
+goog.require( 'json2html' );
 
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js
 
-// const Parser = require( 'jsonparse' );
+import Parser from 'jsonparse';
 
-// const through = require( 'through' );
+import through from 'through';
 
 const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
 
@@ -112,7 +113,7 @@ function onToken( token, value ){
     };
 
     // console.log( '> ' + token + ' : ' + value, this._expect, this._tree, this._args );
-
+    const TAGNAME_WITHOUT_END_TAG = '';
     const tree = this._tree;
     let expect = this._expect;
     let phase, queue;
@@ -154,11 +155,11 @@ function onToken( token, value ){
     };
 
     function createEndTag( childNodesContents ){
-        const currentNode = tree.pop();
+        const tagNameOrNodeType = tree.pop();
         
         expect = tree.length ? htmljson.EXPECT.IN_CHILD_NODES : htmljson.EXPECT.END_OF_DOCUMENT;
 
-        switch( currentNode ){
+        switch( tagNameOrNodeType ){
             //case htmljson.NODE_TYPE.DOCUMENT_NODE :
             //case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 // expect = htmljson.EXPECT.END_OF_DOCUMENT;
@@ -168,18 +169,24 @@ function onToken( token, value ){
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 queue = '<![endif]-->';
                 break;
-            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
-                queue = '<!--<![endif]-->';
-                break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
                 queue = ']]>';
                 break;
+            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
             case htmljson.NODE_TYPE.COMMENT_NODE :
                 queue = '-->';
                 break;
             default :
-                if( m_isString( currentNode ) ){
-                    const tagName = currentNode;
+                if( tagNameOrNodeType === TAGNAME_WITHOUT_END_TAG ){
+                    if( !childNodesContents ){
+                        queue = '>';
+                    } else {
+                        queue = '';
+                    };
+                    self._omittedEndTagBefore = '';
+                    updateFlags();
+                } else if( m_isString( tagNameOrNodeType ) ){
+                    const tagName = tagNameOrNodeType;
 
                     if( !childNodesContents ){
                         queue = self._isXMLDocument || self._isXmlInHTML ? ' />' : '>';
@@ -207,18 +214,18 @@ function onToken( token, value ){
         self._endTagRequired = self._escapeForHTMLDisabled = self._isXmlInHTML = false;
 
         for( let i = 0, l = tree.length; i < l; ++i ){
-            const tagName = tree[ i ];
+            const tagNameOrNodeType = tree[ i ];
 
-            if( tagName === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || tagName === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
-                self._endTagRequired = true;
-            } else if( m_isString( tagName ) ){
-                if( m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ] ){
+            if( tagNameOrNodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || tagNameOrNodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ){
+                self._endTagRequired = self._escapeForHTMLDisabled = self._isXmlInHTML = false;
+            } else if( m_isString( tagNameOrNodeType ) ){
+                if( m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagNameOrNodeType ] ){
                     self._endTagRequired = true;
                 };
-                if( m_UNESCAPED_TAGS[ tagName ] ){
+                if( m_UNESCAPED_TAGS[ tagNameOrNodeType ] ){
                     self._escapeForHTMLDisabled = true;
                 };
-                if( m_TAGNAME_TO_NAMESPACE[ tagName ] || m_isNamespacedTag( tagName ) ){
+                if( m_TAGNAME_TO_NAMESPACE[ tagNameOrNodeType ] || m_isNamespacedTag( tagNameOrNodeType ) ){
                     self._isXmlInHTML = true;
                 };
             };
@@ -226,7 +233,11 @@ function onToken( token, value ){
     };
 
     function closeParentStartTag(){
-        return closeStartTag && m_isString( tree[ tree.length - 1 ] ) ? '>' : '';
+        if( closeStartTag ){
+            closeStartTag = false;
+            return '>';
+        };
+        return '';
     };
 
     function appendOmittedEndTagBasedOnFollowingNode(){
@@ -255,10 +266,10 @@ function onToken( token, value ){
                         const result = executeProcessingInstruction();
 
                         if( m_isArray( result ) ){
-                            m_endTagRequired   = this._endTagRequired;
+                            m_endTagRequired        = this._endTagRequired;
                             m_escapeForHTMLDisabled = this._escapeForHTMLDisabled;
-                            m_isXMLDocument     = this._isXMLDocument || this._isXmlInHTML;
-                            queue = p_json2html(
+                            m_isXMLDocument         = this._isXMLDocument || this._isXmlInHTML;
+                            queue = json2html(
                                 result,
                                 this._onInstruction,
                                 this._onerror,
@@ -386,6 +397,12 @@ function onToken( token, value ){
                         case htmljson.EXPECT.TAG_NAME  :
                             phase = htmljson.PHASE.TAG_NAME;
                             break;
+                        case htmljson.EXPECT.TAG_NAME_WITHOUT_END_TAG :
+                            phase = htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG;
+                            break;
+                        case htmljson.EXPECT.TAG_NAME_WITHOUT_START_TAG :
+                            phase = htmljson.PHASE.TAG_NAME_WITHOUT_START_TAG;
+                            break;
                         case htmljson.EXPECT.DOCUMENT_NODE_VALUE :
                             phase = htmljson.PHASE.DOCUMENT_NODE_VALUE;
                             break;
@@ -400,6 +417,9 @@ function onToken( token, value ){
                             break;
                         case htmljson.EXPECT.COND_CMT_HIDE_LOWER_FORMURA:
                             phase = htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA;
+                            break;
+                        case htmljson.EXPECT.NN4_COND_CMT_SHOW_LOWER_FORMURA :
+                            phase = htmljson.PHASE.NN4_COND_CMT_SHOW_LOWER_FORMURA;
                             break;
                         case htmljson.EXPECT.COND_CMT_SHOW_LOWER_FORMURA:
                             phase = htmljson.PHASE.COND_CMT_SHOW_LOWER_FORMURA;
@@ -488,7 +508,7 @@ function onToken( token, value ){
                     expect = htmljson.EXPECT.NODE_TYPE;
                     break;
             /** <!DOCTYPE html> */
-                case htmljson.PHASE.DOCUMENT_NODE_START:
+                case htmljson.PHASE.ENTER_DOCUMENT_NODE:
                     expect = htmljson.EXPECT.DOCUMENT_NODE_VALUE;
                     tree.push( htmljson.NODE_TYPE.DOCUMENT_NODE );
                     break;
@@ -500,21 +520,25 @@ function onToken( token, value ){
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** DocumentFragment */
-                case htmljson.PHASE.DOCUMENT_FRAGMENT_NODE_START :
+                case htmljson.PHASE.ENTER_DOCUMENT_FRAGMENT_NODE :
                     expect = htmljson.EXPECT.CHILD_NODES_START ;
                     tree.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
                     break;
             /** Element */
-                case htmljson.PHASE.ELEMENT_NODE_START :
+                case htmljson.PHASE.ENTER_ELEMENT_NODE :
                     expect = htmljson.EXPECT.TAG_NAME;
                     break;
+                case htmljson.PHASE.ENTER_ELEMENT_WITHOUT_END_TAG :
+                    expect = htmljson.EXPECT.TAG_NAME_WITHOUT_END_TAG;
+                    break;
                 case htmljson.PHASE.TAG_NAME :
+                case htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG :
                     let tagName = m_parseTagName( /** @type {string} */ (value) );
                     const id        = tagName[ 1 ];
                     const className = tagName[ 2 ];
                     tagName = tagName[ 0 ];
                 
-                    queue = ( this._omittedEndTagBefore === 'p'&& !m_P_END_TAG_LESS_TAGS[ tagName ] ? '</p>' : '' ) + '<' + tagName;
+                    queue = ( this._omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ? '</p>' : '' ) + '<' + tagName;
 
                     this._omittedEndTagBefore = '';
 
@@ -531,7 +555,11 @@ function onToken( token, value ){
                     if( !this._escapeForHTMLDisabled ){
                         this._escapeForHTMLDisabled = !!m_UNESCAPED_TAGS[ tagName ];
                     };
-                    tree.push( tagName );
+                    if( phase === htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG ){
+                        tree.push( TAGNAME_WITHOUT_END_TAG );
+                    } else {
+                        tree.push( tagName );
+                    };
                     updateFlags();
                     expect = htmljson.EXPECT.ATTRIBUTES_START;
                     break;
@@ -590,8 +618,18 @@ function onToken( token, value ){
                     createEndTag( false );
                     break;
 
+            /** </div> */
+                case htmljson.PHASE.ENTER_ELEMENT_WITHOUT_START_TAG :
+                    expect = htmljson.EXPECT.TAG_NAME_WITHOUT_START_TAG;
+                    tree.push( htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG );
+                    break;
+                case htmljson.PHASE.TAG_NAME_WITHOUT_START_TAG :
+                    queue  = '</' + value + '>';
+                    expect = htmljson.EXPECT.END_OF_NODE;
+                    break;
+
             /** Text Node */
-                case htmljson.PHASE.TEXT_NODE_START:
+                case htmljson.PHASE.ENTER_TEXT_NODE:
                     expect = htmljson.EXPECT.TEXT_NODE_VALUE;
                     tree.push( htmljson.NODE_TYPE.TEXT_NODE );
                     break;
@@ -605,7 +643,7 @@ function onToken( token, value ){
                     expect = htmljson.EXPECT.IN_CHILD_NODES;
                     break;
             /** <![CDATA[ ]]> */
-                case htmljson.PHASE.CDATA_SECTION_START:
+                case htmljson.PHASE.ENTER_CDATA_SECTION:
                     queue  = '<![CDATA[';
                     expect = htmljson.EXPECT.CDATA_SECTION_VALUE;
                     tree.push( htmljson.NODE_TYPE.CDATA_SECTION );
@@ -615,7 +653,7 @@ function onToken( token, value ){
                     expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!-- --> */
-                case htmljson.PHASE.COMMENT_NODE_START:
+                case htmljson.PHASE.ENTER_COMMENT_NODE:
                     queue  = '<!--';
                     expect = htmljson.EXPECT.COMMENT_NODE_VALUE;
                     tree.push( htmljson.NODE_TYPE.COMMENT_NODE );
@@ -625,7 +663,7 @@ function onToken( token, value ){
                     expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!--[if IE]> --> */
-                case htmljson.PHASE.COND_CMT_HIDE_LOWER_START :
+                case htmljson.PHASE.ENTER_COND_CMT_HIDE_LOWER :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
                     expect = htmljson.EXPECT.COND_CMT_HIDE_LOWER_FORMURA;
                     tree.push( htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER );
@@ -634,18 +672,34 @@ function onToken( token, value ){
                     queue = value + ']>';
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
+            /** <!--{true}; --> */
+                case htmljson.PHASE.ENTER_NN4_COND_CMT_HIDE_LOWER :
+                    queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--{';
+                    expect = htmljson.EXPECT.NN4_COND_CMT_SHOW_LOWER_FORMURA;
+                    tree.push( htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER );
+                    break;
+                case htmljson.PHASE.NN4_COND_CMT_SHOW_LOWER_FORMURA :
+                    queue = value + '};';
+                    expect = htmljson.EXPECT.CHILD_NODES_START;
+                    break;
             /** <!--[if !IE]><!--> */
-                case htmljson.PHASE.COND_CMT_SHOW_LOWER_START :
-                    queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
+                case htmljson.PHASE.ENTER_COND_CMT_SHOW_LOWER_START :
+                    queue  = '<!--[';
                     expect = htmljson.EXPECT.COND_CMT_SHOW_LOWER_FORMURA;
                     tree.push( htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START );
                     break;
                 case htmljson.PHASE.COND_CMT_SHOW_LOWER_FORMURA :
                     queue  = value + ']><!-->';
-                    expect = htmljson.EXPECT.CHILD_NODES_START;
+                    expect = htmljson.EXPECT.END_OF_NODE;
+                    break;
+            /** <!--<![endif]--> */
+                case htmljson.PHASE.ENTER_COND_CMT_SHOW_LOWER_END :
+                    queue = '<!--<![endif]-->';
+                    expect = htmljson.EXPECT.END_OF_NODE;
+                    tree.push( htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END );
                     break;
             /** <? func(...) ?> */
-                case htmljson.PHASE.PROCESSING_INSTRUCTION_START :
+                case htmljson.PHASE.ENTER_PROCESSING_INSTRUCTION :
                     expect = htmljson.EXPECT.PROCESSING_INSTRUCTION_NAME;
                     tree.push( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION );
                     break;
