@@ -84,10 +84,10 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                     return REMOVED;
                 };
                 break;
-            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
-            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
+            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :

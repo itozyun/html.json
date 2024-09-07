@@ -39,51 +39,38 @@ Handler.prototype.onParseDocType = function( doctype ){
 };
 
 Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
-    var attrObj, i, attr, value;
-
-    if( attrs ){
-        attrObj = {};
-        for( i = 0; i < attrs.length; i += 2 ){
-            attr  = attrs[ i ];
-            value = attrs[ i + 1 ];
-            attrObj[ attr ] = value;
-        };
-        if( i === 0 ){
-            attrs = null;
-        };
-    };
-
-    vnode = this._currentNode.insertElementLast( tag, attrObj );
-
-    if( !empty ){
-        this._currentNode = vnode;
+    if( empty ){
+        this._currentNode.insertElementLast( tag, attrs );
+    } else {
+        this._currentNode = this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG, tag, attrs );
     };
 };
 
 Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
     if( noStartTag ){
-        this._currentNode.insertNoEscapeTextLast( '</' + tag + '>' );
+        this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG, tag );
     } else if( !missingEndTag ){
         if( tag === this._currentNode.getTagName() ){
+            this._currentNode.close();
             this._currentNode = this._currentNode.getParent();
         } else {
-            // error
+            throw 'End tag error! ' + tag;
         };
     };
 };
 
-Handler.prototype.onParseText = function( text ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, text );
+Handler.prototype.onParseText = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, nodeValue );
 };
 
-Handler.prototype.onParseComment = function( comment ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.COMMENT_NODE, comment );
+Handler.prototype.onParseComment = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.COMMENT_NODE, nodeValue );
 };
 
-Handler.prototype.onParseCDATASection = function( data ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.CDATA_SECTION, data );
+Handler.prototype.onParseCDATASection = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.CDATA_SECTION, nodeValue );
 };
 
-Handler.prototype.onParseProcessingInstruction = function( data ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, data );
+Handler.prototype.onParseProcessingInstruction = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, nodeValue );
 };

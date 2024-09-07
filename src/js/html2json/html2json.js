@@ -32,6 +32,8 @@ html2json = function( htmlString, opt_options ){
         removeLineBreaksBetweenFullWidth
                           = !!options[ 'removeLineBreaksBetweenFullWidth' ];
 
+    let isCcShowLowerStarted = false;
+
     walkNode( vnode, json, parentTreeIsInPreTag || false, false );
 
     m_normalizeTextNodes( json );
@@ -183,7 +185,7 @@ html2json = function( htmlString, opt_options ){
             case htmljson.NODE_TYPE.COMMENT_NODE :
                 // console.log( nodeValue )
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
-                    // htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
+                    // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
                     returnByNodeList     = true;
                     parentTreeIsInPreTag = insidePreTag;
                     // console.log( extractStringBetween( nodeValue, '>', '<![endif]' ) )
@@ -191,28 +193,20 @@ html2json = function( htmlString, opt_options ){
                     returnByNodeList = parentTreeIsInPreTag = false;
 
                     if( childNodeList.length || m_isNumber( childNodeList ) ){
-                        currentJSONNode = [ htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER, getIECondition( nodeValue ) ];
+                        currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
                         m_isArray( childNodeList )
                             ? currentJSONNode.push.apply( currentJSONNode, childNodeList )
                             : currentJSONNode.push( childNodeList );  // conditional, unescapedText
                         parentJSONNode.push( currentJSONNode );
                     };
                 } else if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '><!' ) ){
-                    // htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
+                    // htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START
                     // 8:"[if !(IE)]><!"
-                    currentJSONNode = [ htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER, getIECondition( nodeValue ) ];
-
-                    while( nextNode = currentVNode.getNextNode() ){
-                        if( nextNode.getNodeType() === 8 && nextNode.getData() === '<![endif]' ){
-                            nextNode.remove();
-                            break;
-                        };
-                        walkNode( nextNode, currentJSONNode, insidePreTag, lineBreaksTrimmed );
-                        nextNode.remove();
-                    };
-                    if( 2 < currentJSONNode.length ){
-                        parentJSONNode.push( currentJSONNode );
-                    };
+                    parentJSONNode.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START, getIECondition( nodeValue ) ] );
+                    isCcShowLowerStarted = true;
+                } else if( nextNode.getData() === '<![endif]' && isCcShowLowerStarted ){
+                    parentJSONNode.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END ] );
+                    isCcShowLowerStarted = false;
                 } else if( keepComments ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
                     parentJSONNode.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToNumber( nodeValue ) ] );

@@ -6,29 +6,34 @@ goog.provide( 'htmljson.EXPECT' );
  * @enum {number}
  */
 htmljson.NODE_TYPE = {
-    ELEMENT_NODE                   :  1, // v
-    // ATTRIBUTE_NODE                 2
-    TEXT_NODE                      :  3, // v
-    CDATA_SECTION                  :  4, // v
-    // EntityReference                5
-    // Entity                         6
-    PROCESSING_INSTRUCTION         :  7, // v
-    COMMENT_NODE                   :  8, // v
-    DOCUMENT_NODE                  :  9, // v
-    // DOCUMENT_TYPE_NODE            10
-    DOCUMENT_FRAGMENT_NODE         : 11, // v
-    // Notation                      12
-    CONDITIONAL_COMMENT_HIDE_LOWER : 13,
-    CONDITIONAL_COMMENT_SHOW_LOWER : 14,
-    NETSCAPE4_CONDITIONAL_COMMENT  : 15
+    ELEMENT_NODE                  :  1, // v
+    // ATTRIBUTE_NODE                2
+    TEXT_NODE                     :  3, // v
+    CDATA_SECTION                 :  4, // v
+    // EntityReference               5
+    // Entity                        6
+    PROCESSING_INSTRUCTION        :  7, // v
+    COMMENT_NODE                  :  8, // v
+    DOCUMENT_NODE                 :  9, // v
+    // DOCUMENT_TYPE_NODE           10
+    DOCUMENT_FRAGMENT_NODE        : 11, // v
+    // Notation                     12
+    COND_CMT_HIDE_LOWER           : 13,
+    COND_CMT_SHOW_LOWER_START     : 14,
+    COND_CMT_SHOW_LOWER_END       : 15,
+    NETSCAPE4_COND_CMT_HIDE_LOWER : 16,
+    ELEMENT_WITHOUT_END_TAG       : 17,
+    ELEMENT_WITHOUT_START_TAG     : 18
 };
 
 /**
  * @enum {number}
  */
 htmljson.PHASE = {
+    // <-- copy to EXPECT
     ERROR                          : htmljson.NODE_TYPE.ELEMENT_NODE - 2,
     NODE_START                     : htmljson.NODE_TYPE.ELEMENT_NODE - 1,
+    // copy to EXPECT -->
 
     ELEMENT_NODE_START             : htmljson.NODE_TYPE.ELEMENT_NODE,
     TEXT_NODE_START                : htmljson.NODE_TYPE.TEXT_NODE,
@@ -37,37 +42,42 @@ htmljson.PHASE = {
     COMMENT_NODE_START             : htmljson.NODE_TYPE.COMMENT_NODE,
     DOCUMENT_NODE_START            : htmljson.NODE_TYPE.DOCUMENT_NODE,
     DOCUMENT_FRAGMENT_NODE_START   : htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE,
-    COMMENT_HIDE_LOWER_START       : htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER,
-    COMMENT_SHOW_LOWER_START       : htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER,
-    NETSCAPE4_CONDITIONAL_COMMENT  : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT,
+    COND_CMT_HIDE_LOWER_START      : htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER,
+    COND_CMT_SHOW_LOWER_START      : htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START,
+    COND_CMT_SHOW_LOWER_END        : htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END,
+    NETSCAPE4_COND_CMT_HIDE_LOWER  : htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER,
+    ELEMENT_WITHOUT_END_TAG        : htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG,
+    ELEMENT_WITHOUT_START_TAG      : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG,
+
     // <-- copy to EXPECT
-    DOCUMENT_NODE_VALUE            : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  1,
-    TEXT_NODE_VALUE                : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  2,
-    CDATA_SECTION_VALUE            : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  3,
-    COMMENT_NODE_VALUE             : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  4,
-    COMMENT_HIDE_LOWER_FORMURA     : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  5,
-    COMMENT_SHOW_LOWER_FORMURA     : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  6,
-    PROCESSING_INSTRUCTION_NAME    : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  7,
+    DOCUMENT_NODE_VALUE            : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  1,
+    TEXT_NODE_VALUE                : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  2,
+    CDATA_SECTION_VALUE            : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  3,
+    COMMENT_NODE_VALUE             : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  4,
+    COND_CMT_HIDE_LOWER_FORMURA    : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  5,
+    COND_CMT_SHOW_LOWER_FORMURA    : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  6,
+    PROCESSING_INSTRUCTION_NAME    : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  7,
 
-    TAG_NAME                       : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  8,
+    TAG_NAME                       : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  8,
 
-    ATTRIBUTES_START               : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT +  9,
-    ATTRIBUTE_PROPERTY             : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 10,
-    ATTRIBUTE_VALUE                : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 11,
+    ATTRIBUTES_START               : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG +  9,
+    ATTRIBUTE_PROPERTY             : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 10,
+    ATTRIBUTE_VALUE                : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 11,
 
-    STYLES_START                   : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 12,
-    CSS_PROPERTY                   : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 13,
-    CSS_VALUE                      : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 14,
+    STYLES_START                   : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 12,
+    CSS_PROPERTY                   : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 13,
+    CSS_VALUE                      : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 14,
     
-    IN_INSTRUCTION_ATTRIBUTE       : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 15,
+    IN_INSTRUCTION_ATTRIBUTE       : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 15,
 
-    END_OF_NODE                    : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 16,
+    END_OF_NODE                    : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 16,
     // copy to EXPECT -->
-    CLOSE_EMPTY_ELEMENT            : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 17,
-    END_OF_ATTRIBUTES              : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 18,
-    END_OF_STYLES                  : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 19,
-    TEXT_DATA                      : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 20,
-    INSTRUCTION_ATTRIBUTE_NAME     : htmljson.NODE_TYPE.NETSCAPE4_CONDITIONAL_COMMENT + 21
+
+    CLOSE_EMPTY_ELEMENT            : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 17,
+    END_OF_ATTRIBUTES              : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 18,
+    END_OF_STYLES                  : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 19,
+    TEXT_DATA                      : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 20,
+    INSTRUCTION_ATTRIBUTE_NAME     : htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG + 21
 };
 
 /**
@@ -82,8 +92,8 @@ htmljson.EXPECT = {
     TEXT_NODE_VALUE                : htmljson.PHASE.TEXT_NODE_VALUE, //
     CDATA_SECTION_VALUE            : htmljson.PHASE.CDATA_SECTION_VALUE,
     COMMENT_NODE_VALUE             : htmljson.PHASE.COMMENT_NODE_VALUE, //
-    COMMENT_HIDE_LOWER_FORMURA     : htmljson.PHASE.COMMENT_HIDE_LOWER_FORMURA, //
-    COMMENT_SHOW_LOWER_FORMURA     : htmljson.PHASE.COMMENT_SHOW_LOWER_FORMURA, //
+    COND_CMT_HIDE_LOWER_FORMURA    : htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA, //
+    COND_CMT_SHOW_LOWER_FORMURA    : htmljson.PHASE.COND_CMT_SHOW_LOWER_FORMURA, //
     PROCESSING_INSTRUCTION_NAME    : htmljson.PHASE.PROCESSING_INSTRUCTION_NAME, //
 
     TAG_NAME                       : htmljson.PHASE.TAG_NAME, //

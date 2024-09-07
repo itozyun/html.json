@@ -43,15 +43,19 @@ module.exports = function( onInstruction, opt_onError, opt_options ){
     return parser._stream = stream;
 };
 
-module.exports.DOCUMENT_NODE                  = htmljson.NODE_TYPE.DOCUMENT_NODE;
-module.exports.DOCUMENT_FRAGMENT_NODE         = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-module.exports.ELEMENT_NODE                   = htmljson.NODE_TYPE.ELEMENT_NODE;
-module.exports.TEXT_NODE                      = htmljson.NODE_TYPE.TEXT_NODE;
-module.exports.CDATA_SECTION                  = htmljson.NODE_TYPE.CDATA_SECTION;
-module.exports.COMMENT_NODE                   = htmljson.NODE_TYPE.COMMENT_NODE;
-module.exports.CONDITIONAL_COMMENT_HIDE_LOWER = htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER;
-module.exports.CONDITIONAL_COMMENT_SHOW_LOWER = htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER;
-module.exports.PROCESSING_INSTRUCTION         = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
+module.exports.DOCUMENT_NODE                 = htmljson.NODE_TYPE.DOCUMENT_NODE;
+module.exports.DOCUMENT_FRAGMENT_NODE        = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+module.exports.ELEMENT_NODE                  = htmljson.NODE_TYPE.ELEMENT_NODE;
+module.exports.TEXT_NODE                     = htmljson.NODE_TYPE.TEXT_NODE;
+module.exports.CDATA_SECTION                 = htmljson.NODE_TYPE.CDATA_SECTION;
+module.exports.PROCESSING_INSTRUCTION        = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
+module.exports.COMMENT_NODE                  = htmljson.NODE_TYPE.COMMENT_NODE;
+module.exports.COND_CMT_HIDE_LOWER           = htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER;
+module.exports.COND_CMT_SHOW_LOWER_START     = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
+module.exports.COND_CMT_SHOW_LOWER_END       = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END;
+module.exports.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
+module.exports.ELEMENT_WITHOUT_END_TAG       = htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG;
+module.exports.ELEMENT_WITHOUT_START_TAG     = htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG;
 
 /**
  * @this {!Through}
@@ -161,10 +165,10 @@ function onToken( token, value ){
             //case htmljson.NODE_TYPE.TEXT_NODE :
             //case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                 //break;
-            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 queue = '<![endif]-->';
                 break;
-            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
+            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
                 queue = '<!--<![endif]-->';
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
@@ -205,7 +209,7 @@ function onToken( token, value ){
         for( let i = 0, l = tree.length; i < l; ++i ){
             const tagName = tree[ i ];
 
-            if( tagName === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER || tagName === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER ){
+            if( tagName === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || tagName === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
                 self._endTagRequired = true;
             } else if( m_isString( tagName ) ){
                 if( m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ] ){
@@ -394,11 +398,11 @@ function onToken( token, value ){
                         case htmljson.EXPECT.COMMENT_NODE_VALUE:
                             phase = htmljson.PHASE.COMMENT_NODE_VALUE;
                             break;
-                        case htmljson.EXPECT.COMMENT_HIDE_LOWER_FORMURA:
-                            phase = htmljson.PHASE.COMMENT_HIDE_LOWER_FORMURA;
+                        case htmljson.EXPECT.COND_CMT_HIDE_LOWER_FORMURA:
+                            phase = htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA;
                             break;
-                        case htmljson.EXPECT.COMMENT_SHOW_LOWER_FORMURA:
-                            phase = htmljson.PHASE.COMMENT_SHOW_LOWER_FORMURA;
+                        case htmljson.EXPECT.COND_CMT_SHOW_LOWER_FORMURA:
+                            phase = htmljson.PHASE.COND_CMT_SHOW_LOWER_FORMURA;
                             break;
                         case htmljson.EXPECT.ATTRIBUTE_PROPERTY :
                             phase = htmljson.PHASE.ATTRIBUTE_PROPERTY;
@@ -621,22 +625,22 @@ function onToken( token, value ){
                     expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!--[if IE]> --> */
-                case htmljson.PHASE.COMMENT_HIDE_LOWER_START :
+                case htmljson.PHASE.COND_CMT_HIDE_LOWER_START :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
-                    expect = htmljson.EXPECT.COMMENT_HIDE_LOWER_FORMURA;
-                    tree.push( htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER );
+                    expect = htmljson.EXPECT.COND_CMT_HIDE_LOWER_FORMURA;
+                    tree.push( htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER );
                     break;
-                case htmljson.PHASE.COMMENT_HIDE_LOWER_FORMURA :
+                case htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA :
                     queue = value + ']>';
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** <!--[if !IE]><!--> */
-                case htmljson.PHASE.COMMENT_SHOW_LOWER_START :
+                case htmljson.PHASE.COND_CMT_SHOW_LOWER_START :
                     queue  = appendOmittedEndTagBasedOnFollowingNode() + '<!--[';
-                    expect = htmljson.EXPECT.COMMENT_SHOW_LOWER_FORMURA;
-                    tree.push( htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER );
+                    expect = htmljson.EXPECT.COND_CMT_SHOW_LOWER_FORMURA;
+                    tree.push( htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START );
                     break;
-                case htmljson.PHASE.COMMENT_SHOW_LOWER_FORMURA :
+                case htmljson.PHASE.COND_CMT_SHOW_LOWER_FORMURA :
                     queue  = value + ']><!-->';
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;

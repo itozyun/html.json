@@ -7,16 +7,24 @@ var exports = { gulp : function( options ){} };
 var happyDOM = { Window : function(){} };
 
 var NODE_TYPE = {
-    ELEMENT_NODE                   : 1,
-    TEXT_NODE                      : 3,
-    CDATA_SECTION                  : 4,
-    PROCESSING_INSTRUCTION         : 7,
-    COMMENT_NODE                   : 8,
-    DOCUMENT_NODE                  : 9,
-    DOCUMENT_FRAGMENT_NODE         : 11,
-    CONDITIONAL_COMMENT_HIDE_LOWER : 13,
-    CONDITIONAL_COMMENT_SHOW_LOWER : 14,
-    NETSCAPE4_CONDITIONAL_COMMENT  : 15
+    ELEMENT_NODE                  :  1, // v
+    // ATTRIBUTE_NODE                2
+    TEXT_NODE                     :  3, // v
+    CDATA_SECTION                 :  4, // v
+    // EntityReference               5
+    // Entity                        6
+    PROCESSING_INSTRUCTION        :  7, // v
+    COMMENT_NODE                  :  8, // v
+    DOCUMENT_NODE                 :  9, // v
+    // DOCUMENT_TYPE_NODE           10
+    DOCUMENT_FRAGMENT_NODE        : 11, // v
+    // Notation                     12
+    COND_CMT_HIDE_LOWER           : 13,
+    COND_CMT_SHOW_LOWER_START     : 14,
+    COND_CMT_SHOW_LOWER_END       : 15,
+    NETSCAPE4_COND_CMT_HIDE_LOWER : 16,
+    ELEMENT_WITHOUT_END_TAG       : 17,
+    ELEMENT_WITHOUT_START_TAG     : 18
 };
 
 /**

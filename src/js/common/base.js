@@ -350,8 +350,8 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
                         : nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE
                                 ? 1
                         : nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE
-                       || nodeType === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER
-                       || nodeType === htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER
+                       || nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
+                       || nodeType === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START
                                 ? 2
                                 : Infinity;
     return startIndex;

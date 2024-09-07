@@ -79,23 +79,23 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                     errorHandler( 'COMMENT_NODE Error! [' + currentJSONNode + ']' );
                 };
                 break;
-            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント
                 appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']>';
                 } else if( htmljson.DEFINE.DEBUG ){
-                    errorHandler( 'CONDITIONAL_COMMENT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
+                    errorHandler( 'COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
                 htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
                 break;
-            case htmljson.NODE_TYPE.CONDITIONAL_COMMENT_SHOW_LOWER :
+            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
                 // 下の階層が見える条件付きコメント
                 appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
                     htmlString += '<!--[' + arg1 + ']><!-->';
                 } else if( htmljson.DEFINE.DEBUG ){
-                    errorHandler( 'CONDITIONAL_COMMENT_SHOW_LOWER Error! [' + currentJSONNode + ']' );
+                    errorHandler( 'COND_CMT_SHOW_LOWER_START Error! [' + currentJSONNode + ']' );
                 };
                 htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<!--<![endif]-->';
                 break;
