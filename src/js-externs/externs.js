@@ -23,8 +23,8 @@ var NODE_TYPE = {
     COND_CMT_SHOW_LOWER_START     : 14,
     COND_CMT_SHOW_LOWER_END       : 15,
     NETSCAPE4_COND_CMT_HIDE_LOWER : 16,
-    ELEMENT_WITHOUT_END_TAG       : 17,
-    ELEMENT_WITHOUT_START_TAG     : 18
+    ELEMENT_START_TAG             : 17,
+    ELEMENT_END_TAG               : 18
 };
 
 /**

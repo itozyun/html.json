@@ -55,8 +55,8 @@ module.exports.COND_CMT_HIDE_LOWER           = htmljson.NODE_TYPE.COND_CMT_HIDE_
 module.exports.COND_CMT_SHOW_LOWER_START     = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
 module.exports.COND_CMT_SHOW_LOWER_END       = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END;
 module.exports.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
-module.exports.ELEMENT_WITHOUT_END_TAG       = htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG;
-module.exports.ELEMENT_WITHOUT_START_TAG     = htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG;
+module.exports.ELEMENT_START_TAG             = htmljson.NODE_TYPE.ELEMENT_START_TAG;
+module.exports.ELEMENT_END_TAG               = htmljson.NODE_TYPE.ELEMENT_END_TAG;
 
 /**
  * @this {!Through}
@@ -217,7 +217,7 @@ function onToken( token, value ){
             const tagNameOrNodeType = tree[ i ];
 
             if( tagNameOrNodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || tagNameOrNodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ){
-                self._endTagRequired = self._escapeForHTMLDisabled = self._isXmlInHTML = false;
+                self._endTagRequired = true;
             } else if( m_isString( tagNameOrNodeType ) ){
                 if( m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagNameOrNodeType ] ){
                     self._endTagRequired = true;
@@ -528,7 +528,7 @@ function onToken( token, value ){
                 case htmljson.PHASE.ENTER_ELEMENT_NODE :
                     expect = htmljson.EXPECT.TAG_NAME;
                     break;
-                case htmljson.PHASE.ENTER_ELEMENT_WITHOUT_END_TAG :
+                case htmljson.PHASE.ENTER_ELEMENT_START_TAG :
                     expect = htmljson.EXPECT.TAG_NAME_WITHOUT_END_TAG;
                     break;
                 case htmljson.PHASE.TAG_NAME :
@@ -619,9 +619,9 @@ function onToken( token, value ){
                     break;
 
             /** </div> */
-                case htmljson.PHASE.ENTER_ELEMENT_WITHOUT_START_TAG :
+                case htmljson.PHASE.ENTER_ELEMENT_END_TAG :
                     expect = htmljson.EXPECT.TAG_NAME_WITHOUT_START_TAG;
-                    tree.push( htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG );
+                    tree.push( htmljson.NODE_TYPE.ELEMENT_END_TAG );
                     break;
                 case htmljson.PHASE.TAG_NAME_WITHOUT_START_TAG :
                     queue  = '</' + value + '>';

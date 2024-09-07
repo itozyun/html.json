@@ -10,7 +10,7 @@ goog.require( 'htmljson.NODE_TYPE' );
  */
 function _canHasChildren( vnode ){
     return vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
-           vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ||
+           vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ||
            _isDocOrDocFragment( vnode );
 };
 
@@ -42,7 +42,7 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
             case htmljson.NODE_TYPE.COMMENT_NODE              :
             case htmljson.NODE_TYPE.CDATA_SECTION             :
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION    :
-            case htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG :
+            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
                 throw 'nodeType:' + parent._nodeType + ' は親になることが出来ません!';
         };
     };
@@ -65,14 +65,14 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
         childNodes = parent._childNodes;
         if( 0 <= insertPosition && insertPosition < childNodes.length ){
             if( htmljson.DEFINE.DEBUG ){
-                if( 1 <= insertPosition && childNodes[ insertPosition - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+                if( 1 <= insertPosition && childNodes[ insertPosition - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
                     throw '閉じタグの無い Element の次に Node を挿入することは出来ません!';
                 };
             };
             childNodes.splice( insertPosition, 0, this );
         } else {
             if( htmljson.DEFINE.DEBUG ){
-                if( childNodes.length && childNodes[ childNodes.length - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+                if( childNodes.length && childNodes[ childNodes.length - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
                     throw '閉じタグの無い Element の次に Node を挿入することは出来ません!';
                 };
             };
@@ -82,10 +82,10 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
 
     switch( nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE            :
-        case htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG :
+        case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             /** @type {!Object | null} */
             this._attrs   = opt_attrs || null;
-        case htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG :
+        case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             this._tagName = /** @type {string} */ (opt_tagOrNodeValue);
             break;
         case htmljson.NODE_TYPE.TEXT_NODE               :
@@ -108,13 +108,13 @@ VNode.prototype.getJSON = function(){
     switch( this._nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE           :
             json.length = 0;
-        case htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG :
+        case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             json.push( this._tagName );
             if( m_isAttributes( this._attrs ) ){
                 json.push( this._attrs );
             };
             break;
-        case htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG :
+        case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             json[ 1 ] = this._tagName;
             break;
         case htmljson.NODE_TYPE.TEXT_NODE              :
@@ -139,7 +139,7 @@ VNode.prototype.getJSON = function(){
  * @return {number}
  */
 VNode.prototype.getNodeType = function(){
-    if( this._nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+    if( this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
         return htmljson.NODE_TYPE.ELEMENT_NODE;
     };
     return this._nodeType;
@@ -163,7 +163,7 @@ VNode.prototype.setNodeType = function( nodeType ){
  */
 VNode.prototype.close = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'close() をサポートしない nodeType です!';
         };
     };
@@ -174,7 +174,7 @@ VNode.prototype.close = function(){
  * @return {boolean}
  */
 VNode.prototype.closed = function(){
-    return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG;
+    return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
 
 /**
@@ -191,8 +191,8 @@ VNode.prototype.isValid = function(){
             };
         };
     };
-    return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG &&
-           this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG;
+    return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG &&
+           this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG;
 };
 
 /**
@@ -240,7 +240,7 @@ VNode.prototype.setData = function( data ){
  */
 VNode.prototype.getAttributes = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'getAttributes() をサポートしない nodeType です!';
         };
     };
@@ -253,7 +253,7 @@ VNode.prototype.getAttributes = function(){
  */
 VNode.prototype.getTagName = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG ){
+        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG ){
             throw 'getTagName() をサポートしない nodeType です!';
         };
     };
@@ -292,7 +292,7 @@ VNode.prototype.getPrevNode = function(){
  */
 VNode.prototype.getNextNode = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG || _isDocOrDocFragment( this ) ){
+        if( this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || _isDocOrDocFragment( this ) ){
             throw 'getNextNode() をサポートしない nodeType です!';
         };
     };
@@ -462,7 +462,7 @@ function _insertAt( parent, index, vnodes ){
     index = index < l ? index : l; 
 
     for( ; i; ){
-        if( htmljson.DEFINE.DEBUG && vnode && vnodes[ i - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+        if( htmljson.DEFINE.DEBUG && vnode && vnodes[ i - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             // 逆順に処理しているので、vnode は現在のノード(vnodes[i-1])の nextSibling
             throw '閉じタグの無い Element の次に Node を挿入することは出来ません!';
         };
@@ -595,7 +595,7 @@ VNode.prototype.insertNodeLast = function( nodeType, nodeValueOrTag, opt_attrs )
  * @return {!VNode | null} */
 VNode.prototype.insertNodeAfter = function( nodeType, nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){
-        if( _isDocOrDocFragment( this ) || nodeType === htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG ){
+        if( _isDocOrDocFragment( this ) || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'insertNodeAfter() をサポートしない nodeType です!';
         };
     };

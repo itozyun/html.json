@@ -46,14 +46,14 @@ Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
     if( empty ){
         this._currentNode.insertElementLast( tag, attrs );
     } else {
-        this._currentNode = this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_WITHOUT_END_TAG, tag, attrs );
+        this._currentNode = this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_START_TAG, tag, attrs );
     };
 };
 
 Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
     if( noStartTag ){
         if( this._allowInvalidTree ){
-            this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG, tag );
+            this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_END_TAG, tag );
         };
     } else if( !missingEndTag || !this._allowInvalidTree ){
         if( tag === this._currentNode.getTagName() ){

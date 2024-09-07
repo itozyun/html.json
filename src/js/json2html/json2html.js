@@ -47,7 +47,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
         var htmlString = '',
             arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
-            attrIndex = 1, tagName = arg0, attrs,
+            attrIndex = 1, isElementWithoutEndTag, tagName = arg0, attrs,
             result,
             id, className, childNodesContents, isXMLRoot;
 
@@ -56,10 +56,10 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
                     isXmlInHTML = true;
                 };
-                htmlString += arg1 + walkChildNodes( currentJSONNode, false, false );
+                htmlString = arg1 + walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                htmlString += walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );
+                htmlString = walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
                 appendOmittedEndTagBasedOnFollowingNode();
@@ -67,14 +67,14 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
                 if( m_isString( arg1 ) ){
-                    htmlString += '<![CDATA[' + arg1 + ']]>';
+                    htmlString = '<![CDATA[' + arg1 + ']]>';
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'CDATA_SECTION Error! [' + currentJSONNode + ']' );
                 };
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
                 if( m_isString( arg1 ) ){
-                    htmlString += '<!--' + arg1 + '-->';
+                    htmlString = '<!--' + arg1 + '-->';
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'COMMENT_NODE Error! [' + currentJSONNode + ']' );
                 };
@@ -83,21 +83,33 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 // 下の階層が隠れる条件付きコメント
                 appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
-                    htmlString += '<!--[' + arg1 + ']>';
+                    htmlString = '<!--[' + arg1 + ']>';
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
                 htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
                 break;
-            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
-                // 下の階層が見える条件付きコメント
+            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                // 下の階層が隠れる条件付きコメント
                 appendOmittedEndTagBasedOnFollowingNode();
                 if( m_isString( arg1 ) ){
-                    htmlString += '<!--[' + arg1 + ']><!-->';
+                    htmlString = '<!--{' + arg1 + '};';
+                } else if( htmljson.DEFINE.DEBUG ){
+                    errorHandler( 'NETSCAPE4_COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
+                };
+                htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '-->';
+                break;
+            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
+                // 下の階層が見える条件付きコメント
+                if( m_isString( arg1 ) ){
+                    htmlString = '<!--[' + arg1 + ']><!-->';
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'COND_CMT_SHOW_LOWER_START Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<!--<![endif]-->';
+                htmlString += walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled ) + '<!--<![endif]-->';
+                break;
+            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
+                htmlString = '<!--<![endif]-->';
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                 result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
@@ -114,6 +126,15 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                     };
                 };
                 break;
+            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
+                if( m_isString( arg1 ) ){
+                    htmlString = '</' + arg1 + '>';
+                } else if( htmljson.DEFINE.DEBUG ){
+                    errorHandler( 'ELEMENT_END_TAG Error! [' + currentJSONNode + ']' );
+                };
+                break;
+            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
+                isElementWithoutEndTag = true;
             case htmljson.NODE_TYPE.ELEMENT_NODE :
                 tagName   = currentJSONNode[ 1 ];
                 attrIndex = 2;
@@ -124,7 +145,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                     className = tagName[ 2 ];
                     tagName   = tagName[ 0 ];
                     if( omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ){
-                        htmlString += '</p>'
+                        htmlString = '</p>'
                     };
                     omittedEndTagBefore = '';
 
@@ -152,11 +173,15 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
 
                     if( childNodesContents ){
                         htmlString += '>' + childNodesContents;
+                    } else if( isElementWithoutEndTag ){
+                        htmlString += '>';
                     } else {
                         htmlString += isXmlInHTML ? '/>' : '>';
                     };
 
-                    if( ( !isXmlInHTML || childNodesContents ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || endTagRequired ) ){
+                    if( isElementWithoutEndTag ){
+                        omittedEndTagBefore = '';
+                    } else if( ( !isXmlInHTML || childNodesContents ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || endTagRequired ) ){
                         htmlString += '</' + tagName + '>';
                         omittedEndTagBefore = '';
                     } else {

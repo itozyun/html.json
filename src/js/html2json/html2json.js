@@ -19,6 +19,7 @@ let parentTreeIsInPreTag = false;
 html2json = function( htmlString, allowInvalidTree, opt_options ){
     const
         json              = [],
+        _aryPush          = json.push,
         vnode             = htmljson.createVNodeFromHTML( htmlString, allowInvalidTree ),
         options           = opt_options || {},
         trimWhitespace    = [ 'none', false ].indexOf( options[ 'trimWhitespace' ] ) === -1,
@@ -53,6 +54,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
             // console.log( currentVNode )
         switch( currentVNode.getNodeType() ){
             case htmljson.NODE_TYPE.ELEMENT_NODE :
+            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                 var attrs       = {},
                     tagName     = currentVNode.getTagName().toLowerCase(),
                     isPreTag    = tagName === 'pre' || tagName === 'listing',
@@ -75,7 +77,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     
                             if( functionNameAndArgs.args ){
                                 attrValue = [ functionNameAndArgs.name ];
-                                attrValue.push.apply( functionNameAndArgs.args );
+                                _aryPush.apply( attrValue, functionNameAndArgs.args );
                             } else {
                                 attrValue = functionNameAndArgs.name;
                             };
@@ -114,6 +116,13 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || insidePreTag, TRIM_LINEBREAKS[ tagName ] );
                 };
                 parentJSONNode.push( currentJSONNode );
+
+                if( !currentVNode.closed() ){
+                    currentJSONNode.unshift( htmljson.NODE_TYPE.ELEMENT_START_TAG );
+                };
+                break;
+            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
+                parentJSONNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, currentVNode.getTagName().toLowerCase() ] );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
                 if( !insidePreTag && trimWhitespace ){
@@ -159,8 +168,8 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             // 先頭と最後の半角スペースを削除
                             nodeValue = trimChar( nodeValue, ' ' );
                         };
-                        // 先頭または最後の半角スペースの保護には \u0020 を使う
-                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' );
+                        // 先頭または最後の半角スペースの保護には \u0020 または &#20; を使う
+                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#20;' ).join( ' ' );
                     };
                 };
                 if( nodeValue ){
@@ -179,7 +188,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
 
                 if( functionNameAndArgs.args ){
-                    currentJSONNode.push.apply( currentJSONNode, functionNameAndArgs.args );
+                    _aryPush.apply( currentJSONNode, functionNameAndArgs.args );
                 };
                 parentJSONNode.push( currentJSONNode );
                 break;
@@ -196,7 +205,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     if( childNodeList.length || m_isNumber( childNodeList ) ){
                         currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
                         m_isArray( childNodeList )
-                            ? currentJSONNode.push.apply( currentJSONNode, childNodeList )
+                            ? _aryPush.apply( currentJSONNode, childNodeList )
                             : currentJSONNode.push( childNodeList );  // conditional, unescapedText
                         parentJSONNode.push( currentJSONNode );
                     };
