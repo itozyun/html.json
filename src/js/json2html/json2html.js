@@ -10,7 +10,7 @@ goog.require( 'htmljson.DEFINE.USE_XHTML' );
  * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
- * @return {string|void} html string
+ * @return {string | void} html string
  */
 var json2html = function( json, onInstruction, opt_onError, opt_options ){
     /** @const {number} */
@@ -148,7 +148,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                         htmlString += ' ' + walkAttributes( attrs );
                     };
                     // childNodes
-                    childNodesContents = walkChildNodes( currentJSONNode, endTagRequired || m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_TAGS[ tagName ] );
+                    childNodesContents = walkChildNodes( currentJSONNode, endTagRequired || m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_TAGS[ tagName ] );
 
                     if( childNodesContents ){
                         htmlString += '>' + childNodesContents;

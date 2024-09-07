@@ -1,18 +1,19 @@
-goog.require( 'htmljson.VNode.createVNodeFromHTML' );
+goog.provide( 'htmljson.createVNodeFromHTML' );
 
 goog.require( 'htmlparser.exec' );
 goog.requireType( 'htmlparser.typedef.Handler' );
 
-goog.require( 'htmljson.VNode' );
+goog.require( 'VNode' );
 goog.require( 'htmljson.NODE_TYPE' );
 
 /**
  * 
- * @param {string} html 
+ * @param {string} html
+ * @param {boolean} allowInvalidTree
  * @return {!VNode}
  */
-htmljson.VNode.createVNodeFromHTML = function( html ){
-    var handler = new Handler;
+htmljson.createVNodeFromHTML = function( html, allowInvalidTree ){
+    var handler = new Handler( allowInvalidTree );
 
     htmlparser.exec( html, handler );
 
@@ -23,8 +24,11 @@ htmljson.VNode.createVNodeFromHTML = function( html ){
  * @private
  * @extends {htmlparser.typedef.Handler}
  * @constructor
+ * @param {boolean} allowInvalidTree
  */
-function Handler(){
+function Handler( allowInvalidTree ){
+    this._allowInvalidTree = allowInvalidTree;
+
     /** @const {!VNode} */
     this._rootNode = new VNode( null, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
     /** @type {!VNode} */
@@ -48,8 +52,10 @@ Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
 
 Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
     if( noStartTag ){
-        this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG, tag );
-    } else if( !missingEndTag ){
+        if( this._allowInvalidTree ){
+            this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_WITHOUT_START_TAG, tag );
+        };
+    } else if( !missingEndTag || !this._allowInvalidTree ){
         if( tag === this._currentNode.getTagName() ){
             this._currentNode.close();
             this._currentNode = this._currentNode.getParent();

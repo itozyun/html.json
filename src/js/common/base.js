@@ -9,9 +9,9 @@ var m_ATTRS_NO_VALUE      = {checked:!0,compact:!0,declare:!0,defer:!0,disabled:
 var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base:!0,col:!0,embed:!0,keygen:!0,param:!0, /* ,source:!0 */ // for Opera 9
                             track:!0,wbr:!0,command:!0,basefont:!0,frame:!0,isindex:!0,bgsound:!0},
     // 終了タグを省略できるタグの一覧
-    m_OMITTABLE_END_TAGS  = {p:!0,dt:!0,dd:!0,li:!0,option:!0,thead:!0,tfoot:!0,th:!0,tr:!0,td:!0,rt:!0,rp:!0,optgroup:!0,caption:!0,colgroup:!0},
+    m_OMITTABLE_END_TAGS  = {html:!0,head:!0,body:!0,p:!0,dt:!0,dd:!0,li:!0,option:!0,tbody:!0,thead:!0,tfoot:!0,td:!0,th:!0,tr:!0,rb:!0,rbc:!0,rp:!0,rt:!0,rtc:!0,optgroup:!0,caption:!0,colgroup:!0},
     // 子孫が終了タグを省略できないタグの一覧
-    m_CHILDREN_MUST_HAVE_END_TAGS
+    m_DESCENDANTS_MUST_HAVE_END_TAGS
                           = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
     m_TAGNAME_TO_NAMESPACE= {
         xml:  'http://www.w3.org/1999/xhtml',

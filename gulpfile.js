@@ -2,22 +2,20 @@ const gulp = require( 'gulp' );
 
 let ClosureCompiler;
 
-ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
-
 let isDebug = false;
 let isPrettify = true;
 
 gulp.task(
     'dist',
     gulp.series(
-        /* function(){
+        function(){
             ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
 
             return gulp.src(
                     [
                         './src/closure-primitives/base.js',
-                        './.submodules/htmlparser/src/** /*.js', 
-                        './src/js/** /*.js'
+                        './.submodules/htmlparser/src/js/**/*.js', 
+                        './src/js/**/*.js'
                     ]
                 ).pipe(
                     ClosureCompiler(
@@ -43,7 +41,7 @@ gulp.task(
                             define            : [
                                 'htmljson.DEFINE.DEBUG=true'
                             ],
-                            env               : 'CUSTOM',
+                            // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
@@ -55,7 +53,7 @@ gulp.task(
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
-        }, */
+        },
         function(){
             return gulp.src(
                     [

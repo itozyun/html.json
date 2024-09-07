@@ -207,5 +207,6 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                 ++numAttributes;
             };
         };
+        return numAttributes;
     };
 };

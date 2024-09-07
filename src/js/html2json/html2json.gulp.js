@@ -2,13 +2,14 @@ goog.provide( 'html2json.gulp' );
 
 goog.require( 'html2json.node' );
 
-html2json.gulp = function( opt_selector, opt_options ){
+/**
+ * @param {!Object=} opt_options
+ */
+html2json.gulp = function( opt_options ){
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'html2json',
-          options     = opt_selector && typeof opt_selector === 'object'
-                          ? opt_selector
-                      : opt_options && typeof opt_options === 'object'
+          options     = opt_options && typeof opt_options === 'object'
                           ? opt_options
                           : {};
 
@@ -25,7 +26,7 @@ html2json.gulp = function( opt_selector, opt_options ){
                 try {
                     file.contents = Buffer.from(
                         JSON.stringify(
-                            html2json( file.contents.toString( encoding ), opt_selector, opt_options ),
+                            html2json( file.contents.toString( encoding ), false, opt_options ),
                             null,
                             options[ 'prettify' ] ? '    ' : ''
                         )

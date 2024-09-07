@@ -212,7 +212,7 @@ function onToken( token, value ){
             if( tagName === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || tagName === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
                 self._endTagRequired = true;
             } else if( m_isString( tagName ) ){
-                if( m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ] ){
+                if( m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ] ){
                     self._endTagRequired = true;
                 };
                 if( m_UNESCAPED_TAGS[ tagName ] ){
@@ -526,7 +526,7 @@ function onToken( token, value ){
                     };
 
                     if( !this._endTagRequired ){
-                        this._endTagRequired = !!m_CHILDREN_MUST_HAVE_END_TAGS[ tagName ];
+                        this._endTagRequired = !!m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ];
                     };
                     if( !this._escapeForHTMLDisabled ){
                         this._escapeForHTMLDisabled = !!m_UNESCAPED_TAGS[ tagName ];
