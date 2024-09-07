@@ -11,12 +11,13 @@ A compact and portable format that can be converted back to HTML in a lightweigh
      * オフラインドキュメントのコンテンツデータ
      * PJAX のコンテンツデータ
      * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ
-3. TODO html.json DOM(予定)
-4. TODO `<? include ./sidebar.json ?>`
-5. TODO sort attrs
-6. TODO ソースコード(HTML)の実際に沿った空白除去ルールの決定
-7. TODO [jsonml / Add support for Processing instructions](https://github.com/mckamey/jsonml/pull/14)
-8. TODO json2dom
+
+## コンパイルとテスト
+
+~~~sh
+npm run make
+npm run test
+~~~
 
 ## 目次
 
@@ -30,7 +31,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 
 ## 1. html2json
 
-heppy-dom に依存する。
+[ES2 HTML Parser](https://github.com/ECMAScript2/htmlparser) で HTML をパースします．
 
 * `trimWhitespace`
 * `keepCDATASections`
@@ -77,8 +78,6 @@ heppy-dom に依存する。
 
 ### 1.1. ProcessingInstruction
 
-* ~~`html2json("<? funcName ?>")` は不可、必ず Element の下に書くこと！~~
-
 ~~~html
 <div id="side">
 <? createSidebar("",6,{}) ?>
@@ -116,7 +115,7 @@ heppy-dom に依存する。
 
 ## 2. json2json
 
-動的コンテンツの内、決定した値を `onInstruction` で埋め込むことが出来る。
+動的コンテンツの内、決定した値を `onInstruction` で埋め込むことが出来る．
 
 ~~~js
 json2json( json, onInstruction, opt_onReachElement, opt_onError, opt_options );
@@ -135,7 +134,7 @@ json2html と微妙に異なる点に注意!
 * `null` or `""` : `InstructionNode`を削除
 * `{string|number}` TEXT_NODE になる
 * strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, ["p", "Hello, world!"]`, `[ 1, "p", ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
+* 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能．このノードは再度 `onInstruction` で処理される．
 
 #### `InstructionAttr`
 
@@ -158,7 +157,7 @@ json2html と微妙に異なる点に注意!
 
 ## 3. json2html
 
-既に JSON パーサーがある環境では、json2html を用意するだけで、json データから html を生成できる。
+既に JSON パーサーがある環境では、json2html を用意するだけで、json データから html を生成できる．
 
 ~~~js
 json2html( json, onInstruction, opt_strictQuot, opt_useConmma );
@@ -177,7 +176,7 @@ json2json と微妙に異なる点に注意!
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
 * strict な html.json `[json2html.DOCUMENT_FRAGMENT_NODE, [ 'P', "Hello, world!" ]]`, `[2, 'p', ...`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2html.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能。このノードは再度 `onInstruction` で処理される。
+* 戻り値が `[json2html.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能．このノードは再度 `onInstruction` で処理される．
 
 #### `InstructionAttr`
 
@@ -216,7 +215,7 @@ json2json と微妙に異なる点に注意!
    * style 属性はオブジェクトまたは文字列(`elm.style.cssText`)で記述する
      * `{style:{}}`, `style:"color:red;font-size:2em"`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onInstruction の戻り値で使用できる
-5. doctype 文字列。XHTML では XML 宣言を含むこともある `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
+5. doctype 文字列．XHTML では XML 宣言を含むこともある `"<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html>"`
 6. `nodeValue` は `string` または Finite な `number`
 7. `...nodes` は `[ nodeType, ... ]`, `string` または Finite な `number`
 8. 壊れた HTML ツリーを子にもつことがある
@@ -273,13 +272,13 @@ json2json と微妙に異なる点に注意!
 
 ### 4.3. TextNode
 
-テキストノードは基本的に子として出現する。
+テキストノードは基本的に子として出現する．
 
 ~~~json
 [ "p", "Hello, World!" ]
 ~~~
 
-以下は単一のテキストノードの場合。
+以下は単一のテキストノードの場合．
 
 ~~~js
 [ 3, "Hello, World!" ] // Text Node
@@ -311,42 +310,41 @@ json2json と微妙に異なる点に注意!
 
 ## 5. HTML の最小化
 
-### json2html 処理時に合わせて実施します。
+### json2html 処理時に合わせて実施します
 
 1. 閉じタグの省略
    * リンク要素下の閉じタグは省略しない
      * https://triple-underscore.github.io/HTML-writing-ja.html#optional-tags
-   * `<source>` は閉じる。`</source>` が無いと Opera 9 で DOM ツリーが崩れる為。
+   * `<source>` は閉じる．`</source>` が無いと Opera 9 で DOM ツリーが崩れる為．
 2. 属性のダブルクォーテーションの省略
 
-### html2json 処理時に合わせて実施します。
+### html2json 処理時に合わせて実施します
 
 1. テキストノードの空白文字の削除
    * 改行とタブは一つの半角スペースに
    * 2つ以上の半角スペースを1つの半角スペースへ
    * 先頭と最後の半角スペースを削除、例外は `trimWhitespace` を参照
    * 半角スペースの保護
-     * 先頭または最後、または連続する半角スペースの保護には `\u0020` を使う。この工程で半角スペースに変換される。
-     * `&#32;` は jsdom で半角スペースに変換されてしまう為、`&#32;` を削除から保護することは出来ない。
+     * 先頭または最後、または連続する半角スペースの保護には `\u0020` を使う．この工程で半角スペースに変換される．
+     * `&#32;` は jsdom で半角スペースに変換されてしまう為、`&#32;` を削除から保護することは出来ない．
    * ここ迄で空文字列 `""` になった場合は、テキストノードは作られない
-   * この作業の行われないのは `<script>` `<style>` `<textarea>` と `<pre>` の子要素。
+   * この作業の行われないのは `<script>` `<style>` `<textarea>` と `<pre>` の子要素．
 2. `<script>` `<style>` `<textarea>` 下用の不要な空白文字の削除
    * テキストノードの最初と最後の改行文字を削除
-   * TODO JSON-LD を最小化
 3. `<pre>` 下用の不要な空白文字の削除
-   * 最初に登場するテキストノードが空白文字のみならノードを削除する。再度、最初のテキストノードを調べる。
+   * 最初に登場するテキストノードが空白文字のみならノードを削除する．再度、最初のテキストノードを調べる．
    * 最初のテキストノードの先頭が改行文字なら改行文字を削除
-   * 最後に登場するテキストノードが空白文字のみならノードを削除する。再度、最後のテキストノードを調べる。
+   * 最後に登場するテキストノードが空白文字のみならノードを削除する．再度、最後のテキストノードを調べる．
    * 最後のテキストノードの最後が改行文字なら改行文字を削除
 4. コメントノードの削除
-   * 条件付きコメント以外を削除します。
+   * 条件付きコメント以外を削除します．
    * コメントノードのキープ
    * 参考 [IEでコメントノードを事前に除去し速度を稼ぐ](https://uupaa.hatenadiary.org/entry/20091203/1259820356), [コメントがフロートの位置をずらす](https://web.archive.org/web/20110519022142/http://css-bug.jp/win/ie/ver6/0424/)
-5. 連続するテキストノードのマージ
+5. 連続するテキストノードのマージ(noemalize)
 
-### json2json 処理時に合わせて実施します。
+### json2json 処理時に合わせて実施します
 
-1. 連続するテキストノードのマージ
+1. 連続するテキストノードのマージ(noemalize)
 
 ### 5.1. 公開用 HTML の為の機械処理
 

@@ -161,7 +161,7 @@ function S(a) {
   }
   r("Invalid html.json document!");
 }
-;T.node = {};
+;T.module = {};
 module.exports = T;
 T.DOCUMENT_NODE = 9;
 T.DOCUMENT_FRAGMENT_NODE = 11;
@@ -178,22 +178,22 @@ T.ELEMENT_WITHOUT_END_TAG = 17;
 T.ELEMENT_WITHOUT_START_TAG = 18;
 T.gulp = function(a, d, b) {
   const p = require("plugin-error");
-  return require("through2").A(function(e, w, z) {
-    if (e.o()) {
+  return require("through2")(function(e, w, z) {
+    if (e.isNull()) {
       return z();
     }
-    if (e.v()) {
-      return this.m("error", new p("json2html", "Streaming not supported")), z();
+    if (e.isStream()) {
+      return this.emit("error", new p("json2html", "Streaming not supported")), z();
     }
-    if (".json" === e.j) {
+    if (".json" === e.extname) {
       try {
-        const r = JSON.parse(e.l.toString(w)), C = T(r, a, d, b);
-        e.j = "." + e.h.split(".").pop();
-        e.h = e.h.substr(0, e.h.length - e.j.length);
-        e.l = Buffer.from(C);
+        const r = JSON.parse(e.contents.toString(w)), C = T(r, a, d, b);
+        e.extname = "." + e.stem.split(".").pop();
+        e.stem = e.stem.substr(0, e.stem.length - e.extname.length);
+        e.contents = Buffer.from(C);
         this.push(e);
       } catch (r) {
-        this.m("error", new p("json2html", r));
+        this.emit("error", new p("json2html", r));
       }
     } else {
       this.push(e);

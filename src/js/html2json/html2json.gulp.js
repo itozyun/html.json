@@ -1,6 +1,6 @@
 goog.provide( 'html2json.gulp' );
 
-goog.require( 'html2json.node' );
+goog.require( 'html2json.module' );
 
 /**
  * @param {!Object=} opt_options
@@ -13,7 +13,13 @@ html2json.gulp = function( opt_options ){
                           ? opt_options
                           : {};
 
-    return through.obj(
+    return through(
+        /**
+         * @this {stream.Readable}
+         * @param {!Vinyl} file 
+         * @param {string} encoding 
+         * @param {function()} callback 
+         */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
     

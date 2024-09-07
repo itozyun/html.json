@@ -1,6 +1,6 @@
 goog.provide( 'json2html.gulp' );
 
-goog.require( 'json2html.node' );
+goog.require( 'json2html.module' );
 goog.require( 'json2html' );
 
 /**
@@ -13,7 +13,13 @@ json2html.gulp = function( onInstruction, opt_onError, opt_options ){
           through     = require( 'through2'     ),
           pluginName  = 'json2html';
     
-    return through.obj(
+    return through(
+        /**
+         * @this {stream.Readable}
+         * @param {!Vinyl} file 
+         * @param {string} encoding 
+         * @param {function()} callback 
+         */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
     

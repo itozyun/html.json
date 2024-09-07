@@ -158,7 +158,7 @@ function W(a) {
   }
   z("Invalid html.json document!");
 }
-;X.node = {};
+;X.module = {};
 module.exports = X;
 X.DOCUMENT_NODE = 9;
 X.DOCUMENT_FRAGMENT_NODE = 11;
@@ -264,22 +264,22 @@ function Y(a, c, b, f) {
 }
 ;X.gulp = function(a, c, b) {
   const f = require("plugin-error"), t = require("through2"), p = c && "object" === typeof c ? c : b && "object" === typeof b ? b : {};
-  return t.A(function(m, y, z) {
-    if (m.o()) {
+  return t(function(m, y, z) {
+    if (m.isNull()) {
       return z();
     }
-    if (m.v()) {
-      return this.m("error", new f("json2json", "Streaming not supported")), z();
+    if (m.isStream()) {
+      return this.emit("error", new f("json2json", "Streaming not supported")), z();
     }
-    if (".json" === m.j) {
+    if (".json" === m.extname) {
       try {
-        const B = JSON.parse(m.l.toString(y));
+        const B = JSON.parse(m.contents.toString(y));
         let E;
-        X(B, a, c, b) && p.outputStaticPagesAsHTML ? (E = Y(B, a, c, b), m.j = "." + m.h.split(".").pop(), m.h = m.h.substr(0, m.h.length - m.j.length)) : E = JSON.stringify(B, null, p.prettify ? "    " : "");
-        m.l = Buffer.from(E);
+        X(B, a, c, b) && p.outputStaticPagesAsHTML ? (E = Y(B, a, c, b), m.extname = "." + m.stem.split(".").pop(), m.stem = m.stem.substr(0, m.stem.length - m.extname.length)) : E = JSON.stringify(B, null, p.prettify ? "    " : "");
+        m.contents = Buffer.from(E);
         this.push(m);
       } catch (B) {
-        this.m("error", new f("json2json", B));
+        this.emit("error", new f("json2json", B));
       }
     } else {
       this.push(m);

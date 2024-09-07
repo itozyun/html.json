@@ -1,10 +1,10 @@
 var require = function( name ){};
 
-var module = { exports : function(){} };
+/** @const */
+var module = {};
 
-var exports = { gulp : function( options ){} };
-
-var happyDOM = { Window : function(){} };
+module.exports;
+module.exports.gulp = function(){};
 
 var NODE_TYPE = {
     ELEMENT_NODE                  :  1, // v
@@ -29,6 +29,18 @@ var NODE_TYPE = {
 
 /**
  * @constructor
+ */
+function Vinyl(){};
+
+Vinyl.prototype.isNull   = function(){};
+Vinyl.prototype.isStream = function(){};
+Vinyl.prototype.extname;
+Vinyl.prototype.contents;
+Vinyl.prototype.path;
+Vinyl.prototype.stem;
+
+/**
+ * @constructor
  * @extends {stream.Writable}
  */
 function Through(){};
@@ -40,5 +52,5 @@ Through.prototype.resume  = function(){};
 Through.prototype.queue   = function( data ){};
 Through.prototype.push    = function( data ){};
 
-/** @type {Parser} */
-Through.prototype._parser;
+/** {Parser} */
+// Through.prototype._parser;

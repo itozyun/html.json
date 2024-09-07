@@ -1,4 +1,4 @@
-goog.provide( 'json2json.node' );
+goog.provide( 'json2json.module' );
 
 goog.require( 'json2json' );
 goog.require( 'htmljson.NODE_TYPE' );

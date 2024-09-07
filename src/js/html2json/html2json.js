@@ -16,7 +16,7 @@ let parentTreeIsInPreTag = false;
  * @param {boolean} allowInvalidTree
  * @param {!Object=} opt_options
  */
-html2json = function( htmlString, opt_options, allowInvalidTree ){
+html2json = function( htmlString, allowInvalidTree, opt_options ){
     const
         json              = [],
         vnode             = htmljson.createVNodeFromHTML( htmlString, allowInvalidTree ),

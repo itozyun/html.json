@@ -32,14 +32,22 @@ gulp.task(
                                // './node_modules/@externs/nodejs/v8/net.js',
                                 //'./node_modules/@externs/nodejs/v8/events.js',
                                 './node_modules/@externs/nodejs/v8/global/buffer.js',
-                                //'./node_modules/@externs/nodejs/v8/stream.js',
+                                './node_modules/@externs/nodejs/v8/stream.js',
                                 //'./node_modules/@externs/nodejs/v8/zlib.js',
                                 //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',
                                 './src/js-externs/tags-and-attributes.js'
                             ],
                             define            : [
-                                'htmljson.DEFINE.DEBUG=true'
+                                'htmljson.DEFINE.DEBUG=true',
+
+                                'htmlparser.DEFINE.useXML=' + true,
+                                'htmlparser.DEFINE.useDocTypeNode=' + true,
+                                'htmlparser.DEFINE.useProcessingInstruction=' + true,
+                                'htmlparser.DEFINE.useLazy=' + false,
+                                'htmlparser.DEFINE.parsingStop=' + false,
+                                'htmlparser.DEFINE.useCDATASection=' + true,
+                                'htmlparser.DEFINE.attributePrefixSymbol=":"'
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
@@ -74,7 +82,7 @@ gulp.task(
                                // './node_modules/@externs/nodejs/v8/net.js',
                                 //'./node_modules/@externs/nodejs/v8/events.js',
                                 './node_modules/@externs/nodejs/v8/global/buffer.js',
-                                //'./node_modules/@externs/nodejs/v8/stream.js',
+                                './node_modules/@externs/nodejs/v8/stream.js',
                                 //'./node_modules/@externs/nodejs/v8/zlib.js',
                                 //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',
@@ -116,7 +124,7 @@ gulp.task(
                                // './node_modules/@externs/nodejs/v8/net.js',
                                 //'./node_modules/@externs/nodejs/v8/events.js',
                                 './node_modules/@externs/nodejs/v8/global/buffer.js',
-                                //'./node_modules/@externs/nodejs/v8/stream.js',
+                                './node_modules/@externs/nodejs/v8/stream.js',
                                 //'./node_modules/@externs/nodejs/v8/zlib.js',
                                 //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',

@@ -1,4 +1,4 @@
-goog.provide( 'htmljson.streamjson2html' );
+goog.provide( 'streamjson2html' );
 
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.PHASE' );
