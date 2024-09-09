@@ -237,7 +237,9 @@ function onToken( token, value ){
     function closeParentStartTag(){
         if( closeStartTag ){
             closeStartTag = false;
-            return '>';
+            if( tree[ tree.length - 1 ] !== htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ){
+                return '>';
+            };
         };
         return '';
     };
@@ -518,7 +520,7 @@ function onToken( token, value ){
                     if( htmljson.DEFINE.USE_XHTML ){
                         this._isXMLDocument = m_isXML( value );
                     };
-                    queue  = value;
+                    queue  = '<!DOCTYPE ' + value + '>';
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** DocumentFragment */
@@ -671,7 +673,7 @@ function onToken( token, value ){
                     tree.push( htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER );
                     break;
                 case htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA :
-                    queue = value + ']>';
+                    queue = value + ']'; // <= ']>'
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** <!--{true}; --> */

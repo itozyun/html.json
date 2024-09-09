@@ -8,9 +8,6 @@ goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 
 const TRIM_LINEBREAKS = { script : !0, style : !0, textarea : !0 };
 
-let returnByNodeList     = false;
-let parentTreeIsInPreTag = false;
-
 /**
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
@@ -36,10 +33,10 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
 
     let isCcShowLowerStarted = false;
 
-    walkNode( vnode, json, parentTreeIsInPreTag || false, false );
+    walkNode( vnode, json, false, false );
 
-    m_normalizeTextNodes( json );
-    return json;
+    m_normalizeTextNodes( json[ 0 ] );
+    return json[ 0 ];
 
     /**
      * 
@@ -49,18 +46,17 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
      * @param {boolean} lineBreaksTrimmed
      */
     function walkNode( currentVNode, parentJSONNode, insidePreTag, lineBreaksTrimmed ){
-        var nodeValue = currentVNode.getData(),
-            functionNameAndArgs, currentJSONNode, childNodeList;
+        var nodeValue, functionNameAndArgs, currentJSONNode, vDocFragment;
             // console.log( currentVNode )
         switch( currentVNode.getNodeType() ){
             case htmljson.NODE_TYPE.ELEMENT_NODE :
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                 var attrs       = {},
                     tagName     = currentVNode.getTagName().toLowerCase(),
-                    isPreTag    = tagName === 'pre' || tagName === 'listing',
+                    isPreTag    = tagName === 'pre',
                     attributes  = currentVNode.getAttributes(),
                     numAttrs    = 0,
-                    i, l, attrName, attrValue, className = '', textNode;
+                    i, attrName, attrValue, className = '', textNode;
 
                 if( attributes ){
                     for( attrName in attributes ){
@@ -73,6 +69,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             className = '.' + attrValue;
                             continue;
                         } else if( attrName.startsWith( attrPrefix ) ){
+                            attrValue = /** @type {string} */ (attrValue);
                             functionNameAndArgs = codeToObject( attrValue );
     
                             if( functionNameAndArgs.args ){
@@ -125,6 +122,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 parentJSONNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, currentVNode.getTagName().toLowerCase() ] );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
+                nodeValue = currentVNode.getData();
                 if( !insidePreTag && trimWhitespace ){
                     if( lineBreaksTrimmed ){
                         // 先頭と最後の改行文字を削除
@@ -168,8 +166,8 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             // 先頭と最後の半角スペースを削除
                             nodeValue = trimChar( nodeValue, ' ' );
                         };
-                        // 先頭または最後の半角スペースの保護には \u0020 または &#20; を使う
-                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#20;' ).join( ' ' );
+                        // 先頭または最後の半角スペースの保護には \u0020 または &#x20; を使う
+                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' );
                     };
                 };
                 if( nodeValue ){
@@ -177,13 +175,15 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 };
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
+                nodeValue = currentVNode.getData();
                 if( keepCDATASections ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
                     parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToNumber( /** @type {string} */ (nodeValue) ) ] );
                 };
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                functionNameAndArgs = codeToObject( extractStringBetween( /** @type {string} */ (nodeValue), '?', '?', true ) );
+                nodeValue = currentVNode.getData();
+                functionNameAndArgs = codeToObject( /** @type {string} */ (nodeValue) );
 
                 currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
 
@@ -193,20 +193,29 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 parentJSONNode.push( currentJSONNode );
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
-                // console.log( nodeValue )
+                nodeValue = currentVNode.getData();
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
-                    returnByNodeList     = true;
-                    parentTreeIsInPreTag = insidePreTag;
                     // console.log( extractStringBetween( nodeValue, '>', '<![endif]' ) )
-                    childNodeList = html2json( extractStringBetween( nodeValue, '>', '<![endif]', true ), true, options );
-                    returnByNodeList = parentTreeIsInPreTag = false;
+                    vDocFragment    = htmljson.createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
+                    currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
 
-                    if( childNodeList.length || m_isNumber( childNodeList ) ){
-                        currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
-                        m_isArray( childNodeList )
-                            ? _aryPush.apply( currentJSONNode, childNodeList )
-                            : currentJSONNode.push( childNodeList );  // conditional, unescapedText
+                    for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
+                        walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, insidePreTag, lineBreaksTrimmed );
+                    };
+                    if( 2 < currentJSONNode.length || keepComments ){
+                        parentJSONNode.push( currentJSONNode );
+                    };
+                } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
+                    // htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
+                    // console.log( extractStringBetween( nodeValue, '>', '<![endif]' ) )
+                    vDocFragment    = htmljson.createVNodeFromHTML( extractStringBetween( nodeValue, '};', '-->', true ), true );
+                    currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, nodeValue.substring( 0, nodeValue.indexOf( '};' ) ) ];
+
+                    for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
+                        walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, insidePreTag, lineBreaksTrimmed );
+                    };
+                    if( 2 < currentJSONNode.length || keepComments ){
                         parentJSONNode.push( currentJSONNode );
                     };
                 } else if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '><!' ) ){
@@ -223,15 +232,24 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 };
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
+                nodeValue = currentVNode.getData();
                 if( trimWhitespace ){
                     nodeValue = nodeValue
                         .split( '\n' ).join( ' ' )  // 宣言中の改行を半角スペースに
                         .split( '  ' ).join( ' ' ); // 2つ以上の半角スペースをスペースに
                 };
-                parentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_NODE, nodeValue );
+                currentJSONNode = [ htmljson.NODE_TYPE.DOCUMENT_NODE, nodeValue ];
+                parentJSONNode.push( currentJSONNode );
+                for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
+                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, false, false );
+                };
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                parentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+                currentJSONNode = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ];
+                parentJSONNode.push( currentJSONNode );
+                for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
+                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, insidePreTag, lineBreaksTrimmed );
+                };
                 break;
         };
     };

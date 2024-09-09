@@ -18,7 +18,7 @@ test('simple',
 
         var json = html2json('<code><? now ?></code>'), now;
 
-        t.deepEqual(json, ['code', [ 7, 'now' ]]);
+        t.deepEqual(json, [11, ['code', [ 7, 'now' ]]]);
 
         t.deepEqual(
             json2json(
@@ -32,7 +32,7 @@ test('simple',
             true
         );
 
-        t.deepEqual(json, ['code', now]);
+        t.deepEqual(json, [11, ['code', now]]);
     }
 );
 
@@ -54,6 +54,6 @@ test('optimaize',
             true
         );
 
-        t.deepEqual(json, ['code', 'AB']);
+        t.deepEqual(json, [11, ['code', 'AB']]);
     }
 );

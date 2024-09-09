@@ -31,19 +31,24 @@ function _isDocOrDocFragment( vnode ){
  * @param {number} insertPosition
  * @param {number} nodeType 
  * @param {string=} opt_tagOrNodeValue 
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  */
 var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_attrs ){
     var childNodes;
 
     if( htmljson.DEFINE.DEBUG ){
-        switch( parent._nodeType ){
-            case htmljson.NODE_TYPE.TEXT_NODE                 :
-            case htmljson.NODE_TYPE.COMMENT_NODE              :
-            case htmljson.NODE_TYPE.CDATA_SECTION             :
-            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION    :
-            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                throw 'nodeType:' + parent._nodeType + ' は親になることが出来ません!';
+        if( parent ){
+            switch( parent._nodeType ){
+                case htmljson.NODE_TYPE.TEXT_NODE                 :
+                case htmljson.NODE_TYPE.COMMENT_NODE              :
+                case htmljson.NODE_TYPE.CDATA_SECTION             :
+                case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION    :
+                case htmljson.NODE_TYPE.ELEMENT_END_TAG :
+                    throw 'nodeType:' + parent._nodeType + ' は親になることが出来ません!';
+            };
+            if( _isDocOrDocFragment( this ) ){
+                throw 'nodeType:' + parent._nodeType + ' は子になることが出来ません!';
+            };
         };
     };
 
@@ -53,11 +58,6 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
     this._nodeType = nodeType;
 
     if( parent ){
-        if( htmljson.DEFINE.DEBUG ){
-            if( _isDocOrDocFragment( this ) ){
-                throw 'nodeType:' + parent._nodeType + ' は子になることが出来ません!';
-            };
-        };
         if( !parent._childNodes ){
             /** @type {!Array.<!VNode>} */
             parent._childNodes = [];
@@ -83,7 +83,7 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
     switch( nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE            :
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-            /** @type {!Object | null} */
+            /** @type {Object<string,(boolean|string)> | null} */
             this._attrs   = opt_attrs || null;
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             this._tagName = /** @type {string} */ (opt_tagOrNodeValue);
@@ -236,7 +236,7 @@ VNode.prototype.setData = function( data ){
 
 /**
  * 
- * @return {!Object | null}
+ * @return {Object<string,(boolean|string)> | null}
  */
 VNode.prototype.getAttributes = function(){
     if( htmljson.DEFINE.DEBUG ){
@@ -488,7 +488,7 @@ function _insertAt( parent, index, vnodes ){
 
 /**
  * @param {string} tagName 
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @param {string=} opt_textContent  
  * @return {!VNode | null} */
 VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textContent ){
@@ -501,7 +501,7 @@ VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textCont
 };
 /**
  * @param {string} tagName 
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textContent ){
@@ -510,7 +510,7 @@ VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textConte
 /**
  * @param {number} index
  * @param {string} tagName 
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textContent ){
@@ -523,7 +523,7 @@ VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textC
 };
 /**
  * @param {string} tagName 
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textContent ){
@@ -531,7 +531,7 @@ VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textConten
 };
 /**
  * @param {string} tagName 
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @param {string=} opt_textContent
  * @return {!VNode | null} */
 VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textContent ){
@@ -553,7 +553,7 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
 /**
  * @param {number} nodeType
  * @param {string} nodeValueOrTag
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode | null} */
 VNode.prototype.insertNodeBefore = function( nodeType, nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){
@@ -566,7 +566,7 @@ VNode.prototype.insertNodeBefore = function( nodeType, nodeValueOrTag, opt_attrs
 /**
  * @param {number} nodeType
  * @param {string} nodeValueOrTag
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode} */
 VNode.prototype.insertNodeFirst = function( nodeType, nodeValueOrTag, opt_attrs ){
     return this.insertNodeAt( 0, nodeType, nodeValueOrTag, opt_attrs );
@@ -583,7 +583,7 @@ VNode.prototype.insertNodeAt = function( index, nodeType, nodeValueOrTag, opt_at
 /**
  * @param {number} nodeType
  * @param {string} nodeValueOrTag
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode} */
 VNode.prototype.insertNodeLast = function( nodeType, nodeValueOrTag, opt_attrs ){
     return this.insertNodeAt( this.getChildNodeLength(), nodeType, nodeValueOrTag, opt_attrs );
@@ -591,7 +591,7 @@ VNode.prototype.insertNodeLast = function( nodeType, nodeValueOrTag, opt_attrs )
 /**
  * @param {number} nodeType
  * @param {string} nodeValueOrTag
- * @param {!Object=} opt_attrs 
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode | null} */
 VNode.prototype.insertNodeAfter = function( nodeType, nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){

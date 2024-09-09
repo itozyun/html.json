@@ -56,7 +56,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
                     isXmlInHTML = true;
                 };
-                htmlString = arg1 + walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );
+                htmlString = '<!DOCTYPE ' + arg1 + '>' + walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 htmlString = walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );

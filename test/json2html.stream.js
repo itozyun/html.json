@@ -1,6 +1,6 @@
 const test            = require('ava');
 const json2html       = require('../dist/json2html.js');
-const streamJson2html = require('../dist/stream-json2html.js');
+const streamJson2html = require('../dist/json2html.stream.js');
 const fs              = require('fs');
 
 test('stream', async t => {

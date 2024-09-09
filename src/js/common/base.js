@@ -339,7 +339,7 @@ function m_toSnakeCase( cssProperty ){
  */
 function m_getChildNodeStartIndex( htmlJsonNode ){
     var nodeTypeOrTagName = htmlJsonNode[ 0 ];
-    var isElement         = m_getNodeType( htmlJsonNode ) === htmljson.NODE_TYPE.ELEMENT_NODE || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG;
+    var isElement         = m_getNodeType( htmlJsonNode ) === htmljson.NODE_TYPE.ELEMENT_NODE || nodeTypeOrTagName === htmljson.NODE_TYPE.ELEMENT_START_TAG;
     var indexAttrs        = m_isNumber( nodeTypeOrTagName ) ? 2 : 1;
 
     return isElement ? (
