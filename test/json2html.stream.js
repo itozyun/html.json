@@ -6,20 +6,22 @@ const fs              = require('fs');
 test('stream', async t => {
     const chunks = [];
 
-    function onInstruction( funcName, args ){
-        console.log( funcName, args );
+    const date = new Date;
 
-        return funcName === 'date' ? (new Date).toLocaleString() : undefined
+    function onInstruction( funcName, args ){
+        // console.log( funcName, args );
+
+        return funcName === 'date' ? date.toLocaleString() : undefined
     };
 
     await new Promise((resolve) => {
-        fs.createReadStream(__dirname + '/../index.html.json')
+        fs.createReadStream(__dirname + '/index.html.json')
           .pipe(streamJson2html(onInstruction))
           .on('data', (chunk)=> {chunks.push(chunk)})
           .on('end', ()=> {resolve(chunks.join(''))});
     });
     
-    const correct = json2html(JSON.parse(fs.readFileSync(__dirname + '/../index.html.json')), onInstruction);
+    const correct = json2html(JSON.parse(fs.readFileSync(__dirname + '/index.html.json')), onInstruction);
 
     t.deepEqual(chunks.join(''), correct);
 });
