@@ -97,3 +97,11 @@ test('end tag', (t) => {
     t.deepEqual( html2json('<!--[if IE]></div><![endif]-->'), [11, [13, 'if IE', [18, 'div']] ] );
     t.deepEqual( html2json('<!--{true};</div>-->'), [11, [16, 'true', [18, 'div']] ] );
 });
+
+test('<pre>', (t) => {
+    t.deepEqual( html2json('<pre>\nGOTO 100\n</pre>' ), [ 11, ['pre', 'GOTO 100'] ]);
+
+    t.deepEqual( html2json('<pre>\n<b>GOTO 100\n</b></pre>' ), [ 11, ['pre', [ 'b', 'GOTO 100'] ] ]);
+
+    t.deepEqual( html2json('<pre><b>\nGOTO 100</b>\n</pre>' ), [ 11, ['pre', [ 'b', 'GOTO 100'] ] ]);
+});

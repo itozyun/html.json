@@ -142,18 +142,18 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             nodeValue = nodeValue.split( '\n\n' ).join( '\n' );
                         };
 
-                        // 最後の改行を削除
-                        nodeValue = trimLastChar( nodeValue, '\n' );
-
                         if( isTrimAgressive ){
                             var trimWhitespaceAggressively =
                                 // <b>1</b> / <b>3</b>
-                                //         ^^^ / の両隣のスペースを削除するか？は改行の有無で判断する
+                                //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する
                                     // 先頭が改行、かつ
                                     nodeValue.charAt( 0 ) === '\n' &&
-                                    // 最後が改行+空白文字の場合  
+                                    // 最後が改行+0個以上の空白文字の場合  
                                     /\n[ ]*$/.test( nodeValue );
                         };
+
+                        // 最後の改行を削除
+                        nodeValue = trimLastChar( nodeValue, '\n' );
 
                         // 改行文字を一つの半角スペースに
                         nodeValue = nodeValue.split( '\n' ).join( ' ' );
@@ -167,7 +167,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             // 先頭と最後の半角スペースを削除
                             nodeValue = trimChar( nodeValue, ' ' );
                         };
-                        // 先頭または最後の半角スペースの保護には \u0020 または &#x20; を使う
+                        // 半角スペースの保護には \u0020 または &#x20; を使う
                         nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' );
                     };
                 };

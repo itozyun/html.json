@@ -406,8 +406,8 @@ function Z(a, b, e) {
             for (d = d.split("\t").join(" "); 0 <= d.indexOf("\n\n");) {
               d = d.split("\n\n").join("\n");
             }
-            d = M(d, "\n");
             A && (q = "\n" === d.charAt(0) && /\n[ ]*$/.test(d));
+            d = M(d, "\n");
             for (d = d.split("\n").join(" "); 0 <= d.indexOf("  ");) {
               d = d.split("  ").join(" ");
             }
