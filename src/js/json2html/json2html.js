@@ -106,7 +106,6 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'COND_CMT_SHOW_LOWER_START Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled ) + '<!--<![endif]-->';
                 break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
                 htmlString = '<!--<![endif]-->';
