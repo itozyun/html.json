@@ -167,8 +167,8 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             // 先頭と最後の半角スペースを削除
                             nodeValue = trimChar( nodeValue, ' ' );
                         };
-                        // 半角スペースの保護には \u0020 または &#x20; を使う
-                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' );
+                        // 半角スペースの保護には \u0020 または &#x20; または &#32; を使う
+                        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' ).split( '&#32;' ).join( ' ' );
                     };
                 };
                 if( nodeValue ){

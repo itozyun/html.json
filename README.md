@@ -36,14 +36,13 @@ gulp externs
 
 [ES2 HTML Parser](https://github.com/ECMAScript2/htmlparser) で HTML をパースします．
 
-* `trimWhitespace`
+* `trimWhitespace` と `removeLineBreaksBetweenFullWidth`
 * `keepCDATASections`
 * `keepComments`
-* `removeLineBreaksBetweenFullWidth`
 * `argumentBrackets`
 * `instructionAttrPrefix`
 
-### `trimWhitespace`
+### `trimWhitespace` と `removeLineBreaksBetweenFullWidth`
 
 1. `removeLineBreaksBetweenFullWidth` オプションが `true` の場合、全角文字の間の改行文字を削除する
 2. タブ文字を半角スペースに置換
@@ -52,10 +51,10 @@ gulp externs
 5. `trimWhitespace:"agressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
    * 但し次のいずれかを満たす場合、前後に一つの半角スペースを残す
      1. テキストノードの先頭が改行ではない
-     2. 後ろが改行と空白文字ではない
+     2. 後ろが改行と改行に続く0個以上の空白文字ではない
 6. 改行を半角スペースに置換
 7. 連続する半角スペースを1つ半角スペースへ
-8. 半角スペースを保護したい場合 `\u0020` を使う
+8. 半角スペースを保護したい場合 `\u0020`, `&#32;`, `&#x20;` を使う
 
 #### `trimWhitespace:"agressive"` でテキストノードの前後の空白文字をすべて削除する
 
@@ -69,7 +68,7 @@ gulp externs
 [ [ "div" ], "html.json", [ "div" ] ]
 ~~~
 
-#### `trimWhitespace:"agressive"` でもテキストノードの前後の空白文字を1つだけ残す
+#### `trimWhitespace:"agressive"` でもテキストノードの前後の空白文字を1つづつ残す
 
 ~~~html
 <b>1</b> / <b>10</b>
@@ -337,11 +336,10 @@ json2json と微妙に異なる点に注意!
    * 2つ以上の半角スペースを1つの半角スペースへ
    * 先頭と最後の半角スペースを削除、例外は `trimWhitespace` を参照
    * 半角スペースの保護
-     * 先頭または最後、または連続する半角スペースの保護には `\u0020` を使う．この工程で半角スペースに変換される．
-     * `&#32;` は jsdom で半角スペースに変換されてしまう為、`&#32;` を削除から保護することは出来ない．
+     * 先頭または最後、または連続する半角スペースの保護には `\u0020`, `&#32;`, `&#x20;` を使う．この工程で半角スペースに変換される．
    * ここ迄で空文字列 `""` になった場合は、テキストノードは作られない
    * この作業の行われないのは `<script>` `<style>` `<textarea>` と `<pre>` の子要素．
-2. `<script>` `<style>` `<textarea>` 下用の不要な空白文字の削除
+2. `<script>` `<style>` `<textarea>` 用の不要な空白文字の削除
    * テキストノードの最初と最後の改行文字を削除
 3. `<pre>` 下用の不要な空白文字の削除
    * 最初に登場するテキストノードが空白文字のみならノードを削除する．再度、最初のテキストノードを調べる．

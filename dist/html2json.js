@@ -412,7 +412,7 @@ function Z(a, b, e) {
               d = d.split("  ").join(" ");
             }
             q && (d = M(z(d, " "), " "));
-            d = d.split("\\u0020").join(" ").split("&#x20;").join(" ");
+            d = d.split("\\u0020").join(" ").split("&#x20;").join(" ").split("&#32;").join(" ");
           }
         }
         d && h.push(K(d) ? +d : d);
