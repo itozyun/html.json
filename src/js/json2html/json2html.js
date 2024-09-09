@@ -62,50 +62,40 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 htmlString = walkChildNodes( currentJSONNode, endTagRequired, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
-                appendOmittedEndTagBasedOnFollowingNode();
-                htmlString += escapeForHTMLDisabled ? arg1 : m_escapeForHTML( '' + arg1 );
+                htmlString = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? arg1 : m_escapeForHTML( '' + arg1 ) );
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
-                if( m_isString( arg1 ) ){
-                    htmlString = '<![CDATA[' + arg1 + ']]>';
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     errorHandler( 'CDATA_SECTION Error! [' + currentJSONNode + ']' );
                 };
+                htmlString = '<![CDATA[' + arg1 + ']]>';
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
-                if( m_isString( arg1 ) ){
-                    htmlString = '<!--' + arg1 + '-->';
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     errorHandler( 'COMMENT_NODE Error! [' + currentJSONNode + ']' );
                 };
+                htmlString = '<!--' + arg1 + '-->';
                 break;
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント
-                appendOmittedEndTagBasedOnFollowingNode();
-                if( m_isString( arg1 ) ){
-                    htmlString = '<!--[' + arg1 + ']>';
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     errorHandler( 'COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
+                htmlString = appendOmittedEndTagBasedOnFollowingNode() + '<!--[' + arg1 + ']>' + walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
                 break;
             case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント
-                appendOmittedEndTagBasedOnFollowingNode();
-                if( m_isString( arg1 ) ){
-                    htmlString = '<!--{' + arg1 + '};';
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     errorHandler( 'NETSCAPE4_COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString += walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '-->';
+                htmlString = appendOmittedEndTagBasedOnFollowingNode() + '<!--{' + arg1 + '};' + walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '-->';
                 break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
                 // 下の階層が見える条件付きコメント
-                if( m_isString( arg1 ) ){
-                    htmlString = '<!--[' + arg1 + ']><!-->';
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     errorHandler( 'COND_CMT_SHOW_LOWER_START Error! [' + currentJSONNode + ']' );
                 };
+                htmlString = '<!--[' + arg1 + ']><!-->';
                 break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
                 htmlString = '<!--<![endif]-->';
@@ -120,17 +110,16 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                         return REMOVED;
                     } else if( m_isArray( result ) ){
                         return REMOVED;
-                    // } else if( htmljson.DEFINE.DEBUG ){
-                        // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
+                    } else if( htmljson.DEFINE.DEBUG ){
+                        errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + '] result:' + JSON.stringify( result ) );
                     };
                 };
                 break;
             case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                if( m_isString( arg1 ) ){
-                    htmlString = '</' + arg1 + '>';
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     errorHandler( 'ELEMENT_END_TAG Error! [' + currentJSONNode + ']' );
                 };
+                htmlString = '</' + arg1 + '>';
                 break;
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                 isElementWithoutEndTag = true;
@@ -138,69 +127,74 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 tagName   = currentJSONNode[ 1 ];
                 attrIndex = 2;
             default :
-                if( m_isString( tagName ) ){
-                    tagName   = m_parseTagName( tagName );
-                    id        = tagName[ 1 ];
-                    className = tagName[ 2 ];
-                    tagName   = tagName[ 0 ];
-                    if( omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ){
-                        htmlString = '</p>'
-                    };
-                    omittedEndTagBefore = '';
-
-                    htmlString += '<' + tagName;
-
-                    if( id ){
-                        htmlString += ' id=' + m_quoteAttributeValue( id, useSingleQuot, quotAlways );
-                    };
-                    if( className ){
-                        htmlString += ' class=' + m_quoteAttributeValue( className, useSingleQuot, quotAlways );;
-                    };
-
-                    // xml;
-                    if( !isXmlInHTML ){
-                        isXMLRoot = isXmlInHTML = isXML( tagName );
-                    };
-
-                    attrs = currentJSONNode[ attrIndex ];
-                    // attr
-                    if( m_isAttributes( attrs ) ){
-                        htmlString += ' ' + walkAttributes( attrs );
-                    };
-                    // childNodes
-                    childNodesContents = walkChildNodes( currentJSONNode, endTagRequired || m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_TAGS[ tagName ] );
-
-                    if( childNodesContents ){
-                        htmlString += '>' + childNodesContents;
-                    } else if( isElementWithoutEndTag ){
-                        htmlString += '>';
-                    } else {
-                        htmlString += isXmlInHTML ? '/>' : '>';
-                    };
-
-                    if( isElementWithoutEndTag ){
-                        omittedEndTagBefore = '';
-                    } else if( ( !isXmlInHTML || childNodesContents ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || endTagRequired ) ){
-                        htmlString += '</' + tagName + '>';
-                        omittedEndTagBefore = '';
-                    } else {
-                        omittedEndTagBefore = m_NO_CHILD_ELEMENTS[ tagName ] ? '' : tagName;
-                    };
-
-                    if( isXMLRoot ){
-                        isXmlInHTML = false;
-                    };
-                } else if( htmljson.DEFINE.DEBUG ){
+                if( htmljson.DEFINE.DEBUG && !m_isString( tagName ) ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
+                };
+
+                tagName   = m_parseTagName( tagName );
+                id        = tagName[ 1 ];
+                className = tagName[ 2 ];
+                tagName   = tagName[ 0 ];
+
+                if( omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ){
+                    htmlString = appendOmittedEndTagBasedOnFollowingNode();
+                } else {
+                    omittedEndTagBefore = '';
+                };
+
+                htmlString += '<' + tagName;
+
+                if( id ){
+                    htmlString += ' id=' + m_quoteAttributeValue( id, useSingleQuot, quotAlways );
+                };
+                if( className ){
+                    htmlString += ' class=' + m_quoteAttributeValue( className, useSingleQuot, quotAlways );;
+                };
+
+                // xml;
+                if( !isXmlInHTML ){
+                    isXMLRoot = isXmlInHTML = isXML( tagName );
+                };
+
+                attrs = currentJSONNode[ attrIndex ];
+                // attr
+                if( m_isAttributes( attrs ) ){
+                    htmlString += ' ' + walkAttributes( attrs );
+                };
+                // childNodes
+                childNodesContents = walkChildNodes( currentJSONNode, endTagRequired || m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_TAGS[ tagName ] );
+
+                if( childNodesContents ){
+                    htmlString += '>' + childNodesContents;
+                } else if( isElementWithoutEndTag ){
+                    htmlString += '>';
+                } else {
+                    htmlString += isXmlInHTML ? '/>' : '>';
+                };
+
+                if( isElementWithoutEndTag ){
+                    omittedEndTagBefore = '';
+                } else if( ( !isXmlInHTML || childNodesContents ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || endTagRequired ) ){
+                    htmlString += '</' + tagName + '>';
+                    omittedEndTagBefore = '';
+                } else {
+                    omittedEndTagBefore = m_NO_CHILD_ELEMENTS[ tagName ] ? '' : tagName;
+                };
+
+                if( isXMLRoot ){
+                    isXmlInHTML = false;
                 };
                 break;
         };
 
         function appendOmittedEndTagBasedOnFollowingNode(){
+            var htmlString = '';
+
             if( omittedEndTagBefore ){
-                htmlString += '</' + omittedEndTagBefore + '>';
+                htmlString = '</' + omittedEndTagBefore + '>';
                 omittedEndTagBefore = '';
             };
+            return htmlString;
         };
 
         return htmlString;

@@ -237,17 +237,19 @@ function onToken( token, value ){
     function closeParentStartTag(){
         if( closeStartTag ){
             closeStartTag = false;
-            if( tree[ tree.length - 1 ] !== htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ){
-                return '>';
-            };
+            return '>';
         };
         return '';
+    };
+
+    function lastNodeIsElement(){
+        return m_isString( tree[ tree.length - 1 ] );
     };
 
     function appendOmittedEndTagBasedOnFollowingNode(){
         let html = '';
 
-        if( !closeStartTag && self._omittedEndTagBefore ){
+        if( self._omittedEndTagBefore ){
             html = '</' + self._omittedEndTagBefore + '>';
             self._omittedEndTagBefore = '';
         };
@@ -361,7 +363,7 @@ function onToken( token, value ){
                     switch( expect ){
                         case htmljson.EXPECT.ATTRIBUTES_START  :
                         case htmljson.EXPECT.CHILD_NODES_START :
-                            closeStartTag = true;
+                            closeStartTag = lastNodeIsElement();
                         case htmljson.EXPECT.NODE_START     :
                         case htmljson.EXPECT.IN_CHILD_NODES :
                             phase = htmljson.PHASE.NODE_START;
@@ -445,7 +447,7 @@ function onToken( token, value ){
                             break;
                         case htmljson.EXPECT.ATTRIBUTES_START  :
                         case htmljson.EXPECT.CHILD_NODES_START :
-                            closeStartTag = true;
+                            closeStartTag = lastNodeIsElement();
                         case htmljson.EXPECT.IN_CHILD_NODES :
                             phase = htmljson.PHASE.TEXT_DATA;
                             break;
@@ -476,7 +478,7 @@ function onToken( token, value ){
                             break;
                         case htmljson.EXPECT.ATTRIBUTES_START  :
                         case htmljson.EXPECT.CHILD_NODES_START :
-                            closeStartTag = true;
+                            closeStartTag = lastNodeIsElement();
                         case htmljson.EXPECT.IN_CHILD_NODES    :
                             phase = htmljson.PHASE.TEXT_DATA;
                             value += '';
@@ -541,10 +543,15 @@ function onToken( token, value ){
                     const id        = tagName[ 1 ];
                     const className = tagName[ 2 ];
                     tagName = tagName[ 0 ];
-                
-                    queue = ( this._omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ? '</p>' : '' ) + '<' + tagName;
 
-                    this._omittedEndTagBefore = '';
+                    if( this._omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ){
+                        queue = appendOmittedEndTagBasedOnFollowingNode();
+                    } else {
+                        queue = '';
+                        this._omittedEndTagBefore = '';
+                    };
+
+                    queue += '<' + tagName;
 
                     if( id ){
                         queue += ' id=' + m_quoteAttributeValue( id, this._useSingleQuot, this._quotAlways );
@@ -673,7 +680,7 @@ function onToken( token, value ){
                     tree.push( htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER );
                     break;
                 case htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA :
-                    queue = value + ']'; // <= ']>'
+                    queue = value + ']>';
                     expect = htmljson.EXPECT.CHILD_NODES_START;
                     break;
             /** <!--{true}; --> */
