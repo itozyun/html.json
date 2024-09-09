@@ -338,23 +338,22 @@ function m_toSnakeCase( cssProperty ){
  * @return {number}
  */
 function m_getChildNodeStartIndex( htmlJsonNode ){
-    var nodeType   = htmlJsonNode[ 0 ];
-    var isElement  = m_getNodeType( htmlJsonNode ) === htmljson.NODE_TYPE.ELEMENT_NODE;
-    var indexAttrs = nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ? 2 : 1;
-    var startIndex = isElement
-                        ? (
-                            m_isAttributes( htmlJsonNode[ indexAttrs ] )
-                                ? indexAttrs + 1
-                                : indexAttrs
-                            )
-                        : nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE
-                                ? 1
-                        : nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE
-                       || nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
-                       || nodeType === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START
-                                ? 2
-                                : Infinity;
-    return startIndex;
+    var nodeTypeOrTagName = htmlJsonNode[ 0 ];
+    var isElement         = m_getNodeType( htmlJsonNode ) === htmljson.NODE_TYPE.ELEMENT_NODE || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG;
+    var indexAttrs        = m_isNumber( nodeTypeOrTagName ) ? 2 : 1;
+
+    return isElement ? (
+                           m_isAttributes( htmlJsonNode[ indexAttrs ] )
+                               ? indexAttrs + 1
+                               : indexAttrs
+                       )
+          : nodeTypeOrTagName === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE
+               ? 1
+          : nodeTypeOrTagName === htmljson.NODE_TYPE.DOCUMENT_NODE
+            || nodeTypeOrTagName === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
+            || nodeTypeOrTagName === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
+               ? 2
+               : Infinity;
 };
 
 /**
@@ -383,7 +382,7 @@ function m_normalizeTextNodes( htmlJsonNode ){
                     text = '';
                 };
                 ++i;
-                if( nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ){
+                if( nodeType === htmljson.NODE_TYPE.ELEMENT_NODE || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
                     m_normalizeTextNodes( node );
                 };
             };

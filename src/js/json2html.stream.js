@@ -9,9 +9,11 @@ goog.require( 'json2html' );
 
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js
 
-import Parser from 'jsonparse';
+goog.require( 'Parser' );
+goog.require( 'through' );
+// import Parser from 'jsonparse';
 
-import through from 'through';
+// import through from 'through';
 
 const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
 

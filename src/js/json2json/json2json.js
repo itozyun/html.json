@@ -87,7 +87,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
-            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
+            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes );
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
@@ -116,6 +116,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                 };
                 break;
             case htmljson.NODE_TYPE.ELEMENT_NODE :
+            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                 tagName   = arg1;
                 attrIndex = 2;
             default :
