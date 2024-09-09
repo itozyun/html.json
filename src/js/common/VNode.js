@@ -461,16 +461,23 @@ function _insertAt( parent, index, vnodes ){
 
     index = index < l ? index : l; 
 
-    for( ; i; ){
-        if( htmljson.DEFINE.DEBUG && vnode && vnodes[ i - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
-            // 逆順に処理しているので、vnode は現在のノード(vnodes[i-1])の nextSibling
-            throw '閉じタグの無い Element の次に Node を挿入することは出来ません!';
+    if( htmljson.DEFINE.DEBUG ){
+        for( ; i; ){
+            if( htmljson.DEFINE.DEBUG && vnode && vnodes[ i - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
+                // 逆順に処理しているので、vnode は現在のノード(vnodes[i-1])の nextSibling
+                throw '閉じタグの無い Element の次に Node を挿入することは出来ません!';
+            };
+            vnode = vnodes[ --i ];
+            if( htmljson.DEFINE.DEBUG && vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE ){
+                throw '_insertAt() をサポートしない nodeType です!';
+            };
         };
+        i = vnodes.length;
+    };
 
+    for( ; i; ){
         vnode = vnodes[ --i ];
-        if( htmljson.DEFINE.DEBUG && vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE ){
-            throw '_insertAt() をサポートしない nodeType です!';
-        } else if( vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+        if( vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
             vnode.getChildNodeLength() && _insertAt( parent, index, vnode._childNodes );
         } else {
             vnode.remove();
@@ -517,7 +524,7 @@ VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textC
     var element = new VNode( this, index, htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs );
 
     if( opt_textContent != null ){
-        element.insertNodeFirst( htmljson.NODE_TYPE.TEXT_NODE, opt_textContent );
+        element.insertNodeAt( 0, htmljson.NODE_TYPE.TEXT_NODE, opt_textContent );
     };
     return element;
 };
@@ -552,52 +559,53 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
 
 /**
  * @param {number} nodeType
- * @param {string} nodeValueOrTag
+ * @param {string=} opt_nodeValueOrTag
  * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode | null} */
-VNode.prototype.insertNodeBefore = function( nodeType, nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){
         if( _isDocOrDocFragment( this ) ){
             throw 'insertNodeBefore() をサポートしない nodeType です!';
         };
     };
-    return this._parent ? this._parent.insertNodeAt( this.getMyIndex(), nodeType, nodeValueOrTag, opt_attrs ) : null;
+    return this._parent ? this._parent.insertNodeAt( this.getMyIndex(), nodeType, opt_nodeValueOrTag, opt_attrs ) : null;
 };
 /**
  * @param {number} nodeType
- * @param {string} nodeValueOrTag
+ * @param {string=} opt_nodeValueOrTag
  * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode} */
-VNode.prototype.insertNodeFirst = function( nodeType, nodeValueOrTag, opt_attrs ){
-    return this.insertNodeAt( 0, nodeType, nodeValueOrTag, opt_attrs );
+VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+    return this.insertNodeAt( 0, nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
  * 
  * @param {number} index
  * @param {number} nodeType
- * @param {string} nodeValueOrTag
- * @return {!VNode} */
-VNode.prototype.insertNodeAt = function( index, nodeType, nodeValueOrTag, opt_attrs ){
-    return new VNode( this, index, nodeType, nodeValueOrTag, opt_attrs );
-};
-/**
- * @param {number} nodeType
- * @param {string} nodeValueOrTag
+ * @param {string=} opt_nodeValueOrTag
  * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode} */
-VNode.prototype.insertNodeLast = function( nodeType, nodeValueOrTag, opt_attrs ){
-    return this.insertNodeAt( this.getChildNodeLength(), nodeType, nodeValueOrTag, opt_attrs );
+VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, opt_attrs ){
+    return new VNode( this, index, nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
  * @param {number} nodeType
- * @param {string} nodeValueOrTag
+ * @param {string=} opt_nodeValueOrTag
+ * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @return {!VNode} */
+VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+    return this.insertNodeAt( this.getChildNodeLength(), nodeType, opt_nodeValueOrTag, opt_attrs );
+};
+/**
+ * @param {number} nodeType
+ * @param {string=} opt_nodeValueOrTag
  * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
  * @return {!VNode | null} */
-VNode.prototype.insertNodeAfter = function( nodeType, nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){
         if( _isDocOrDocFragment( this ) || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'insertNodeAfter() をサポートしない nodeType です!';
         };
     };
-    return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeType, nodeValueOrTag, opt_attrs ) : null;
+    return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeType, opt_nodeValueOrTag, opt_attrs ) : null;
 };
