@@ -43,7 +43,7 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
                 case htmljson.NODE_TYPE.COMMENT_NODE              :
                 case htmljson.NODE_TYPE.CDATA_SECTION             :
                 case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION    :
-                case htmljson.NODE_TYPE.ELEMENT_END_TAG :
+                case htmljson.NODE_TYPE.ELEMENT_END_TAG           :
                     throw 'nodeType:' + parent._nodeType + ' は親になることが出来ません!';
             };
             if( _isDocOrDocFragment( this ) ){
