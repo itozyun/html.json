@@ -286,27 +286,29 @@ function m_escapeForHTML( unsafeText ){
  * @return {string}
  */
 function m_quoteAttributeValue( value, useSingleQuot, quotAlways ){
-    var strValue = m_escapeForHTML( '' + value );
+    var strValue          = m_escapeForHTML( '' + value );
     var containDoubleQuot = strValue.match( '"' );
+    var containSingleQuot = strValue.match( "'" );
+    var _                 = useSingleQuot ? "'" : '"';
 
-    if( containDoubleQuot ){
-        if( strValue.match( "'" ) ){ // " と ' を含む
-            if( useSingleQuot ){
-                strValue = "'" + strValue.split( '&apos;' ).join( "'" ) // 既にエスケープ済かもしれないので、一旦エスケープの解除
-                                         .split( "'" ).join( '&apos;' ) // " のエスケープ
-                         + "'";
-            } else {
-                strValue = '"' + strValue.split( '&quot;' ).join( '"' ) // 既にエスケープ済かもしれないので、一旦エスケープの解除
-                                           .split( '"' ).join( '&quot;' ) // " のエスケープ
-                         + '"';
-            };
+    if( containDoubleQuot && containSingleQuot ){
+        if( useSingleQuot ){
+            strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
         } else {
-            strValue = "'" + strValue + "'";
+            strValue = _ + strValue.split( '"' ).join( '\\"' ) + _; // " のエスケープ
+        };
+    } else if( containDoubleQuot ){
+        strValue = "'" + strValue + "'";
+    } else if( containSingleQuot ){
+        if( useSingleQuot ){
+            strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
+        } else {
+            strValue = _ + strValue + _;
         };
     } else if( quotAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
         // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
         // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
-        strValue = ( useSingleQuot ? "'" : '"' ) + m_escapeForHTML( strValue ) + ( useSingleQuot ? "'" : '"' );
+        strValue = _ + strValue + _;
     };
     return strValue;
 };
