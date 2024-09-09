@@ -196,7 +196,6 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 nodeValue = currentVNode.getData();
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
-                    // console.log( extractStringBetween( nodeValue, '>', '<![endif]' ) )
                     vDocFragment    = htmljson.createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
 
@@ -208,9 +207,8 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     };
                 } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
                     // htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
-                    // console.log( extractStringBetween( nodeValue, '>', '<![endif]' ) )
-                    vDocFragment    = htmljson.createVNodeFromHTML( extractStringBetween( nodeValue, '};', '-->', true ), true );
-                    currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, nodeValue.substring( 0, nodeValue.indexOf( '};' ) ) ];
+                    vDocFragment    = htmljson.createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
+                    currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
                         walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, insidePreTag, lineBreaksTrimmed );

@@ -438,8 +438,8 @@ function Z(a, b, f) {
           }
           (2 < e.length || t) && h.push(e);
         } else if (c.startsWith("{") && 2 < c.indexOf("};")) {
-          d = Y(H(c, "};", "--\x3e", !0), !0);
-          e = [16, c.substring(0, c.indexOf("};"))];
+          d = Y(c.substring(c.indexOf("};") + 2), !0);
+          e = [16, H(c, "{", "};", !1)];
           for (n = 0; n < V(d); ++n) {
             l(W(d, n), e, p, q);
           }
