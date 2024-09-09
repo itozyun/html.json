@@ -23,6 +23,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
         isTrimAgressive   = options[ 'trimWhitespace' ] === 'agressive',
         keepCDATASections = !!options[ 'keepCDATASections' ],
         keepComments      = !!options[ 'keepComments' ],
+        keepEmptyCondCmt  = !!options[ 'keepEmptyConditionalComment' ],
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
         argClosingBracket = argumentBrackets.substr( argumentBrackets.length ),
@@ -46,7 +47,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
      * @param {boolean} lineBreaksTrimmed
      */
     function walkNode( currentVNode, parentJSONNode, insidePreTag, lineBreaksTrimmed ){
-        var nodeValue, functionNameAndArgs, currentJSONNode, vDocFragment;
+        var nodeValue, functionNameAndArgs, currentJSONNode, prevJSONNode, vDocFragment;
             // console.log( currentVNode )
         switch( currentVNode.getNodeType() ){
             case htmljson.NODE_TYPE.ELEMENT_NODE :
@@ -202,7 +203,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
                         walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, insidePreTag, lineBreaksTrimmed );
                     };
-                    if( 2 < currentJSONNode.length || keepComments ){
+                    if( 2 < currentJSONNode.length || keepEmptyCondCmt ){
                         parentJSONNode.push( currentJSONNode );
                     };
                 } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
@@ -213,7 +214,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
                         walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, insidePreTag, lineBreaksTrimmed );
                     };
-                    if( 2 < currentJSONNode.length || keepComments ){
+                    if( 2 < currentJSONNode.length || keepEmptyCondCmt ){
                         parentJSONNode.push( currentJSONNode );
                     };
                 } else if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '><!' ) ){
@@ -222,7 +223,13 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     parentJSONNode.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START, getIECondition( nodeValue ) ] );
                     isCcShowLowerStarted = true;
                 } else if( nodeValue === '<![endif]' && isCcShowLowerStarted ){
-                    parentJSONNode.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END ] );
+                    prevJSONNode = parentJSONNode[ parentJSONNode.length -1 ];
+
+                    if( keepEmptyCondCmt || !prevJSONNode || prevJSONNode[ 0 ] !== htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
+                        parentJSONNode.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END ] );
+                    } else if( prevJSONNode ){
+                        parentJSONNode.pop();
+                    };
                     isCcShowLowerStarted = false;
                 } else if( keepComments ){
                     // htmljson.NODE_TYPE.COMMENT_NODE

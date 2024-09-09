@@ -84,3 +84,16 @@ test('processing-instruction', (t) => {
 test('id-class', (t) => {
     t.deepEqual( html2json('<div id=app class="app nojs"></div>'), [11, ['div#app.app nojs'] ]);
 });
+
+test('start tag', (t) => {
+    t.deepEqual( html2json('<!--[if IE]><table border=1><![endif]-->'), [11, [13, 'if IE', [17, 'table', { border : 1}]] ] );
+    t.deepEqual( html2json('<!--[if IE]><input><table border=1><![endif]-->'), [11, [13, 'if IE', ['input'], [17, 'table', { border : 1}]] ] );
+    t.deepEqual( html2json('<!--[if IE]><table border=1><tr><![endif]-->'), [11, [13, 'if IE', [17, 'table', { border : 1}, [ 'tr' ]]] ] );
+
+    t.deepEqual( html2json('<!--{true};<table border=1>-->'), [11, [16, 'true', [17, 'table', { border : 1}]] ] );
+});
+
+test('end tag', (t) => {
+    t.deepEqual( html2json('<!--[if IE]></div><![endif]-->'), [11, [13, 'if IE', [18, 'div']] ] );
+    t.deepEqual( html2json('<!--{true};</div>-->'), [11, [16, 'true', [18, 'div']] ] );
+});

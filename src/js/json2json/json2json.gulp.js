@@ -16,8 +16,12 @@ json2json.gulp = function( onInstruction, opt_onError, opt_options ){
                             ? opt_onError
                       : opt_options && typeof opt_options === 'object'
                             ? opt_options
-                            : {};
-    
+                            : {},
+          outputStaticPagesAsHTML = options[ 'outputStaticPagesAsHTML' ],
+          staticPages             = options[ 'staticPages' ] && typeof options[ 'staticPages' ] === 'object' ? options[ 'staticPages' ] : {};
+
+    options[ 'staticPages' ] = staticPages;
+
     return through(
         /**
          * @this {stream.Readable}
@@ -39,7 +43,11 @@ json2json.gulp = function( onInstruction, opt_onError, opt_options ){
                     const isStaticWebPage = json2json( json, onInstruction, opt_onError, opt_options );
                     let content;
 
-                    if( isStaticWebPage && options[ 'outputStaticPagesAsHTML' ] ){
+                    if( outputStaticPagesAsHTML ){
+                        staticPages[ file.path.split( '\\' ).join( '/' ).split( '.json' ).join( '' ) ] = isStaticWebPage;
+                    };
+
+                    if( isStaticWebPage && outputStaticPagesAsHTML ){
                         content = json2html( json, onInstruction, opt_onError, opt_options );
                         // .html <= .html.json
                         file.extname = '.' + file.stem.split( '.' ).pop();
