@@ -1,6 +1,6 @@
 /**
- * @constructor
+ * constructor
  */
-function Console(){};
+// function Console(){};
 
-const setTimeout = {};
+// const setTimeout = {};

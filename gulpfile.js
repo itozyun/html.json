@@ -178,7 +178,7 @@ gulp.task(
                             define            : [
                                 'htmljson.DEFINE.DEBUG=' + isDebug
                             ],
-                            env               : 'CUSTOM',
+                            // env               : 'CUSTOM',
                             compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',

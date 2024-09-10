@@ -53,6 +53,7 @@ var TAB =             "\t".charCodeAt(0);
 
 var STRING_BUFFER_SIZE = 64 * 1024;
 
+/** @constructor */
 Parser = function() {
   this.tState = START;
   this.value = undefined;
@@ -86,12 +87,12 @@ Parser.toknam = function (code) {
 };
 
 var proto = Parser.prototype;
-proto.onError = function (err) { throw err; };
-proto.charError = function (buffer, i) {
+Parser.prototype.onError = function (err) { throw err; };
+Parser.prototype.charError = function (buffer, i) {
   this.tState = STOP;
   this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + Parser.toknam(this.tState)));
 };
-proto.appendStringChar = function (char) {
+Parser.prototype.appendStringChar = function (char) {
   if (this.stringBufferOffset >= STRING_BUFFER_SIZE) {
     this.string += this.stringBuffer.toString('utf8');
     this.stringBufferOffset = 0;
@@ -99,7 +100,7 @@ proto.appendStringChar = function (char) {
 
   this.stringBuffer[this.stringBufferOffset++] = char;
 };
-proto.appendStringBuf = function (buf, start, end) {
+Parser.prototype.appendStringBuf = function (buf, start, end) {
   var size = buf.length;
   if (typeof start === 'number') {
     if (typeof end === 'number') {
@@ -126,7 +127,7 @@ proto.appendStringBuf = function (buf, start, end) {
   buf.copy(this.stringBuffer, this.stringBufferOffset, start, end);
   this.stringBufferOffset += size;
 };
-proto.write = function (buffer) {
+Parser.prototype.write = function (buffer) {
   if (typeof buffer === "string") buffer = new Buffer(buffer);
   var n;
   for (var i = 0, l = buffer.length; i < l; i++) {
@@ -314,18 +315,18 @@ proto.write = function (buffer) {
     }
   }
 };
-proto.onToken = function (token, value) {
+Parser.prototype.onToken = function (token, value) {
   // Override this to get events
 };
 
-proto.parseError = function (token, value) {
+Parser.prototype.parseError = function (token, value) {
   this.tState = STOP;
   this.onError(new Error("Unexpected " + Parser.toknam(token) + (value ? ("(" + JSON.stringify(value) + ")") : "") + " in state " + Parser.toknam(this.state)));
 };
-proto.push = function () {
+Parser.prototype.push = function () {
   this.stack.push({value: this.value, key: this.key, mode: this.mode});
 };
-proto.pop = function () {
+Parser.prototype.pop = function () {
   var value = this.value;
   var parent = this.stack.pop();
   this.value = parent.value;
@@ -334,14 +335,14 @@ proto.pop = function () {
   this.emit(value);
   if (!this.mode) { this.state = VALUE; }
 };
-proto.emit = function (value) {
+Parser.prototype.emit = function (value) {
   if (this.mode) { this.state = COMMA; }
   this.onValue(value);
 };
-proto.onValue = function (value) {
+Parser.prototype.onValue = function (value) {
   // Override me
 };
-proto.onToken = function (token, value) {
+Parser.prototype.onToken = function (token, value) {
   if(this.state === VALUE){
     if(token === STRING || token === NUMBER || token === TRUE || token === FALSE || token === NULL){
       if (this.value) {

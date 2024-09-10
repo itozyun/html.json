@@ -53,4 +53,4 @@ Through.prototype.queue   = function( data ){};
 Through.prototype.push    = function( data ){};
 
 /** {Parser} */
-// Through.prototype._parser;
+Through.prototype._parser;
