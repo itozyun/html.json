@@ -167,7 +167,7 @@ VNode.prototype.isElement = function(){
 /**
  * 
  */
-VNode.prototype.close = function(){
+VNode.prototype.finalize = function(){
     if( htmljson.DEFINE.DEBUG ){
         if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'close() をサポートしない nodeType です!';
@@ -179,7 +179,7 @@ VNode.prototype.close = function(){
 /**
  * @return {boolean}
  */
-VNode.prototype.closed = function(){
+VNode.prototype.isClosed = function(){
     return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
 
@@ -371,7 +371,7 @@ VNode.prototype.getMyIndex = function(){
 /**
  * 
  */
-VNode.prototype.remove = function(){
+VNode.prototype.detach = function(){
     if( htmljson.DEFINE.DEBUG ){
         if( _isDocOrDocFragment( this ) ){
             throw 'remove() をサポートしない nodeType です!';
@@ -399,7 +399,7 @@ VNode.prototype.empty = function(){
 
     if( childNodes ){
         for( i = childNodes.length; i; ){
-            childNodes[ --i ].remove();
+            childNodes[ --i ].detach();
         };
     };
 };
@@ -486,7 +486,7 @@ function _insertAt( parent, index, vnodes ){
         if( vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
             vnode.getChildNodeLength() && _insertAt( parent, index, vnode._childNodes );
         } else {
-            vnode.remove();
+            vnode.detach();
             childNodes.splice( index, 0, vnode );
             vnode._parent = parent;
         };

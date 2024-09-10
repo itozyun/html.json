@@ -57,7 +57,7 @@ Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
         };
     } else if( !missingEndTag || !this._allowInvalidTree ){
         if( tag === this._currentNode.getTagName() ){
-            this._currentNode.close();
+            this._currentNode.finalize();
             this._currentNode = /** @type {!VNode} */ (this._currentNode.getParent());
         } else {
             throw 'End tag error! ' + tag;

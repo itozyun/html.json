@@ -36,19 +36,19 @@ gulp externs
 
 [ES2 HTML Parser](https://github.com/ECMAScript2/htmlparser) で HTML をパースします．
 
-* `trimWhitespace` と `removeLineBreaksBetweenFullWidth`
+* `trimWhitespaces` と `removeNewlineBetweenFullWidthChars`
 * `keepCDATASections`
 * `keepComments`
 * `argumentBrackets`
 * `instructionAttrPrefix`
 
-### `trimWhitespace` と `removeLineBreaksBetweenFullWidth`
+### `trimWhitespaces` と `removeNewlineBetweenFullWidthChars`
 
-1. `removeLineBreaksBetweenFullWidth` オプションが `true` の場合、全角文字の間の改行文字を削除する
+1. `removeNewlineBetweenFullWidthChars` オプションが `true` の場合、全角文字の間の改行文字を削除する
 2. タブ文字を半角スペースに置換
 3. 連続する改行を1つの改行へ
 4. テキストノードの最後の連続する改行を削除
-5. `trimWhitespace:"agressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
+5. `trimWhitespaces:"aggressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
    * 但し次のいずれかを満たす場合、前後に一つの半角スペースを残す
      1. テキストノードの先頭が改行ではない
      2. 後ろが改行と改行に続く0個以上の空白文字ではない
@@ -56,7 +56,7 @@ gulp externs
 7. 連続する半角スペースを1つ半角スペースへ
 8. 半角スペースを保護したい場合 `\u0020`, `&#32;`, `&#x20;` を使う
 
-#### `trimWhitespace:"agressive"` でテキストノードの前後の空白文字をすべて削除する
+#### `trimWhitespaces:"aggressive"` でテキストノードの前後の空白文字をすべて削除する
 
 ~~~html
     </div>
@@ -68,7 +68,7 @@ gulp externs
 [ [ "div" ], "html.json", [ "div" ] ]
 ~~~
 
-#### `trimWhitespace:"agressive"` でもテキストノードの前後の空白文字を1つづつ残す
+#### `trimWhitespaces:"aggressive"` でもテキストノードの前後の空白文字を1つづつ残す
 
 ~~~html
 <b>1</b> / <b>10</b>
@@ -334,7 +334,7 @@ json2json と微妙に異なる点に注意!
 1. テキストノードの空白文字の削除
    * 改行とタブは一つの半角スペースに
    * 2つ以上の半角スペースを1つの半角スペースへ
-   * 先頭と最後の半角スペースを削除、例外は `trimWhitespace` を参照
+   * 先頭と最後の半角スペースを削除、例外は `trimWhitespaces` を参照
    * 半角スペースの保護
      * 先頭または最後、または連続する半角スペースの保護には `\u0020`, `&#32;`, `&#x20;` を使う．この工程で半角スペースに変換される．
    * ここ迄で空文字列 `""` になった場合は、テキストノードは作られない

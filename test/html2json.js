@@ -37,15 +37,15 @@ test('text', (t) => {
 });
 
 test('whitespace', (t) => {
-    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, { trimWhitespace : 'agressive' }), [ 11, ['p'] ]);
+    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, { trimWhitespaces : 'aggressive' }), [ 11, ['p'] ]);
 
-    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, { trimWhitespace : 'normal' }), [ 11, ['p', ' '] ]);
+    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, { trimWhitespaces : 'normal' }), [ 11, ['p', ' '] ]);
 
-    t.deepEqual( html2json('<p>\n\n \t\t &#x20; \n\n \t\t',false, { trimWhitespace : 'agressive' }), [11, ['p', ' ']]);
+    t.deepEqual( html2json('<p>\n\n \t\t &#x20; \n\n \t\t',false, { trimWhitespaces : 'aggressive' }), [11, ['p', ' ']]);
 
-    t.deepEqual( html2json('<p>\n\n \t\t \\u0020 \n\n \t\t', false, { trimWhitespace : 'agressive' }), [11, ['p', ' ']]);
+    t.deepEqual( html2json('<p>\n\n \t\t \\u0020 \n\n \t\t', false, { trimWhitespaces : 'aggressive' }), [11, ['p', ' ']]);
 
-    t.deepEqual( html2json('<p>\\u0020\\u0020', false, { trimWhitespace : 'normal' }), [11, ['p', '  ']]);
+    t.deepEqual( html2json('<p>\\u0020\\u0020', false, { trimWhitespaces : 'normal' }), [11, ['p', '  ']]);
     // t.deepEqual( html2json('<p>\\u0020'), ['p', '    ']);
 });
 

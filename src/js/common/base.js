@@ -397,6 +397,113 @@ function m_normalizeTextNodes( htmlJsonNode ){
 
 /**
  * 
+ * @param {string} nodeValue 
+ * @param {boolean} isDescendantOfPre 
+ * @param {boolean} isTrimNewlines 
+ * @param {boolean} isTrimWhitespace 
+ * @param {boolean} isAggressiveTrim 
+ * @param {boolean} isRemoveNewlineBetweenFullWidthChars 
+ * @return {string | number}
+ */
+function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars ){
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
+    function removeNewlineBetweenFullWidthChars( string ){
+        // この関数は、HTML文書を文字列として受け取り、全角文字に挟まれた改行コードを削除したHTML文書を文字列として返す
+        // 正規表現を使って、全角文字に挟まれた改行コードを空文字に置換する
+        // 全角文字の範囲は、Unicodeのコードポイントで指定する
+        // \uFF01-\uFF60は全角記号や英数字、\u3040-\u309Fはひらがな、\u30A0-\u30FFはカタカナ、\u4E00-\u9FFFは漢字などを表す
+        // \r\nや\nや\rなどの改行コードを表すために、\sというメタ文字を使う
+        // gというフラグを使って、文字列全体に対して置換を行う
+        return string.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2");
+    };
+
+    if( !isDescendantOfPre && isTrimWhitespace ){
+        if( isTrimNewlines ){
+            // 先頭と最後の改行文字を削除
+            nodeValue = m_trimChar( /** @type {string} */ (nodeValue), '\n' );
+        } else {
+            nodeValue = nodeValue.split( '\r\n' ).join( '\n' );
+            if( isRemoveNewlineBetweenFullWidthChars ){
+                nodeValue = removeNewlineBetweenFullWidthChars( nodeValue );
+            };
+
+            // タブは一つの半角スペースに
+            nodeValue = nodeValue.split( '\t' ).join( ' ' );
+
+            // 2つ以上の改行を1つの改行へ
+            while( 0 <= nodeValue.indexOf( '\n\n' ) ){
+                nodeValue = nodeValue.split( '\n\n' ).join( '\n' );
+            };
+
+            if( isAggressiveTrim ){
+                var isAggressiveTrimWhitespace =
+                    // <b>1</b> / <b>3</b>
+                    //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する
+                        // 先頭が改行、かつ
+                        nodeValue.charAt( 0 ) === '\n' &&
+                        // 最後が改行+0個以上の空白文字の場合  
+                        /\n[ ]*$/.test( nodeValue );
+            };
+
+            // 最後の改行を削除
+            nodeValue = m_trimLastChar( nodeValue, '\n' );
+
+            // 改行文字を一つの半角スペースに
+            nodeValue = nodeValue.split( '\n' ).join( ' ' );
+
+            // 2つ以上の半角スペースを1つの半角スペースへ
+            while( 0 <= nodeValue.indexOf( '  ' ) ){
+                nodeValue = nodeValue.split( '  ' ).join( ' ' );
+            };
+
+            if( isAggressiveTrimWhitespace ){
+                // 先頭と最後の半角スペースを削除
+                nodeValue = m_trimChar( nodeValue, ' ' );
+            };
+            // 半角スペースの保護には \u0020 または &#x20; または &#32; を使う
+            nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' ).split( '&#32;' ).join( ' ' );
+        };
+    };
+    return m_tryToNumber( nodeValue );
+};
+
+/**
+ * 
+ * @param {string} string 
+ * @return {string} 
+ */
+function m_trimChar( string, chr ){
+    return m_trimLastChar( m_trimFirstChar( string, chr ), chr );
+};
+
+/**
+ * 
+ * @param {string} string 
+ * @return {string} 
+ */
+function m_trimFirstChar( string, chr ){
+    while( string.charAt( 0 ) === chr ){ string = string.substr( 1 ); };
+
+    return string;
+};
+
+/**
+ * 
+ * @param {string} string 
+ * @return {string} 
+ */
+function m_trimLastChar( string, chr ){
+    while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };
+
+    return string;
+};
+
+/**
+ * 
  * @param {string} tagName 
  * @return {!Array.<string>}
  */
