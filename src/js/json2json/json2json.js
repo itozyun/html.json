@@ -34,6 +34,8 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
     /** @const */
     var keepComments      = options[ 'keepComments'          ] !== false;
     /** @const */
+    var keepEmptyCondCmt  = options[ 'keepEmptyConditionalComment' ] === true;
+    /** @const */
     var attrPrefix        = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
     var isTreeUpdated   = false,
@@ -61,7 +63,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
         var arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
             attrIndex = 1, tagName = arg0,
-            attrs, result;
+            prevJSONNode, attrs, result;
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
@@ -86,9 +88,28 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                 break;
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes );
+                if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
+                    parentJSONNode.splice( myIndex, 1 );
+                    return REMOVED;
+                };
+                break;
+            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
+                prevJSONNode = parentJSONNode[ myIndex -1 ];
+
+                if( keepEmptyCondCmt || !prevJSONNode || prevJSONNode[ 0 ] !== htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
+                    
+                } else if( prevJSONNode ){
+                    parentJSONNode.splice( myIndex, 1 );
+                    parentJSONNode.splice( myIndex - 1, 1 );
+                    return REMOVED;
+                };
                 break;
             case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes );
+                if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
+                    parentJSONNode.splice( myIndex, 1 );
+                    return REMOVED;
+                };
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                 result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );

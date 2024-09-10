@@ -19,8 +19,8 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
     var errorHandler = typeof opt_onError === 'function' ? opt_onError : function( error ){};
 
     var options       = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {},
-        quotAlways    = !!options[ 'quotAlways' ],
-        useSingleQuot = !!options[ 'useSingleQuot' ],
+        quotAlways    = options[ 'quotAlways'            ] === true,
+        useSingleQuot = options[ 'useSingleQuot'         ] === true,
         attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
     var omittedEndTagBefore, isXmlInHTML = m_isXMLDocument;

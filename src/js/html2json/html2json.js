@@ -19,18 +19,20 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
         _aryPush          = json.push,
         vnode             = htmljson.createVNodeFromHTML( htmlString, allowInvalidTree ),
         options           = opt_options || {},
+
         trimWhitespace    = [ 'none', false ].indexOf( options[ 'trimWhitespace' ] ) === -1,
         isTrimAgressive   = options[ 'trimWhitespace' ] === 'agressive',
-        keepCDATASections = !!options[ 'keepCDATASections' ],
-        keepComments      = !!options[ 'keepComments' ],
-        keepEmptyCondCmt  = !!options[ 'keepEmptyConditionalComment' ],
+        removeLineBreaksBetweenFullWidth
+                          = !!options[ 'removeLineBreaksBetweenFullWidth' ],
+
+        keepCDATASections = options[ 'keepCDATASections'           ] === true,
+        keepComments      = options[ 'keepComments'                ] === true,
+        keepEmptyCondCmt  = options[ 'keepEmptyConditionalComment' ] === true,
+        attrPrefix        = options[ 'instructionAttrPrefix'       ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX,
+
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
-        argClosingBracket = argumentBrackets.substr( argumentBrackets.length ),
-        attrPrefix        = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX,
-
-        removeLineBreaksBetweenFullWidth
-                          = !!options[ 'removeLineBreaksBetweenFullWidth' ];
+        argClosingBracket = argumentBrackets.substr( argumentBrackets.length );
 
     let isCcShowLowerStarted = false;
 
@@ -307,7 +309,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     function getFirstTextNode( vElement ){
         for( var i = 0, l = vElement.getChildNodeLength(), node; i < l; ++i ){
             node = vElement.getChildNodeAt( i );
-            if( node.getNodeType() === 1 ){
+            if( node.isElement() ){
                 node = getFirstTextNode( node );
             };
             if( node && node.getNodeType() === 3 ){
@@ -324,7 +326,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     function getLastTextNode( vElement ){
         for( var i = vElement.getChildNodeLength(), node; i; ){
             node = vElement.getChildNodeAt( --i );
-            if( node.getNodeType() === 1 ){
+            if( node.isElement() ){
                 node = getLastTextNode( node );
             };
             if( node && node.getNodeType() === 3 ){

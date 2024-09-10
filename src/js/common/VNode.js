@@ -139,9 +139,6 @@ VNode.prototype.getJSON = function(){
  * @return {number}
  */
 VNode.prototype.getNodeType = function(){
-    if( this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
-        return htmljson.NODE_TYPE.ELEMENT_NODE;
-    };
     return this._nodeType;
 };
 
@@ -156,6 +153,15 @@ VNode.prototype.setNodeType = function( nodeType ){
         };
     };
     this._nodeType = nodeType;
+};
+
+/**
+ * 
+ * @return {boolean}
+ */
+VNode.prototype.isElement = function(){
+    return this._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
+           this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
 
 /**

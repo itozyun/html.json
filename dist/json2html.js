@@ -168,7 +168,7 @@ function U(a) {
   var C = "function" === typeof b ? b : function() {
   };
   b = b && "object" === typeof b ? b : p || {};
-  var A = !!b.quotAlways, G = !!b.useSingleQuot, N = b.instructionAttrPrefix || ":", x, z = !1;
+  var A = !0 === b.quotAlways, G = !0 === b.useSingleQuot, N = b.instructionAttrPrefix || ":", x, z = !1;
   if (I(a)) {
     return 7 === P(a) && (a = [11, a]), d(a, null, 0, !1, !1);
   }
