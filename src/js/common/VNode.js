@@ -11,6 +11,8 @@ goog.require( 'htmljson.NODE_TYPE' );
 function _canHasChildren( vnode ){
     return vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
            vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ||
+           vnode._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER ||
+           vnode._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ||
            _isDocOrDocFragment( vnode );
 };
 
@@ -30,20 +32,21 @@ function _isDocOrDocFragment( vnode ){
  * @param {!VNode | null} parent 
  * @param {number} insertPosition
  * @param {number} nodeType 
- * @param {string=} opt_tagOrNodeValue 
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(string | number)=} opt_nodeValueOrTag 
+ * @param {(Attrs | null)=} opt_attrs 
  */
-var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_attrs ){
+var VNode = function( parent, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrs ){
     var childNodes;
 
     if( htmljson.DEFINE.DEBUG ){
         if( parent ){
             switch( parent._nodeType ){
-                case htmljson.NODE_TYPE.TEXT_NODE                 :
-                case htmljson.NODE_TYPE.COMMENT_NODE              :
-                case htmljson.NODE_TYPE.CDATA_SECTION             :
-                case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION    :
-                case htmljson.NODE_TYPE.ELEMENT_END_TAG           :
+                case htmljson.NODE_TYPE.TEXT_NODE               :
+                case htmljson.NODE_TYPE.COMMENT_NODE            :
+                case htmljson.NODE_TYPE.CDATA_SECTION           :
+                case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION  :
+                case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
+                case htmljson.NODE_TYPE.ELEMENT_END_TAG         :
                     throw 'nodeType:' + parent._nodeType + ' は親になることが出来ません!';
             };
             if( _isDocOrDocFragment( this ) ){
@@ -83,17 +86,20 @@ var VNode = function( parent, insertPosition, nodeType, opt_tagOrNodeValue, opt_
     switch( nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE            :
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-            /** @type {Object<string,(boolean|string)> | null} */
+            /** @type {Attrs | null} */
             this._attrs   = opt_attrs || null;
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-            this._tagName = /** @type {string} */ (opt_tagOrNodeValue);
+            this._tagName = /** @type {string} */ (opt_nodeValueOrTag);
             break;
-        case htmljson.NODE_TYPE.TEXT_NODE               :
-        case htmljson.NODE_TYPE.COMMENT_NODE            :
-        case htmljson.NODE_TYPE.DOCUMENT_NODE           :
-        case htmljson.NODE_TYPE.CDATA_SECTION           :
-        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION  :
-            this._data = /** @type {string} */ (opt_tagOrNodeValue);
+        case htmljson.NODE_TYPE.TEXT_NODE                     :
+        case htmljson.NODE_TYPE.CDATA_SECTION                 :
+        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
+        case htmljson.NODE_TYPE.COMMENT_NODE                  :
+        case htmljson.NODE_TYPE.DOCUMENT_NODE                 :
+        case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER           :
+        case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START     :
+        case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+            this._nodeValue = /** @type {string | number} */ (opt_nodeValueOrTag);
             break;
     };
 };
@@ -117,12 +123,15 @@ VNode.prototype.getJSON = function(){
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             json[ 1 ] = this._tagName;
             break;
-        case htmljson.NODE_TYPE.TEXT_NODE              :
-        case htmljson.NODE_TYPE.COMMENT_NODE           :
-        case htmljson.NODE_TYPE.DOCUMENT_NODE          :
-        case htmljson.NODE_TYPE.CDATA_SECTION          :
-        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-            json[ 1 ] = this._data;
+        case htmljson.NODE_TYPE.TEXT_NODE                     :
+        case htmljson.NODE_TYPE.CDATA_SECTION                 :
+        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
+        case htmljson.NODE_TYPE.COMMENT_NODE                  :
+        case htmljson.NODE_TYPE.DOCUMENT_NODE                 :
+        case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER           :
+        case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START     :
+        case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+            json[ 1 ] = this._nodeValue;
             break;
     };
 
@@ -133,6 +142,12 @@ VNode.prototype.getJSON = function(){
     };
     return json;
 };
+
+/*=============================================================================
+ *
+ *  nodeType
+ *
+ */
 
 /**
  * 
@@ -154,6 +169,60 @@ VNode.prototype.setNodeType = function( nodeType ){
     };
     this._nodeType = nodeType;
 };
+
+/*=============================================================================
+ *
+ *  nodeValue
+ *
+ */
+
+/**
+ * 
+ * @return {string | number | void}
+ */
+VNode.prototype.getNodeValue = function(){
+    switch( this._nodeType ){
+        case htmljson.NODE_TYPE.TEXT_NODE                     :
+        case htmljson.NODE_TYPE.CDATA_SECTION                 :
+        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
+        case htmljson.NODE_TYPE.COMMENT_NODE                  :
+        case htmljson.NODE_TYPE.DOCUMENT_NODE                 :
+        case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER           :
+        case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START     :
+        case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+            return this._nodeValue;
+        default :
+            if( htmljson.DEFINE.DEBUG ){
+                throw 'getNodeValue() をサポートしない nodeType です!'
+            };
+    };
+};
+
+/**
+ * 
+ * @param {string} nodeValue
+ */
+VNode.prototype.setNodeValue = function( nodeValue ){
+    switch( this._nodeType ){
+        case htmljson.NODE_TYPE.TEXT_NODE              :
+        case htmljson.NODE_TYPE.CDATA_SECTION          :
+        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+        case htmljson.NODE_TYPE.COMMENT_NODE           :
+        case htmljson.NODE_TYPE.DOCUMENT_NODE          :
+            this._nodeValue = nodeValue;
+            break;
+        default :
+            if( htmljson.DEFINE.DEBUG ){
+                throw 'setNodeValue() をサポートしない nodeType です!'
+            };
+    };
+};
+
+/*=============================================================================
+ *
+ *  valid element, start tag, end tag
+ *
+ */
 
 /**
  * 
@@ -188,11 +257,16 @@ VNode.prototype.isClosed = function(){
  * @return {boolean}
  */
 VNode.prototype.isValid = function(){
-    var childNodes = this._childNodes, i, l;
+    var childNodes = this._childNodes, i, l, childNode;
 
     if( childNodes ){
         for( i = 0, l = childNodes.length; i < l; ++i ){
-            if( !childNodes[ i ].isValid() ){
+            childNode = childNodes[ i ];
+            if( childNode._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
+                || childNode._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
+            ){
+                continue;
+            } else if( !childNode.isValid() ){
                 return false;
             };
         };
@@ -201,57 +275,11 @@ VNode.prototype.isValid = function(){
            this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG;
 };
 
-/**
- * 
- * @return {string | void}
+/*=============================================================================
+ *
+ *  only element
+ *
  */
-VNode.prototype.getData = function(){
-    switch( this._nodeType ){
-        case htmljson.NODE_TYPE.TEXT_NODE              :
-        case htmljson.NODE_TYPE.CDATA_SECTION          :
-        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-        case htmljson.NODE_TYPE.COMMENT_NODE           :
-        case htmljson.NODE_TYPE.DOCUMENT_NODE          :
-            return this._data;
-        default :
-            if( htmljson.DEFINE.DEBUG ){
-                throw 'getData() をサポートしない nodeType です!'
-            };
-    };
-};
-
-/**
- * 
- * @param {string} data
- */
-VNode.prototype.setData = function( data ){
-    switch( this._nodeType ){
-        case htmljson.NODE_TYPE.TEXT_NODE              :
-        case htmljson.NODE_TYPE.CDATA_SECTION          :
-        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-        case htmljson.NODE_TYPE.COMMENT_NODE           :
-        case htmljson.NODE_TYPE.DOCUMENT_NODE          :
-            this._data = data;
-            break;
-        default :
-            if( htmljson.DEFINE.DEBUG ){
-                throw 'setData() をサポートしない nodeType です!'
-            };
-    };
-};
-
-/**
- * 
- * @return {Object<string,(boolean|string)> | null}
- */
-VNode.prototype.getAttributes = function(){
-    if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
-            throw 'getAttributes() をサポートしない nodeType です!';
-        };
-    };
-    return m_isAttributes( this._attrs ) ? this._attrs : null;
-};
 
 /**
  * 
@@ -259,12 +287,254 @@ VNode.prototype.getAttributes = function(){
  */
 VNode.prototype.getTagName = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_NODE && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG ){
+        if( !this.isElement() && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG ){
             throw 'getTagName() をサポートしない nodeType です!';
         };
     };
     return this._tagName;
 };
+
+/**
+ * 
+ * @return {string}
+ */
+VNode.prototype.getClassName = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getClassName() をサポートしない nodeType です!';
+        };
+    };
+    return this._className;
+};
+
+/**
+ * 
+ * @param {string} className
+ * @return {boolean}
+ */
+VNode.prototype.hasClassName = function( className ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'hasClassName() をサポートしない nodeType です!';
+        };
+        if( className.indexOf( ' ' ) !== -1 ){
+            throw 'hasClassName() は半角文字を含む className をサポートしません!';
+        };
+    };
+    return 0 <= ( ' ' + this._className + ' ' ).indexOf( ' ' + className + ' ' );
+};
+
+/**
+ * 
+ * @param {string} className
+ */
+VNode.prototype.addClassName = function( className ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'addClassName() をサポートしない nodeType です!';
+        };
+        if( className.indexOf( ' ' ) !== -1 ){
+            throw 'addClassName() は半角文字を含む className をサポートしません!';
+        };
+    };
+    if( !this.hasClassName( className ) ){
+        this._className = ( this._className ? ' ' : '' ) + className;
+    };
+};
+
+/**
+ * 
+ * @param {string} className
+ */
+VNode.prototype.removeClassName = function( className ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'removeClassName() をサポートしない nodeType です!';
+        };
+        if( className.indexOf( ' ' ) !== -1 ){
+            throw 'removeClassName() は半角文字を含む className をサポートしません!';
+        };
+    };
+    if( this.hasClassName( className ) ){
+        var classList = this._className.split( ' ' );
+
+        classList.splice( classList.indexOf( className ), 1 );
+
+        this._className = classList.join( ' ' );
+    };
+};
+
+/**
+ * 
+ * @return {Attrs | null}
+ */
+VNode.prototype.getAttrs = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getAttrs() をサポートしない nodeType です!';
+        };
+    };
+    return m_isAttributes( this._attrs ) ? this._attrs : null;
+};
+
+/**
+ * 
+ * @return {boolean}
+ */
+VNode.prototype.hasAttr = function( name ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'hasAttr() をサポートしない nodeType です!';
+        };
+    };
+    if( name === 'class' || name === 'className' ){
+        return !!this._className;
+    } else if( name === 'id' ){
+        return !!this._id;
+    } else {
+        if( m_isAttributes( this._attrs ) ){
+            return this._attrs[ name ] != null;
+        };
+    };
+    return  false;
+};
+
+/**
+ * 
+ * @param {string} name
+ * @return {*}
+ */
+VNode.prototype.getAttr = function( name ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getAttr() をサポートしない nodeType です!';
+        };
+    };
+    if( name === 'class' || name === 'className' ){
+        return this._className;
+    } else if( name === 'id' ){
+        return this._id;
+    } else {
+        if( m_isAttributes( this._attrs ) ){
+            return this._attrs[ name ];
+        };
+    };
+};
+
+/**
+ * 
+ * @param {string} name
+ * @param {string | boolean | number | Styles} value
+ */
+VNode.prototype.setAttr = function( name, value ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'setAttr() をサポートしない nodeType です!';
+        };
+    };
+    if( name === 'class' || name === 'className' ){
+        this._className = value;
+    } else if( name === 'id' ){
+        this._id = value;
+    } else {
+        if( !m_isAttributes( this._attrs ) ){
+            this._attrs = {};
+        };
+        this._attrs[ name ] = value;
+    };
+};
+
+/**
+ * 
+ * @param {string} name
+ */
+VNode.prototype.removeAttr = function( name ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'removeAttr() をサポートしない nodeType です!';
+        };
+    };
+    if( name === 'class' || name === 'className' ){
+        this._className = '';
+    } else if( name === 'id' ){
+        this._id = '';
+    } else if( m_isAttributes( this._attrs ) ){
+        delete this._attrs[ name ];
+    };
+};
+
+/**
+ * 
+ * @param {string} name
+ * @return {*}
+ */
+VNode.prototype.getStyle = function( name ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getStyle() をサポートしない nodeType です!';
+        };
+    };
+    var style = this.getAttr( 'style' );
+
+    if( style && m_isString( style ) ){
+        style = m_parseCSSText( /** @type {string} */ (style) );
+        this.setAttr( 'style', style );
+    };
+    if( style ){
+        return style[ name ];
+    };
+};
+
+/**
+ * 
+ * @param {string} name
+ * @param {string | number | boolean} value
+ */
+VNode.prototype.setStyle = function( name, value ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'setStyle() をサポートしない nodeType です!';
+        };
+    };
+    var style = this.getAttr( 'style' );
+
+    if( style && m_isString( style ) ){
+        style = m_parseCSSText( /** @type {string} */ (style) );
+        this.setAttr( 'style', style );
+    } else if( !style ){
+        this.setAttr( 'style', style = {} );
+    };
+    style[ name ] = value === '0px' ? 0 : m_tryToNumber( value );
+};
+
+/**
+ * 
+ * @param {string} name
+ * @return {*}
+ */
+VNode.prototype.removeStyle = function( name ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getStyle() をサポートしない nodeType です!';
+        };
+    };
+    var style = this.getAttr( 'style' );
+
+    if( style && m_isString( style ) ){
+        style = m_parseCSSText( /** @type {string} */ (style) );
+        this.setAttr( 'style', style );
+    };
+    if( style ){
+        delete style[ name ];
+    };
+};
+
+
+/*=============================================================================
+ *
+ *  parent, siblings
+ *
+ */
 
 /**
  * 
@@ -303,6 +573,25 @@ VNode.prototype.getNextNode = function(){
         };
     };
     return this._parent && this._parent.getChildNodeAt( this.getMyIndex() + 1 );
+};
+
+/*=============================================================================
+ *
+ *  child nodes
+ *
+ */
+
+/**
+ * 
+ * @return {number}
+ */
+VNode.prototype.getMyIndex = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( _isDocOrDocFragment( this ) ){
+            throw 'getMyIndex() をサポートしない nodeType です!';
+        };
+    };
+    return this._parent ? this._parent._childNodes.indexOf( this ) : -1;
 };
 
 /**
@@ -355,18 +644,11 @@ VNode.prototype.getChildNodeAt = function( index ){
     return this._childNodes && this._childNodes[ index ] || null;
 };
 
-/**
- * 
- * @return {number}
+/*=============================================================================
+ *
+ *  remove node
+ *
  */
-VNode.prototype.getMyIndex = function(){
-    if( htmljson.DEFINE.DEBUG ){
-        if( _isDocOrDocFragment( this ) ){
-            throw 'getMyIndex() をサポートしない nodeType です!';
-        };
-    };
-    return this._parent ? this._parent._childNodes.indexOf( this ) : -1;
-};
 
 /**
  * 
@@ -475,7 +757,7 @@ function _insertAt( parent, index, vnodes ){
             };
             vnode = vnodes[ --i ];
             if( htmljson.DEFINE.DEBUG && vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE ){
-                throw '_insertAt() をサポートしない nodeType です!';
+                throw 'Document Node を挿入することは出来ません!';
             };
         };
         i = vnodes.length;
@@ -501,7 +783,7 @@ function _insertAt( parent, index, vnodes ){
 
 /**
  * @param {string} tagName 
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent  
  * @return {!VNode | null} */
 VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textContent ){
@@ -514,7 +796,7 @@ VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textCont
 };
 /**
  * @param {string} tagName 
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textContent ){
@@ -523,7 +805,7 @@ VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textConte
 /**
  * @param {number} index
  * @param {string} tagName 
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textContent ){
@@ -536,7 +818,7 @@ VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textC
 };
 /**
  * @param {string} tagName 
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textContent ){
@@ -544,7 +826,7 @@ VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textConten
 };
 /**
  * @param {string} tagName 
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent
  * @return {!VNode | null} */
 VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textContent ){
@@ -565,8 +847,8 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
 
 /**
  * @param {number} nodeType
- * @param {string=} opt_nodeValueOrTag
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(string | number)=} opt_nodeValueOrTag
+ * @param {(Attrs | null)=} opt_attrs 
  * @return {!VNode | null} */
 VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){
@@ -578,8 +860,8 @@ VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_a
 };
 /**
  * @param {number} nodeType
- * @param {string=} opt_nodeValueOrTag
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(string | number)=} opt_nodeValueOrTag
+ * @param {(Attrs | null)=} opt_attrs 
  * @return {!VNode} */
 VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
     return this.insertNodeAt( 0, nodeType, opt_nodeValueOrTag, opt_attrs );
@@ -588,24 +870,24 @@ VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_at
  * 
  * @param {number} index
  * @param {number} nodeType
- * @param {string=} opt_nodeValueOrTag
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(string | number)=} opt_nodeValueOrTag
+ * @param {(Attrs | null)=} opt_attrs 
  * @return {!VNode} */
 VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, opt_attrs ){
     return new VNode( this, index, nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
  * @param {number} nodeType
- * @param {string=} opt_nodeValueOrTag
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(string | number)=} opt_nodeValueOrTag
+ * @param {(Attrs | null)=} opt_attrs 
  * @return {!VNode} */
 VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
     return this.insertNodeAt( this.getChildNodeLength(), nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
  * @param {number} nodeType
- * @param {string=} opt_nodeValueOrTag
- * @param {(Object<string,(boolean|string)> | null)=} opt_attrs 
+ * @param {(string | number)=} opt_nodeValueOrTag
+ * @param {(Attrs | null)=} opt_attrs 
  * @return {!VNode | null} */
 VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
     if( htmljson.DEFINE.DEBUG ){

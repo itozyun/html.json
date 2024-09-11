@@ -70,17 +70,8 @@ function pa(a) {
   return b.join("");
 }
 function qa(a) {
-  var b = a.indexOf("#"), c = a.indexOf(".");
-  if (b < c) {
-    var e = a.split(".")[1];
-    a = a.split(".")[0];
-    if (0 < b) {
-      var m = a.split("#")[1];
-      a = a.split("#")[0];
-    }
-  } else {
-    c < b && (m = a.split("#")[1], a = a.split("#")[0], 0 < c && (e = a.split(".")[1], a = a.split(".")[0]));
-  }
+  var b = a.indexOf("#"), c = a.indexOf("."), e = "", m = "";
+  b < c ? (e = a.split(".")[1], a = a.split(".")[0], 0 < b && (m = a.split("#")[1], a = a.split("#")[0])) : c < b && (m = a.split("#")[1], a = a.split("#")[0], 0 < c && (e = a.split(".")[1], a = a.split(".")[0]));
   return [a, m, e];
 }
 function ra(a, b, c, e) {

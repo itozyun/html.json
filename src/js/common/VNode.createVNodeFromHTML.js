@@ -39,7 +39,7 @@ Handler.prototype.onParseError = function( msg ){ throw msg; };
 
 Handler.prototype.onParseDocType = function( doctype ){
     this._rootNode.setNodeType( htmljson.NODE_TYPE.DOCUMENT_NODE );
-    this._rootNode.setData( doctype );
+    this._rootNode.setNodeValue( doctype );
 };
 
 Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){

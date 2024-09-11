@@ -61,17 +61,8 @@ function T(a, e, b) {
   return a;
 }
 function U(a) {
-  var e = a.indexOf("#"), b = a.indexOf(".");
-  if (e < b) {
-    var p = a.split(".")[1];
-    a = a.split(".")[0];
-    if (0 < e) {
-      var d = a.split("#")[1];
-      a = a.split("#")[0];
-    }
-  } else {
-    b < e && (d = a.split("#")[1], a = a.split("#")[0], 0 < b && (p = a.split(".")[1], a = a.split(".")[0]));
-  }
+  var e = a.indexOf("#"), b = a.indexOf("."), p = "", d = "";
+  e < b ? (p = a.split(".")[1], a = a.split(".")[0], 0 < e && (d = a.split("#")[1], a = a.split("#")[0])) : b < e && (d = a.split("#")[1], a = a.split("#")[0], 0 < b && (p = a.split(".")[1], a = a.split(".")[0]));
   return [a, d, p];
 }
 ;function V(a, e, b, p) {

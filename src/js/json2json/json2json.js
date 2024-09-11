@@ -146,7 +146,7 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                         attrs = currentJSONNode[ attrIndex ];
                         // attr
                         if( m_isAttributes( attrs ) ){
-                            if( walkAttributes( attrs ) === 0 ){
+                            if( walkAttributes( currentJSONNode, attrIndex - 1, attrs ) === 0 ){
                                 currentJSONNode.splice( attrIndex, 1 );
                             };
                         };
@@ -189,11 +189,19 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
     };
 
     /**
+     * @param {!Array} currentJSONNode
+     * @param {number} tagNameIndex
      * @param {!Object} attrs
      * @return {number} = attributes.length
      */
-    function walkAttributes( attrs ){
+    function walkAttributes( currentJSONNode, tagNameIndex, attrs ){
         var numAttributes = 0, name, originalName, value, isInstruction;
+        var classList, i, newClass;
+
+        var tagName = m_parseTagName( /** @type {string} */ (currentJSONNode[ tagNameIndex ]) );
+        var id        = tagName[ 1 ];
+        var className = tagName[ 2 ];
+        tagName = tagName[ 0 ];
     
         for( name in attrs ){
             originalName = name;
@@ -218,6 +226,21 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                     } else if( m_ATTRS_NO_VALUE[ name ] && value === false ){
 
                     } else if( value !== null ){
+                        if( m_isString( value ) ){
+                            value = /** @type {string} */ (value);
+                            if( name === 'id' ){
+                                id = value;
+                                continue;
+                            } else if( name === 'class' ){
+                                for( classList = value.split( ' ' ), i = classList.length; i; ){
+                                    newClass = classList[ --i ];
+                                    if( ( ' ' + className + ' ' ).indexOf( ' ' + newClass + ' ' ) === -1 ){
+                                        className = ( className ? ' ' : '' ) + newClass;
+                                    };
+                                };
+                                continue;
+                            };
+                        };
                         attrs[ name ] = value;
                         ++numAttributes;
                     };
@@ -229,6 +252,8 @@ json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, 
                 ++numAttributes;
             };
         };
+
+        currentJSONNode[ tagNameIndex ] = m_createTagName( tagName, id, className );
         return numAttributes;
     };
 };

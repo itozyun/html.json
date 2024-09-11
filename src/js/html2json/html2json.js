@@ -57,22 +57,21 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 var attrs       = {},
                     tagName     = currentVNode.getTagName().toLowerCase(),
                     isPreTag    = tagName === 'pre',
-                    attributes  = currentVNode.getAttributes(),
+                    attributes  = currentVNode.getAttrs(),
                     numAttrs    = 0,
-                    i, attrName, attrValue, className = '', textNode;
+                    i, attrName, attrValue, id, className, textNode;
 
                 if( attributes ){
                     for( attrName in attributes ){
-                        attrValue = m_ATTRS_NO_VALUE[ attrName ] ? 1 : attributes[ attrName ];
+                        attrValue = /** @type {string} */ (m_ATTRS_NO_VALUE[ attrName ] ? 1 : attributes[ attrName ]);
 
                         if( attrName === 'id' ){
-                            tagName += '#' + attrValue;
+                            id = attrValue;
                             continue;
                         } else if( attrName === 'class' ){
-                            className = '.' + attrValue;
+                            className = attrValue;
                             continue;
                         } else if( attrName.startsWith( attrPrefix ) ){
-                            attrValue = /** @type {string} */ (attrValue);
                             functionNameAndArgs = codeToObject( attrValue );
     
                             if( functionNameAndArgs.args ){
@@ -81,30 +80,28 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             } else {
                                 attrValue = functionNameAndArgs.name;
                             };
-                        } else if( m_isNumberString( attrValue ) ){
-                            attrValue = + attrValue;
                         };
-                        attrs[ attrName ] = attrValue;
+                        attrs[ attrName ] = /** @type {number | string} */ (m_tryToNumber( attrValue ));
                         ++numAttrs;
                     };
                 };
-                tagName += className;
+                tagName = m_createTagName( tagName, id, className );
 
                 if( isPreTag && isTrimWhitespace ){
                     // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
                     while( textNode = getFirstTextNode( currentVNode ) ){
-                        if( !removeWhitespaces( /** @type {string} */ (textNode.getData()) ) ){
+                        if( !removeWhitespaces( /** @type {string} */ (textNode.getNodeValue()) ) ){
                             textNode.detach();
                         } else {
-                            textNode.setData( m_trimFirstChar( /** @type {string} */ (textNode.getData()), '\n' ) );
+                            textNode.setNodeValue( m_trimFirstChar( /** @type {string} */ (textNode.getNodeValue()), '\n' ) );
                             break;
                         };
                     };
                     while( textNode = getLastTextNode( currentVNode ) ){
-                        if( !removeWhitespaces( /** @type {string} */ (textNode.getData()) ) ){
+                        if( !removeWhitespaces( /** @type {string} */ (textNode.getNodeValue()) ) ){
                             textNode.detach();
                         } else {
-                            textNode.setData( m_trimLastChar( /** @type {string} */ (textNode.getData()), '\n' ) );
+                            textNode.setNodeValue( m_trimLastChar( /** @type {string} */ (textNode.getNodeValue()), '\n' ) );
                             break;
                         };
                     };
@@ -125,20 +122,20 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 parentJSONNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, currentVNode.getTagName().toLowerCase() ] );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
-                nodeValue = m_trimWhiteSpaces( '' + currentVNode.getData(), isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
+                nodeValue = m_trimWhiteSpaces( '' + currentVNode.getNodeValue(), isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
                 if( nodeValue ){
                     parentJSONNode.push( nodeValue );
                 };
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
-                nodeValue = currentVNode.getData();
+                nodeValue = currentVNode.getNodeValue();
                 if( keepCDATASections ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
                     parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToNumber( /** @type {string} */ (nodeValue) ) ] );
                 };
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                nodeValue = currentVNode.getData();
+                nodeValue = currentVNode.getNodeValue();
                 functionNameAndArgs = codeToObject( /** @type {string} */ (nodeValue) );
 
                 currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
@@ -149,7 +146,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 parentJSONNode.push( currentJSONNode );
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
-                nodeValue = currentVNode.getData();
+                nodeValue = /** @type {string} */ (currentVNode.getNodeValue());
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
                     vDocFragment    = htmljson.createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
@@ -192,7 +189,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 };
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                nodeValue = currentVNode.getData();
+                nodeValue = currentVNode.getNodeValue();
                 if( isTrimWhitespace ){
                     nodeValue = nodeValue
                         .split( '\n' ).join( ' ' )  // 宣言中の改行を半角スペースに

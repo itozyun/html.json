@@ -3,6 +3,16 @@ goog.provide( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
 
+/**
+ * @typedef {Object.<string, (string | number | boolean)>}
+ */
+var Styles;
+
+/**
+ * @typedef {Object.<string, (string | number | boolean | Styles)>}
+ */
+var Attrs;
+
 var m_ATTRS_NO_VALUE      = {checked:!0,compact:!0,declare:!0,defer:!0,disabled:!0,ismap:!0,multiple:!0,nohref:!0,noresize:!0,noshade:!0,nowrap:!0,readonly:!0,selected:!0};
 
     // 子を持たない要素の一覧
@@ -86,13 +96,13 @@ function m_isStringOrNumber( v ){
  * @return {boolean}
  */
 function m_isNumberString( v ){
-    return v === '' + ( + v ) && m_isNumber( parseInt( v, 10 ) );
+    return v === '' + ( + v ); //  && m_isNumber( parseInt( v, 10 ) );
 };
 
 /**
  * 
- * @param {string} v 
- * @return {number|string}
+ * @param {*} v
+ * @return {*}
  */
 function m_tryToNumber( v ){
     return m_isNumberString( v ) ? + v : v;
@@ -468,7 +478,7 @@ function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrim
             nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' ).split( '&#32;' ).join( ' ' );
         };
     };
-    return m_tryToNumber( nodeValue );
+    return /** @type {number | string} */ (m_tryToNumber( nodeValue ));
 };
 
 /**
@@ -503,14 +513,15 @@ function m_trimLastChar( string, chr ){
 };
 
 /**
+ * `div#main.default-color` -> `['div', 'main', 'default-color']`
  * 
  * @param {string} tagName 
- * @return {!Array.<string>}
+ * @return {!Array.<string>} [ tagName, id, className ]
  */
 function m_parseTagName( tagName ){
     var indexID = tagName.indexOf( '#' ),
         indexClassName = tagName.indexOf( '.' ),
-        className, id;
+        className = '', id = '';
     
     if( indexID < indexClassName ){
         className = tagName.split( '.' )[ 1 ];
@@ -529,3 +540,94 @@ function m_parseTagName( tagName ){
     };
     return [ tagName, id, className ];
 };
+
+/**
+ * 
+ * @param {string} tagName 
+ * @param {string | void} id 
+ * @param {string | void} className
+ * @return {string}
+ */
+function m_createTagName( tagName, id, className ){
+    if( id ){
+        tagName += '#' + id;
+    };
+    if( className ){
+        tagName += '.' + className;
+    };
+    return tagName;
+};
+
+/**
+ * cssText は : ; を区切り文字にするが、次のケースがあるため
+ *   content:";"; content:":";
+ *           ^^^          ^^^
+ *   filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=70)
+ *                ^
+ *
+ * 次のように処理しない
+ *   propAndValues = cssText.split( ';' );
+ *   cssProperty = propAndValues[ 0 ].split( ':' )[ 0 ];
+ * 
+ * @param {string} cssText
+ * @return {Styles | null}
+ */
+function m_parseCSSText( cssText ){
+    function isWhitespace( chr ){
+        return chr === ' ' || chr === '\b' || chr === '\f' || chr === '\n' || chr === '\r' || chr === '\t';
+    };
+
+    function saveCSSProperty( value ){
+        styles[ property ] = value === '0px' ? 0 : m_tryToNumber( value );
+        ++numAttrs;
+    };
+
+    var phase    = 0,
+        l        = cssText.length,
+        i        = 1,
+        styles   = {},
+        numAttrs = 0,
+        chr, start, quot, property;
+
+    while( i < l ){
+        chr = cssText.charAt( i );
+        switch( phase ){
+            case 0 :
+                if( !isWhitespace( chr ) ){
+                    start = i;
+                    phase = 1;
+                };
+                break;
+            case 1 : // property:value;
+                     // ^^^^^^^^
+                if( chr === ':' ){
+                    property = cssText.substring( /** @type {number} */ (start), i );
+                    start = i;
+                    phase = 2;
+                };
+                break;
+            case 2 :
+                if( !isWhitespace( chr ) ){
+                    start = i;
+                    phase = 3;
+                };
+                break;
+            case 3 : // property:value; or style="property:value"
+                     //          ^^^^^
+                if( quot === chr ){
+                    quot = '';
+                } else if( chr === '"' || chr === "'" ){
+                    quot = chr;
+                } else if( !quot && chr === ';' ){
+                    saveCSSProperty( cssText.substring( /** @type {number} */ (start), i ) );
+                    phase = 0;
+                };
+                break;
+        };
+        if( phase === 1 ){
+            saveCSSProperty( cssText.substring( /** @type {number} */ (start) ) );
+        };
+    };
+    return numAttrs ? styles : null;
+};
+
