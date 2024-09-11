@@ -81,7 +81,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                                 attrValue = functionNameAndArgs.name;
                             };
                         };
-                        attrs[ attrName ] = /** @type {number | string} */ (m_tryToNumber( attrValue ));
+                        attrs[ attrName ] = /** @type {number | string} */ (m_tryToFiniteNumber( attrValue ));
                         ++numAttrs;
                     };
                 };
@@ -131,7 +131,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 nodeValue = currentVNode.getNodeValue();
                 if( keepCDATASections ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToNumber( /** @type {string} */ (nodeValue) ) ] );
+                    parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToFiniteNumber( /** @type {string} */ (nodeValue) ) ] );
                 };
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
@@ -185,7 +185,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     isCcShowLowerStarted = false;
                 } else if( keepComments ){
                     // htmljson.NODE_TYPE.COMMENT_NODE
-                    parentJSONNode.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToNumber( nodeValue ) ] );
+                    parentJSONNode.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToFiniteNumber( nodeValue ) ] );
                 };
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_NODE :

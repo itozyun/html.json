@@ -504,7 +504,7 @@ VNode.prototype.setStyle = function( name, value ){
     } else if( !style ){
         this.setAttr( 'style', style = {} );
     };
-    style[ name ] = value === '0px' ? 0 : m_tryToNumber( value );
+    style[ name ] = value === '0px' ? 0 : m_tryToFiniteNumber( value );
 };
 
 /**

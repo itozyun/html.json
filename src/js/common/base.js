@@ -95,8 +95,11 @@ function m_isStringOrNumber( v ){
  * @param {*} v 
  * @return {boolean}
  */
-function m_isNumberString( v ){
-    return v === '' + ( + v ); //  && m_isNumber( parseInt( v, 10 ) );
+function m_isFiniteNumberString( v ){
+    return v === '' + ( + v ) && // is number string
+           v ===    v &&         // not NaN
+           v !==  1/0 &&         // not  Infinity
+           v !== -1/0;           // not -Infinity
 };
 
 /**
@@ -104,8 +107,8 @@ function m_isNumberString( v ){
  * @param {*} v
  * @return {*}
  */
-function m_tryToNumber( v ){
-    return m_isNumberString( v ) ? + v : v;
+function m_tryToFiniteNumber( v ){
+    return m_isFiniteNumberString( v ) ? + v : v;
 };
 
 /**
@@ -390,17 +393,21 @@ function m_normalizeTextNodes( htmlJsonNode ){
                 htmlJsonNode.splice( i, 1 );
             } else {
                 if( text ){
-                    htmlJsonNode.splice( i, 0, m_tryToNumber( text ) );
+                    htmlJsonNode.splice( i, 0, m_tryToFiniteNumber( text ) );
                     text = '';
                 };
                 ++i;
-                if( nodeType === htmljson.NODE_TYPE.ELEMENT_NODE || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
+                if( nodeType === htmljson.NODE_TYPE.ELEMENT_NODE               ||
+                    nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG          ||
+                    nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER        ||
+                    nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
+                ){
                     m_normalizeTextNodes( node );
                 };
             };
         };
         if( text ){
-            htmlJsonNode[ i ] = m_tryToNumber( text );
+            htmlJsonNode[ i ] = m_tryToFiniteNumber( text );
         };
     };
 };
@@ -478,7 +485,7 @@ function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrim
             nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' ).split( '&#32;' ).join( ' ' );
         };
     };
-    return /** @type {number | string} */ (m_tryToNumber( nodeValue ));
+    return /** @type {number | string} */ (m_tryToFiniteNumber( nodeValue ));
 };
 
 /**
@@ -578,7 +585,7 @@ function m_parseCSSText( cssText ){
     };
 
     function saveCSSProperty( value ){
-        styles[ property ] = value === '0px' ? 0 : m_tryToNumber( value );
+        styles[ property ] = value === '0px' ? 0 : m_tryToFiniteNumber( value );
         ++numAttrs;
     };
 
