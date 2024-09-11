@@ -10,7 +10,7 @@
 <ol>
   <li>Fisrt
   <li>Second
-  <li>Therd
+  <li>Third
 </ol>
 ~~~
 
@@ -25,7 +25,7 @@ First\n
 <ol>
 <li>Fisrt
 <li>Second
-<li>Therd
+<li>Third
 </ol>
 ~~~
 
