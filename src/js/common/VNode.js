@@ -113,14 +113,12 @@ var VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag
     switch( nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE      :
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-            /** @type {Attrs | null} */
-            this._attrs   = opt_attrsOrArgs || null;
+            this._attrs   = /** @type {Attrs | null} */ (opt_attrsOrArgs || null);
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             this._tagName = /** @type {string} */ (opt_nodeValueOrTag);
             break;
         case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-            /** @type {Array | null} */
-            this._args = opt_attrsOrArgs || null;
+            this._args = /** @type {Array | null} */(opt_attrsOrArgs || null);
         case htmljson.NODE_TYPE.TEXT_NODE                     :
         case htmljson.NODE_TYPE.CDATA_SECTION                 :
         case htmljson.NODE_TYPE.COMMENT_NODE                  :
@@ -180,7 +178,7 @@ VNode.prototype.getHTMLJSON = function(){
 
     if( childNodes ){
         for( i = 0, l = childNodes.length; i < l; ++i ){
-            json.push( childNodes[ i ].getJSON() );
+            json.push( childNodes[ i ].getHTMLJSON() );
         };
     };
     return json;

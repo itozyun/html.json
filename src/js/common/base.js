@@ -38,7 +38,9 @@ var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0
                                 center:!0,dir:!0,noframes:!0,marquee:!0
                             },
     // HTML エスケープをしない要素の一覧
-    m_UNESCAPED_TAGS      = {script:!0,style:!0,plaintext:!0,xmp:!0};
+    m_UNESCAPED_TAGS      = {script:!0,style:!0,plaintext:!0,xmp:!0},
+
+    m_TRIM_LINEBREAKS     = {script:!0,style:!0,textarea:!0};
 
 // stream-json2html => json2html で使用
 var m_endTagRequired        = false;

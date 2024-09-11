@@ -6,8 +6,6 @@ goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 
-const TRIM_LINEBREAKS = { script : !0, style : !0, textarea : !0 };
-
 /**
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
@@ -110,7 +108,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 currentJSONNode = numAttrs ? [ tagName, attrs ] : [ tagName ];
 
                 for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
-                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, TRIM_LINEBREAKS[ tagName ] );
+                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_LINEBREAKS[ tagName ] );
                 };
                 parentJSONNode.push( currentJSONNode );
 
