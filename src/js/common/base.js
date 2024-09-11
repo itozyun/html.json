@@ -65,6 +65,15 @@ function m_isObject( value ){
 
 /**
  * 
+ * @param {*} value 
+ * @return {boolean}
+ */
+function m_isBoolean( value ){
+    return value === !!value;
+};
+
+/**
+ * 
  * @param {*} str 
  * @return {boolean}
  */
@@ -97,9 +106,9 @@ function m_isStringOrNumber( v ){
  */
 function m_isFiniteNumberString( v ){
     return v === '' + ( + v ) && // is number string
-           v ===    v &&         // not NaN
-           v !==  1/0 &&         // not  Infinity
-           v !== -1/0;           // not -Infinity
+           v === v            && // not NaN
+           v !== '' +  1/0    && // not  Infinity
+           v !== '' + -1/0;      // not -Infinity
 };
 
 /**

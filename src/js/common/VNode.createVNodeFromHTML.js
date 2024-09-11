@@ -30,7 +30,7 @@ function Handler( allowInvalidTree ){
     this._allowInvalidTree = allowInvalidTree;
 
     /** @const {!VNode} */
-    this._rootNode = new VNode( null, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+    this._rootNode = new VNode( false, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
     /** @type {!VNode} */
     this._currentNode = this._rootNode;
 };
@@ -46,7 +46,7 @@ Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
     if( empty ){
         this._currentNode.insertElementLast( tag, attrs );
     } else {
-        this._currentNode = this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_START_TAG, tag, attrs );
+        this._currentNode = /** @type {!VNode} */ (this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_START_TAG, tag, attrs ));
     };
 };
 

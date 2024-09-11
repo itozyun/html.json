@@ -1,4 +1,5 @@
 goog.provide( 'VNode' );
+goog.provide( 'VNode.currentRestrictedVNode' );
 
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
@@ -27,16 +28,42 @@ function _isDocOrDocFragment( vnode ){
 };
 
 /**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _isCurrentVNode( vnode ){
+    return vnode === VNode.currentRestrictedVNode;
+};
+
+/**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _isCurrentVNodeAndCanHaveChildren( vnode ){
+    return _isCurrentVNode( vnode ) && _canHasChildren( vnode );
+};
+
+/**
  * @constructor
  * 
- * @param {!VNode | null} parent 
+ * @param {!VNode | boolean} parentOrMode
  * @param {number} insertPosition
  * @param {number} nodeType 
  * @param {(string | number)=} opt_nodeValueOrTag 
  * @param {(Attrs | null)=} opt_attrs 
  */
-var VNode = function( parent, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrs ){
-    var childNodes;
+var VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrs ){
+    var childNodes, parent;
+
+    if( m_isBoolean( parentOrMode ) ){
+        parent = null;
+        this._isRestrictedMode = /** @type {boolean} */ (parentOrMode);
+    } else {
+        parent = /** @type {!VNode} */ (parentOrMode);
+        this._isRestrictedMode = parent._isRestrictedMode;
+    };
 
     if( htmljson.DEFINE.DEBUG ){
         if( parent ){
@@ -105,6 +132,12 @@ var VNode = function( parent, insertPosition, nodeType, opt_nodeValueOrTag, opt_
 };
 
 /**
+ * 制限モードの時に、操作が出来る現在ノード
+ *
+ * @type {VNode | null} */
+VNode.currentRestrictedVNode = null;
+
+/**
  * 
  * @return {!Array}
  */
@@ -163,6 +196,9 @@ VNode.prototype.getNodeType = function(){
  */
 VNode.prototype.setNodeType = function( nodeType ){
     if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では setNodeType() は非対応です!';
+        };
         if( nodeType !== htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
             throw 'nodeType の変更は DOCUMENT_FRAGMENT_NODE -> DOCUMENT_NODE だけをサポートします!';
         };
@@ -203,6 +239,12 @@ VNode.prototype.getNodeValue = function(){
  * @param {string} nodeValue
  */
 VNode.prototype.setNodeValue = function( nodeValue ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への setNodeValue() は非対応です!';
+        };
+    };
+
     switch( this._nodeType ){
         case htmljson.NODE_TYPE.TEXT_NODE              :
         case htmljson.NODE_TYPE.CDATA_SECTION          :
@@ -237,6 +279,12 @@ VNode.prototype.isElement = function(){
  * 
  */
 VNode.prototype.finalize = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では finalize() は非対応です!';
+        };
+    };
+
     if( htmljson.DEFINE.DEBUG ){
         if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'close() をサポートしない nodeType です!';
@@ -321,6 +369,7 @@ VNode.prototype.hasClassName = function( className ){
             throw 'hasClassName() は半角文字を含む className をサポートしません!';
         };
     };
+
     return 0 <= ( ' ' + this._className + ' ' ).indexOf( ' ' + className + ' ' );
 };
 
@@ -330,6 +379,9 @@ VNode.prototype.hasClassName = function( className ){
  */
 VNode.prototype.addClassName = function( className ){
     if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への addClassName() は非対応です!';
+        };
         if( !this.isElement() ){
             throw 'addClassName() をサポートしない nodeType です!';
         };
@@ -337,6 +389,7 @@ VNode.prototype.addClassName = function( className ){
             throw 'addClassName() は半角文字を含む className をサポートしません!';
         };
     };
+
     if( !this.hasClassName( className ) ){
         this._className = ( this._className ? ' ' : '' ) + className;
     };
@@ -348,6 +401,9 @@ VNode.prototype.addClassName = function( className ){
  */
 VNode.prototype.removeClassName = function( className ){
     if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への removeClassName() は非対応です!';
+        };
         if( !this.isElement() ){
             throw 'removeClassName() をサポートしない nodeType です!';
         };
@@ -355,6 +411,7 @@ VNode.prototype.removeClassName = function( className ){
             throw 'removeClassName() は半角文字を含む className をサポートしません!';
         };
     };
+
     if( this.hasClassName( className ) ){
         var classList = this._className.split( ' ' );
 
@@ -374,6 +431,7 @@ VNode.prototype.getAttrs = function(){
             throw 'getAttrs() をサポートしない nodeType です!';
         };
     };
+
     return m_isAttributes( this._attrs ) ? this._attrs : null;
 };
 
@@ -387,6 +445,7 @@ VNode.prototype.hasAttr = function( name ){
             throw 'hasAttr() をサポートしない nodeType です!';
         };
     };
+
     if( name === 'class' || name === 'className' ){
         return !!this._className;
     } else if( name === 'id' ){
@@ -410,6 +469,7 @@ VNode.prototype.getAttr = function( name ){
             throw 'getAttr() をサポートしない nodeType です!';
         };
     };
+
     if( name === 'class' || name === 'className' ){
         return this._className;
     } else if( name === 'id' ){
@@ -431,7 +491,11 @@ VNode.prototype.setAttr = function( name, value ){
         if( !this.isElement() ){
             throw 'setAttr() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への setAttr() は非対応です!';
+        };
     };
+
     if( name === 'class' || name === 'className' ){
         this._className = value;
     } else if( name === 'id' ){
@@ -453,7 +517,11 @@ VNode.prototype.removeAttr = function( name ){
         if( !this.isElement() ){
             throw 'removeAttr() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への removeAttr() は非対応です!';
+        };
     };
+
     if( name === 'class' || name === 'className' ){
         this._className = '';
     } else if( name === 'id' ){
@@ -474,6 +542,7 @@ VNode.prototype.getStyle = function( name ){
             throw 'getStyle() をサポートしない nodeType です!';
         };
     };
+
     var style = this.getAttr( 'style' );
 
     if( style && m_isString( style ) ){
@@ -495,7 +564,11 @@ VNode.prototype.setStyle = function( name, value ){
         if( !this.isElement() ){
             throw 'setStyle() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への setStyle() は非対応です!';
+        };
     };
+
     var style = this.getAttr( 'style' );
 
     if( style && m_isString( style ) ){
@@ -517,7 +590,11 @@ VNode.prototype.removeStyle = function( name ){
         if( !this.isElement() ){
             throw 'getStyle() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への removeStyle() は非対応です!';
+        };
     };
+
     var style = this.getAttr( 'style' );
 
     if( style && m_isString( style ) ){
@@ -545,7 +622,11 @@ VNode.prototype.getParent = function(){
         if( _isDocOrDocFragment( this ) ){
             throw 'getParent() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への getParent() は非対応です!';
+        };
     };
+
     return this._parent;
 };
 
@@ -559,6 +640,7 @@ VNode.prototype.getPrevNode = function(){
             throw 'getPrevNode() をサポートしない nodeType です!';
         };
     };
+
     return this._parent && this._parent.getChildNodeAt( this.getMyIndex() - 1 );
 };
 
@@ -572,6 +654,7 @@ VNode.prototype.getNextNode = function(){
             throw 'getNextNode() をサポートしない nodeType です!';
         };
     };
+
     return this._parent && this._parent.getChildNodeAt( this.getMyIndex() + 1 );
 };
 
@@ -590,7 +673,11 @@ VNode.prototype.getMyIndex = function(){
         if( _isDocOrDocFragment( this ) ){
             throw 'getMyIndex() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getMyIndex() は非対応です!';
+        };
     };
+
     return this._parent ? this._parent._childNodes.indexOf( this ) : -1;
 };
 
@@ -603,7 +690,11 @@ VNode.prototype.getChildNodeLength = function(){
         if( !_canHasChildren( this ) ){
             throw 'getChildNodeLength() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getChildNodeLength() は非対応です!';
+        };
     };
+
     return this._childNodes && this._childNodes.length;
 };
 
@@ -615,7 +706,11 @@ VNode.prototype.getFirstChild = function(){
         if( !_canHasChildren( this ) ){
             throw 'getFirstChild() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getFirstChild() は非対応です!';
+        };
     };
+
     return this.getChildNodeAt( 0 );
 };
 
@@ -627,7 +722,11 @@ VNode.prototype.getLastChild = function(){
         if( !_canHasChildren( this ) ){
             throw 'getLastChild() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getLastChild() は非対応です!';
+        };
     };
+
     return this.getChildNodeAt( this.getChildNodeLength() - 1 );
 };
 
@@ -640,7 +739,11 @@ VNode.prototype.getChildNodeAt = function( index ){
         if( !_canHasChildren( this ) ){
             throw 'getChildNodeAt() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getChildNodeAt() は非対応です!';
+        };
     };
+
     return this._childNodes && this._childNodes[ index ] || null;
 };
 
@@ -651,14 +754,18 @@ VNode.prototype.getChildNodeAt = function( index ){
  */
 
 /**
- * 
+ * == remove
  */
-VNode.prototype.detach = function(){
+VNode.prototype.remove = function(){
     if( htmljson.DEFINE.DEBUG ){
         if( _isDocOrDocFragment( this ) ){
             throw 'remove() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への discard() は非対応です!';
+        };
     };
+
     var index = this.getMyIndex();
 
     if( 0 <= index ){
@@ -675,13 +782,16 @@ VNode.prototype.empty = function(){
         if( !_canHasChildren( this ) ){
             throw 'empty() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への empty() は非対応です!';
+        };
     };
 
     var childNodes = this._childNodes, i, l;
 
     if( childNodes ){
         for( i = childNodes.length; i; ){
-            childNodes[ --i ].detach();
+            childNodes[ --i ].remove();
         };
     };
 };
@@ -699,18 +809,34 @@ VNode.prototype.insertBefore = function( ___vnode ){
         if( _isDocOrDocFragment( this ) ){
             throw 'insertBefore() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertBefore() は非対応です!';
+        };
     };
+
     this._parent && _insertAt( this._parent, this.getMyIndex(), arguments );
 };
 /**
  * @param {...VNode} ___vnode */
 VNode.prototype.insertFirst = function( ___vnode ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertFirst() は非対応です!';
+        };
+    };
+
     _insertAt( this, 0, arguments );
 };
 /**
  * @param {number} index
  * @param {...VNode} ___vnode */
 VNode.prototype.insertAt = function( index, ___vnode ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertAt() は非対応です!';
+        };
+    };
+
     var args = [], i;
 
     for( i = arguments.length; 1 < i; ){
@@ -721,16 +847,26 @@ VNode.prototype.insertAt = function( index, ___vnode ){
 /**
  * @param {...VNode} ___vnode */
 VNode.prototype.insertLast = function( ___vnode ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertLast() は非対応です!';
+        };
+    };
+
     _insertAt( this, this.getChildNodeLength(), arguments );
 };
 /**
  * @param {...VNode} ___vnode */
 VNode.prototype.insertAfter = function( ___vnode ){
     if( htmljson.DEFINE.DEBUG ){
-        if( _isDocOrDocFragment( this ) ){
+        if( _isDocOrDocFragment( this ) || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'insertAfter() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertAfter() は非対応です!';
+        };
     };
+
     this._parent && _insertAt( this._parent, this.getMyIndex() + 1, arguments )
 };
 
@@ -752,7 +888,7 @@ function _insertAt( parent, index, vnodes ){
     if( htmljson.DEFINE.DEBUG ){
         for( ; i; ){
             if( htmljson.DEFINE.DEBUG && vnode && vnodes[ i - 1 ]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
-                // 逆順に処理しているので、vnode は現在のノード(vnodes[i-1])の nextSibling
+                // 逆順で処理しているので、vnode は現在のノード(vnodes[i-1])の nextSibling
                 throw '閉じタグの無い Element の次に Node を挿入することは出来ません!';
             };
             vnode = vnodes[ --i ];
@@ -768,7 +904,7 @@ function _insertAt( parent, index, vnodes ){
         if( vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
             vnode.getChildNodeLength() && _insertAt( parent, index, vnode._childNodes );
         } else {
-            vnode.detach();
+            vnode.remove();
             childNodes.splice( index, 0, vnode );
             vnode._parent = parent;
         };
@@ -791,15 +927,35 @@ VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textCont
         if( _isDocOrDocFragment( this ) ){
             throw 'insertElementBefore() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への insertElementBefore() は非対応です!';
+        };
     };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this._parent ? this._parent.insertElementAt( this.getMyIndex(), tagName, opt_attrs, opt_textContent ) : null;
 };
 /**
  * @param {string} tagName 
  * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent 
- * @return {!VNode} */
+ * @return {VNode | null} */
 VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textContent ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren( this ) ){
+            throw 'restricted mode では現在のノード以外への insertElementFirst() は非対応です!';
+        };
+    };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this.insertElementAt( 0, tagName, opt_attrs, opt_textContent );
 };
 /**
@@ -809,6 +965,12 @@ VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textConte
  * @param {string=} opt_textContent 
  * @return {!VNode} */
 VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textContent ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertElementAt() は非対応です!';
+        };
+    };
+
     var element = new VNode( this, index, htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs );
 
     if( opt_textContent != null ){
@@ -820,8 +982,19 @@ VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textC
  * @param {string} tagName 
  * @param {(Attrs | null)=} opt_attrs 
  * @param {string=} opt_textContent 
- * @return {!VNode} */
+ * @return {VNode | null} */
 VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textContent ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren( this ) ){
+            throw 'restricted mode では現在のノード以外への insertElementLast() は非対応です!';
+        };
+    };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this.insertElementAt( this.getChildNodeLength(), tagName, opt_attrs, opt_textContent );
 };
 /**
@@ -831,10 +1004,19 @@ VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textConten
  * @return {!VNode | null} */
 VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textContent ){
     if( htmljson.DEFINE.DEBUG ){
-        if( _isDocOrDocFragment( this ) ){
+        if( _isDocOrDocFragment( this ) || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'insertElementAfter() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への insertElementAfter() は非対応です!';
+        };
     };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this._parent ? this._parent.insertElementAt( this.getMyIndex() + 1, tagName, opt_attrs, opt_textContent ) : null;
 };
 
@@ -855,15 +1037,35 @@ VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_a
         if( _isDocOrDocFragment( this ) ){
             throw 'insertNodeBefore() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への insertNodeBefore() は非対応です!';
+        };
     };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this._parent ? this._parent.insertNodeAt( this.getMyIndex(), nodeType, opt_nodeValueOrTag, opt_attrs ) : null;
 };
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
  * @param {(Attrs | null)=} opt_attrs 
- * @return {!VNode} */
+ * @return {VNode | null} */
 VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren( this ) ){
+            throw 'restricted mode では現在のノード以外への insertNodeFirst() は非対応です!';
+        };
+    };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this.insertNodeAt( 0, nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
@@ -874,14 +1076,31 @@ VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_at
  * @param {(Attrs | null)=} opt_attrs 
  * @return {!VNode} */
 VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, opt_attrs ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では insertNodeAt() は非対応です!';
+        };
+    };
+
     return new VNode( this, index, nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
  * @param {(Attrs | null)=} opt_attrs 
- * @return {!VNode} */
+ * @return {VNode | null} */
 VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren( this ) ){
+            throw 'restricted mode では現在のノード以外への insertNodeLast() は非対応です!';
+        };
+    };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this.insertNodeAt( this.getChildNodeLength(), nodeType, opt_nodeValueOrTag, opt_attrs );
 };
 /**
@@ -894,6 +1113,15 @@ VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_at
         if( _isDocOrDocFragment( this ) || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'insertNodeAfter() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への insertNodeAfter() は非対応です!';
+        };
     };
+
+    if( this._isRestrictedMode ){
+        //
+        return null;
+    };
+
     return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeType, opt_nodeValueOrTag, opt_attrs ) : null;
 };

@@ -14,7 +14,7 @@ function P(a) {
   return O(a) || a === +a;
 }
 function Q(a) {
-  return a === "" + +a && a === a && a !== 1 / 0 && a !== -1 / 0;
+  return a === "" + +a && a === a && a !== "" + 1 / 0 && a !== "" + -1 / 0;
 }
 function R(a) {
   if (P(a)) {

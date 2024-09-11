@@ -91,7 +91,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
                     while( textNode = getFirstTextNode( currentVNode ) ){
                         if( !removeWhitespaces( /** @type {string} */ (textNode.getNodeValue()) ) ){
-                            textNode.detach();
+                            textNode.remove();
                         } else {
                             textNode.setNodeValue( m_trimFirstChar( /** @type {string} */ (textNode.getNodeValue()), '\n' ) );
                             break;
@@ -99,7 +99,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     };
                     while( textNode = getLastTextNode( currentVNode ) ){
                         if( !removeWhitespaces( /** @type {string} */ (textNode.getNodeValue()) ) ){
-                            textNode.detach();
+                            textNode.remove();
                         } else {
                             textNode.setNodeValue( m_trimLastChar( /** @type {string} */ (textNode.getNodeValue()), '\n' ) );
                             break;
