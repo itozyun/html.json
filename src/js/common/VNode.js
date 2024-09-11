@@ -52,9 +52,9 @@ function _isCurrentVNodeAndCanHaveChildren( vnode ){
  * @param {number} insertPosition
  * @param {number} nodeType 
  * @param {(string | number)=} opt_nodeValueOrTag 
- * @param {(Attrs | null)=} opt_attrs 
+ * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  */
-var VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrs ){
+var VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     var childNodes, parent;
 
     if( m_isBoolean( parentOrMode ) ){
@@ -111,16 +111,18 @@ var VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag
     };
 
     switch( nodeType ){
-        case htmljson.NODE_TYPE.ELEMENT_NODE            :
+        case htmljson.NODE_TYPE.ELEMENT_NODE      :
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             /** @type {Attrs | null} */
-            this._attrs   = opt_attrs || null;
+            this._attrs   = opt_attrsOrArgs || null;
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             this._tagName = /** @type {string} */ (opt_nodeValueOrTag);
             break;
+        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+            /** @type {Array | null} */
+            this._args = opt_attrsOrArgs || null;
         case htmljson.NODE_TYPE.TEXT_NODE                     :
         case htmljson.NODE_TYPE.CDATA_SECTION                 :
-        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
         case htmljson.NODE_TYPE.COMMENT_NODE                  :
         case htmljson.NODE_TYPE.DOCUMENT_NODE                 :
         case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER           :
@@ -141,11 +143,17 @@ VNode.currentRestrictedVNode = null;
  * 
  * @return {!Array}
  */
-VNode.prototype.getJSON = function(){
+VNode.prototype.getHTMLJSON = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getHTMLJSON() は非対応です!';
+        };
+    };
+
     var json = [ this._nodeType ], childNodes = this._childNodes, i, l;
 
     switch( this._nodeType ){
-        case htmljson.NODE_TYPE.ELEMENT_NODE           :
+        case htmljson.NODE_TYPE.ELEMENT_NODE      :
             json.length = 0;
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             json.push( this._tagName );
@@ -156,9 +164,11 @@ VNode.prototype.getJSON = function(){
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             json[ 1 ] = this._tagName;
             break;
+        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
+            json[ 2 ] = this._args;
+            // TODO
         case htmljson.NODE_TYPE.TEXT_NODE                     :
         case htmljson.NODE_TYPE.CDATA_SECTION                 :
-        case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
         case htmljson.NODE_TYPE.COMMENT_NODE                  :
         case htmljson.NODE_TYPE.DOCUMENT_NODE                 :
         case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER           :
@@ -1030,9 +1040,9 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | null)=} opt_attrs 
+ * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  * @return {!VNode | null} */
-VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
         if( _isDocOrDocFragment( this ) ){
             throw 'insertNodeBefore() をサポートしない nodeType です!';
@@ -1047,14 +1057,14 @@ VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_a
         return null;
     };
 
-    return this._parent ? this._parent.insertNodeAt( this.getMyIndex(), nodeType, opt_nodeValueOrTag, opt_attrs ) : null;
+    return this._parent ? this._parent.insertNodeAt( this.getMyIndex(), nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ) : null;
 };
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | null)=} opt_attrs 
+ * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  * @return {VNode | null} */
-VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
         if( this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren( this ) ){
             throw 'restricted mode では現在のノード以外への insertNodeFirst() は非対応です!';
@@ -1066,30 +1076,30 @@ VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_at
         return null;
     };
 
-    return this.insertNodeAt( 0, nodeType, opt_nodeValueOrTag, opt_attrs );
+    return this.insertNodeAt( 0, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
 };
 /**
  * 
  * @param {number} index
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | null)=} opt_attrs 
+ * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  * @return {!VNode} */
-VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
         if( this._isRestrictedMode ){
             throw 'restricted mode では insertNodeAt() は非対応です!';
         };
     };
 
-    return new VNode( this, index, nodeType, opt_nodeValueOrTag, opt_attrs );
+    return new VNode( this, index, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
 };
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | null)=} opt_attrs 
+ * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  * @return {VNode | null} */
-VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
         if( this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren( this ) ){
             throw 'restricted mode では現在のノード以外への insertNodeLast() は非対応です!';
@@ -1101,14 +1111,14 @@ VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_att
         return null;
     };
 
-    return this.insertNodeAt( this.getChildNodeLength(), nodeType, opt_nodeValueOrTag, opt_attrs );
+    return this.insertNodeAt( this.getChildNodeLength(), nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
 };
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | null)=} opt_attrs 
+ * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  * @return {!VNode | null} */
-VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_attrs ){
+VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
         if( _isDocOrDocFragment( this ) || nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ){
             throw 'insertNodeAfter() をサポートしない nodeType です!';
@@ -1123,5 +1133,5 @@ VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_at
         return null;
     };
 
-    return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeType, opt_nodeValueOrTag, opt_attrs ) : null;
+    return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ) : null;
 };

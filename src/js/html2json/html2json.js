@@ -1,7 +1,7 @@
 goog.provide( 'html2json' );
 
 goog.requireType( 'VNode' );
-goog.require( 'htmljson.createVNodeFromHTML' );
+goog.require( 'VNode.createVNodeFromHTML' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -17,7 +17,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     const
         json              = [],
         _aryPush          = json.push,
-        vnode             = htmljson.createVNodeFromHTML( htmlString, allowInvalidTree ),
+        vnode             = VNode.createVNodeFromHTML( htmlString, allowInvalidTree ),
         options           = opt_options || {},
 
         isTrimWhitespace  = [ 'none', false ].indexOf( options[ 'trimWhitespaces' ] ) === -1,
@@ -149,7 +149,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 nodeValue = /** @type {string} */ (currentVNode.getNodeValue());
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
-                    vDocFragment    = htmljson.createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
+                    vDocFragment    = VNode.createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
@@ -160,7 +160,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     };
                 } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
                     // htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
-                    vDocFragment    = htmljson.createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
+                    vDocFragment    = VNode.createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){

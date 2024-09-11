@@ -265,9 +265,9 @@ function P(a, c) {
     case 18:
       this.ea = l;
       break;
+    case 7:
     case 3:
     case 4:
-    case 7:
     case 8:
     case 9:
     case 13:

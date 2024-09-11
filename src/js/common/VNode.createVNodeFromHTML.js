@@ -1,4 +1,4 @@
-goog.provide( 'htmljson.createVNodeFromHTML' );
+goog.provide( 'VNode.createVNodeFromHTML' );
 
 goog.require( 'htmlparser.exec' );
 goog.requireType( 'htmlparser.typedef.Handler' );
@@ -12,7 +12,7 @@ goog.require( 'htmljson.NODE_TYPE' );
  * @param {boolean} allowInvalidTree
  * @return {!VNode}
  */
-htmljson.createVNodeFromHTML = function( html, allowInvalidTree ){
+VNode.createVNodeFromHTML = function( html, allowInvalidTree ){
     var handler = new Handler( allowInvalidTree );
 
     htmlparser.exec( html, handler );
