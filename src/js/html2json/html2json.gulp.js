@@ -13,7 +13,7 @@ html2json.gulp = function( opt_options ){
                           ? opt_options
                           : {};
 
-    return through(
+    return through.obj(
         /**
          * @this {stream.Readable}
          * @param {!Vinyl} file 
@@ -37,9 +37,9 @@ html2json.gulp = function( opt_options ){
                             options[ 'prettify' ] ? '    ' : ''
                         )
                     );
-                    console.log( file.path.split( process.cwd() )[ 1 ].split( '\\' ).join( '/' ), performance.now() - now )
+                    console.log( file.path.split( process.cwd() )[ 1 ].split( '\\' ).join( '/' ), ( performance.now() - now ) | 0 )
                     // .html => .html.json
-                    // file.stem += file.extname;
+                    file.stem += file.extname;
                     file.extname = '.json';
                     this.push( file );
                 } catch( O_o ) {

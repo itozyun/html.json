@@ -13,7 +13,7 @@ json2html.gulp = function( onInstruction, opt_onError, opt_options ){
           through     = require( 'through2'     ),
           pluginName  = 'json2html';
     
-    return through(
+    return through.obj(
         /**
          * @this {stream.Readable}
          * @param {!Vinyl} file 

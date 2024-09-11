@@ -368,7 +368,7 @@ function ka(a, b, d, f) {
 ;Z.gulp = function(a, b, d) {
   const f = require("plugin-error"), p = require("through2"), g = b && "object" === typeof b ? b : d && "object" === typeof d ? d : {}, E = g.outputStaticPagesAsHTML, M = g.staticPages && "object" === typeof g.staticPages ? g.staticPages : {};
   g.staticPages = M;
-  return p(function(u, K, G) {
+  return p.obj(function(u, K, G) {
     if (u.isNull()) {
       return G();
     }

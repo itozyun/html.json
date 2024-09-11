@@ -39,6 +39,10 @@ Vinyl.prototype.contents;
 Vinyl.prototype.path;
 Vinyl.prototype.stem;
 
+
+function through2(){};
+through2.obj = function(){};
+
 /**
  * @constructor
  * @extends {stream.Writable}

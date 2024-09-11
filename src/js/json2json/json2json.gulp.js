@@ -22,7 +22,7 @@ json2json.gulp = function( onInstruction, opt_onError, opt_options ){
 
     options[ 'staticPages' ] = staticPages;
 
-    return through(
+    return through.obj(
         /**
          * @this {stream.Readable}
          * @param {!Vinyl} file 

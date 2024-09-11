@@ -181,7 +181,7 @@ V.ELEMENT_START_TAG = 17;
 V.ELEMENT_END_TAG = 18;
 V.gulp = function(a, e, b) {
   const p = require("plugin-error");
-  return require("through2")(function(d, k, B) {
+  return require("through2").obj(function(d, k, B) {
     if (d.isNull()) {
       return B();
     }
