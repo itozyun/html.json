@@ -11,7 +11,7 @@
     <!--[if (!vml)|(IE 9)]><!-->
     <picture>
         <source src="chart.svg" type="xml/image">
-        <img src="chart.svg">
+        <img src="chart.png">
     </picture>
     <!--<![endif]-->
     <!--[if (vml)&!(IE 9)]><v:path>...</v:path><![endif]-->
