@@ -37,7 +37,11 @@ Vinyl.prototype.isStream = function(){};
 Vinyl.prototype.extname;
 Vinyl.prototype.contents;
 Vinyl.prototype.path;
+Vinyl.prototype.base;
 Vinyl.prototype.stem;
+Vinyl.prototype.stat = {};
+Vinyl.prototype.stat.birthtimeMs = 0;
+Vinyl.prototype.stat.ctimeMs = 0;
 
 
 function through2(){};
