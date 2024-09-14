@@ -44,14 +44,19 @@ json2json.gulp = function( onInstruction, opt_onError, opt_options ){
                     let content;
 
                     if( outputStaticPagesAsHTML ){
-                        staticPages[ file.path.split( '\\' ).join( '/' ).split( '.json' ).join( '' ) ] = isStaticWebPage;
+                        const filePathElements = file.path.split( '\\' ).join( '/' ).split( '.' );
+
+                        filePathElements.pop();
+                        staticPages[ filePathElements.join( '.' ) ] = isStaticWebPage;
                     };
 
                     if( isStaticWebPage && outputStaticPagesAsHTML ){
                         content = json2html( json, onInstruction, opt_onError, opt_options );
                         // .html <= .html.json
-                        file.extname = '.' + file.stem.split( '.' ).pop();
+                        const extname = '.' + file.stem.split( '.' ).pop();
+
                         file.stem    = file.stem.substr( 0, file.stem.length - file.extname.length );
+                        file.extname = extname;
                     } else {
                         content = JSON.stringify( json, null, options[ 'prettify' ] ? '    ' : '' );
                     };

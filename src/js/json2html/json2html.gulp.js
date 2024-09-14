@@ -27,17 +27,20 @@ json2html.gulp = function( onInstruction, opt_onError, opt_options ){
                 this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
                 return callback();
             };
+
+            const originalExtname = '.' + file.stem.split( '.' ).pop();
     
-            if( file.extname === '.json' ){
+            if( file.extname === '.json' && [ '.html', '.htm', '.xhtml' ].indexOf( originalExtname ) ){
                 try {
                     const json = JSON.parse( file.contents.toString( encoding ) );
 
-                    const content = json2html( /** @type {!Array} */ (json), onInstruction, opt_onError, opt_options );
-                    // .html <= .html.json
-                    file.extname = '.' + file.stem.split( '.' ).pop();
-                    file.stem    = file.stem.substr( 0, file.stem.length - file.extname.length );
-                    
-                    file.contents = Buffer.from( /** @type {string} */ (content) );
+                    if( m_isArray( json ) ){
+                        const content = json2html( /** @type {!Array} */ (json), onInstruction, opt_onError, opt_options );
+                        // .html <= .html.json
+                        file.stem     = file.stem.substr( 0, file.stem.length - originalExtname.length );
+                        file.extname  = originalExtname;
+                        file.contents = Buffer.from( /** @type {string} */ (content) );
+                    };
                     this.push( file );
                 } catch( O_o ) {
                     this.emit( 'error', new PluginError( pluginName, O_o ) );

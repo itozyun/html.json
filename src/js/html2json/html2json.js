@@ -10,6 +10,7 @@ goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
  * @param {!Object=} opt_options
+ * @return {!Array}
  */
 html2json = function( htmlString, allowInvalidTree, opt_options ){
     const
