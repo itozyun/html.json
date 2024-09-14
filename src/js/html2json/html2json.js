@@ -74,10 +74,10 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                             functionNameAndArgs = codeToObject( attrValue );
     
                             if( functionNameAndArgs.args ){
-                                attrValue = [ functionNameAndArgs.name ];
+                                attrValue = [ functionNameAndArgs.funcName ];
                                 _aryPush.apply( attrValue, functionNameAndArgs.args );
                             } else {
-                                attrValue = functionNameAndArgs.name;
+                                attrValue = functionNameAndArgs.funcName;
                             };
                         };
                         attrs[ attrName ] = /** @type {number | string} */ (m_tryToFiniteNumber( attrValue ));
@@ -137,7 +137,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 nodeValue = currentVNode.getNodeValue();
                 functionNameAndArgs = codeToObject( /** @type {string} */ (nodeValue) );
 
-                currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.name ];
+                currentJSONNode = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.funcName ];
 
                 if( functionNameAndArgs.args ){
                     _aryPush.apply( currentJSONNode, functionNameAndArgs.args );
@@ -222,7 +222,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     /**
      * 
      * @param {string} string 
-     * @return {{ name : string, args : (!Array|void) }} 
+     * @return {{ funcName : string, args : (!Array|void) }} 
      */
     function codeToObject( string ){
         var from = string.indexOf( argOpeningBracket );
@@ -230,9 +230,9 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
         var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, string.lastIndexOf( argClosingBracket ) - 2 ) + ']' ));
 
         if( args.length ){
-            return { name : name, args : args };
+            return { funcName : name, args : args };
         };
-        return { name : name };
+        return { funcName : name };
     };
 
     /**
