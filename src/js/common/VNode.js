@@ -33,7 +33,7 @@ function _isDocOrDocFragment( vnode ){
  * @return {boolean} 
  */
 function _isCurrentVNode( vnode ){
-    return vnode === VNode.currentRestrictedVNode;
+    return vnode === VNode.currentRestrictedVNode && !vnode._removed;
 };
 
 /**
@@ -54,7 +54,7 @@ function _isCurrentVNodeAndCanHaveChildren( vnode ){
  * @param {(string | number)=} opt_nodeValueOrTag 
  * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
  */
-var VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
+VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     var childNodes, parent;
 
     if( m_isBoolean( parentOrMode ) ){
@@ -295,7 +295,7 @@ VNode.prototype.finalize = function(){
 
     if( htmljson.DEFINE.DEBUG ){
         if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
-            throw 'close() をサポートしない nodeType です!';
+            throw 'finalize() をサポートしない nodeType です!';
         };
     };
     this._nodeType = htmljson.NODE_TYPE.ELEMENT_NODE;
@@ -387,11 +387,11 @@ VNode.prototype.hasClassName = function( className ){
  */
 VNode.prototype.addClassName = function( className ){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
-            throw 'restricted mode では現在のノード以外への addClassName() は非対応です!';
-        };
         if( !this.isElement() ){
             throw 'addClassName() をサポートしない nodeType です!';
+        };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への addClassName() は非対応です!';
         };
         if( className.indexOf( ' ' ) !== -1 ){
             throw 'addClassName() は半角文字を含む className をサポートしません!';
@@ -409,11 +409,11 @@ VNode.prototype.addClassName = function( className ){
  */
 VNode.prototype.removeClassName = function( className ){
     if( htmljson.DEFINE.DEBUG ){
-        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
-            throw 'restricted mode では現在のノード以外への removeClassName() は非対応です!';
-        };
         if( !this.isElement() ){
             throw 'removeClassName() をサポートしない nodeType です!';
+        };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への removeClassName() は非対応です!';
         };
         if( className.indexOf( ' ' ) !== -1 ){
             throw 'removeClassName() は半角文字を含む className をサポートしません!';
@@ -647,6 +647,9 @@ VNode.prototype.getPrevNode = function(){
         if( _isDocOrDocFragment( this ) ){
             throw 'getPrevNode() をサポートしない nodeType です!';
         };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getPrevNode() は非対応です!';
+        };
     };
 
     return this._parent && this._parent.getChildNodeAt( this.getMyIndex() - 1 );
@@ -660,6 +663,9 @@ VNode.prototype.getNextNode = function(){
     if( htmljson.DEFINE.DEBUG ){
         if( this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || _isDocOrDocFragment( this ) ){
             throw 'getNextNode() をサポートしない nodeType です!';
+        };
+        if( this._isRestrictedMode ){
+            throw 'restricted mode では getNextNode() は非対応です!';
         };
     };
 
@@ -774,6 +780,11 @@ VNode.prototype.remove = function(){
         };
     };
 
+    if( this._isRestrictedMode ){
+        this._removed = true;
+        return null;
+    };
+
     var index = this.getMyIndex();
 
     if( 0 <= index ){
@@ -793,6 +804,17 @@ VNode.prototype.empty = function(){
         if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
             throw 'restricted mode では現在のノード以外への empty() は非対応です!';
         };
+    };
+
+    if( this._isRestrictedMode ){
+        this._emptied = true;
+        if( this._nodesInsertedFirst ){
+            this._nodesInsertedFirst.length = 0;
+        };
+        if( this._nodesInsertedLast ){
+            this._nodesInsertedLast.length = 0;
+        };
+        return;
     };
 
     var childNodes = this._childNodes, i, l;
@@ -941,7 +963,8 @@ VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textCont
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedBefore = this._nodesInsertedBefore || [];
+        this._nodesInsertedBefore.push( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
         return null;
     };
 
@@ -960,7 +983,8 @@ VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textConte
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedFirst = this._nodesInsertedFirst || [];
+        this._nodesInsertedFirst.unshift( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
         return null;
     };
 
@@ -999,7 +1023,8 @@ VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textConten
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedLast = this._nodesInsertedLast || [];
+        this._nodesInsertedLast.push( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
         return null;
     };
 
@@ -1021,7 +1046,8 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedAfter = this._nodesInsertedAfter || [];
+        this._nodesInsertedAfter.unshift( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
         return null;
     };
 
@@ -1051,7 +1077,8 @@ VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_a
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedBefore = this._nodesInsertedBefore || [];
+        this._nodesInsertedBefore.push( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
         return null;
     };
 
@@ -1070,7 +1097,8 @@ VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_at
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedFirst = this._nodesInsertedFirst || [];
+        this._nodesInsertedFirst.unshift( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
         return null;
     };
 
@@ -1105,7 +1133,8 @@ VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_att
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedLast = this._nodesInsertedLast || [];
+        this._nodesInsertedLast.push( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
         return null;
     };
 
@@ -1127,7 +1156,8 @@ VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_at
     };
 
     if( this._isRestrictedMode ){
-        //
+        this._nodesInsertedAfter = this._nodesInsertedAfter || [];
+        this._nodesInsertedAfter.unshift( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
         return null;
     };
 

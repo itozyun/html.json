@@ -7,25 +7,25 @@ goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 /**
  * @param {!Array} json
  * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)=} opt_onInstruction
- * @param {!function(*)|!Object=} opt_onReachElement
+ * @param {!function(*)|!Object=} opt_onEnterNode
  * @param {!function(string)|!Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {boolean|void} isStaticWebPage
  */
-json2json = function( json, opt_onInstruction, opt_onReachElement, opt_onError, opt_options ){
+json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
     /** @const */
     var onInstruction     = typeof opt_onInstruction === 'function' ? opt_onInstruction : function( funcName, args ){};
     /** @const */
-    var onReachElement    = typeof opt_onReachElement === 'function' ? opt_onReachElement : function( elementLike ){};
+    var onEnterNode    = typeof opt_onEnterNode === 'function' ? opt_onEnterNode : function( elementLike ){};
     /** @const */
     var errorHandler      = typeof opt_onError === 'function' ? opt_onError : function( error ){};
     /** @const */
     var options           = m_isObject( opt_onInstruction )
                               ? opt_onInstruction
-                          : m_isObject( opt_onReachElement )
-                              ? opt_onReachElement
+                          : m_isObject( opt_onEnterNode )
+                              ? opt_onEnterNode
                           : m_isObject( opt_onError )
                               ? opt_onError
                               : opt_options || {};

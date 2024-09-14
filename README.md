@@ -120,7 +120,7 @@ gulp externs
 動的コンテンツの内、決定した値を `onInstruction` で埋め込むことが出来る．
 
 ~~~js
-json2json( json, onInstruction, opt_onReachElement, opt_onError, opt_options );
+json2json( json, onInstruction, opt_onEnterNode, opt_onError, opt_options );
 
 function onInstruction( methodName, args, currentHtmlJson ){
     return undefined; // null or '' or string or number or html.json
@@ -146,16 +146,20 @@ json2html と微妙に異なる点に注意!
 * 戻り値が配列の場合、新しい関数名と引数の `InstructionAttr` に置き換わる 
 * これ以外は属性値になる
 
-### `opt_onReachElement`
+### `opt_onEnterNode`
 
 * Element に到達したときにコールバックされる
 * 引数は DOM ライクに要素を操作できるオブジェクト
 * 但し、文書ツリーの操作が出来るのは次に限る
+  * 現在のノードの nodeValue の変更
   * 現在の Element の属性の操作
-  * 現在の Element の子孫の操作
   * 現在の Element の直前への挿入
+  * 現在の Element の子リストの最初への挿入
+  * 現在の Element の子リストの最期への挿入
   * 現在の Element の直後への挿入
-  * 現在の Element を Element で wrap する
+  * 現在の Element の削除
+  * 現在の Element の子を空にする
+  * ~~現在の Element を Element で wrap する~~
 
 ## 3. json2html
 
