@@ -41,6 +41,7 @@ gulp externs
 * `trimWhitespaces` と `removeNewlineBetweenFullWidthChars`
 * `keepCDATASections`
 * `keepComments`
+* `keepEmptyConditionalComment`
 * `argumentBrackets`
 * `instructionAttrPrefix`
 

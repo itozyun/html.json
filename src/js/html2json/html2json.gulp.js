@@ -9,9 +9,10 @@ html2json.gulp = function( opt_options ){
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'html2json',
-          options     = opt_options && typeof opt_options === 'object'
-                          ? opt_options
-                          : {};
+          options     = opt_options || {},
+          prettify    = options[ 'prettify' ];
+
+    let numHTMLFiles = 0, totalTime = 0;
 
     return through.obj(
         /**
@@ -27,27 +28,31 @@ html2json.gulp = function( opt_options ){
                 this.emit( 'error', new PluginError( pluginName, 'Streaming not supported' ) );
                 return callback();
             };
-            const now = performance.now();
+
             if( file.extname === '.html' || file.extname === '.htm' || file.extname === '.xhtml' || file.extname === '.php' ){
                 try {
+                    const now  = performance.now();
+                    const json = html2json( file.contents.toString( encoding ), false, options );
+
+                    ++numHTMLFiles;
+                    totalTime += ( performance.now() - now ) | 0;
+
                     file.contents = Buffer.from(
-                        JSON.stringify(
-                            html2json( file.contents.toString( encoding ), false, opt_options ),
-                            null,
-                            options[ 'prettify' ] ? '    ' : ''
-                        )
+                        JSON.stringify( json, null, prettify ? '    ' : '' )
                     );
-                    console.log( file.path.split( process.cwd() )[ 1 ].split( '\\' ).join( '/' ), ( performance.now() - now ) | 0 )
                     // .html => .html.json
                     file.stem += file.extname;
                     file.extname = '.json';
-                    this.push( file );
                 } catch( O_o ) {
                     this.emit( 'error', new PluginError( pluginName, O_o ) );
+                    return callback();
                 };
-            } else {
-                this.push( file );
             };
+            this.push( file );
+            callback();
+        },
+        function( callback ){
+            console.log( '[html2json] done!  Total number of files:' + numHTMLFiles + ', Total Time:' + totalTime + ', Average:' + ( totalTime / numHTMLFiles | 0 ) );
             callback();
         }
     );

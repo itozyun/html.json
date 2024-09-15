@@ -128,9 +128,8 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 };
                 break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
-                nodeValue = currentVNode.getNodeValue();
                 if( keepCDATASections ){
-                    // htmljson.NODE_TYPE.COMMENT_NODE
+                    nodeValue = currentVNode.getNodeValue();
                     parentJSONNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToFiniteNumber( /** @type {string} */ (nodeValue) ) ] );
                 };
                 break;
