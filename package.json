@@ -19,10 +19,10 @@
     "url": "git@github.com/itozyun/html.json.git"
   },
   "keywords": [
-    "html",
-    "json",
-    "stream-json",
-    "ssr"
+    "html", "html-json",
+    "json", "stream-json",
+    "gulpplugin",
+    "ssg", "static-site", "static site generation", "website"
   ],
   "dependencies": {
     "plugin-error": "^2.0.1",
