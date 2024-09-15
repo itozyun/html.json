@@ -1,6 +1,7 @@
 goog.provide( 'json2html' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
+goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -208,7 +209,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
     function isXML( tagName ){
         if( isXmlInHTML ){
             return true;
-        } else if( m_TAGNAME_TO_NAMESPACE[ tagName ] ){
+        } else if( htmlparser.XML_ROOT_ELEMENTS[ tagName ] ){
             return true;
         };
         return m_isNamespacedTag( tagName ); // v: vml
@@ -230,7 +231,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
             childNode = currentJSONNode[ i ];
 
             if( m_isStringOrNumber( childNode ) ){
-                htmlString += walkNode( [ htmljson.NODE_TYPE.TEXT_NODE, childNode ], null, 0, false, escapeForHTMLDisabled );
+                htmlString += walkNode( [ htmljson.NODE_TYPE.TEXT_NODE, childNode ], currentJSONNode, i, false, escapeForHTMLDisabled );
             } else if( m_isArray( childNode ) ){
                 htmlPartString = walkNode( childNode, currentJSONNode, i, pEndTagRequired, escapeForHTMLDisabled );
                 if( htmlPartString === REMOVED ){

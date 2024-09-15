@@ -1,6 +1,7 @@
 goog.provide( 'json2html.stream' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
+goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
@@ -228,7 +229,7 @@ function onToken( token, value ){
                 if( m_UNESCAPED_ELEMENTS[ tagNameOrNodeType ] ){
                     self._escapeForHTMLDisabled = true;
                 };
-                if( m_TAGNAME_TO_NAMESPACE[ tagNameOrNodeType ] || m_isNamespacedTag( tagNameOrNodeType ) ){
+                if( htmlparser.XML_ROOT_ELEMENTS[ tagNameOrNodeType ] || m_isNamespacedTag( tagNameOrNodeType ) ){
                     self._isXmlInHTML = true;
                 };
             };
