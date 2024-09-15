@@ -40,15 +40,15 @@ var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http
  * @const {!Object.<string, boolean>}
  */
 var m_P_END_TAG_LESS_TAGS = {
-        H1:!0        , H2:!0        , H3:!0      , H4:!0        , H5:!0      , H6:!0      ,
-        ADDRESS:!0   , BLOCKQUOTE:!0, DETAILS:!0 , DIV:!0       , DL:!0      , FIELDSET:!0,
-        FORM:!0      , HR:!0        , LEGEND:!0  , NOSCRIPT:!0  , OL:!0      , P:!0       ,
+        H1:!0        , H2:!0        , H3:!0      , H4:!0      , H5:!0       , H6:!0    ,
+        ADDRESS:!0   , BLOCKQUOTE:!0, DIV:!0     , DL:!0      , FIELDSET:!0 , FORM:!0  ,
+        HR:!0        , LEGEND:!0    , MENU:!0    , NOSCRIPT:!0, OL:!0       , P:!0     ,
         PRE:!0       , /* table:!0, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
         UL:!0        ,
-        CENTER:!0    , DIR:!0       , NOFRAMES:!0, MARQUEE:!0
-        
-    // ,ARTICLE:!0   , ASIDE:!0     , CANVAS:!0  , FIGCAPTION:!0, FIGURE:!0  , FOOTER:!0, // HTML5 要素は IE~8 で無視されるので除外
-    //  HEADER:!0    , HGROUP:!0    , MAIN:!0    , MENU:!0      , NAV:!0     , SECTION:!0
+        CENTER:!0    , DIR:!0       , NOFRAMES:!0, MARQUEE:!0 //, legacy
+    // HTML5 要素は IE~8 で無視されるので除外
+    //  ARTICLE:!0   , ASIDE:!0     , CANVAS:!0  , DETAILS:!0, FIGCAPTION:!0, FIGURE:!0,
+    //  FOOTER:!0    , HEADER:!0    , HGROUP:!0  , MAIN:!0   , NAV:!0       , SECTION:!0
     };
 
 /**

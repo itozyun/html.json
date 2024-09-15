@@ -1,6 +1,6 @@
 var aa = {xml:!0, svg:!0, math:!0}, ba = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, j:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0}, w = {checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0};
-var ca = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, da = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, ea = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DETAILS:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, m:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, h:!0, l:!0, v:!0, o:!0}, fa = {SCRIPT:!0, STYLE:!0, 
-PLAINTEXT:!0, XMP:!0}, ha = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0};
+var ca = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, da = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, ea = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, m:!0, v:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, h:!0, l:!0, C:!0, o:!0}, fa = {SCRIPT:!0, STYLE:!0, PLAINTEXT:!0, 
+XMP:!0}, ha = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0};
 function z(a) {
   return !(!a || a.pop !== [].pop);
 }

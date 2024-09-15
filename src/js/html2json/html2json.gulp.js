@@ -12,7 +12,7 @@ html2json.gulp = function( opt_options ){
           options     = opt_options || {},
           prettify    = options[ 'prettify' ];
 
-    let numHTMLFiles = 0, totalTime = 0;
+    let numHTMLFiles = 0, totalFileSize = 0, totalTime = 0;
 
     return through.obj(
         /**
@@ -31,11 +31,13 @@ html2json.gulp = function( opt_options ){
 
             if( file.extname === '.html' || file.extname === '.htm' || file.extname === '.xhtml' || file.extname === '.php' ){
                 try {
+                    const html = file.contents.toString( encoding );
                     const now  = performance.now();
-                    const json = html2json( file.contents.toString( encoding ), false, options );
+                    const json = html2json( html, false, options );
 
                     ++numHTMLFiles;
-                    totalTime += ( performance.now() - now ) | 0;
+                    totalFileSize += html.length;
+                    totalTime += performance.now() - now;
 
                     file.contents = Buffer.from(
                         JSON.stringify( json, null, prettify ? '    ' : '' )
@@ -52,7 +54,12 @@ html2json.gulp = function( opt_options ){
             callback();
         },
         function( callback ){
-            console.log( '[html2json] done!  Total number of files:' + numHTMLFiles + ', Total Time:' + totalTime + ', Average:' + ( totalTime / numHTMLFiles | 0 ) );
+            console.log( '[html2json] done!' )
+            console.log( '  Number of files: ' + numHTMLFiles );
+            console.log( '  Total file size: ' + ( ( totalFileSize / 100 | 0 ) / 10 ) + 'KB' );
+            console.log( '  Total Time     : ' + ( totalTime | 0 ) + 'ms' );
+            console.log( '  Time per file  : ' + ( ( totalTime / numHTMLFiles  * 100 | 0 ) / 100  ) + 'ms' );
+            console.log( '  Time per size  : ' + (   totalTime / totalFileSize * 1000 * 100 | 0 ) + 'ms/100KB' );
             callback();
         }
     );
