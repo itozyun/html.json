@@ -178,11 +178,11 @@ function ea(a, c) {
   h();
   H(p, c, "", !0);
 }
-;var ma = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0};
+;var ma = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0}, na = {PRE:!0, LISTING:!0};
 function O(a) {
   return a === "" + +a && a === a && a !== "" + 1 / 0 && a !== "" + -1 / 0 ? +a : a;
 }
-function na(a) {
+function oa(a) {
   if ("" + a === a || a === +a) {
     a = 3;
   } else {
@@ -195,20 +195,20 @@ function na(a) {
   }
   return a;
 }
-function oa(a) {
+function pa(a) {
   return !(a && a.pop === [].pop) && !(!a || "object" !== typeof a);
 }
-function pa(a) {
+function qa(a) {
   var c = a[0];
   var d = c === +c ? 2 : 1;
-  d = 1 === na(a) || 17 === c ? oa(a[d]) ? d + 1 : d : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
+  d = 1 === oa(a) || 17 === c ? pa(a[d]) ? d + 1 : d : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
   c = "";
   var h;
   if (d < a.length) {
     for (h = d; h < a.length;) {
       d = a[h];
-      var u = na(d);
-      3 === u ? (c = "" + d === d || d === +d ? c + d : c + d[1], a.splice(h, 1)) : (c && (a.splice(h, 0, O(c)), c = ""), ++h, 1 !== u && 17 !== u && 13 !== u && 16 !== u || pa(d));
+      var u = oa(d);
+      3 === u ? (c = "" + d === d || d === +d ? c + d : c + d[1], a.splice(h, 1)) : (c && (a.splice(h, 0, O(c)), c = ""), ++h, 1 !== u && 17 !== u && 13 !== u && 16 !== u || qa(d));
     }
     c && (a[h] = O(c));
   }
@@ -293,11 +293,11 @@ function X(a, c, d, h) {
   return a.ba ? (a.ca = a.ca || [], a.ca.push([c, d, h]), null) : new S(a, V(a), c, d, h);
 }
 ;function Y(a, c) {
-  c = new qa(c);
+  c = new ra(c);
   ea(a, c);
   return c.aa;
 }
-function qa(a) {
+function ra(a) {
   this.ba = a;
   this.$ = this.aa = new S(!1, 0, 11);
 }
@@ -338,8 +338,8 @@ function ja(a, c) {
       case 17:
         var t = {};
         var f = b.ga;
-        r = "PRE" === f || "LISTING" === f;
-        var D = oa(b.ha) ? b.ha : null, M = 0, I;
+        r = !!na[f.toUpperCase()];
+        var D = pa(b.ha) ? b.ha : null, M = 0, I;
         if (D) {
           for (I in D) {
             var F = da[I] ? 1 : D[I];
@@ -379,7 +379,7 @@ function ja(a, c) {
         }
         g = M ? [f, t] : [f];
         for (n = 0; n < V(b); ++n) {
-          h(W(b, n), g, r || m, !!ma[f]);
+          h(W(b, n), g, r || m, !!ma[f.toUpperCase()]);
         }
         k.push(g);
         17 !== b.$ || g.unshift(17);
@@ -489,7 +489,7 @@ function ja(a, c) {
   const x = d.substr(0, d.length / 2), l = d.substr(d.length);
   let G = !1;
   h(a, A, !1, !1);
-  pa(A[0]);
+  qa(A[0]);
   return A[0];
 }
 ;Z.module = {};

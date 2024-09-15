@@ -164,7 +164,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                     htmlString += ' ' + walkAttributes( attrs );
                 };
                 // childNodes
-                childNodesContents = walkChildNodes( currentJSONNode, m_CHILD_P_MUST_HAVE_END_TAG[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_ELEMENTS[ tagName ] );
+                childNodesContents = walkChildNodes( currentJSONNode, m_CHILD_P_MUST_HAVE_END_TAG[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_ELEMENTS[ isXmlInHTML ? tagName.toUpperCase() : tagName ] );
 
                 if( childNodesContents ){
                     htmlString += '>' + childNodesContents;

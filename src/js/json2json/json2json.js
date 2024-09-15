@@ -4,6 +4,7 @@ goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
+goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 
 /**
  * @param {!Array} json
@@ -46,7 +47,8 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
     /** @const */
     var attrPrefix        = options[ 'instructionAttrPrefix'       ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
-    var isTreeUpdated   = false,
+    var isXmlInHTML     = false,
+        isTreeUpdated   = false,
         isStaticWebPage = true;
 
     if( m_isArray( json ) ){
@@ -73,10 +75,13 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
         var arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
             attrIndex = 1, tagName = arg0,
-            prevJSONNode, attrs, result, isPreTag;
+            prevJSONNode, attrs, result, isPreTag, isXMLRoot;
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
+                if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
+                    isXmlInHTML = true;
+                };
                 walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
@@ -165,7 +170,12 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                             };
                         };
 
-                        isPreTag = tagName === 'P';
+                        // xml;
+                        if( !isXmlInHTML ){
+                            isXMLRoot = isXmlInHTML = isXML( tagName );
+                        };
+
+                        isPreTag = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ? tagName.toUpperCase() : tagName ];
 
                         if( isPreTag && isTrimWhitespace ){
                             // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
@@ -173,13 +183,30 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                         };
 
                         // childNodes
-                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
+                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ isXmlInHTML ? tagName.toUpperCase() : tagName ] );
+
+                        if( isXMLRoot ){
+                            isXmlInHTML = false;
+                        };
                     };
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
                 };
         };
         return 0;
+    };
+
+    /**
+     * @param {string} tagName 
+     * @return {boolean} 
+     */
+    function isXML( tagName ){
+        if( isXmlInHTML ){
+            return true;
+        } else if( htmlparser.XML_ROOT_ELEMENTS[ tagName ] ){
+            return true;
+        };
+        return m_isNamespacedTag( tagName ); // v: vml
     };
 
     /**

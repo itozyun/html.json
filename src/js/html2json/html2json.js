@@ -56,7 +56,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                 var attrs       = {},
                     tagName     = currentVNode.getTagName(),
-                    isPreTag    = tagName === 'PRE' || tagName === 'LISTING',
+                    isPreTag    = !!m_FAMILY_OF_PRE_ELEMENT[ tagName.toUpperCase() ],
                     attributes  = currentVNode.getAttrs(),
                     numAttrs    = 0,
                     i, attrName, attrValue, id, className, textNode;
@@ -110,7 +110,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 currentJSONNode = numAttrs ? [ tagName, attrs ] : [ tagName ];
 
                 for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
-                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
+                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName.toUpperCase() ] );
                 };
                 parentJSONNode.push( currentJSONNode );
 

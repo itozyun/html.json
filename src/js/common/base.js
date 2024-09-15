@@ -17,13 +17,16 @@ var Attrs;
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
  * 
+ *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
+ * 
  * @const {!Object.<string, boolean>} */
 var m_OMITTABLE_END_TAGS = {HTML:!0,HEAD:!0,BODY:!0,P:!0,DT:!0,DD:!0,LI:!0,OPTION:!0,TBODY:!0,THEAD:!0,TFOOT:!0,TD:!0,TH:!0,TR:!0,RB:!0,RBC:!0,RP:!0,RT:!0,RTC:!0,OPTGROUP:!0,CAPTION:!0,COLGROUP:!0};
 
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
- *   子孫が終了タグを省略できないタグの一覧
+ *   子の <p> が終了タグを省略できないタグの一覧
  * 
+ *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * @const {!Object.<string, boolean>}
  */
 var m_CHILD_P_MUST_HAVE_END_TAG = {A:!0,AUDIO:!0,DEL:!0,INS:!0,MAP:!0,NOSCRIPT:!0,VIDEO:!0};
@@ -36,6 +39,7 @@ var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http
 /** 
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-p-element
  *   </p> を省略できる後続のタグの一覧
+ *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * 
  * @const {!Object.<string, boolean>}
  */
@@ -61,7 +65,12 @@ var m_UNESCAPED_ELEMENTS = {SCRIPT:!0,STYLE:!0,PLAINTEXT:!0,XMP:!0};
  */
 var m_TRIM_NEWLINES_ELEMENTS = {SCRIPT:!0,STYLE:!0,TEXTAREA:!0};
 
-// stream-json2html => json2html で使用
+/**
+ * @const {!Object.<string, boolean>}
+ */
+var m_FAMILY_OF_PRE_ELEMENT = {PRE:!0,LISTING:!0};
+
+// json2html.stream から json2html を呼ぶときに使用
 var m_pEndTagRequired       = false;
 var m_escapeForHTMLDisabled = false;
 var m_isXMLDocument         = false;

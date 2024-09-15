@@ -226,7 +226,7 @@ function onToken( token, value ){
                 if( i === l - 1 ){
                     self._pEndTagRequired = self._pEndTagRequired || m_CHILD_P_MUST_HAVE_END_TAG[ tagNameOrNodeType ];
                 };
-                if( m_UNESCAPED_ELEMENTS[ tagNameOrNodeType ] ){
+                if( m_UNESCAPED_ELEMENTS[ self._isXMLDocument || self._isXmlInHTML ? tagNameOrNodeType.toUpperCase() : tagNameOrNodeType ] ){
                     self._escapeForHTMLDisabled = true;
                 };
                 if( htmlparser.XML_ROOT_ELEMENTS[ tagNameOrNodeType ] || m_isNamespacedTag( tagNameOrNodeType ) ){
@@ -566,7 +566,7 @@ function onToken( token, value ){
                         this._pEndTagRequired = !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ];
                     };
                     if( !this._escapeForHTMLDisabled ){
-                        this._escapeForHTMLDisabled = !!m_UNESCAPED_ELEMENTS[ tagName ];
+                        this._escapeForHTMLDisabled = !!m_UNESCAPED_ELEMENTS[ self._isXMLDocument || self._isXmlInHTML ? tagName.toUpperCase() : tagName ];
                     };
                     if( phase === htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG ){
                         tree.push( TAGNAME_WITHOUT_END_TAG );
