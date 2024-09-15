@@ -145,10 +145,10 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 htmlString += '<' + tagName;
 
                 if( id ){
-                    htmlString += ' id=' + m_quoteAttributeValue( id, useSingleQuot, quotAlways );
+                    htmlString += ' id=' + m_quoteAttributeValue( id, useSingleQuot, isXmlInHTML || quotAlways );
                 };
                 if( className ){
-                    htmlString += ' class=' + m_quoteAttributeValue( className, useSingleQuot, quotAlways );;
+                    htmlString += ' class=' + m_quoteAttributeValue( className, useSingleQuot, isXmlInHTML || quotAlways );;
                 };
 
                 // xml;
@@ -169,7 +169,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                 } else if( isElementWithoutEndTag ){
                     htmlString += '>';
                 } else {
-                    htmlString += isXmlInHTML ? '/>' : '>';
+                    htmlString += isXmlInHTML ? ' />' : '>';
                 };
 
                 if( isElementWithoutEndTag ){
@@ -271,7 +271,7 @@ var json2html = function( json, onInstruction, opt_onError, opt_options ){
                         value = toCSSTest( value );
                         if( !value ) continue;
                     };
-                    attrText += '=' + m_quoteAttributeValue( value, useSingleQuot, quotAlways );
+                    attrText += '=' + m_quoteAttributeValue( value, useSingleQuot, isXmlInHTML || quotAlways );
                 };
             };
         };

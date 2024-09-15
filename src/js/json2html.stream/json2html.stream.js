@@ -150,7 +150,7 @@ function onToken( token, value ){
                     return ' ' + self._attribute;
                 };
             } else {
-                return ' ' + self._attribute + '=' + m_quoteAttributeValue( value, self._useSingleQuot, self._quotAlways );
+                return ' ' + self._attribute + '=' + m_quoteAttributeValue( value, self._useSingleQuot, self._isXmlInHTML || self._quotAlways );
             };
         };
         return '';
@@ -554,10 +554,10 @@ function onToken( token, value ){
                     queue += '<' + tagName;
 
                     if( id ){
-                        queue += ' id=' + m_quoteAttributeValue( id, this._useSingleQuot, this._quotAlways );
+                        queue += ' id=' + m_quoteAttributeValue( id, this._useSingleQuot, this._isXmlInHTML || this._quotAlways );
                     };
                     if( className ){
-                        queue += ' class=' + m_quoteAttributeValue( className, this._useSingleQuot, this._quotAlways );;
+                        queue += ' class=' + m_quoteAttributeValue( className, this._useSingleQuot, this._isXmlInHTML || this._quotAlways );;
                     };
 
                     if( !this._endTagRequired ){
