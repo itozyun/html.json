@@ -7,9 +7,9 @@ test('simple',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'p', 'Hello, world!' ]
+                [ 'P', 'Hello, world!' ]
             ),
-            '<p>Hello, world!'
+            '<P>Hello, world!'
         );
 
         let random = Math.random();
@@ -32,9 +32,9 @@ test('id-class',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'div#app.app nojs', 'Hello, Application!' ]
+                [ 'DIV#app.app nojs', 'Hello, Application!' ]
             ),
-            '<div id=app class="app nojs">Hello, Application!</div>'
+            '<DIV id=app class="app nojs">Hello, Application!</DIV>'
         );
     }
 );

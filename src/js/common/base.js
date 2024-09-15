@@ -1,5 +1,6 @@
 goog.provide( 'htmljson.base' );
 
+goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
 
@@ -13,37 +14,55 @@ var Styles;
  */
 var Attrs;
 
-var m_ATTRS_NO_VALUE      = {checked:!0,compact:!0,declare:!0,defer:!0,disabled:!0,ismap:!0,multiple:!0,nohref:!0,noresize:!0,noshade:!0,nowrap:!0,readonly:!0,selected:!0};
+/**
+ * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
+ * 
+ * @const {!Object.<string, boolean>} */
+var m_OMITTABLE_END_TAGS = {HTML:!0,HEAD:!0,BODY:!0,P:!0,DT:!0,DD:!0,LI:!0,OPTION:!0,TBODY:!0,THEAD:!0,TFOOT:!0,TD:!0,TH:!0,TR:!0,RB:!0,RBC:!0,RP:!0,RT:!0,RTC:!0,OPTGROUP:!0,CAPTION:!0,COLGROUP:!0};
 
-    // 子を持たない要素の一覧
-var m_NO_CHILD_ELEMENTS   = {link:!0,meta:!0,br:!0,hr:!0,img:!0,input:!0,area:!0,base:!0,col:!0,embed:!0,keygen:!0,param:!0, /* ,source:!0 */ // for Opera 9
-                            track:!0,wbr:!0,command:!0,basefont:!0,frame:!0,isindex:!0,bgsound:!0},
-    // 終了タグを省略できるタグの一覧
-    m_OMITTABLE_END_TAGS  = {html:!0,head:!0,body:!0,p:!0,dt:!0,dd:!0,li:!0,option:!0,tbody:!0,thead:!0,tfoot:!0,td:!0,th:!0,tr:!0,rb:!0,rbc:!0,rp:!0,rt:!0,rtc:!0,optgroup:!0,caption:!0,colgroup:!0},
-    // 子孫が終了タグを省略できないタグの一覧
-    m_DESCENDANTS_MUST_HAVE_END_TAGS
-                          = {a:!0,audio:!0,del:!0,ins:!0,map:!0,noscript:!0,video:!0},
-    m_TAGNAME_TO_NAMESPACE= {
-        xml:  'http://www.w3.org/1999/xhtml',
-        svg:  'http://www.w3.org/2000/svg',
-        math: 'http://www.w3.org/1998/Math/MathML'
-    },
-    // </p> を省略できる後続のタグの一覧
-    m_P_END_TAG_LESS_TAGS = {
-                                address:!0,article:!0,aside:!0,blockquote:!0,canvas:!0,details:!0,div:!0,dl:!0,fieldset:!0,figcaption:!0,figure:!0,
-                                footer:!0,form:!0,h1:!0,h2:!0,h3:!0,h4:!0,h5:!0,h6:!0,header:!0,hgroup:!0,hr:!0,legend:!0,
-                                main:!0,menu:!0,nav:!0,noscript:!0,ol:!0,p:!0,pre:!0,section:!0,
-                                /* table:!0, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-                                ul:!0,
-                                center:!0,dir:!0,noframes:!0,marquee:!0
-                            },
-    // HTML エスケープをしない要素の一覧
-    m_UNESCAPED_TAGS      = {script:!0,style:!0,plaintext:!0,xmp:!0},
+/**
+ * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
+ *   子孫が終了タグを省略できないタグの一覧
+ * 
+ * @const {!Object.<string, boolean>}
+ */
+var m_CHILD_P_MUST_HAVE_END_TAG = {A:!0,AUDIO:!0,DEL:!0,INS:!0,MAP:!0,NOSCRIPT:!0,VIDEO:!0};
 
-    m_TRIM_LINEBREAKS     = {script:!0,style:!0,textarea:!0};
+/**
+ * @const {!Object.<string, string>}
+ */
+var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http://www.w3.org/2000/svg', math : 'http://www.w3.org/1998/Math/MathML' };
+
+/** 
+ * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-p-element
+ *   </p> を省略できる後続のタグの一覧
+ * 
+ * @const {!Object.<string, boolean>}
+ */
+var m_P_END_TAG_LESS_TAGS = {
+        H1:!0        , H2:!0        , H3:!0      , H4:!0        , H5:!0      , H6:!0      ,
+        ADDRESS:!0   , BLOCKQUOTE:!0, DETAILS:!0 , DIV:!0       , DL:!0      , FIELDSET:!0,
+        FORM:!0      , HR:!0        , LEGEND:!0  , NOSCRIPT:!0  , OL:!0      , P:!0       ,
+        PRE:!0       , /* table:!0, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+        UL:!0        ,
+        CENTER:!0    , DIR:!0       , NOFRAMES:!0, MARQUEE:!0
+        
+    // ,ARTICLE:!0   , ASIDE:!0     , CANVAS:!0  , FIGCAPTION:!0, FIGURE:!0  , FOOTER:!0, // HTML5 要素は IE~8 で無視されるので除外
+    //  HEADER:!0    , HGROUP:!0    , MAIN:!0    , MENU:!0      , NAV:!0     , SECTION:!0
+    };
+
+/**
+ * @const {!Object.<string, boolean>}
+ */
+var m_UNESCAPED_ELEMENTS = {SCRIPT:!0,STYLE:!0,PLAINTEXT:!0,XMP:!0};
+
+/**
+ * @const {!Object.<string, boolean>}
+ */
+var m_TRIM_NEWLINES_ELEMENTS = {SCRIPT:!0,STYLE:!0,TEXTAREA:!0};
 
 // stream-json2html => json2html で使用
-var m_endTagRequired        = false;
+var m_pEndTagRequired       = false;
 var m_escapeForHTMLDisabled = false;
 var m_isXMLDocument         = false;
 
@@ -531,7 +550,7 @@ function m_trimLastChar( string, chr ){
 };
 
 /**
- * `div#main.default-color` -> `['div', 'main', 'default-color']`
+ * `div#main.default-color` -> `['DIV', 'main', 'default-color']`
  * 
  * @param {string} tagName 
  * @return {!Array.<string>} [ tagName, id, className ]
@@ -591,10 +610,6 @@ function m_createTagName( tagName, id, className ){
  * @return {Styles | null}
  */
 function m_parseCSSText( cssText ){
-    function isWhitespace( chr ){
-        return chr === ' ' || chr === '\b' || chr === '\f' || chr === '\n' || chr === '\r' || chr === '\t';
-    };
-
     function saveCSSProperty( value ){
         styles[ property ] = value === '0px' ? 0 : m_tryToFiniteNumber( value );
         ++numAttrs;
@@ -611,7 +626,7 @@ function m_parseCSSText( cssText ){
         chr = cssText.charAt( i );
         switch( phase ){
             case 0 :
-                if( !isWhitespace( chr ) ){
+                if( !htmlparser.isWhitespace( chr ) ){
                     start = i;
                     phase = 1;
                 };
@@ -625,7 +640,7 @@ function m_parseCSSText( cssText ){
                 };
                 break;
             case 2 :
-                if( !isWhitespace( chr ) ){
+                if( !htmlparser.isWhitespace( chr ) ){
                     start = i;
                     phase = 3;
                 };

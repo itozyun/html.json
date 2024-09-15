@@ -1,1 +1,48 @@
-[ "div", { "color" : "red", ":click" : [ "date", 1,2, null, [ 1, 2, {}, 3 ] ] }, [13, "if IE", ["p", "Hello, IE"]], [7, "date", 2, { "aa" : "bb" }, null ], "< Hello, World! >", [ 1, "b", [ 3, "♥" ] ], [ "i", 123 ] ]
+[
+    "DIV",
+    {
+        "color": "red",
+        ":clock": [
+            "date",
+            1,
+            2,
+            null,
+            [
+                1,
+                2,
+                {},
+                3
+            ]
+        ]
+    },
+    [
+        13,
+        "if IE",
+        [
+            "P",
+            "Hello, IE"
+        ]
+    ],
+    [
+        7,
+        "date",
+        2,
+        {
+            "aa": "bb"
+        },
+        null
+    ],
+    "< Hello, World! >",
+    [
+        1,
+        "B",
+        [
+            3,
+            "♥"
+        ]
+    ],
+    [
+        "I",
+        123
+    ]
+]

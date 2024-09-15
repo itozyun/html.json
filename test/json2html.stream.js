@@ -21,7 +21,7 @@ test('stream', async t => {
           .on('end', ()=> {resolve(chunks.join(''))});
     });
     
-    const correct = json2html(JSON.parse(fs.readFileSync(__dirname + '/index.html.json')), onInstruction);
+    const expected = json2html(JSON.parse(fs.readFileSync(__dirname + '/index.html.json')), onInstruction);
 
-    t.deepEqual(chunks.join(''), correct);
+    t.deepEqual(chunks.join(''), expected);
 });

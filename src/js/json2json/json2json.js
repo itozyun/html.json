@@ -1,5 +1,6 @@
 goog.provide( 'json2json' );
 
+goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -164,7 +165,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                             };
                         };
 
-                        isPreTag = tagName === 'p';
+                        isPreTag = tagName === 'P';
 
                         if( isPreTag && isTrimWhitespace ){
                             // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
@@ -172,7 +173,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                         };
 
                         // childNodes
-                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_LINEBREAKS[ tagName ] );
+                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
                     };
                 } else if( htmljson.DEFINE.DEBUG ){
                     errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
@@ -247,7 +248,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                         } else if( htmljson.DEFINE.DEBUG ){
                             errorHandler( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
                         };
-                    } else if( m_ATTRS_NO_VALUE[ name ] && value === false ){
+                    } else if( htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value === false ){
 
                     } else if( value !== null ){
                         if( m_isString( value ) ){

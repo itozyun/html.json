@@ -1,6 +1,7 @@
 goog.provide( 'html2json' );
 
 goog.requireType( 'VNode' );
+goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'VNode.createVNodeFromHTML' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
@@ -54,15 +55,15 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
             case htmljson.NODE_TYPE.ELEMENT_NODE :
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                 var attrs       = {},
-                    tagName     = currentVNode.getTagName().toLowerCase(),
-                    isPreTag    = tagName === 'pre',
+                    tagName     = currentVNode.getTagName(),
+                    isPreTag    = tagName === 'PRE' || tagName === 'LISTING',
                     attributes  = currentVNode.getAttrs(),
                     numAttrs    = 0,
                     i, attrName, attrValue, id, className, textNode;
 
                 if( attributes ){
                     for( attrName in attributes ){
-                        attrValue = /** @type {string} */ (m_ATTRS_NO_VALUE[ attrName ] ? 1 : attributes[ attrName ]);
+                        attrValue = /** @type {string} */ (htmlparser.BOOLEAN_ATTRIBUTES[ attrName ] ? 1 : attributes[ attrName ]);
 
                         if( attrName === 'id' ){
                             id = attrValue;
@@ -109,7 +110,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 currentJSONNode = numAttrs ? [ tagName, attrs ] : [ tagName ];
 
                 for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
-                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_LINEBREAKS[ tagName ] );
+                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
                 };
                 parentJSONNode.push( currentJSONNode );
 
@@ -118,7 +119,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 };
                 break;
             case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                parentJSONNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, currentVNode.getTagName().toLowerCase() ] );
+                parentJSONNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, currentVNode.getTagName() ] );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
                 nodeValue = m_trimWhiteSpaces( '' + currentVNode.getNodeValue(), isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );

@@ -1,5 +1,6 @@
 goog.provide( 'json2html.stream' );
 
+goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
@@ -145,7 +146,7 @@ function onToken( token, value ){
 
     function createAttributeNodeString( value ){
         if( value != null ){
-            if( m_ATTRS_NO_VALUE[ self._attribute ] ){
+            if( htmlparser.BOOLEAN_ATTRIBUTES[ self._attribute ] ){
                 if( value !== false ){
                     return ' ' + self._attribute;
                 };
@@ -198,12 +199,12 @@ function onToken( token, value ){
                     if(
                         ( !( self._isXMLDocument || self._isXmlInHTML ) || childNodesContents ) // XML ではない、または、子を持つ
                         &&
-                        ( !m_OMITTABLE_END_TAGS[ tagName ] || self._endTagRequired ) // 閉じタグを省略しない、または親要素によって省略できない
+                        ( !m_OMITTABLE_END_TAGS[ tagName ] || ( self._pEndTagRequired && tagName === 'P' ) ) // 閉じタグを省略しない、または親要素によって省略できない
                     ){
                         queue += '</' + tagName + '>';
                         self._omittedEndTagBefore = '';
                     } else {
-                        self._omittedEndTagBefore = m_NO_CHILD_ELEMENTS[ tagName ] ? '' : tagName;
+                        self._omittedEndTagBefore = htmlparser.VOID_ELEMENTS[ tagName ] ? '' : tagName;
                     };
                     // update flags
                     updateFlags();
@@ -213,18 +214,18 @@ function onToken( token, value ){
     };
 
     function updateFlags(){
-        self._endTagRequired = self._escapeForHTMLDisabled = self._isXmlInHTML = false;
+        self._pEndTagRequired = self._escapeForHTMLDisabled = self._isXmlInHTML = false;
 
         for( let i = 0, l = tree.length; i < l; ++i ){
             const tagNameOrNodeType = tree[ i ];
 
             if( tagNameOrNodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || tagNameOrNodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ){
-                self._endTagRequired = true;
+                self._pEndTagRequired = true;
             } else if( m_isString( tagNameOrNodeType ) ){
-                if( m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagNameOrNodeType ] ){
-                    self._endTagRequired = true;
+                if( i === l - 1 ){
+                    self._pEndTagRequired = self._pEndTagRequired || m_CHILD_P_MUST_HAVE_END_TAG[ tagNameOrNodeType ];
                 };
-                if( m_UNESCAPED_TAGS[ tagNameOrNodeType ] ){
+                if( m_UNESCAPED_ELEMENTS[ tagNameOrNodeType ] ){
                     self._escapeForHTMLDisabled = true;
                 };
                 if( m_TAGNAME_TO_NAMESPACE[ tagNameOrNodeType ] || m_isNamespacedTag( tagNameOrNodeType ) ){
@@ -272,7 +273,7 @@ function onToken( token, value ){
                         const result = executeProcessingInstruction();
 
                         if( m_isArray( result ) ){
-                            m_endTagRequired        = this._endTagRequired;
+                            m_pEndTagRequired       = this._pEndTagRequired;
                             m_escapeForHTMLDisabled = this._escapeForHTMLDisabled;
                             m_isXMLDocument         = this._isXMLDocument || this._isXmlInHTML;
                             queue = json2html(
@@ -285,7 +286,7 @@ function onToken( token, value ){
                                     'instructionAttrPrefix' : this._attrPrefix
                                 }
                             );
-                            m_endTagRequired = m_escapeForHTMLDisabled = m_isXMLDocument = false;
+                            m_pEndTagRequired = m_escapeForHTMLDisabled = m_isXMLDocument = false;
                         } else {
                             queue = m_isStringOrNumber( result ) ? '' + result : '';
                         };
@@ -544,7 +545,7 @@ function onToken( token, value ){
                     const className = tagName[ 2 ];
                     tagName = tagName[ 0 ];
 
-                    if( this._omittedEndTagBefore === 'p' && !m_P_END_TAG_LESS_TAGS[ tagName ] ){
+                    if( this._omittedEndTagBefore === 'P' && !m_P_END_TAG_LESS_TAGS[ tagName ] ){
                         queue = appendOmittedEndTagBasedOnFollowingNode();
                     } else {
                         queue = '';
@@ -560,11 +561,11 @@ function onToken( token, value ){
                         queue += ' class=' + m_quoteAttributeValue( className, this._useSingleQuot, this._isXmlInHTML || this._quotAlways );;
                     };
 
-                    if( !this._endTagRequired ){
-                        this._endTagRequired = !!m_DESCENDANTS_MUST_HAVE_END_TAGS[ tagName ];
+                    if( !this._pEndTagRequired ){
+                        this._pEndTagRequired = !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ];
                     };
                     if( !this._escapeForHTMLDisabled ){
-                        this._escapeForHTMLDisabled = !!m_UNESCAPED_TAGS[ tagName ];
+                        this._escapeForHTMLDisabled = !!m_UNESCAPED_ELEMENTS[ tagName ];
                     };
                     if( phase === htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG ){
                         tree.push( TAGNAME_WITHOUT_END_TAG );

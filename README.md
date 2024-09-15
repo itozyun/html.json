@@ -65,7 +65,7 @@ gulp externs
 ~~~
 
 ~~~json
-[ [ "div" ], "html.json", [ "div" ] ]
+[ [ "DIV" ], "html.json", [ "DIV" ] ]
 ~~~
 
 #### `trimWhitespaces:"aggressive"` でもテキストノードの前後の空白文字を1つづつ残す
@@ -75,7 +75,7 @@ gulp externs
 ~~~
 
 ~~~json
-[ [ "b", 1 ], " / ", [ "b", 10 ] ]
+[ [ "B", 1 ], " / ", [ "B", 10 ] ]
 ~~~
 
 ### 1.1. ProcessingInstruction
@@ -88,7 +88,7 @@ gulp externs
 
 ~~~js
 [
-    "div#side",
+    "DIV#side",
     [
         7, // ProcessingInstruction
         "createSidebar", // メソッド名
@@ -105,7 +105,7 @@ gulp externs
 
 ~~~js
 [
-    "ul",
+    "UL",
     {
         ":class" : [ // 動的属性
             "toggleList", // メソッド名
@@ -135,14 +135,14 @@ json2html と微妙に異なる点に注意!
 * `undefiend` : 何もしない
 * `null` or `""` : `InstructionNode`を削除
 * `{string|number}` TEXT_NODE になる
-* strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, ["p", "Hello, world!"]`, `[ 1, "p", ...node ]`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, ["P", "Hello, world!"]`, `[ 1, "P", ...node ]`, `[ "P", "Hi!" ]` や `[ 3, "Hello, world!" ]`
 * 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能．このノードは再度 `onInstruction` で処理される．
 
 #### `InstructionAttr`
 
 * `undefiend` : 何もしない
 * `null` : 属性を削除する
-* `m_ATTRS_NO_VALUE` なプロパティであり属性値が `false` の場合、属性を削除する
+* `htmlparser.BOOLEAN_ATTRIBUTES` なプロパティであり属性値が `false` の場合、属性を削除する
 * 戻り値が配列の場合、新しい関数名と引数の `InstructionAttr` に置き換わる 
 * これ以外は属性値になる
 
@@ -181,13 +181,13 @@ json2json と微妙に異なる点に注意!
 
 * `undefiend` or `null` or `""` 何も書きださない
 * `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
-* strict な html.json `[json2html.DOCUMENT_FRAGMENT_NODE, [ 'P', "Hello, world!" ]]`, `[2, 'p', ...`, `[ 'p', "Hi!" ]` や `[ 3, "Hello, world!" ]`
+* strict な html.json `[json2html.DOCUMENT_FRAGMENT_NODE, [ "P", "Hello, world!" ]]`, `[2, "P", ...`, `[ "P", "Hi!" ]` や `[ 3, "Hello, world!" ]`
 * 戻り値が `[json2html.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能．このノードは再度 `onInstruction` で処理される．
 
 #### `InstructionAttr`
 
 * `undefiend` or `null` : 属性を削除する
-* `m_ATTRS_NO_VALUE` なプロパティであり属性値が `false` の場合、属性を削除する
+* `htmlparser.BOOLEAN_ATTRIBUTES` なプロパティであり属性値が `false` の場合、属性を削除する
 * 戻り値が配列の場合、このノードは再度 `onInstruction` で処理される(無限ループにならずいつかは属性値を返すこと)
 * これ以外は属性値になる
 
@@ -195,8 +195,8 @@ json2json と微妙に異なる点に注意!
 
 |                                               | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
 |:----------------------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
-| HTML_ELEMENT *4                               | `1`                         | `"input"`              | `{attributes}` *3 | `...nodes` |
-| タグ名(.class#id) *1, *2                      | `"input"`, `"p.main#main"`  |`{attributes}` *3       | `...nodes`        | -          |
+| HTML_ELEMENT *4                               | `1`                         | `"INPUT"`              | `{attributes}` *3 | `...nodes` |
+| タグ名(.class#id) *1, *2                      | `"INPUT"`, `"P#main.main"`  |`{attributes}` *3       | `...nodes`        | -          |
 | TEXT_NODE *4                                  | `3`                         | `nodeValue` *6         | -                 | -          |
 | CDATA_SECTION                                 | `4`                         | `nodeValue` *6         | -                 | -          |
 | PROCESSING_INSTRUCTION                        | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
@@ -207,8 +207,8 @@ json2json と微妙に異なる点に注意!
 | 下の階層が見える条件付きコメントの開始タグ    | `14`                        | `"!(IE 7)"`            | -                 | -          |
 | 下の階層が見える条件付きコメントの終了タグ    | `15`                        | -                      | -                 | -          |
 | Netscape4用 下の階層が隠れる条件付コメント *8 | `16`                        | `"true"`               | `...nodes`        | -          |
-| HTML_ELEMENT(開始タグのみ) *9                 | `17`                        | `"div"`                | `{attributes}` *3 | `...nodes` |
-| HTML_ELEMENT(閉じタグのみ) *9                 | `18`                        | `"div"`                | -                 | -          |
+| HTML_ELEMENT(開始タグのみ) *9                 | `17`                        | `"DIV"`                | `{attributes}` *3 | `...nodes` |
+| HTML_ELEMENT(閉じタグのみ) *9                 | `18`                        | `"DIV"`                | -                 | -          |
 
 1. タグ名は小文字
 2. クラス名, id どちらか、または両方を第2引数ではなくここで記述できる
@@ -243,18 +243,18 @@ json2json と微妙に異なる点に注意!
     9,
     "<!DOCTYPE html>",
     [
-        "html",
+        "HTML",
         {
             "lang"    : "ja",
             "xmlns:v" : "urn:schemas-microsoft-com:vml"
         },
         [
-            "head",
+            "HEAD",
             {
                 "prefix" : "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"
             },
             [
-                "meta",
+                "META",
                 {
                     "http-equiv" : "Content-Type",
                     "content"    : "text/html; charset=utf-8"
@@ -262,7 +262,7 @@ json2json と微妙に異なる点に注意!
             ]
         ],
         [
-            "body",
+            "BODY",
             { "size" : 1 },
             // ...childNodes
         ]
@@ -274,23 +274,23 @@ json2json と微妙に異なる点に注意!
 
 ~~~json
 [
-    "body.app-root#app-root",
+    "BODY.app-root#app-root",
     { "size" : 1 },
     [
-        "p",
-        [ "span", "Hello, World!" ]
+        "P",
+        [ "SPAN", "Hello, World!" ]
     ]
 ]
 ~~~
 
-子要素が、`Text`, `<br>`, `Text` の場合は `... "Hello,", [ "br" ], "World!"`
+子要素が、`Text`, `<br>`, `Text` の場合は `... "Hello,", [ "BR" ], "World!"`
 
 ### 4.3. TextNode
 
 テキストノードは基本的に子として出現する．
 
 ~~~json
-[ "p", "Hello, World!" ]
+[ "P", "Hello, World!" ]
 ~~~
 
 以下は単一のテキストノードの場合．
@@ -316,10 +316,15 @@ json2json と微妙に異なる点に注意!
 ### 4.5. 下の階層が見える条件付きコメント
 
 ~~~js
-[ 
-    14,
-    "if !IE",
-    // ...childNodes
+[
+    [
+        14,
+        "if !IE"
+    ],
+    "Not IE"
+    [
+        15
+    ]
 ]
 ~~~
 

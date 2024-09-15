@@ -9,6 +9,7 @@ gulp.task(
     'dist',
     gulp.series(
         function(){
+            console.log( '** 1. html2json' );
             ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
 
             return gulp.src(
@@ -63,9 +64,12 @@ gulp.task(
                 );
         },
         function(){
+            console.log( '** 2. json2json' );
             return gulp.src(
                     [
-                        './src/closure-primitives/base.js', './src/js/**/*.js'
+                        './src/closure-primitives/base.js',
+                        './.submodules/htmlparser/src/js/**/*.js', 
+                        './src/js/**/*.js'
                     ]
                 ).pipe(
                     ClosureCompiler(
@@ -105,9 +109,12 @@ gulp.task(
                 );
         },
         function(){
+            console.log( '** 3. json2html' );
             return gulp.src(
                     [
-                        './src/closure-primitives/base.js', './src/js/**/*.js'
+                        './src/closure-primitives/base.js',
+                        './.submodules/htmlparser/src/js/**/*.js', 
+                        './src/js/**/*.js'
                     ]
                 ).pipe(
                     ClosureCompiler(
@@ -147,9 +154,11 @@ gulp.task(
                 );
         },
         function(){
+            console.log( '** 4. json2html.stream' );
             return gulp.src(
                     [
                         './src/closure-primitives/base.js',
+                        './.submodules/htmlparser/src/js/**/*.js',
                         // './node_modules/jsonparse/jsonparse.js',
                         // './node_modules/through/index.js',
                         './src/js/**/*.js'
