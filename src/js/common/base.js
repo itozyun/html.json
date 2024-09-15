@@ -20,7 +20,12 @@ var Attrs;
  *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * 
  * @const {!Object.<string, boolean>} */
-var m_OMITTABLE_END_TAGS = {HTML:!0,HEAD:!0,BODY:!0,P:!0,DT:!0,DD:!0,LI:!0,OPTION:!0,TBODY:!0,THEAD:!0,TFOOT:!0,TD:!0,TH:!0,TR:!0,RB:!0,RBC:!0,RP:!0,RT:!0,RTC:!0,OPTGROUP:!0,CAPTION:!0,COLGROUP:!0};
+var m_OMITTABLE_END_TAGS = {
+        HTML : true, HEAD     : true, BODY    :true, P        :true, DT    : true, DD : true,
+        LI   : true, OPTION   : true, TBODY   :true, THEAD    :true, TFOOT : true, TD : true,
+        TH   : true, TR       : true, RB      :true, RBC      :true, RP    : true, RT : true,
+        RTC  : true, OPTGROUP : true, CAPTION :true, COLGROUP :true
+    };
 
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
@@ -29,7 +34,7 @@ var m_OMITTABLE_END_TAGS = {HTML:!0,HEAD:!0,BODY:!0,P:!0,DT:!0,DD:!0,LI:!0,OPTIO
  *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * @const {!Object.<string, boolean>}
  */
-var m_CHILD_P_MUST_HAVE_END_TAG = {A:!0,AUDIO:!0,DEL:!0,INS:!0,MAP:!0,NOSCRIPT:!0,VIDEO:!0};
+var m_CHILD_P_MUST_HAVE_END_TAG = { A : true, AUDIO : true, DEL : true, INS : true, MAP : true, NOSCRIPT : true, VIDEO : true };
 
 /**
  * @const {!Object.<string, string>}
@@ -44,31 +49,40 @@ var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http
  * @const {!Object.<string, boolean>}
  */
 var m_P_END_TAG_LESS_TAGS = {
-        H1:!0        , H2:!0        , H3:!0      , H4:!0      , H5:!0       , H6:!0    ,
-        ADDRESS:!0   , BLOCKQUOTE:!0, DIV:!0     , DL:!0      , FIELDSET:!0 , FORM:!0  ,
-        HR:!0        , LEGEND:!0    , MENU:!0    , NOSCRIPT:!0, OL:!0       , P:!0     ,
-        PRE:!0       , /* table:!0, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-        UL:!0        ,
-        CENTER:!0    , DIR:!0       , NOFRAMES:!0, MARQUEE:!0 //, legacy
+        H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
+        ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
+        HR      : true, LEGEND     : true, MENU     : true, NOSCRIPT : true, OL        : true, P        : true,
+        PRE     : true, /* TABLE   : true, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+        UL      : true,
+        CENTER  : true, DIR        : true, NOFRAMES : true, MARQUEE  : true //, legacy
     // HTML5 要素は IE~8 で無視されるので除外
-    //  ARTICLE:!0   , ASIDE:!0     , CANVAS:!0  , DETAILS:!0, FIGCAPTION:!0, FIGURE:!0,
-    //  FOOTER:!0    , HEADER:!0    , HGROUP:!0  , MAIN:!0   , NAV:!0       , SECTION:!0
+    //  ARTICLE : true, ASIDE      : true, CANVAS   : true, DETAILS  : true, FIGCAPTION : true, FIGURE  : true,
+    //  FOOTER  : true, HEADER     : true, HGROUP   : true, MAIN     : true, NAV        : true, SECTION : true
     };
 
 /**
  * @const {!Object.<string, boolean>}
  */
-var m_UNESCAPED_ELEMENTS = {SCRIPT:!0,STYLE:!0,PLAINTEXT:!0,XMP:!0};
+var m_UNESCAPED_ELEMENTS = {
+    SCRIPT : true, STYLE : true, TEXTAREA : true, TITLE : true, PLAINTEXT : true, XMP : true,
+    script : true, style : true, textarea : true, title : true, plaintext : true, xmp : true
+};
 
 /**
  * @const {!Object.<string, boolean>}
  */
-var m_TRIM_NEWLINES_ELEMENTS = {SCRIPT:!0,STYLE:!0,TEXTAREA:!0};
+var m_TRIM_NEWLINES_ELEMENTS = {
+    SCRIPT : true, STYLE : true, TEXTAREA : true,
+    script : true, style : true, textarea : true
+};
 
 /**
  * @const {!Object.<string, boolean>}
  */
-var m_FAMILY_OF_PRE_ELEMENT = {PRE:!0,LISTING:!0};
+var m_FAMILY_OF_PRE_ELEMENT = {
+    PRE : true, LISTING : true,
+    pre : true, listing : true
+};
 
 // json2html.stream から json2html を呼ぶときに使用
 var m_pEndTagRequired       = false;

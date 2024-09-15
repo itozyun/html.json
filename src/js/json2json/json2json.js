@@ -175,7 +175,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                             isXMLRoot = isXmlInHTML = isXML( tagName );
                         };
 
-                        isPreTag = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ? tagName.toUpperCase() : tagName ];
+                        isPreTag = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ];
 
                         if( isPreTag && isTrimWhitespace ){
                             // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
@@ -183,7 +183,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                         };
 
                         // childNodes
-                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ isXmlInHTML ? tagName.toUpperCase() : tagName ] );
+                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
 
                         if( isXMLRoot ){
                             isXmlInHTML = false;

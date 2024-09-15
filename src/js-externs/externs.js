@@ -7,19 +7,33 @@ module.exports;
 module.exports.gulp = function(){};
 
 var __NAME_PROTECTION__ = [
-    {HTML:!0,HEAD:!0,BODY:!0,P:!0,DT:!0,DD:!0,LI:!0,OPTION:!0,TBODY:!0,THEAD:!0,TFOOT:!0,TD:!0,TH:!0,TR:!0,RB:!0,RBC:!0,RP:!0,RT:!0,RTC:!0,OPTGROUP:!0,CAPTION:!0,COLGROUP:!0},
-    {A:!0,AUDIO:!0,DEL:!0,INS:!0,MAP:!0,NOSCRIPT:!0,VIDEO:!0},
     {
-        H1:!0        , H2:!0        , H3:!0      , H4:!0      , H5:!0       , H6:!0    ,
-        ADDRESS:!0   , BLOCKQUOTE:!0, DIV:!0     , DL:!0      , FIELDSET:!0 , FORM:!0  ,
-        HR:!0        , LEGEND:!0    , MENU:!0    , NOSCRIPT:!0, OL:!0       , P:!0     ,
-        PRE:!0       ,
-        UL:!0        ,
-        CENTER:!0    , DIR:!0       , NOFRAMES:!0, MARQUEE:!0
+        HTML : true, HEAD     : true, BODY    :true, P        :true, DT    : true, DD : true,
+        LI   : true, OPTION   : true, TBODY   :true, THEAD    :true, TFOOT : true, TD : true,
+        TH   : true, TR       : true, RB      :true, RBC      :true, RP    : true, RT : true,
+        RTC  : true, OPTGROUP : true, CAPTION :true, COLGROUP :true
     },
-    {SCRIPT:!0,STYLE:!0,PLAINTEXT:!0,XMP:!0},
-    {SCRIPT:!0,STYLE:!0,TEXTAREA:!0},
-    {PRE:!0,LISTING:!0}
+    { A : true, AUDIO : true, DEL : true, INS : true, MAP : true, NOSCRIPT : true, VIDEO : true },
+    {
+        H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
+        ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
+        HR      : true, LEGEND     : true, MENU     : true, NOSCRIPT : true, OL        : true, P        : true,
+        PRE     : true,
+        UL      : true,
+        CENTER  : true, DIR        : true, NOFRAMES : true, MARQUEE  : true
+    },
+    {
+        SCRIPT : true, STYLE : true, TEXTAREA : true, TITLE : true, PLAINTEXT : true, XMP : true,
+        script : true, style : true, textarea : true, title : true, plaintext : true, xmp : true
+    },
+    {
+        SCRIPT : true, STYLE : true, TEXTAREA : true,
+        script : true, style : true, textarea : true
+    },
+    {
+        PRE : true, LISTING : true,
+        pre : true, listing : true
+    }
 ];
 
 var NODE_TYPE = {
