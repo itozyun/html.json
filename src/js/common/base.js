@@ -21,7 +21,7 @@ var Attrs;
 var InstructionHandler;
 
 /**
- * @typedef {function(!VNode) | !Object.<(string | number), function(!VNode)>=}
+ * @typedef {function(!VNode) | !Object.<(string | number), function(!VNode)>}
  */
 var EnterNodeHandler;
 
