@@ -1,5 +1,6 @@
 goog.provide( 'htmljson.base' );
 
+goog.requireType( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
@@ -18,6 +19,11 @@ var Attrs;
  * @typedef {(function(string, ...*):(!Array | string | number | boolean | null | void) | !Object.<(string | number), function(...*):(!Array | string | number | boolean | null | void)>)}
  */
 var InstructionHandler;
+
+/**
+ * @typedef {function(!VNode) | !Object.<(string | number), function(!VNode)>=}
+ */
+var EnterNodeHandler;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags

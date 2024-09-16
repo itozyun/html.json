@@ -11,7 +11,7 @@ goog.require( 'htmljson.DEFINE.USE_XHTML' );
 /**
  * @param {!Array} json
  * @param {!InstructionHandler=} opt_onInstruction
- * @param {!function(!VNode) | !Object.<(string | number), function(!VNode)>=} opt_onEnterNode
+ * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {string | void} html string

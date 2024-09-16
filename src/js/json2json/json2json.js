@@ -10,7 +10,7 @@ goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 /**
  * @param {!Array} json
  * @param {!InstructionHandler=} opt_onInstruction
- * @param {!function(!VNode) | !Object.<(string | number), function(!VNode)>=} opt_onEnterNode
+ * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(!VNode)=} opt_onDocumentReady
  * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
