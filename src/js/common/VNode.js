@@ -352,6 +352,19 @@ VNode.prototype.getTagName = function(){
 
 /**
  * 
+ * @param {string} tagName
+ */
+VNode.prototype.setTagName = function( tagName ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG ){
+            throw 'getTagName() をサポートしない nodeType です!';
+        };
+    };
+    this._tagName = tagName;
+};
+
+/**
+ * 
  * @return {string}
  */
 VNode.prototype.getClassName = function(){

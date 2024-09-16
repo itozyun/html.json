@@ -15,6 +15,11 @@ var Styles;
 var Attrs;
 
 /**
+ * @typedef {(function(string, ...*):(!Array | string | number | boolean | null | void) | !Object.<(string | number), function(...*):(!Array | string | number | boolean | null | void)>)}
+ */
+var InstructionHandler;
+
+/**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
  * 
  *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
@@ -230,23 +235,32 @@ function m_isInstructionAttr( prefix, name ){
 
 /**
  * 
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
+ * @param {!InstructionHandler} onInstruction
  * @param {!Array} currentJSONNode 
  * @param {!Array|null} parentJSONNode 
  * @param {number} myIndex
- * @param {!function(string)} errorHandler 
+ * @param {!function(string)} onError 
  * @return {!Array|string|number|boolean|null|void}
  */
-function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler ){
+function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, onError ){
     var functionName = /** @type {string} */ (currentJSONNode[ 1 ]);
     var args         = currentJSONNode.slice( 2 );
     var result;
 
-    if( args.length ){
-        result = onInstruction( functionName, args );
+    if( typeof onInstruction === 'function' ){
+        if( args.length ){
+            result = onInstruction( functionName, args );
+        } else {
+            result = onInstruction( functionName );
+        };
     } else {
-        result = onInstruction( functionName );
+        if( args.length ){
+            result = onInstruction[ functionName ]( args );
+        } else {
+            result = onInstruction[ functionName ]();
+        };
     };
+
     if( result !== undefined ){
         if( result === null || result === '' ){
             //
@@ -287,7 +301,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
                 };
             };
         } else if( htmljson.DEFINE.DEBUG ){
-            errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
+            onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
         };
     };
     return result;
@@ -296,13 +310,13 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
 /**
  * 
  * @param {boolean} recursion
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
+ * @param {!InstructionHandler} onInstruction
  * @param {string} name 
  * @param {!Array|string} value 
- * @param {!function(string)} errorHandler 
+ * @param {!function(string)} onError 
  * @return {!Array|string|number|boolean|null|void}
  */
-function m_executeInstructionAttr( recursion, onInstruction, name, value, errorHandler ){
+function m_executeInstructionAttr( recursion, onInstruction, name, value, onError ){
     var result;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
@@ -310,21 +324,33 @@ function m_executeInstructionAttr( recursion, onInstruction, name, value, errorH
         var functionName = /** @type {string} */ (value[ 0 ]);
         var args         = value.slice( 1 );
 
-        if( args.length ){
-            result = onInstruction( functionName, args );
+        if( typeof onInstruction === 'function' ){
+            if( args.length ){
+                result = onInstruction( functionName, args );
+            } else {
+                result = onInstruction( functionName );
+            };
         } else {
-            result = onInstruction( functionName );
+            if( args.length ){
+                result = onInstruction[ functionName ]( args );
+            } else {
+                result = onInstruction[ functionName ]();
+            };
         };
     } else if( m_isString( value ) ){
-        result = onInstruction( /** @type {string} */ (value) );
+        if( typeof onInstruction === 'function' ){
+            result = onInstruction( /** @type {string} */ (value) );
+        } else {
+            result = onInstruction[ /** @type {string} */ (value) ]();
+        };
     } else if( htmljson.DEFINE.DEBUG ){
-        errorHandler( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
+        onError( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
     };
 
     if( recursion && m_isArray( result ) ){
         result = /** @type {!Array} */ (result);
 
-        return m_executeInstructionAttr( true, onInstruction, name, result, errorHandler );
+        return m_executeInstructionAttr( true, onInstruction, name, result, onError );
     };
     return result;
 };
@@ -491,7 +517,11 @@ function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrim
         return string.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2");
     };
 
-    if( !isDescendantOfPre && isTrimWhitespace ){
+    if( isDescendantOfPre ){
+        if( isAggressiveTrim ){
+            // 改行文字の前のスペース、タブを削除する
+        };
+    } else if( isTrimWhitespace ){
         if( isTrimNewlines ){
             // 先頭と最後の改行文字を削除
             nodeValue = m_trimChar( /** @type {string} */ (nodeValue), '\n' );

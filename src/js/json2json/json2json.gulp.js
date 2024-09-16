@@ -1,22 +1,21 @@
 goog.provide( 'json2json.gulp' );
 
+goog.requireType( 'VNode' );
 goog.require( 'json2json.module' );
 goog.require( 'json2html' );
 
 /**
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!InstructionHandler=} opt_onInstruction
+ * @param {!function(!VNode) | !Object.<(string | number), function(!VNode)>=} opt_onEnterNode
+ * @param {!function(!VNode)=} opt_onDocumentReady
+ * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
  */
-json2json.gulp = function( onInstruction, opt_onError, opt_options ){
+json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'json2json',
-          options     = opt_onError && typeof opt_onError === 'object'
-                            ? opt_onError
-                      : opt_options && typeof opt_options === 'object'
-                            ? opt_options
-                            : {},
+          options     = opt_options || {},
           outputStaticPagesAsHTML = options[ 'outputStaticPagesAsHTML' ],
           staticPages             = options[ 'staticPages' ] && typeof options[ 'staticPages' ] === 'object' ? options[ 'staticPages' ] : {};
 
@@ -40,7 +39,7 @@ json2json.gulp = function( onInstruction, opt_onError, opt_options ){
             if( file.extname === '.json' ){
                 try {
                     const json = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ) );
-                    const isStaticWebPage = json2json( json, onInstruction, opt_onError, opt_options );
+                    const isStaticWebPage = json2json( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, options );
                     let content;
 
                     if( outputStaticPagesAsHTML ){
@@ -51,7 +50,7 @@ json2json.gulp = function( onInstruction, opt_onError, opt_options ){
                     };
 
                     if( isStaticWebPage && outputStaticPagesAsHTML ){
-                        content = json2html( json, onInstruction, opt_onError, opt_options );
+                        content = json2html( json, undefined, opt_onEnterNode, opt_onError, options );
                         // .html <= .html.json
                         const extname = '.' + file.stem.split( '.' ).pop();
 

@@ -1,5 +1,6 @@
 goog.provide( 'json2html.stream' );
 
+goog.requireType( 'VNode' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 goog.require( 'htmljson.NODE_TYPE' );
@@ -20,32 +21,34 @@ goog.require( 'through' );
 const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
 
 /**
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!InstructionHandler=} opt_onInstruction
+ * @param {!function(!VNode) | !Object.<(string | number), function(!VNode)>=} opt_onEnterNode
+ * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {!Through}
  */
-module.exports = function( onInstruction, opt_onError, opt_options ){
+module.exports = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const parser  = new Parser();
     const stream  = /** @type {!Through} */ (through( writeHandler, endHandler ));
-    const options = opt_onError && typeof opt_onError === 'object' ? opt_onError : opt_options || {};
+    const options = opt_options || {};
 
-    stream._parser = parser;
+                  stream._parser        = parser;
+                  parser._stream        = stream;
+    /** @const */ parser._createValue   = parser.onToken;
+    /** @const */ parser.onToken        = onToken;
+    /** @const */ parser.onError        = onError;
+    /** @const */ parser._expect        = htmljson.EXPECT.NODE_START;
+    /** @const */ parser._tree          = [];
+    /** @const */ parser._args          = [];
+    /** @const */ parser._onInstruction = opt_onInstruction || null;
+    /** @const */ parser._onEnterNode   = opt_onEnterNode || null;
+    /** @const */ parser._onerror       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
+    /** @const */ parser._quotAlways    = !!options[ 'quotAlways' ];
+    /** @const */ parser._useSingleQuot = !!options[ 'useSingleQuot' ];
+    /** @const */ parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
+    parser._cssText = '';
 
-    parser._createValue   = parser.onToken;
-    parser.onToken        = onToken;
-    parser.onError        = onError;
-    parser._expect        = htmljson.EXPECT.NODE_START;
-    parser._tree          = [];
-    parser._args          = [];
-    parser._onInstruction = onInstruction;
-    parser._onerror       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
-    parser._quotAlways    = !!options[ 'quotAlways' ],
-    parser._useSingleQuot = !!options[ 'useSingleQuot' ],
-    parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
-    parser._cssText       = '';
-
-    return parser._stream = stream;
+    return stream;
 };
 
 module.exports.DOCUMENT_NODE                 = htmljson.NODE_TYPE.DOCUMENT_NODE;
@@ -126,23 +129,31 @@ function onToken( token, value ){
     const self = this;
 
     function executeProcessingInstruction(){
-        const result = self._args.length
-                     ? self._onInstruction.call( self._stream, self._functionName, self._args )
-                     : self._onInstruction.call( self._stream, self._functionName );
+        if( self._onInstruction ){
+            const result = self._args.length
+                        ? self._onInstruction.call( self._stream, self._functionName, self._args )
+                        : self._onInstruction.call( self._stream, self._functionName );
 
-        self._functionName = null;
-        self._args.length  = 0;
-        return result;
+            self._functionName = null;
+            self._args.length  = 0;
+            return result;
+        };
+        self.onError( 'onInstruction is void!' );
+        return '';
     };
 
     function executeInstructionAttr(){
-        self._args.unshift( self._functionName );
+        if( self._onInstruction ){
+            self._args.unshift( self._functionName );
 
-        const result = m_executeInstructionAttr( true, self._onInstruction.bind( self._stream ), self._attribute, self._args, self._onerror );
-
-        self._functionName = null;
-        self._args.length  = 0;
-        return result;
+            const result = m_executeInstructionAttr( true, self._onInstruction.bind( self._stream ), self._attribute, self._args, self._onerror );
+    
+            self._functionName = null;
+            self._args.length  = 0;
+            return result;
+        };
+        self.onError( 'onInstruction is void!' );
+        return '';
     };
 
     function createAttributeNodeString( value ){
@@ -280,6 +291,7 @@ function onToken( token, value ){
                             queue = json2html(
                                 result,
                                 this._onInstruction,
+                                this._onEnterNode,
                                 this._onerror,
                                 {
                                     'quotAlways'            : this._quotAlways,

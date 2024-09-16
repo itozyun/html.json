@@ -1,14 +1,16 @@
 goog.provide( 'json2html.gulp' );
 
+goog.requireType( 'VNode' );
 goog.require( 'json2html.module' );
 goog.require( 'json2html' );
 
 /**
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)} onInstruction
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!InstructionHandler=} opt_onInstruction
+ * @param {!function(!VNode) | !Object.<(string | number), function(!VNode)>=} opt_onEnterNode
+ * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
  */
-json2html.gulp = function( onInstruction, opt_onError, opt_options ){
+json2html.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'json2html';
@@ -35,7 +37,7 @@ json2html.gulp = function( onInstruction, opt_onError, opt_options ){
                     const json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( m_isArray( json ) ){
-                        const content = json2html( /** @type {!Array} */ (json), onInstruction, opt_onError, opt_options );
+                        const content = json2html( /** @type {!Array} */ (json), opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
                         // .html <= .html.json
                         file.stem     = file.stem.substr( 0, file.stem.length - originalExtname.length );
                         file.extname  = originalExtname;

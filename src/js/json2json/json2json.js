@@ -1,5 +1,6 @@
 goog.provide( 'json2json' );
 
+goog.requireType( 'VNode' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
@@ -8,29 +9,27 @@ goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 
 /**
  * @param {!Array} json
- * @param {!function(string, ...*):(!Array|string|number|boolean|null|void)=} opt_onInstruction
- * @param {!function(*)|!Object=} opt_onEnterNode
- * @param {!function(string)|!Object=} opt_onError
+ * @param {!InstructionHandler=} opt_onInstruction
+ * @param {!function(!VNode) | !Object.<(string | number), function(!VNode)>=} opt_onEnterNode
+ * @param {!function(!VNode)=} opt_onDocumentReady
+ * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
- * @return {boolean|void} isStaticWebPage
+ * @return {boolean | void} isStaticWebPage
  */
-json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
+
     /** @const */
-    var onInstruction     = typeof opt_onInstruction === 'function' ? opt_onInstruction : function( funcName, args ){};
+    var onInstruction     = opt_onInstruction || null;
     /** @const */
-    var onEnterNode    = typeof opt_onEnterNode === 'function' ? opt_onEnterNode : function( elementLike ){};
+    var onEnterNode       = opt_onEnterNode || null;
     /** @const */
-    var errorHandler      = typeof opt_onError === 'function' ? opt_onError : function( error ){};
+    var onDocumentReady   = typeof opt_onDocumentReady === 'function' ? opt_onDocumentReady : null;
     /** @const */
-    var options           = m_isObject( opt_onInstruction )
-                              ? opt_onInstruction
-                          : m_isObject( opt_onEnterNode )
-                              ? opt_onEnterNode
-                          : m_isObject( opt_onError )
-                              ? opt_onError
-                              : opt_options || {};
+    var onError           = typeof opt_onError === 'function' ? opt_onError : function( error ){};
+    /** @const */
+    var options           = opt_options || {};
     /** @const */
     var isTrimWhitespace  = [ 'normal', true, 'aggressive' ].indexOf( options[ 'trimWhitespaces' ] ) !== -1;
     /** @const */
@@ -58,7 +57,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
         };
         return isStaticWebPage;
     } else if( htmljson.DEFINE.DEBUG ){
-        errorHandler( 'Invalid html.json document!' );
+        onError( 'Invalid html.json document!' );
     };
 
     /**
@@ -133,26 +132,30 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                 };
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, errorHandler );
+                if( onInstruction ){
+                    result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, onError );
 
-                if( result !== undefined ){
-                    if( result === null || result === '' ){
-                        if( parentJSONNode ){
-                            parentJSONNode.splice( myIndex, 1 );
-                        } else {
-                            json.length = 0;
-                            json.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
+                    if( result !== undefined ){
+                        if( result === null || result === '' ){
+                            if( parentJSONNode ){
+                                parentJSONNode.splice( myIndex, 1 );
+                            } else {
+                                json.length = 0;
+                                json.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
+                            };
+                            return REMOVED;
+                        } else if( m_isStringOrNumber( result ) ){
+                            // just replaced
+                        } else if( m_isArray( result ) ){
+                            return REMOVED;
+                        // } else if( htmljson.DEFINE.DEBUG ){
+                            // onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                         };
-                        return REMOVED;
-                    } else if( m_isStringOrNumber( result ) ){
-                        // just replaced
-                    } else if( m_isArray( result ) ){
-                        return REMOVED;
-                    // } else if( htmljson.DEFINE.DEBUG ){
-                        // errorHandler( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
+                    } else {
+                        isStaticWebPage = false;
                     };
                 } else {
-                    isStaticWebPage = false;
+                    onError( 'onInstruction is void!' );
                 };
                 break;
             case htmljson.NODE_TYPE.ELEMENT_NODE :
@@ -190,7 +193,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                         };
                     };
                 } else if( htmljson.DEFINE.DEBUG ){
-                    errorHandler( 'Not html.json! [' + currentJSONNode + ']' );
+                    onError( 'Not html.json! [' + currentJSONNode + ']' );
                 };
         };
         return 0;
@@ -225,7 +228,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
             childNode = currentJSONNode[ i ];
 
             if( m_isStringOrNumber( childNode ) ){
-                // TEXT_NODE
+
             } else if( m_isArray( childNode ) ){
                 nodeIncreaseOrDecrease = walkNode( childNode, currentJSONNode, i, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
                 if( nodeIncreaseOrDecrease ){
@@ -233,7 +236,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                     isTreeUpdated = true;
                 };
             } else if( htmljson.DEFINE.DEBUG ){
-                errorHandler( 'Invalid html.json! [' + childNode + ']' );
+                onError( 'Invalid html.json! [' + childNode + ']' );
             };
         };
 
@@ -263,7 +266,11 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
             if( isInstruction ){
                 name = name.substr( attrPrefix.length );
                 name === 'className' && ( name = 'class' );
-                value = m_executeInstructionAttr( false, onInstruction, name, value, errorHandler );
+                if( onInstruction ){
+                    value = m_executeInstructionAttr( false, onInstruction, name, value, onError );
+                } else {
+                    onError( 'onInstruction is void!' );
+                };
 
                 if( value !== undefined ){
                     delete attrs[ originalName ];
@@ -273,7 +280,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt
                             isStaticWebPage = false;
                             ++numAttributes;
                         } else if( htmljson.DEFINE.DEBUG ){
-                            errorHandler( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
+                            onError( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
                         };
                     } else if( htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value === false ){
 

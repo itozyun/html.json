@@ -35,7 +35,9 @@ function Handler( allowInvalidTree ){
     this._currentNode = this._rootNode;
 };
 
-Handler.prototype.onParseError = function( msg ){ throw msg; };
+Handler.prototype.onParseError = function( msg ){
+    throw msg;
+};
 
 Handler.prototype.onParseDocType = function( doctype ){
     this._rootNode.setNodeType( htmljson.NODE_TYPE.DOCUMENT_NODE );
