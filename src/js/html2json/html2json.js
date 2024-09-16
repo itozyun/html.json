@@ -1,6 +1,5 @@
 goog.provide( 'html2json' );
 
-goog.requireType( 'VNode' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'VNode.createVNodeFromHTML' );
 goog.require( 'htmljson.base' );

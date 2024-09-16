@@ -1,6 +1,5 @@
 goog.provide( 'json2json.gulp' );
 
-goog.requireType( 'VNode' );
 goog.require( 'json2json.module' );
 goog.require( 'json2html' );
 

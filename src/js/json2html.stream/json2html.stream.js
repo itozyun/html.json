@@ -1,6 +1,5 @@
 goog.provide( 'json2html.stream' );
 
-goog.requireType( 'VNode' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 goog.require( 'htmljson.NODE_TYPE' );
