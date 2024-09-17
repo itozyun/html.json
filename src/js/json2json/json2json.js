@@ -212,7 +212,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
         } else if( htmlparser.XML_ROOT_ELEMENTS[ tagName ] ){
             return true;
         };
-        return m_isNamespacedTag( tagName ); // v: vml
+        return m_isNamespacedTag( tagName ); 
     };
 
     /**

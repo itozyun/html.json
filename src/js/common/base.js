@@ -198,6 +198,12 @@ function m_isXML( xmlDeclarationAndDocumentType ){
     return xmlDeclarationAndDocumentType.indexOf( '<?xml ' ) === 0 || 0 <= xmlDeclarationAndDocumentType.toUpperCase().indexOf( '<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ' );
 };
 
+/**
+ * `m_isNamespacedTag("v:path") => true`
+ * 
+ * @param {string} tagName 
+ * @return {boolean}
+ */
 function m_isNamespacedTag( tagName ){
     return htmljson.DEFINE.USE_XML_NS ? 0 < tagName.indexOf( ':' ) : false;
 };
