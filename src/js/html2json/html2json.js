@@ -56,7 +56,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 var attrs       = {},
                     tagName     = currentVNode.getTagName(),
                     isPreTag    = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ],
-                    attributes  = currentVNode.getAttrs(),
+                    attributes  = currentVNode._attrs,
                     numAttrs    = 0,
                     i, attrName, attrValue, id, className, textNode;
 

@@ -46,6 +46,17 @@ function _isCurrentVNodeAndCanHaveChildren( vnode ){
 };
 
 /**
+ * @private
+ * @param {*} oldValue 
+ * @param {*} newValue 
+ */
+function _compare( oldValue, newValue ){
+    if( oldValue !== newValue ){
+        VNode.treeIsUpdated = true;
+    };
+};
+
+/**
  * @constructor
  * 
  * @param {!VNode | boolean} parentOrMode
@@ -138,10 +149,16 @@ VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, op
 VNode.currentRestrictedVNode = null;
 
 /**
+ * 文書ツリーの変更検知用
+ *
+ * @type {boolean} */
+VNode.treeIsUpdated = false;
+
+/**
  * 
  * @return {!Array}
  */
-VNode.prototype.getHTMLJSON = function(){
+VNode.prototype.getHTMLJson = function(){
     if( htmljson.DEFINE.DEBUG ){
         if( this._isRestrictedMode ){
             throw 'restricted mode では getHTMLJSON() は非対応です!';
@@ -178,7 +195,7 @@ VNode.prototype.getHTMLJSON = function(){
 
     if( childNodes ){
         for( i = 0, l = childNodes.length; i < l; ++i ){
-            json.push( childNodes[ i ].getHTMLJSON() );
+            json.push( childNodes[ i ].getHTMLJson() );
         };
     };
     return json;
@@ -211,6 +228,7 @@ VNode.prototype.setNodeType = function( nodeType ){
             throw 'nodeType の変更は DOCUMENT_FRAGMENT_NODE -> DOCUMENT_NODE だけをサポートします!';
         };
     };
+    _compare( this._nodeType, nodeType );
     this._nodeType = nodeType;
 };
 
@@ -259,6 +277,7 @@ VNode.prototype.setNodeValue = function( nodeValue ){
         case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
         case htmljson.NODE_TYPE.COMMENT_NODE           :
         case htmljson.NODE_TYPE.DOCUMENT_NODE          :
+            _compare( this._nodeValue, nodeValue );
             this._nodeValue = nodeValue;
             break;
         default :
@@ -298,6 +317,7 @@ VNode.prototype.finalize = function(){
             throw 'finalize() をサポートしない nodeType です!';
         };
     };
+    _compare( this._nodeType, htmljson.NODE_TYPE.ELEMENT_NODE );
     this._nodeType = htmljson.NODE_TYPE.ELEMENT_NODE;
 };
 
@@ -360,6 +380,7 @@ VNode.prototype.setTagName = function( tagName ){
             throw 'getTagName() をサポートしない nodeType です!';
         };
     };
+    _compare( this._tagName, tagName );
     this._tagName = tagName;
 };
 
@@ -413,6 +434,8 @@ VNode.prototype.addClassName = function( className ){
 
     if( !this.hasClassName( className ) ){
         this._className = ( this._className ? ' ' : '' ) + className;
+
+        VNode.treeIsUpdated = true;
     };
 };
 
@@ -439,21 +462,9 @@ VNode.prototype.removeClassName = function( className ){
         classList.splice( classList.indexOf( className ), 1 );
 
         this._className = classList.join( ' ' );
-    };
-};
 
-/**
- * 
- * @return {Attrs | null}
- */
-VNode.prototype.getAttrs = function(){
-    if( htmljson.DEFINE.DEBUG ){
-        if( !this.isElement() ){
-            throw 'getAttrs() をサポートしない nodeType です!';
-        };
+        VNode.treeIsUpdated = true;
     };
-
-    return m_isAttributes( this._attrs ) ? this._attrs : null;
 };
 
 /**
@@ -518,13 +529,16 @@ VNode.prototype.setAttr = function( name, value ){
     };
 
     if( name === 'class' || name === 'className' ){
+        _compare( this._className, value );
         this._className = value;
     } else if( name === 'id' ){
+        _compare( this._id, value );
         this._id = value;
     } else {
         if( !m_isAttributes( this._attrs ) ){
             this._attrs = {};
         };
+        _compare( this._attrs[ name ], value );
         this._attrs[ name ] = value;
     };
 };
@@ -544,10 +558,13 @@ VNode.prototype.removeAttr = function( name ){
     };
 
     if( name === 'class' || name === 'className' ){
+        _compare( this._className, '' );
         this._className = '';
     } else if( name === 'id' ){
+        _compare( this._id, '' );
         this._id = '';
     } else if( m_isAttributes( this._attrs ) ){
+        _compare( this._attrs[ name ], undefined );
         delete this._attrs[ name ];
     };
 };
@@ -598,7 +615,10 @@ VNode.prototype.setStyle = function( name, value ){
     } else if( !style ){
         this.setAttr( 'style', style = {} );
     };
-    style[ name ] = value === '0px' ? 0 : m_tryToFiniteNumber( value );
+    var _value = value === '0px' ? 0 : m_tryToFiniteNumber( value );
+
+    _compare( style[ name ], _value );
+    style[ name ] = _value;
 };
 
 /**
@@ -623,6 +643,7 @@ VNode.prototype.removeStyle = function( name ){
         this.setAttr( 'style', style );
     };
     if( style ){
+        _compare( style[ name ], undefined );
         delete style[ name ];
     };
 };
@@ -794,7 +815,7 @@ VNode.prototype.remove = function(){
     };
 
     if( this._isRestrictedMode ){
-        this._removed = true;
+        this._removed = VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -803,6 +824,7 @@ VNode.prototype.remove = function(){
     if( 0 <= index ){
         this._parent._childNodes.splice( index, 1 );
         this._parent = null;
+        VNode.treeIsUpdated = true;
     };
 };
 
@@ -820,7 +842,7 @@ VNode.prototype.empty = function(){
     };
 
     if( this._isRestrictedMode ){
-        this._emptied = true;
+        this._emptied = VNode.treeIsUpdated = true;
         if( this._nodesInsertedFirst ){
             this._nodesInsertedFirst.length = 0;
         };
@@ -942,6 +964,10 @@ function _insertAt( parent, index, vnodes ){
         i = vnodes.length;
     };
 
+    if( i ){
+        VNode.treeIsUpdated = true;
+    };
+
     for( ; i; ){
         vnode = vnodes[ --i ];
         if( vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
@@ -978,6 +1004,7 @@ VNode.prototype.insertElementBefore = function( tagName, opt_attrs, opt_textCont
     if( this._isRestrictedMode ){
         this._nodesInsertedBefore = this._nodesInsertedBefore || [];
         this._nodesInsertedBefore.push( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -998,6 +1025,7 @@ VNode.prototype.insertElementFirst = function( tagName, opt_attrs, opt_textConte
     if( this._isRestrictedMode ){
         this._nodesInsertedFirst = this._nodesInsertedFirst || [];
         this._nodesInsertedFirst.unshift( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -1021,6 +1049,8 @@ VNode.prototype.insertElementAt = function( index, tagName, opt_attrs, opt_textC
     if( opt_textContent != null ){
         element.insertNodeAt( 0, htmljson.NODE_TYPE.TEXT_NODE, opt_textContent );
     };
+
+    VNode.treeIsUpdated = true;
     return element;
 };
 /**
@@ -1038,6 +1068,7 @@ VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textConten
     if( this._isRestrictedMode ){
         this._nodesInsertedLast = this._nodesInsertedLast || [];
         this._nodesInsertedLast.push( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -1061,6 +1092,7 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
     if( this._isRestrictedMode ){
         this._nodesInsertedAfter = this._nodesInsertedAfter || [];
         this._nodesInsertedAfter.unshift( [ htmljson.NODE_TYPE.ELEMENT_NODE, tagName, opt_attrs, opt_textContent ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -1092,6 +1124,7 @@ VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_a
     if( this._isRestrictedMode ){
         this._nodesInsertedBefore = this._nodesInsertedBefore || [];
         this._nodesInsertedBefore.push( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -1112,6 +1145,7 @@ VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_at
     if( this._isRestrictedMode ){
         this._nodesInsertedFirst = this._nodesInsertedFirst || [];
         this._nodesInsertedFirst.unshift( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -1131,6 +1165,7 @@ VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, op
         };
     };
 
+    VNode.treeIsUpdated = true;
     return new VNode( this, index, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
 };
 /**
@@ -1148,6 +1183,7 @@ VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_att
     if( this._isRestrictedMode ){
         this._nodesInsertedLast = this._nodesInsertedLast || [];
         this._nodesInsertedLast.push( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 
@@ -1171,6 +1207,7 @@ VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_at
     if( this._isRestrictedMode ){
         this._nodesInsertedAfter = this._nodesInsertedAfter || [];
         this._nodesInsertedAfter.unshift( [ nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ] );
+        VNode.treeIsUpdated = true;
         return null;
     };
 

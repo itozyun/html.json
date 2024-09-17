@@ -1,6 +1,6 @@
 goog.provide( 'VNode.createVNodeFromHTMLJson' );
 
-goog.require( 'VNode' );
+goog.requireType( 'VNode' );
 goog.require( 'htmljson.NODE_TYPE' );
 
 /**
@@ -15,8 +15,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
     /**
      * 
      * @param {!Array} currentJSONNode 
-     * @param {!VNode | boolean} parentOrMode 
-     * @param {number} myIndex
+     * @param {!VNode | boolean} parentOrMode
      * @return {!VNode}
      */
     function walkNode( currentJSONNode, parentOrMode ){
@@ -28,17 +27,18 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
          */
         function insertNode( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
             if( parentVNode ){
-                return parentVNode.insertNodeLast( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
+                return /** @type {!VNode} */ (parentVNode.insertNodeLast( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ));
             } else {
                 return new VNode( isRestrictedMode, 0, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
             };
         };
 
-        var parentVNode = m_isBoolean( parentOrMode ) ? null : parentOrMode;
+        var parentVNode = m_isBoolean( parentOrMode ) ? null : parentOrMode,
             arg0        = currentJSONNode[ 0 ],
             arg1        = currentJSONNode[ 1 ],
             attrIndex   = 1,
-            tagName     = arg0;
+            tagName     = arg0,
+            vnode;
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
@@ -85,11 +85,11 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
                 attrIndex = 2;
             default :
                 if( m_isString( tagName ) ){
-                    node = insertNode( m_isString( arg0 ) ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0, tagName, currentJSONNode[ attrIndex ] );
-                    walkChildNodes( currentJSONNode, node );
+                    vnode = insertNode( attrIndex === 1 ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0, tagName, currentJSONNode[ attrIndex ] );
+                    walkChildNodes( currentJSONNode, vnode );
                 };
         };
-        return vnode;
+        return /** @type {!VNode} */ (vnode);
     };
 
     /**

@@ -55,6 +55,11 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
         if( isTreeUpdated ){
             m_normalizeTextNodes( json );
         };
+        if( onDocumentReady ){
+            if( m_dispatchDocumentReadyEvent( onDocumentReady, json ) ){
+                isStaticWebPage = m_isStaticDocument( json, attrPrefix );
+            };
+        };
         return isStaticWebPage;
     } else if( htmljson.DEFINE.DEBUG ){
         onError( 'Invalid html.json document!' );
@@ -81,8 +86,6 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
                 if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
                     isXmlInHTML = true;
                 };
-                walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
-                break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
                 break;

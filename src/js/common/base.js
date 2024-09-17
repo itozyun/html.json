@@ -4,6 +4,7 @@ goog.requireType( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
+goog.require( 'VNode.createVNodeFromHTMLJson' );
 
 /**
  * @typedef {Object.<string, (string | number | boolean)>}
@@ -723,3 +724,104 @@ function m_parseCSSText( cssText ){
     return numAttrs ? styles : null;
 };
 
+/**
+ * 
+ * @param {!function(!VNode)} onDocumentReady
+ * @param {!Array} rootHTMLJson
+ * @return {boolean} isUpdated
+ */
+function m_dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
+    var rootVNode = VNode.createVNodeFromHTMLJson( rootHTMLJson, false );
+
+    VNode.treeIsUpdated = false;
+
+    onDocumentReady( rootVNode );
+
+    var isUpdated = VNode.treeIsUpdated;
+
+    if( isUpdated ){
+        VNode.treeIsUpdated = false;
+        rootHTMLJson.length = 0;
+        rootHTMLJson.push.apply( rootHTMLJson, rootVNode.getHTMLJson() );
+        m_normalizeTextNodes( rootHTMLJson );
+    };
+
+    return isUpdated;
+};
+
+/**
+ * 
+ * @param {!Array} rootHTMLJson
+ * @param {string} attrPrefix
+ * @return {boolean} isStatic
+ */
+function m_isStaticDocument( rootHTMLJson, attrPrefix ){
+    return !walkNode( rootHTMLJson );
+    /**
+     * 
+     * @param {!Array} currentJSONNode 
+     * @return {boolean} isDynamic
+     */
+    function walkNode( currentJSONNode ){
+        var arg0 = currentJSONNode[ 0 ],
+            arg1 = currentJSONNode[ 1 ],
+            tagName = arg0, attrsIndex = 1;
+
+        switch( arg0 ){
+            case htmljson.NODE_TYPE.DOCUMENT_NODE :
+            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                return walkChildNodes( currentJSONNode );
+            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+                return true;
+            case htmljson.NODE_TYPE.ELEMENT_NODE :
+            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
+                tagName = arg1;
+                attrsIndex = 2;
+            default :
+                if( m_isString( tagName ) ){
+                    if( m_isAttributes( currentJSONNode[ attrsIndex ] ) ){
+                        if( walkAttributes( currentJSONNode[ attrsIndex ] ) ){
+                            return true;
+                        };
+                    };
+                    return walkChildNodes( currentJSONNode );
+                };
+        };
+        return false;
+    };
+
+    /**
+     * 
+     * @param {!Array} currentJSONNode 
+     * @return {boolean} isDynamic
+     */
+    function walkChildNodes( currentJSONNode ){
+        var i = m_getChildNodeStartIndex( currentJSONNode ), l = currentJSONNode.length, childNode;
+
+        for( ; i < l; ++i ){
+            childNode = currentJSONNode[ i ];
+
+            if( m_isArray( childNode ) ){
+                if( walkNode( childNode ) ){
+                    return true;
+                };
+            };
+        };
+        return false;
+    };
+
+    /**
+     * @param {!Object} attrs
+     * @return {boolean} isDynamic
+     */
+    function walkAttributes( attrs ){
+        for( var name in attrs ){
+            if( m_isInstructionAttr( attrPrefix, name ) ){
+                return true;
+            };
+        };
+        return false;
+    };
+};
