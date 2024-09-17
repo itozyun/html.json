@@ -8,7 +8,7 @@ goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
 
 /**
- * @param {!Array} json
+ * @param {!HTMLJson} rootHTMLJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(!VNode)=} opt_onDocumentReady
@@ -16,7 +16,7 @@ goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
  * @param {!Object=} opt_options
  * @return {boolean | void} isStaticWebPage
  */
-json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
+json2json = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
 
@@ -50,14 +50,14 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
         isTreeUpdated   = false,
         isStaticWebPage = true;
 
-    if( m_isArray( json ) ){
-        walkNode( json, null, 0, [], false, false );
+    if( m_isArray( rootHTMLJson ) ){
+        walkNode( rootHTMLJson, null, 0, [], false, false );
         if( isTreeUpdated ){
-            m_normalizeTextNodes( json );
+            m_normalizeTextNodes( rootHTMLJson );
         };
         if( onDocumentReady ){
-            if( m_dispatchDocumentReadyEvent( onDocumentReady, json ) ){
-                isStaticWebPage = m_isStaticDocument( json, attrPrefix );
+            if( m_dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ) ){
+                isStaticWebPage = m_isStaticDocument( rootHTMLJson, attrPrefix );
             };
         };
         return isStaticWebPage;
@@ -67,10 +67,10 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
      * @param {!Array|null} parentJSONNode 
      * @param {number} myIndex
-     * @param {!Array.<!Array>} ancestorJSONNodes
+     * @param {!Array.<!HTMLJson>} ancestorJSONNodes
      * @param {boolean} isDescendantOfPre 
      * @param {boolean} isTrimNewlines
      * @return {number} Node Increase/Decrease
@@ -143,8 +143,8 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
                             if( parentJSONNode ){
                                 parentJSONNode.splice( myIndex, 1 );
                             } else {
-                                json.length = 0;
-                                json.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
+                                rootHTMLJson.length = 0;
+                                rootHTMLJson.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
                             };
                             return REMOVED;
                         } else if( m_isStringOrNumber( result ) ){
@@ -167,11 +167,12 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
                 attrIndex = 2;
             default :
                 if( m_isString( tagName ) ){
+                    tagName = /** @type {string} */ (tagName);
                     if( 1 + attrIndex <= currentJSONNode.length ){
                         attrs = currentJSONNode[ attrIndex ];
                         // attr
                         if( m_isAttributes( attrs ) ){
-                            if( walkAttributes( currentJSONNode, attrIndex - 1, attrs ) === 0 ){
+                            if( walkAttributes( currentJSONNode, attrIndex - 1, /** @type {!Attrs} */ (attrs) ) === 0 ){
                                 currentJSONNode.splice( attrIndex, 1 );
                             };
                         };
@@ -217,8 +218,8 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
-     * @param {!Array.<!Array>} ancestorJSONNodes
+     * @param {!HTMLJson} currentJSONNode 
+     * @param {!Array.<!HTMLJson>} ancestorJSONNodes
      * @param {boolean} isDescendantOfPre 
      * @param {boolean} isTrimNewlines
      */
@@ -233,7 +234,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
             if( m_isStringOrNumber( childNode ) ){
 
             } else if( m_isArray( childNode ) ){
-                nodeIncreaseOrDecrease = walkNode( childNode, currentJSONNode, i, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
+                nodeIncreaseOrDecrease = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
                 if( nodeIncreaseOrDecrease ){
                     i += nodeIncreaseOrDecrease; // Node Increase/Decrease
                     isTreeUpdated = true;
@@ -247,9 +248,9 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
     };
 
     /**
-     * @param {!Array} currentJSONNode
+     * @param {!HTMLJson} currentJSONNode
      * @param {number} tagNameIndex
-     * @param {!Object} attrs
+     * @param {!Attrs} attrs
      * @return {number} = attributes.length
      */
     function walkAttributes( currentJSONNode, tagNameIndex, attrs ){
@@ -270,7 +271,7 @@ json2json = function( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentRe
                 name = name.substr( attrPrefix.length );
                 name === 'className' && ( name = 'class' );
                 if( onInstruction ){
-                    value = m_executeInstructionAttr( false, onInstruction, name, value, onError );
+                    value = m_executeInstructionAttr( false, onInstruction, name, /** @type {!InstructionArgs | string} */ (value), onError );
                 } else {
                     onError( 'onInstruction is void!' );
                 };

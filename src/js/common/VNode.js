@@ -64,7 +64,7 @@ function _compare( oldValue, newValue ){
  * @param {number} insertPosition
  * @param {number} nodeType 
  * @param {(string | number)=} opt_nodeValueOrTag 
- * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
+ * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs 
  */
 VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     var childNodes, parent;
@@ -130,7 +130,7 @@ VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, op
             this._tagName = /** @type {string} */ (opt_nodeValueOrTag);
             break;
         case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-            this._args = /** @type {Array | null} */(opt_attrsOrArgs || null);
+            this._args = /** @type {InstructionArgs | null} */(opt_attrsOrArgs || null);
         case htmljson.NODE_TYPE.TEXT_NODE                     :
         case htmljson.NODE_TYPE.CDATA_SECTION                 :
         case htmljson.NODE_TYPE.COMMENT_NODE                  :
@@ -157,7 +157,7 @@ VNode.treeIsUpdated = false;
 
 /**
  * 
- * @return {!Array}
+ * @return {!HTMLJson}
  */
 VNode.prototype.getHTMLJson = function(){
     if( htmljson.DEFINE.DEBUG ){
@@ -1110,7 +1110,7 @@ VNode.prototype.insertElementAfter = function( tagName, opt_attrs, opt_textConte
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
+ * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs 
  * @return {!VNode | null} */
 VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
@@ -1134,7 +1134,7 @@ VNode.prototype.insertNodeBefore = function( nodeType, opt_nodeValueOrTag, opt_a
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
+ * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs 
  * @return {VNode | null} */
 VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
@@ -1157,7 +1157,7 @@ VNode.prototype.insertNodeFirst = function( nodeType, opt_nodeValueOrTag, opt_at
  * @param {number} index
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
+ * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs 
  * @return {!VNode} */
 VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
@@ -1172,7 +1172,7 @@ VNode.prototype.insertNodeAt = function( index, nodeType, opt_nodeValueOrTag, op
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
+ * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs 
  * @return {VNode | null} */
 VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){
@@ -1193,7 +1193,7 @@ VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_att
 /**
  * @param {number} nodeType
  * @param {(string | number)=} opt_nodeValueOrTag
- * @param {(Attrs | Array | null)=} opt_attrsOrArgs 
+ * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs 
  * @return {!VNode | null} */
 VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     if( htmljson.DEFINE.DEBUG ){

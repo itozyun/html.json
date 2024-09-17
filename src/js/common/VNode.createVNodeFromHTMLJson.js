@@ -5,7 +5,7 @@ goog.require( 'htmljson.NODE_TYPE' );
 
 /**
  * 
- * @param {!Array} rootHTMLJson 非破壊
+ * @param {!HTMLJson} rootHTMLJson 非破壊
  * @param {boolean} isRestrictedMode
  * @return {!VNode}
  */
@@ -14,7 +14,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
      * @param {!VNode | boolean} parentOrMode
      * @return {!VNode}
      */
@@ -22,7 +22,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
         /**
          * @param {number} nodeType 
          * @param {(string | number)=} opt_nodeValueOrTag 
-         * @param {(Attrs | Array | null)=} opt_attrsOrArgs
+         * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs
          * @return {!VNode}
          */
         function insertNode( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
@@ -44,7 +44,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
             case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                vnode = insertNode( arg0, arg1 );
+                vnode = insertNode( arg0, /** @type {string} */ (arg1) );
                 walkChildNodes( currentJSONNode, vnode );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
@@ -56,7 +56,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
             case htmljson.NODE_TYPE.COMMENT_NODE :
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
             case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                vnode = insertNode( arg0, arg1 );
+                vnode = insertNode( arg0, /** @type {string | number} */ (arg1) );
                 break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
                 vnode = insertNode( arg0 );
@@ -65,7 +65,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
                 for( args = [], i = 2, l = currentJSONNode.length; i < l; ++i ){
                     args[ i - 2 ] = currentJSONNode[ i ];
                 };
-                vnode = insertNode( arg0, arg1, l ? args : null );
+                vnode = insertNode( arg0, /** @type {string} */ (arg1), l ? args : null );
                 break;
             case htmljson.NODE_TYPE.ELEMENT_NODE :
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :
@@ -73,7 +73,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
                 attrIndex = 2;
             default :
                 if( m_isString( tagName ) ){
-                    vnode = insertNode( attrIndex === 1 ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0, tagName, currentJSONNode[ attrIndex ] );
+                    vnode = insertNode( /** @type {number} */ (attrIndex === 1 ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0), /** @type {string} */ (tagName), /** @type {Attr | void} */ (currentJSONNode[ attrIndex ] ) );
                     walkChildNodes( currentJSONNode, vnode );
                 };
         };
@@ -82,7 +82,7 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
      * @param {!VNode} parentVNode 
      */
     function walkChildNodes( currentJSONNode, parentVNode ){
@@ -92,10 +92,9 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
             childNode = currentJSONNode[ i ];
 
             if( m_isStringOrNumber( childNode ) ){
-                // TEXT_NODE
-                parentVNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, childNode );
+                parentVNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, /** @type {string | number} */ (childNode) );
             } else if( m_isArray( childNode ) ){
-                walkNode( childNode, parentVNode );
+                walkNode( /** @type {!HTMLJson} */ (childNode), parentVNode );
             };
         };
     };

@@ -17,7 +17,17 @@ var Styles;
 var Attrs;
 
 /**
- * @typedef {(function(string, ...*):(!Array | string | number | boolean | null | void) | !Object.<(string | number), function(...*):(!Array | string | number | boolean | null | void)>)}
+ * @typedef {Array.<number | string | boolean | !Object | !Array | null>}
+ */
+var InstructionArgs;
+
+/**
+ * @typedef {Array.<number | string | Attrs | InstructionArgs | Array.<number | string | Attrs | InstructionArgs | Array>>}
+ */
+var HTMLJson;
+
+/**
+ * @typedef {(function(string, ...*):(!HTMLJson | string | number | boolean | null | void) | !Object.<(string | number), function(...*):(!HTMLJson | string | number | boolean | null | void)>)}
  */
 var InstructionHandler;
 
@@ -249,11 +259,11 @@ function m_isInstructionAttr( prefix, name ){
 /**
  * 
  * @param {!InstructionHandler} onInstruction
- * @param {!Array} currentJSONNode 
- * @param {!Array|null} parentJSONNode 
+ * @param {!HTMLJson} currentJSONNode 
+ * @param {HTMLJson | null} parentJSONNode 
  * @param {number} myIndex
  * @param {!function(string)} onError 
- * @return {!Array|string|number|boolean|null|void}
+ * @return {!HTMLJson | string | number | boolean | null | void}
  */
 function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, onError ){
     var functionName = /** @type {string} */ (currentJSONNode[ 1 ]);
@@ -285,7 +295,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
                 currentJSONNode.push( htmljson.NODE_TYPE.TEXT_NODE, currentJSONNode );
             };
         } else if( m_isArray( result ) ){
-            result = /** @type {!Array} */ (result);
+            result = /** @type {!HTMLJson} */ (result);
 
             if( result[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
                 if( parentJSONNode ){
@@ -324,12 +334,12 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
  * 
  * @param {boolean} recursion
  * @param {!InstructionHandler} onInstruction
- * @param {string} name 
- * @param {!Array|string} value 
+ * @param {string} attrName 
+ * @param {!InstructionArgs | string} value 
  * @param {!function(string)} onError 
- * @return {!Array|string|number|boolean|null|void}
+ * @return {!InstructionArgs | string | number | boolean | null | void}
  */
-function m_executeInstructionAttr( recursion, onInstruction, name, value, onError ){
+function m_executeInstructionAttr( recursion, onInstruction, attrName, value, onError ){
     var result;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
@@ -357,13 +367,13 @@ function m_executeInstructionAttr( recursion, onInstruction, name, value, onErro
             result = onInstruction[ /** @type {string} */ (value) ]();
         };
     } else if( htmljson.DEFINE.DEBUG ){
-        onError( 'Invalid InstructionAttr value! [' + name + '=' + value + ']' );
+        onError( 'Invalid InstructionAttr value! [' + attrName + '=' + value + ']' );
     };
 
     if( recursion && m_isArray( result ) ){
-        result = /** @type {!Array} */ (result);
+        result = /** @type {!InstructionArgs} */ (result);
 
-        return m_executeInstructionAttr( true, onInstruction, name, result, onError );
+        return m_executeInstructionAttr( true, onInstruction, attrName, result, onError );
     };
     return result;
 };
@@ -441,7 +451,7 @@ function m_toSnakeCase( cssProperty ){
 
 /**
  * 
- * @param {!Array} htmlJsonNode
+ * @param {!HTMLJson} htmlJsonNode
  * @return {number}
  */
 function m_getChildNodeStartIndex( htmlJsonNode ){
@@ -465,7 +475,7 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
 
 /**
  * 連続する Text の結合
- * @param {!Array} htmlJsonNode 
+ * @param {!HTMLJson} htmlJsonNode 
  */
 function m_normalizeTextNodes( htmlJsonNode ){
     var startIndex = m_getChildNodeStartIndex( htmlJsonNode );
@@ -485,7 +495,7 @@ function m_normalizeTextNodes( htmlJsonNode ){
                 htmlJsonNode.splice( i, 1 );
             } else {
                 if( text ){
-                    htmlJsonNode.splice( i, 0, m_tryToFiniteNumber( text ) );
+                    htmlJsonNode.splice( i, 0, /** @type {string | number} */ (m_tryToFiniteNumber( text )) );
                     text = '';
                 };
                 ++i;
@@ -494,12 +504,12 @@ function m_normalizeTextNodes( htmlJsonNode ){
                     nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER        ||
                     nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
                 ){
-                    m_normalizeTextNodes( node );
+                    m_normalizeTextNodes( /** @type {!HTMLJson} */ (node) );
                 };
             };
         };
         if( text ){
-            htmlJsonNode[ i ] = m_tryToFiniteNumber( text );
+            htmlJsonNode[ i ] = /** @type {string | number} */ (m_tryToFiniteNumber( text ));
         };
     };
 };
@@ -733,7 +743,7 @@ function m_parseCSSText( cssText ){
 /**
  * 
  * @param {!function(!VNode)} onDocumentReady
- * @param {!Array} rootHTMLJson
+ * @param {!HTMLJson} rootHTMLJson
  * @return {boolean} isUpdated
  */
 function m_dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
@@ -757,7 +767,7 @@ function m_dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
 
 /**
  * 
- * @param {!Array} rootHTMLJson
+ * @param {!HTMLJson} rootHTMLJson
  * @param {string} attrPrefix
  * @return {boolean} isStatic
  */
@@ -765,7 +775,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
     return !walkNode( rootHTMLJson );
     /**
      * 
-     * @param {!Array} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
      * @return {boolean} isDynamic
      */
     function walkNode( currentJSONNode ){
@@ -788,7 +798,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
             default :
                 if( m_isString( tagName ) ){
                     if( m_isAttributes( currentJSONNode[ attrsIndex ] ) ){
-                        if( walkAttributes( currentJSONNode[ attrsIndex ] ) ){
+                        if( walkAttributes( /** @type {!Attrs} */ (currentJSONNode[ attrsIndex ] )) ){
                             return true;
                         };
                     };
@@ -800,7 +810,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
      * @return {boolean} isDynamic
      */
     function walkChildNodes( currentJSONNode ){
@@ -810,7 +820,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
             childNode = currentJSONNode[ i ];
 
             if( m_isArray( childNode ) ){
-                if( walkNode( childNode ) ){
+                if( walkNode( /** @type {!HTMLJson} */ (childNode) ) ){
                     return true;
                 };
             };
@@ -819,7 +829,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
     };
 
     /**
-     * @param {!Object} attrs
+     * @param {!Attrs} attrs
      * @return {boolean} isDynamic
      */
     function walkAttributes( attrs ){

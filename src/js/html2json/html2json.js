@@ -12,7 +12,7 @@ goog.require( 'VNode' );
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
  * @param {!Object=} opt_options
- * @return {!Array}
+ * @return {!HTMLJson}
  */
 html2json = function( htmlString, allowInvalidTree, opt_options ){
     const
@@ -45,7 +45,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     /**
      * 
      * @param {!VNode} currentVNode 
-     * @param {!Array} parentJSONNode 
+     * @param {!HTMLJson} parentJSONNode 
      * @param {boolean} isDescendantOfPre 
      * @param {boolean} isTrimNewlines
      */

@@ -8,14 +8,14 @@ goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmljson.DEFINE.USE_XHTML' );
 
 /**
- * @param {!Array} json
+ * @param {!HTMLJson} rootHTMLJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(string) | !Object=} opt_onError
  * @param {!Object=} opt_options
  * @return {string | void} html string
  */
-var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
 
@@ -36,19 +36,19 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
 
     var omittedEndTagBefore, isXmlInHTML = m_isXMLDocument;
 
-    if( m_isArray( json ) ){
-        if( m_getNodeType( json ) === htmljson.NODE_TYPE.PROCESSING_INSTRUCTION ){
-            json = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, json ];
+    if( m_isArray( rootHTMLJson ) ){
+        if( m_getNodeType( rootHTMLJson ) === htmljson.NODE_TYPE.PROCESSING_INSTRUCTION ){
+            rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, rootHTMLJson ];
         };
-        return /** @type {string} */ (walkNode( json, null, 0, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false ));
+        return /** @type {string} */ (walkNode( rootHTMLJson, null, 0, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false ));
     } else if( htmljson.DEFINE.DEBUG ){
         onError( 'Invalid html.json document!' );
     };
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
-     * @param {!Array|null} parentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
+     * @param {HTMLJson | null} parentJSONNode 
      * @param {number} myIndex 
      * @param {boolean} pEndTagRequired 
      * @param {boolean} escapeForHTMLDisabled 
@@ -156,7 +156,7 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
                     onError( 'Not html.json! [' + currentJSONNode + ']' );
                 };
 
-                tagName   = m_parseTagName( tagName );
+                tagName   = m_parseTagName( /** @type {string} */ (tagName) );
                 id        = tagName[ 1 ];
                 className = tagName[ 2 ];
                 tagName   = tagName[ 0 ];
@@ -184,7 +184,7 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
 
                 // attr
                 if( m_isAttributes( attrs ) ){
-                    htmlString += walkAttributes( attrs );
+                    htmlString += walkAttributes( /** @type {!Attrs} */ (attrs) );
                 };
                 // childNodes
                 childNodesContents = walkChildNodes( currentJSONNode, m_CHILD_P_MUST_HAVE_END_TAG[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_ELEMENTS[ tagName ] );
@@ -230,7 +230,7 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
 
     /**
      * 
-     * @param {!Array} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode 
      * @param {boolean} pEndTagRequired 
      * @param {boolean} escapeForHTMLDisabled 
      * @return {string}
@@ -247,7 +247,7 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
             if( m_isStringOrNumber( childNode ) ){
                 htmlString[ ++j ] = walkNode( [ htmljson.NODE_TYPE.TEXT_NODE, childNode ], currentJSONNode, i, false, escapeForHTMLDisabled );
             } else if( m_isArray( childNode ) ){
-                htmlPartString = walkNode( childNode, currentJSONNode, i, pEndTagRequired, escapeForHTMLDisabled );
+                htmlPartString = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i, pEndTagRequired, escapeForHTMLDisabled );
                 if( htmlPartString === REMOVED ){
                     --i;
                 } else {
@@ -262,7 +262,7 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
 
     /**
      * 
-     * @param {!Object} attrs 
+     * @param {!Attrs} attrs 
      * @return {string} 先頭に ' ' 付き
      */
     function walkAttributes( attrs ){
@@ -277,7 +277,7 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
 
             if( isInstruction ){
                 if( onInstruction ){
-                    value = m_executeInstructionAttr( true, onInstruction, name, value, onError );
+                    value = m_executeInstructionAttr( true, onInstruction, name, /** @type {!InstructionArgs | string} */ (value), onError );
                 } else {
                     onError( 'onInstruction is void!' );
                 };
@@ -288,10 +288,10 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
 
                 if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] ){
                     if( name === 'style' && m_isObject( value ) ){
-                        value = toCSSTest( value );
+                        value = toCSSTest( /** @type {!Styles} */ (value) );
                         if( !value ) continue;
                     };
-                    attrText += '=' + m_quoteAttributeValue( value, useSingleQuot, isXmlInHTML || quotAlways );
+                    attrText += '=' + m_quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
                 };
             };
         };
@@ -299,18 +299,18 @@ var json2html = function( json, opt_onInstruction, opt_onEnterNode, opt_onError,
     };
 
     /**
-     * @param {!Object} styles 
+     * @param {!Styles} styles 
      * @return {string}
      */
     function toCSSTest( styles ){
-        var cssText = '',
-            name, value;
+        var cssText = [],
+            i = -1, name, value;
     
         for( name in styles ){
             value = styles[ name ];
             value === '0px' && ( value = 0 );
-            cssText += ';' + m_toSnakeCase( name ) + ':' + m_escapeForHTML( '' + value );
+            cssText[ ++i ] = m_toSnakeCase( name ) + ':' + m_escapeForHTML( '' + value );
         };
-        return cssText.substr( 1 );
+        return cssText.join( ';' ).substr( 1 );
     };
 };

@@ -36,7 +36,7 @@ json2html.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_
                     const json = JSON.parse( file.contents.toString( encoding ) );
 
                     if( m_isArray( json ) ){
-                        const content = json2html( /** @type {!Array} */ (json), opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
+                        const content = json2html( /** @type {!HTMLJson} */ (json), opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
                         // .html <= .html.json
                         file.stem     = file.stem.substr( 0, file.stem.length - originalExtname.length );
                         file.extname  = originalExtname;
