@@ -1,5 +1,6 @@
 goog.provide( 'VNode' );
 goog.provide( 'VNode.currentRestrictedVNode' );
+goog.provide( 'VNode.treeIsUpdated' );
 
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );

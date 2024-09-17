@@ -1,6 +1,6 @@
 goog.provide( 'VNode.createVNodeFromHTMLJson' );
 
-goog.requireType( 'VNode' );
+goog.requireType( 'VNode' ); // goog.require( 'VNode' ); だとエラーになる…
 goog.require( 'htmljson.NODE_TYPE' );
 
 /**
@@ -42,44 +42,30 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                vnode = insertNode( htmljson.NODE_TYPE.DOCUMENT_NODE, arg1 );
+            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                vnode = insertNode( arg0, arg1 );
                 walkChildNodes( currentJSONNode, vnode );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                vnode = insertNode( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+                vnode = insertNode( arg0 );
                 walkChildNodes( currentJSONNode, vnode );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
-                vnode = insertNode( htmljson.NODE_TYPE.TEXT_NODE, arg1 );
-                break;
             case htmljson.NODE_TYPE.CDATA_SECTION :
-                vnode = insertNode( htmljson.NODE_TYPE.CDATA_SECTION, arg1 );
-                break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
-                vnode = insertNode( htmljson.NODE_TYPE.COMMENT_NODE, arg1 );
-                break;
-            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
-                vnode = insertNode( htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, arg1 );
-                walkChildNodes( currentJSONNode, vnode );
-                break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
-                vnode = insertNode( htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START, arg1 );
+            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
+                vnode = insertNode( arg0, arg1 );
                 break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
-                vnode = insertNode( htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END );
-                break;
-            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                vnode = insertNode( htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, arg1 );
-                walkChildNodes( currentJSONNode, vnode );
+                vnode = insertNode( arg0 );
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                 for( args = [], i = 2, l = currentJSONNode.length; i < l; ++i ){
                     args[ i - 2 ] = currentJSONNode[ i ];
                 };
-                vnode = insertNode( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, arg1, l ? args : null );
-                break;
-            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                vnode = insertNode( htmljson.NODE_TYPE.ELEMENT_END_TAG, arg1 );
+                vnode = insertNode( arg0, arg1, l ? args : null );
                 break;
             case htmljson.NODE_TYPE.ELEMENT_NODE :
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :

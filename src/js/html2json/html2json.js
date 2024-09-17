@@ -1,10 +1,12 @@
 goog.provide( 'html2json' );
 
+goog.requireType( 'htmlparser.typedef.Handler' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
-goog.require( 'VNode.createVNodeFromHTML' );
+goog.require( 'htmlparser.exec' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
+goog.require( 'VNode' );
 
 /**
  * @param {string} htmlString
@@ -16,7 +18,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     const
         json              = [],
         _aryPush          = json.push,
-        vnode             = VNode.createVNodeFromHTML( htmlString, allowInvalidTree ),
+        vnode             = _createVNodeFromHTML( htmlString, allowInvalidTree ),
         options           = opt_options || {},
 
         isTrimWhitespace  = [ 'none', false ].indexOf( options[ 'trimWhitespaces' ] ) === -1,
@@ -147,7 +149,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 nodeValue = /** @type {string} */ (currentVNode.getNodeValue());
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
-                    vDocFragment    = VNode.createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
+                    vDocFragment    = _createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
@@ -158,7 +160,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     };
                 } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
                     // htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
-                    vDocFragment    = VNode.createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
+                    vDocFragment    = _createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
@@ -291,4 +293,85 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
     function removeWhitespaces( string ){
         return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
     };
+};
+
+/*-----------------------------------------------------------------------------
+ *   private
+ */
+
+/**
+ * 
+ * @param {string} html
+ * @param {boolean} allowInvalidTree
+ * @return {!VNode}
+ */
+function _createVNodeFromHTML( html, allowInvalidTree ){
+    var handler = new Handler( allowInvalidTree );
+
+    htmlparser.exec( html, handler );
+
+    return handler._rootNode;
+};
+
+/** 
+ * @private
+ * @extends {htmlparser.typedef.Handler}
+ * @constructor
+ * @param {boolean} allowInvalidTree
+ */
+function Handler( allowInvalidTree ){
+    this._allowInvalidTree = allowInvalidTree;
+
+    /** @const {!VNode} */
+    this._rootNode = new VNode( false, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
+    /** @type {!VNode} */
+    this._currentNode = this._rootNode;
+};
+
+Handler.prototype.onParseError = function( msg ){
+    throw msg;
+};
+
+Handler.prototype.onParseDocType = function( doctype ){
+    this._rootNode.setNodeType( htmljson.NODE_TYPE.DOCUMENT_NODE );
+    this._rootNode.setNodeValue( doctype );
+};
+
+Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
+    if( empty ){
+        this._currentNode.insertElementLast( tag, attrs );
+    } else {
+        this._currentNode = /** @type {!VNode} */ (this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_START_TAG, tag, attrs ));
+    };
+};
+
+Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
+    if( noStartTag ){
+        if( this._allowInvalidTree ){
+            this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_END_TAG, tag );
+        };
+    } else if( !missingEndTag || !this._allowInvalidTree ){
+        if( tag === this._currentNode.getTagName() ){
+            this._currentNode.finalize();
+            this._currentNode = /** @type {!VNode} */ (this._currentNode.getParent());
+        } else {
+            throw 'End tag error! ' + tag;
+        };
+    };
+};
+
+Handler.prototype.onParseText = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, nodeValue );
+};
+
+Handler.prototype.onParseComment = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.COMMENT_NODE, nodeValue );
+};
+
+Handler.prototype.onParseCDATASection = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.CDATA_SECTION, nodeValue );
+};
+
+Handler.prototype.onParseProcessingInstruction = function( nodeValue ){
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, nodeValue );
 };

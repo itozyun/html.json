@@ -290,46 +290,7 @@ S.prototype.remove = function() {
 function X(a, c, d, g) {
   return a.ba ? (a.ca = a.ca || [], a.ca.push([c, d, g]), null) : new S(a, V(a), c, d, g);
 }
-;function Y(a, c) {
-  c = new qa(c);
-  ea(a, c);
-  return c.aa;
-}
-function qa(a) {
-  this.ba = a;
-  this.$ = this.aa = new S(!1, 0, 11);
-}
-function ia(a, c) {
-  a.aa.$ = 9;
-  U(a.aa, c);
-}
-function ha(a, c, d, g) {
-  g ? (a = a.$, a.ba ? (a.ca = a.ca || [], a.ca.push([1, c, d, void 0])) : new S(a, V(a), 1, c, d)) : a.$ = X(a.$, 17, c, d);
-}
-function fa(a, c, d, g) {
-  if (g) {
-    a.ba && X(a.$, 18, c);
-  } else if (!d || !a.ba) {
-    if (c === a.$.ga) {
-      a.$.$ = 1, a.$ = a.$.da;
-    } else {
-      throw "End tag error! " + c;
-    }
-  }
-}
-function L(a, c) {
-  X(a.$, 3, c);
-}
-function la(a, c) {
-  X(a.$, 8, c);
-}
-function ka(a, c) {
-  X(a.$, 4, c);
-}
-function ja(a, c) {
-  X(a.$, 7, c);
-}
-;function Z(a, c, d) {
+;function Y(a, c, d) {
   function g(b, h, l, t) {
     switch(b.$) {
       case 1:
@@ -420,14 +381,14 @@ function ja(a, c) {
       case 8:
         e = T(b);
         if (e.startsWith("[if") && 0 < e.indexOf("<![endif]")) {
-          b = Y(x(e, ">", "<![endif]", !0), !0);
+          b = Z(x(e, ">", "<![endif]", !0), !0);
           f = [13, x(e, "[", "]", !1)];
           for (p = 0; p < V(b); ++p) {
             g(W(b, p), f, l, t);
           }
           (2 < f.length || r) && h.push(f);
         } else if (e.startsWith("{") && 2 < e.indexOf("};")) {
-          b = Y(e.substring(e.indexOf("};") + 2), !0);
+          b = Z(e.substring(e.indexOf("};") + 2), !0);
           f = [16, x(e, "{", "};", !1)];
           for (p = 0; p < V(b); ++p) {
             g(W(b, p), f, l, t);
@@ -480,7 +441,7 @@ function ja(a, c) {
     return b.split("\n").join("").split(" ").join("").split("\t").join("");
   }
   const A = [], K = A.push;
-  a = Y(a, c);
+  a = Z(a, c);
   d = d || {};
   const n = -1 === ["none", !1].indexOf(d.trimWhitespaces), m = "aggressive" === d.trimWhitespaces, w = !!d.removeNewlineBetweenFullWidthChars, D = !0 === d.keepCDATASections, F = !0 === d.keepComments, r = !0 === d.keepEmptyConditionalComment, B = d.instructionAttrPrefix || ":";
   d = d.argumentBrackets || "()";
@@ -490,21 +451,60 @@ function ja(a, c) {
   pa(A[0]);
   return A[0];
 }
-;Z.module = {};
-module.exports = Z;
-Z.DOCUMENT_NODE = 9;
-Z.DOCUMENT_FRAGMENT_NODE = 11;
-Z.ELEMENT_NODE = 1;
-Z.TEXT_NODE = 3;
-Z.CDATA_SECTION = 4;
-Z.PROCESSING_INSTRUCTION = 7;
-Z.COMMENT_NODE = 8;
-Z.COND_CMT_HIDE_LOWER = 13;
-Z.COND_CMT_SHOW_LOWER_START = 14;
-Z.NETSCAPE4_COND_CMT_HIDE_LOWER = 16;
-Z.ELEMENT_START_TAG = 17;
-Z.ELEMENT_END_TAG = 18;
-Z.gulp = function(a) {
+function Z(a, c) {
+  c = new qa(c);
+  ea(a, c);
+  return c.aa;
+}
+function qa(a) {
+  this.ba = a;
+  this.$ = this.aa = new S(!1, 0, 11);
+}
+function ia(a, c) {
+  a.aa.$ = 9;
+  U(a.aa, c);
+}
+function ha(a, c, d, g) {
+  g ? (a = a.$, a.ba ? (a.ca = a.ca || [], a.ca.push([1, c, d, void 0])) : new S(a, V(a), 1, c, d)) : a.$ = X(a.$, 17, c, d);
+}
+function fa(a, c, d, g) {
+  if (g) {
+    a.ba && X(a.$, 18, c);
+  } else if (!d || !a.ba) {
+    if (c === a.$.ga) {
+      a.$.$ = 1, a.$ = a.$.da;
+    } else {
+      throw "End tag error! " + c;
+    }
+  }
+}
+function L(a, c) {
+  X(a.$, 3, c);
+}
+function la(a, c) {
+  X(a.$, 8, c);
+}
+function ka(a, c) {
+  X(a.$, 4, c);
+}
+function ja(a, c) {
+  X(a.$, 7, c);
+}
+;Y.module = {};
+module.exports = Y;
+Y.DOCUMENT_NODE = 9;
+Y.DOCUMENT_FRAGMENT_NODE = 11;
+Y.ELEMENT_NODE = 1;
+Y.TEXT_NODE = 3;
+Y.CDATA_SECTION = 4;
+Y.PROCESSING_INSTRUCTION = 7;
+Y.COMMENT_NODE = 8;
+Y.COND_CMT_HIDE_LOWER = 13;
+Y.COND_CMT_SHOW_LOWER_START = 14;
+Y.NETSCAPE4_COND_CMT_HIDE_LOWER = 16;
+Y.ELEMENT_START_TAG = 17;
+Y.ELEMENT_END_TAG = 18;
+Y.gulp = function(a) {
   const c = require("plugin-error"), d = require("through2"), g = a || {}, v = g.prettify;
   let x = 0, I = 0, M = 0;
   return d.obj(function(q, A, K) {
@@ -516,7 +516,7 @@ Z.gulp = function(a) {
     }
     if (".html" === q.extname || ".htm" === q.extname || ".xhtml" === q.extname || ".php" === q.extname) {
       try {
-        const n = q.contents.toString(A), m = performance.now(), w = Z(n, !1, g);
+        const n = q.contents.toString(A), m = performance.now(), w = Y(n, !1, g);
         ++x;
         I += n.length;
         M += performance.now() - m;
