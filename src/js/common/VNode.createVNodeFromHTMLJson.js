@@ -5,7 +5,7 @@ goog.require( 'htmljson.NODE_TYPE' );
 
 /**
  * 
- * @param {!Array} rootHTMLJson
+ * @param {!Array} rootHTMLJson 非破壊
  * @param {boolean} isRestrictedMode
  * @return {!VNode}
  */
@@ -38,11 +38,11 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
             arg1        = currentJSONNode[ 1 ],
             attrIndex   = 1,
             tagName     = arg0,
-            vnode;
+            args, i, l, vnode;
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                vnode = insertNode( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, arg1 );
+                vnode = insertNode( htmljson.NODE_TYPE.DOCUMENT_NODE, arg1 );
                 walkChildNodes( currentJSONNode, vnode );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
@@ -73,8 +73,10 @@ VNode.createVNodeFromHTMLJson = function( rootHTMLJson, isRestrictedMode ){
                 walkChildNodes( currentJSONNode, vnode );
                 break;
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                vnode = insertNode( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, arg1 );
-                // args currentJSONNode
+                for( args = [], i = 2, l = currentJSONNode.length; i < l; ++i ){
+                    args[ i - 2 ] = currentJSONNode[ i ];
+                };
+                vnode = insertNode( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, arg1, l ? args : null );
                 break;
             case htmljson.NODE_TYPE.ELEMENT_END_TAG :
                 vnode = insertNode( htmljson.NODE_TYPE.ELEMENT_END_TAG, arg1 );

@@ -6,12 +6,12 @@ function da(a) {
     function f(B, q, k) {
       return t ? t.h(B, q, k) : new ca(!1, 0, B, q, k);
     }
-    var t = d === !!d ? null : d;
-    d = e[0];
-    var n = e[1], w = 1, F = d;
-    switch(d) {
+    var t = d === !!d ? null : d, n = e[0];
+    d = e[1];
+    var v = 1, F = n;
+    switch(n) {
       case 9:
-        var g = f(11, n);
+        var g = f(9, d);
         h(e, g);
         break;
       case 11:
@@ -19,39 +19,44 @@ function da(a) {
         h(e, g);
         break;
       case 3:
-        g = f(3, n);
+        g = f(3, d);
         break;
       case 4:
-        g = f(4, n);
+        g = f(4, d);
         break;
       case 8:
-        g = f(8, n);
+        g = f(8, d);
         break;
       case 13:
-        g = f(13, n);
+        g = f(13, d);
         h(e, g);
         break;
       case 14:
-        g = f(14, n);
+        g = f(14, d);
         break;
       case 15:
         g = f(15);
         break;
       case 16:
-        g = f(16, n);
+        g = f(16, d);
         h(e, g);
         break;
       case 7:
-        g = f(7, n);
+        g = [];
+        n = 2;
+        for (v = e.length; n < v; ++n) {
+          g[n - 2] = e[n];
+        }
+        g = f(7, d, v ? g : null);
         break;
       case 18:
-        g = f(18, n);
+        g = f(18, d);
         break;
       case 1:
       case 17:
-        F = n, w = 2;
+        F = d, v = 2;
       default:
-        L(F) && (g = f(1 === w ? 1 : d, F, e[w]), h(e, g));
+        L(F) && (g = f(1 === v ? 1 : n, F, e[v]), h(e, g));
     }
     return g;
   }
@@ -167,7 +172,7 @@ function qa(a, c) {
 }
 function ra(a, c) {
   function h(d) {
-    var f = d[0], t = d[1], n = f, w = 1;
+    var f = d[0], t = d[1], n = f, v = 1;
     switch(f) {
       case 9:
       case 11:
@@ -178,13 +183,13 @@ function ra(a, c) {
         return !0;
       case 1:
       case 17:
-        n = t, w = 2;
+        n = t, v = 2;
       default:
         if (L(n)) {
-          if (f = V(d[w])) {
+          if (f = V(d[v])) {
             a: {
-              w = d[w];
-              for (var F in w) {
+              v = d[v];
+              for (var F in v) {
                 if (0 === F.indexOf(c)) {
                   f = !0;
                   break a;
@@ -272,14 +277,14 @@ function ra(a, c) {
         }
         break;
       case 7:
-        if (w) {
-          A = w;
+        if (v) {
+          A = v;
           I = b[1];
           K = b.slice(2);
-          var v;
-          "function" === typeof A ? v = K.length ? A(I, K) : A(I) : v = K.length ? A[I](K) : A[I]();
-          void 0 !== v && null !== v && "" !== v && (Q(v) ? m ? m.splice(r, 1, v) : (b.length = 0, b.push(3, b)) : R(v) && (11 === v[0] ? m ? (v.shift(), v.unshift(r, 1), m.splice.apply(m, v)) : (b.length = 0, b.push.apply(b, v)) : R(v[0]) ? m ? (v.unshift(r, 1), m.splice.apply(m, v)) : (b.length = 0, b.push(11), b.push.apply(b, v)) : m ? m.splice(r, 1, v) : (b.length = 0, b.push(11, v))));
-          b = v;
+          var w;
+          "function" === typeof A ? w = K.length ? A(I, K) : A(I) : w = K.length ? A[I](K) : A[I]();
+          void 0 !== w && null !== w && "" !== w && (Q(w) ? m ? m.splice(r, 1, w) : (b.length = 0, b.push(3, b)) : R(w) && (11 === w[0] ? m ? (w.shift(), w.unshift(r, 1), m.splice.apply(m, w)) : (b.length = 0, b.push.apply(b, w)) : R(w[0]) ? m ? (w.unshift(r, 1), m.splice.apply(m, w)) : (b.length = 0, b.push(11), b.push.apply(b, w)) : m ? m.splice(r, 1, w) : (b.length = 0, b.push(11, w))));
+          b = w;
           if (void 0 !== b) {
             if (null === b || "" === b) {
               return m ? m.splice(r, 1) : (a.length = 0, a.push(8, "")), -1;
@@ -305,7 +310,7 @@ function ra(a, c) {
             r = 0;
             var S;
             N = pa(b[m]);
-            v = N[1];
+            w = N[1];
             C = N[2];
             N = N[0];
             for (D in M) {
@@ -314,14 +319,14 @@ function ra(a, c) {
               if (S = 0 === D.indexOf(p)) {
                 var D = D.substr(p.length);
                 "className" === D && (D = "class");
-                w ? G = ma(!1, w, D, G, F) : F("onInstruction is void!");
+                v ? G = ma(!1, v, D, G, F) : F("onInstruction is void!");
                 if (void 0 !== G) {
                   if (delete M[J], R(G)) {
                     L(G[0]) && (M[J] = G, u = !1, ++r);
                   } else if ((!z[D] || !1 !== G) && null !== G) {
                     if (L(G)) {
                       if ("id" === D) {
-                        v = G;
+                        w = G;
                         continue;
                       } else if ("class" === D) {
                         J = G.split(" ");
@@ -342,7 +347,7 @@ function ra(a, c) {
               }
             }
             D = N;
-            v && (D += "#" + v);
+            w && (D += "#" + w);
             C && (D += "." + C);
             b[m] = D;
             0 === r && b.splice(P, 1);
@@ -363,7 +368,7 @@ function ra(a, c) {
     }
     m.pop();
   }
-  var w = c || null;
+  var v = c || null;
   c = "function" === typeof e ? e : null;
   var F = "function" === typeof d ? d : function() {
   };
@@ -438,7 +443,7 @@ function sa(a, c, h) {
       case 1:
         l = q[1], b = 2;
       default:
-        l = pa(l), y = l[1], u = l[2], l = l[0], b = q[b], "P" !== g || ia[l] ? g = "" : k = E(), k += "<" + l, y && (k += " id=" + X(y, w, B || n)), u && (k += " class=" + X(u, w, B || n)), B || (m = B = B || aa[l] ? !0 : !1), V(b) && (k += f(b)), k = (q = d(q, ha[l], p || ja[l])) ? k + (">" + q) : r ? k + ">" : k + (B ? " />" : ">"), r ? g = "" : B && !q || ea[l] && (!x || "P" !== l) ? g = ba[l] ? "" : l : (k += "</" + l + ">", g = ""), m && (B = !1);
+        l = pa(l), y = l[1], u = l[2], l = l[0], b = q[b], "P" !== g || ia[l] ? g = "" : k = E(), k += "<" + l, y && (k += " id=" + X(y, v, B || n)), u && (k += " class=" + X(u, v, B || n)), B || (m = B = B || aa[l] ? !0 : !1), V(b) && (k += f(b)), k = (q = d(q, ha[l], p || ja[l])) ? k + (">" + q) : r ? k + ">" : k + (B ? " />" : ">"), r ? g = "" : B && !q || ea[l] && (!x || "P" !== l) ? g = ba[l] ? "" : l : (k += "</" + l + ">", g = ""), m && (B = !1);
     }
     return k;
   }
@@ -471,7 +476,7 @@ function sa(a, c, h) {
             continue;
           }
         }
-        k += "=" + X(p, w, B || n);
+        k += "=" + X(p, v, B || n);
       }
     }
     return k;
@@ -479,13 +484,13 @@ function sa(a, c, h) {
   var t = "function" === typeof c ? c : function() {
   };
   c = h || {};
-  var n = !0 === c.quotAlways, w = !0 === c.useSingleQuot, F = c.instructionAttrPrefix || ":", g, B = !1;
+  var n = !0 === c.quotAlways, v = !0 === c.useSingleQuot, F = c.instructionAttrPrefix || ":", g, B = !1;
   if (R(a)) {
     return 7 === U(a) && (a = [11, a]), e(a, null, 0, !1, !1);
   }
 }
 ;Z.gulp = function(a, c, h, e, d) {
-  const f = require("plugin-error"), t = require("through2"), n = d || {}, w = n.outputStaticPagesAsHTML, F = n.staticPages && "object" === typeof n.staticPages ? n.staticPages : {};
+  const f = require("plugin-error"), t = require("through2"), n = d || {}, v = n.outputStaticPagesAsHTML, F = n.staticPages && "object" === typeof n.staticPages ? n.staticPages : {};
   n.staticPages = F;
   return t.obj(function(g, B, q) {
     if (g.isNull()) {
@@ -498,12 +503,12 @@ function sa(a, c, h) {
       try {
         const k = JSON.parse(g.contents.toString(B)), l = Z(k, a, c, h, e, n);
         let x;
-        if (w) {
+        if (v) {
           const p = g.path.split("\\").join("/").split(".");
           p.pop();
           F[p.join(".")] = l;
         }
-        if (l && w) {
+        if (l && v) {
           x = sa(k, e, n);
           const p = "." + g.stem.split(".").pop();
           g.stem = g.stem.substr(0, g.stem.length - g.extname.length);
