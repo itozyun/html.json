@@ -4,7 +4,6 @@ goog.requireType( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
-goog.require( 'VNode.createVNodeFromHTMLJson' );
 
 /**
  * @typedef {Object.<string, (string | number | boolean)>}
@@ -738,31 +737,6 @@ function m_parseCSSText( cssText ){
         };
     };
     return numAttrs ? styles : null;
-};
-
-/**
- * 
- * @param {!function(!VNode)} onDocumentReady
- * @param {!HTMLJson} rootHTMLJson
- * @return {boolean} isUpdated
- */
-function m_dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
-    var rootVNode = VNode.createVNodeFromHTMLJson( rootHTMLJson, false );
-
-    VNode.treeIsUpdated = false;
-
-    onDocumentReady( rootVNode );
-
-    var isUpdated = VNode.treeIsUpdated;
-
-    if( isUpdated ){
-        VNode.treeIsUpdated = false;
-        rootHTMLJson.length = 0;
-        rootHTMLJson.push.apply( rootHTMLJson, rootVNode.getHTMLJson() );
-        m_normalizeTextNodes( rootHTMLJson );
-    };
-
-    return isUpdated;
 };
 
 /**

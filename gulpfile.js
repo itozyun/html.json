@@ -90,13 +90,14 @@ gulp.task(
                                 //'./node_modules/@externs/nodejs/v8/zlib.js',
                                 //'./node_modules/@externs/nodejs/v8/path.js',
                                 './src/js-externs/externs.js',
-                                './src/js-externs/tags-and-attributes.js'
+                                './src/js-externs/tags-and-attributes.js',
+                                './src/js-externs/vnode.js'
                             ],
                             define            : [
                                 'htmljson.DEFINE.DEBUG=' + isDebug
                             ],
                             // env               : 'CUSTOM',
-                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            compilation_level : true       ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
                             formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
@@ -169,7 +170,6 @@ gulp.task(
                             dependency_mode   : 'PRUNE',
                             entry_point       : 'goog:json2html.stream',
                             externs           : [
-                                './src/js-externs/console.js',
                                 './node_modules/@externs/nodejs/v8/nodejs.js',
                                 './node_modules/@externs/nodejs/v8/global.js',
                                 //'./node_modules/@externs/nodejs/v8/fs.js',

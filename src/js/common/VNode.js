@@ -145,7 +145,7 @@ VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, op
 
 /**
  * 制限モードの時に、操作が出来る現在ノード
- *
+ * 
  * @type {VNode | null} */
 VNode.currentRestrictedVNode = null;
 
