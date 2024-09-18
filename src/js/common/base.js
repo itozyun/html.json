@@ -26,12 +26,12 @@ var InstructionArgs;
 var HTMLJson;
 
 /**
- * @typedef {(function(string, ...*):(!HTMLJson | string | number | boolean | null | void) | !Object.<(string | number), function(...*):(!HTMLJson | string | number | boolean | null | void)>)}
+ * @typedef {(function(string, ...InstructionArgs):(!HTMLJson | string | number | boolean | null | void) | !Object.<string, function(...InstructionArgs):(!HTMLJson | string | number | boolean | null | void)>)}
  */
 var InstructionHandler;
 
 /**
- * @typedef {function(!VNode) | !Object.<(string | number), function(!VNode)>}
+ * @typedef {function(!VNode) | !Array.<string | number | function(!VNode)>}
  */
 var EnterNodeHandler;
 

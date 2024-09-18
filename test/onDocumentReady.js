@@ -16,12 +16,12 @@ test('vnode',
                 },
                 null,
                 function( vnode ){
-                    vnode.getFirstChild().insertNodeLast( 3, 'CD' );
+                    vnode.getFirstChild().insertNodeLast( 3, 'CD' ).insertNodeAfter( 3, 'EF' );
                 }
             ),
             true
         );
 
-        t.deepEqual(json, [11, ['CODE', 'ABCD']]);
+        t.deepEqual(json, [11, ['CODE', 'ABCDEF']]);
     }
 );
