@@ -1333,7 +1333,7 @@ VNode.prototype.getElementListByTag = function(a) {
   });
   return b;
 };
-VNode.prototype.getElementListByTag = function(a) {
+VNode.prototype.getElementListByClass = function(a) {
   var b = [], c = -1;
   this.walkElements(function(d) {
     d.hasClassName(a) && (b[++c] = d);
@@ -1561,13 +1561,13 @@ VNode.prototype.getMyIndex = function() {
   }
   return this._parent ? this._parent._childNodes.indexOf(this) : -1;
 };
-VNode.prototype.getChildNodeLength = function() {
+VNode.prototype.getChildNodeCount = function() {
   if (htmljson.DEFINE.DEBUG) {
     if (!_canHasChildren(this)) {
-      throw "getChildNodeLength() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+      throw "getChildNodeCount() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
     if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getChildNodeLength() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+      throw "restricted mode \u3067\u306f getChildNodeCount() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   return this._childNodes && this._childNodes.length;
@@ -1592,7 +1592,7 @@ VNode.prototype.getLastChild = function() {
       throw "restricted mode \u3067\u306f getLastChild() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  return this.getChildNodeAt(this.getChildNodeLength() - 1);
+  return this.getChildNodeAt(this.getChildNodeCount() - 1);
 };
 VNode.prototype.getChildNodeAt = function(a) {
   if (htmljson.DEFINE.DEBUG) {
@@ -1671,7 +1671,7 @@ VNode.prototype.insertLast = function(a) {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
     throw "restricted mode \u3067\u306f insertLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  _insertAt(this, this.getChildNodeLength(), arguments);
+  _insertAt(this, this.getChildNodeCount(), arguments);
 };
 VNode.prototype.insertAfter = function(a) {
   if (htmljson.DEFINE.DEBUG) {
@@ -1701,7 +1701,7 @@ function _insertAt(a, b, c) {
   }
   f && (VNode.treeIsUpdated = !0);
   for (; f;) {
-    g = c[--f], g._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? g.getChildNodeLength() && _insertAt(a, b, g._childNodes) : (g.remove(), d.splice(b, 0, g), g._parent = a);
+    g = c[--f], g._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? g.getChildNodeCount() && _insertAt(a, b, g._childNodes) : (g.remove(), d.splice(b, 0, g), g._parent = a);
   }
 }
 VNode.prototype.insertElementBefore = function(a, b, c) {
@@ -1734,7 +1734,7 @@ VNode.prototype.insertElementLast = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(this.getChildNodeLength(), a, b, c);
+  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(this.getChildNodeCount(), a, b, c);
 };
 VNode.prototype.insertElementAfter = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
@@ -1775,7 +1775,7 @@ VNode.prototype.insertNodeLast = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(this.getChildNodeLength(), a, b, c);
+  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(this.getChildNodeCount(), a, b, c);
 };
 VNode.prototype.insertNodeAfter = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
@@ -1808,7 +1808,7 @@ function _walkAllDescendantNodes(a, b) {
   a = a._childNodes;
   var c = 0, d;
   if (a && (d = a.length)) {
-    var e = [0, a];
+    var e = [-1, a];
     do {
       var f = ++e[c];
       if (f = a[f]) {
@@ -1817,7 +1817,7 @@ function _walkAllDescendantNodes(a, b) {
         }
         if (f = f._childNodes) {
           if (d = f.length) {
-            c += 2, e[c + 0] = 0, e[c + 1] = a = f;
+            c += 2, e[c + 0] = -1, e[c + 1] = a = f;
           }
         }
       } else {

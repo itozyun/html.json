@@ -389,7 +389,7 @@ VNode.prototype.getElementListByTag = function( tagName ){
  * @param {string} className
  * @return {!Array.<!VNode>}
  */
-VNode.prototype.getElementListByTag = function( className ){
+VNode.prototype.getElementListByClass = function( className ){
     var elementList = [], i = -1;
 
     this.walkElements(
@@ -1407,7 +1407,7 @@ function _walkAllDescendantNodes( vnode, onEnterNode ){
     if( currentChildNodes ){
         length = currentChildNodes.length;
         if( length ){
-            combiList = [ 0, currentChildNodes ];
+            combiList = [ -1, currentChildNodes ];
             do{
                 currentIndex = ++combiList[ depthX2 ];
                 childNode = currentChildNodes[ currentIndex ];
@@ -1424,7 +1424,7 @@ function _walkAllDescendantNodes( vnode, onEnterNode ){
                         length = childsChildNodes.length;
                         if( length ){
                             depthX2 += 2;
-                            combiList[ depthX2 + 0 ] = 0;
+                            combiList[ depthX2 + 0 ] = -1;
                             combiList[ depthX2 + 1 ] = currentChildNodes = childsChildNodes;
                         };
                     };

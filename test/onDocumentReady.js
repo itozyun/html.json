@@ -17,6 +17,8 @@ test('vnode',
                 null,
                 function( vnode ){
                     vnode.getFirstChild().insertNodeLast( 3, 'CD' ).insertNodeAfter( 3, 'EF' );
+
+                    console.log( vnode.getElementListByTag( 'CODE' )[ 0 ].getHTMLJson() );
                 }
             ),
             true
