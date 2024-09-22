@@ -6,58 +6,6 @@ goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.base' );
 
 /**
- * @private
- * @param {!VNode} vnode 
- * @return {boolean} 
- */
-function _canHasChildren( vnode ){
-    return vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
-           vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ||
-           vnode._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER ||
-           vnode._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ||
-           _isDocOrDocFragment( vnode );
-};
-
-/**
- * @private
- * @param {!VNode} vnode 
- * @return {boolean} 
- */
-function _isDocOrDocFragment( vnode ){
-    return vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE ||
-           vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-};
-
-/**
- * @private
- * @param {!VNode} vnode 
- * @return {boolean} 
- */
-function _isCurrentVNode( vnode ){
-    return vnode === VNode.currentRestrictedVNode && !vnode._removed;
-};
-
-/**
- * @private
- * @param {!VNode} vnode 
- * @return {boolean} 
- */
-function _isCurrentVNodeAndCanHaveChildren( vnode ){
-    return _isCurrentVNode( vnode ) && _canHasChildren( vnode );
-};
-
-/**
- * @private
- * @param {*} oldValue 
- * @param {*} newValue 
- */
-function _compare( oldValue, newValue ){
-    if( oldValue !== newValue ){
-        VNode.treeIsUpdated = true;
-    };
-};
-
-/**
  * @constructor
  * 
  * @param {!VNode | boolean} parentOrMode
@@ -166,7 +114,7 @@ VNode.prototype.getHTMLJson = function(){
         };
     };
 
-    var json = [ this._nodeType ], childNodes = this._childNodes, i, l;
+    var json = [ this._nodeType ], childNodes = this._childNodes, args, i, l;
 
     switch( this._nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE      :
@@ -181,8 +129,12 @@ VNode.prototype.getHTMLJson = function(){
             json[ 1 ] = this._tagName;
             break;
         case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION        :
-            json[ 2 ] = this._args;
-            // TODO
+            args = this._args;
+            if( args ){
+                for( i = 0, l = args.length; i < l; ++i ){
+                    json[ 2 + i ] = args[ i ];
+                };
+            };
         case htmljson.NODE_TYPE.TEXT_NODE                     :
         case htmljson.NODE_TYPE.CDATA_SECTION                 :
         case htmljson.NODE_TYPE.COMMENT_NODE                  :
@@ -229,7 +181,7 @@ VNode.prototype.setNodeType = function( nodeType ){
             throw 'nodeType の変更は DOCUMENT_FRAGMENT_NODE -> DOCUMENT_NODE だけをサポートします!';
         };
     };
-    _compare( this._nodeType, nodeType );
+    _compareValuesAndSetUpdatedFlag( this._nodeType, nodeType );
     this._nodeType = nodeType;
 };
 
@@ -278,7 +230,7 @@ VNode.prototype.setNodeValue = function( nodeValue ){
         case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
         case htmljson.NODE_TYPE.COMMENT_NODE           :
         case htmljson.NODE_TYPE.DOCUMENT_NODE          :
-            _compare( this._nodeValue, nodeValue );
+            _compareValuesAndSetUpdatedFlag( this._nodeValue, nodeValue );
             this._nodeValue = nodeValue;
             break;
         default :
@@ -318,7 +270,7 @@ VNode.prototype.finalize = function(){
             throw 'finalize() をサポートしない nodeType です!';
         };
     };
-    _compare( this._nodeType, htmljson.NODE_TYPE.ELEMENT_NODE );
+    _compareValuesAndSetUpdatedFlag( this._nodeType, htmljson.NODE_TYPE.ELEMENT_NODE );
     this._nodeType = htmljson.NODE_TYPE.ELEMENT_NODE;
 };
 
@@ -354,6 +306,122 @@ VNode.prototype.isValid = function(){
 
 /*=============================================================================
  *
+ *  
+ *
+ */
+
+/**
+ * 
+ * @param {!function(!VNode):(boolean | void)} onEnterNode
+ */
+VNode.prototype.walkNodes = function( onEnterNode ){
+    _walkAllDescendantNodes( this, onEnterNode );
+};
+
+/**
+ * 
+ * @param {!function(!VNode):(boolean | void)} onEnterNode
+ */
+VNode.prototype.walkElements = function( onEnterNode ){
+    _walkAllDescendantNodes(
+        this,
+        function( vnode ){
+            if( vnode.isElement() ){
+                return onEnterNode( vnode );
+            };
+        }
+    );
+};
+
+/**
+ * 
+ * @param {!function(!VNode):(boolean | void)} onEnterNode
+ */
+VNode.prototype.walkText = function( onEnterNode ){
+    _walkAllDescendantNodes(
+        this,
+        function( vnode ){
+            if( vnode._nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
+                return onEnterNode( vnode );
+            };
+        }
+    );
+};
+
+/**
+ * 
+ * @param {string} id
+ */
+VNode.prototype.getElementByID = function( id ){
+    var result = null;
+
+    this.walkElements(
+        function( vnode ){
+            if( vnode.getAttr( 'id' ) === id ){
+                result = vnode;
+                return true;
+            };
+        }
+    );
+    return result;
+};
+
+/**
+ * 
+ * @param {string} tagName
+ * @return {!Array.<!VNode>}
+ */
+VNode.prototype.getElementListByTag = function( tagName ){
+    var elementList = [], i = -1;
+
+    this.walkElements(
+        function( vnode ){
+            if( vnode._tagName === tagName ){ // TODO XMLDocument
+                elementList[ ++i ] = vnode;
+            };
+        }
+    );
+    return elementList;
+};
+
+/**
+ * 
+ * @param {string} className
+ * @return {!Array.<!VNode>}
+ */
+VNode.prototype.getElementListByTag = function( className ){
+    var elementList = [], i = -1;
+
+    this.walkElements(
+        function( vnode ){
+            if( vnode.hasClassName( className ) ){
+                elementList[ ++i ] = vnode;
+            };
+        }
+    );
+    return elementList;
+};
+
+/**
+ * 
+ * @param {string} name
+ * @return {!Array.<!VNode>}
+ */
+VNode.prototype.getElementListByName = function( name ){
+    var elementList = [], i = -1;
+
+    this.walkElements(
+        function( vnode ){
+            if( vnode.getAttr( 'name' ) === name ){
+                elementList[ ++i ] = vnode;
+            };
+        }
+    );
+    return elementList;
+};
+
+/*=============================================================================
+ *
  *  only element
  *
  */
@@ -381,7 +449,7 @@ VNode.prototype.setTagName = function( tagName ){
             throw 'getTagName() をサポートしない nodeType です!';
         };
     };
-    _compare( this._tagName, tagName );
+    _compareValuesAndSetUpdatedFlag( this._tagName, tagName );
     this._tagName = tagName;
 };
 
@@ -530,16 +598,16 @@ VNode.prototype.setAttr = function( name, value ){
     };
 
     if( name === 'class' || name === 'className' ){
-        _compare( this._className, value );
+        _compareValuesAndSetUpdatedFlag( this._className, value );
         this._className = value;
     } else if( name === 'id' ){
-        _compare( this._id, value );
+        _compareValuesAndSetUpdatedFlag( this._id, value );
         this._id = value;
     } else {
         if( !m_isAttributes( this._attrs ) ){
             this._attrs = {};
         };
-        _compare( this._attrs[ name ], value );
+        _compareValuesAndSetUpdatedFlag( this._attrs[ name ], value );
         this._attrs[ name ] = value;
     };
 };
@@ -559,13 +627,13 @@ VNode.prototype.removeAttr = function( name ){
     };
 
     if( name === 'class' || name === 'className' ){
-        _compare( this._className, '' );
+        _compareValuesAndSetUpdatedFlag( this._className, '' );
         this._className = '';
     } else if( name === 'id' ){
-        _compare( this._id, '' );
+        _compareValuesAndSetUpdatedFlag( this._id, '' );
         this._id = '';
     } else if( m_isAttributes( this._attrs ) ){
-        _compare( this._attrs[ name ], undefined );
+        _compareValuesAndSetUpdatedFlag( this._attrs[ name ], undefined );
         delete this._attrs[ name ];
     };
 };
@@ -618,7 +686,7 @@ VNode.prototype.setStyle = function( name, value ){
     };
     var _value = value === '0px' ? 0 : m_tryToFiniteNumber( value );
 
-    _compare( style[ name ], _value );
+    _compareValuesAndSetUpdatedFlag( style[ name ], _value );
     style[ name ] = _value;
 };
 
@@ -644,11 +712,50 @@ VNode.prototype.removeStyle = function( name ){
         this.setAttr( 'style', style );
     };
     if( style ){
-        _compare( style[ name ], undefined );
+        _compareValuesAndSetUpdatedFlag( style[ name ], undefined );
         delete style[ name ];
     };
 };
 
+/**
+ * 
+ * @return {string}
+ */
+VNode.prototype.getTextContent = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getStyle() をサポートしない nodeType です!';
+        };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への getTextContent() は非対応です!';
+        };
+    };
+    var textContent = '';
+
+    this.walkText(
+        function( vnode ){
+            textContent += vnode.getNodeValue();
+        }
+    );
+    return textContent;
+};
+
+/**
+ * 
+ * @param {string} text
+ */
+VNode.prototype.setTextContent = function( text ){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() ){
+            throw 'getStyle() をサポートしない nodeType です!';
+        };
+        if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
+            throw 'restricted mode では現在のノード以外への setTextContent() は非対応です!';
+        };
+    };
+    this.empty();
+    this.insertNodeFirst( htmljson.NODE_TYPE.TEXT_NODE, text );
+};
 
 /*=============================================================================
  *
@@ -1213,4 +1320,116 @@ VNode.prototype.insertNodeAfter = function( nodeType, opt_nodeValueOrTag, opt_at
     };
 
     return this._parent ? this._parent.insertNodeAt( this.getMyIndex() + 1, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ) : null;
+};
+
+
+/*=============================================================================
+ *
+ *  private
+ *
+ */
+
+/**
+ * @private
+ * @enum {number}
+ */
+var _RESTRICTED_MODE = {
+    NO_RESTRICTIONS           : 0,
+    NEW_NODE                  : 1,
+    CURRENT_NODE_EMPTY        : 2,
+    CURRENT_NODE_HAS_CHILDREN : 3,
+    READ_ONLY                 : 4
+};
+
+/**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _canHasChildren( vnode ){
+    return vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
+           vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG ||
+           vnode._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER ||
+           vnode._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ||
+           _isDocOrDocFragment( vnode );
+};
+
+/**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _isDocOrDocFragment( vnode ){
+    return vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE ||
+           vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+};
+
+/**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _isCurrentVNode( vnode ){
+    return vnode === VNode.currentRestrictedVNode && !vnode._removed;
+};
+
+/**
+ * @private
+ * @param {!VNode} vnode 
+ * @return {boolean} 
+ */
+function _isCurrentVNodeAndCanHaveChildren( vnode ){
+    return _isCurrentVNode( vnode ) && _canHasChildren( vnode );
+};
+
+/**
+ * @private
+ * @param {*} oldValue 
+ * @param {*} newValue 
+ */
+function _compareValuesAndSetUpdatedFlag( oldValue, newValue ){
+    if( oldValue !== newValue ){
+        VNode.treeIsUpdated = true;
+    };
+};
+
+/**
+ * 再帰呼び出しを使わずに文書ツリーを遡っています
+ * 
+ * @param {!VNode} vnode
+ * @param {!function(!VNode):(boolean | void)} onEnterNode コールバック内で要素の削除と追加はできません、index が狂います
+ */
+function _walkAllDescendantNodes( vnode, onEnterNode ){
+    var currentChildNodes = vnode._childNodes,
+        depthX2           = 0,
+        combiList, currentIndex, childNode, childsChildNodes, length;
+
+    if( currentChildNodes ){
+        length = currentChildNodes.length;
+        if( length ){
+            combiList = [ 0, currentChildNodes ];
+            do{
+                currentIndex = ++combiList[ depthX2 ];
+                childNode = currentChildNodes[ currentIndex ];
+                if( !childNode ){
+                    combiList.length = depthX2;
+                    depthX2 -= 2;
+                    currentChildNodes = combiList[ depthX2 + 1 ];
+                } else {
+                    if( onEnterNode( childNode ) === true ){
+                        break;
+                    };
+                    childsChildNodes = childNode._childNodes;
+                    if( childsChildNodes ){
+                        length = childsChildNodes.length;
+                        if( length ){
+                            depthX2 += 2;
+                            combiList[ depthX2 + 0 ] = 0;
+                            combiList[ depthX2 + 1 ] = currentChildNodes = childsChildNodes;
+                        };
+                    };
+                };
+            } while( 0 <= depthX2 );
+        };
+    };
 };

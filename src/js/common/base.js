@@ -685,16 +685,16 @@ function m_createTagName( tagName, id, className ){
  * @return {Styles | null}
  */
 function m_parseCSSText( cssText ){
-    function saveCSSProperty( value ){
+    function saveCSSProperty( property, value ){
         styles[ property ] = value === '0px' ? 0 : m_tryToFiniteNumber( value );
-        ++numAttrs;
+        ++numProps;
     };
 
     var phase    = 0,
         l        = cssText.length,
-        i        = 1,
+        i        = 0,
         styles   = {},
-        numAttrs = 0,
+        numProps = 0,
         chr, start, quot, property;
 
     while( i < l ){
@@ -720,23 +720,25 @@ function m_parseCSSText( cssText ){
                     phase = 3;
                 };
                 break;
-            case 3 : // property:value; or style="property:value"
+            case 3 : // property:value;
                      //          ^^^^^
                 if( quot === chr ){
                     quot = '';
-                } else if( chr === '"' || chr === "'" ){
-                    quot = chr;
-                } else if( !quot && chr === ';' ){
-                    saveCSSProperty( cssText.substring( /** @type {number} */ (start), i ) );
-                    phase = 0;
+                } else if( !quot ){
+                    if( chr === '"' || chr === "'" ){
+                        quot = chr;
+                    } else if( chr === ';' ){
+                        saveCSSProperty( property, cssText.substring( /** @type {number} */ (start), i ) );
+                        phase = 0;
+                    };
                 };
                 break;
         };
-        if( phase === 1 ){
-            saveCSSProperty( cssText.substring( /** @type {number} */ (start) ) );
+        if( phase === 3 ){
+            saveCSSProperty( property, cssText.substring( /** @type {number} */ (start) ) );
         };
     };
-    return numAttrs ? styles : null;
+    return numProps ? styles : null;
 };
 
 /**
