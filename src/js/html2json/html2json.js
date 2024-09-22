@@ -110,7 +110,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
 
                 currentJSONNode = numAttrs ? [ tagName, attrs ] : [ tagName ];
 
-                for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
+                for( i = 0; i < currentVNode.getChildNodeCount(); ++i ){
                     walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
                 };
                 parentJSONNode.push( currentJSONNode );
@@ -152,7 +152,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     vDocFragment    = _createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
 
-                    for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
+                    for( i = 0; i < vDocFragment.getChildNodeCount(); ++i ){
                         walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, isDescendantOfPre, isTrimNewlines );
                     };
                     if( 2 < currentJSONNode.length || keepEmptyCondCmt ){
@@ -163,7 +163,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     vDocFragment    = _createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
                     currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) ];
 
-                    for( i = 0; i < vDocFragment.getChildNodeLength(); ++i ){
+                    for( i = 0; i < vDocFragment.getChildNodeCount(); ++i ){
                         walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentJSONNode, isDescendantOfPre, isTrimNewlines );
                     };
                     if( 2 < currentJSONNode.length || keepEmptyCondCmt ){
@@ -197,14 +197,14 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 };
                 currentJSONNode = [ htmljson.NODE_TYPE.DOCUMENT_NODE, nodeValue ];
                 parentJSONNode.push( currentJSONNode );
-                for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
+                for( i = 0; i < currentVNode.getChildNodeCount(); ++i ){
                     walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, false, false );
                 };
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 currentJSONNode = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ];
                 parentJSONNode.push( currentJSONNode );
-                for( i = 0; i < currentVNode.getChildNodeLength(); ++i ){
+                for( i = 0; i < currentVNode.getChildNodeCount(); ++i ){
                     walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentJSONNode, isDescendantOfPre, isTrimNewlines );
                 };
                 break;
@@ -257,7 +257,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
      * @return {!VNode | void}
      */
     function getFirstTextNode( vElement ){
-        for( var i = 0, l = vElement.getChildNodeLength(), node; i < l; ++i ){
+        for( var i = 0, l = vElement.getChildNodeCount(), node; i < l; ++i ){
             node = vElement.getChildNodeAt( i );
             if( node.isElement() ){
                 node = getFirstTextNode( node );
@@ -274,7 +274,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
      * @return {!VNode | void}
      */
     function getLastTextNode( vElement ){
-        for( var i = vElement.getChildNodeLength(), node; i; ){
+        for( var i = vElement.getChildNodeCount(), node; i; ){
             node = vElement.getChildNodeAt( --i );
             if( node.isElement() ){
                 node = getLastTextNode( node );

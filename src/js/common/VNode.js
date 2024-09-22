@@ -841,13 +841,13 @@ VNode.prototype.getMyIndex = function(){
  * 
  * @return {number}
  */
-VNode.prototype.getChildNodeLength = function(){
+VNode.prototype.getChildNodeCount = function(){
     if( htmljson.DEFINE.DEBUG ){
         if( !_canHasChildren( this ) ){
-            throw 'getChildNodeLength() をサポートしない nodeType です!';
+            throw 'getChildNodeCount() をサポートしない nodeType です!';
         };
         if( this._isRestrictedMode ){
-            throw 'restricted mode では getChildNodeLength() は非対応です!';
+            throw 'restricted mode では getChildNodeCount() は非対応です!';
         };
     };
 
@@ -883,7 +883,7 @@ VNode.prototype.getLastChild = function(){
         };
     };
 
-    return this.getChildNodeAt( this.getChildNodeLength() - 1 );
+    return this.getChildNodeAt( this.getChildNodeCount() - 1 );
 };
 
 /**
@@ -1026,7 +1026,7 @@ VNode.prototype.insertLast = function( ___vnode ){
         };
     };
 
-    _insertAt( this, this.getChildNodeLength(), arguments );
+    _insertAt( this, this.getChildNodeCount(), arguments );
 };
 /**
  * @param {...VNode} ___vnode */
@@ -1079,7 +1079,7 @@ function _insertAt( parent, index, vnodes ){
     for( ; i; ){
         vnode = vnodes[ --i ];
         if( vnode._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
-            vnode.getChildNodeLength() && _insertAt( parent, index, vnode._childNodes );
+            vnode.getChildNodeCount() && _insertAt( parent, index, vnode._childNodes );
         } else {
             vnode.remove();
             childNodes.splice( index, 0, vnode );
@@ -1180,7 +1180,7 @@ VNode.prototype.insertElementLast = function( tagName, opt_attrs, opt_textConten
         return null;
     };
 
-    return this.insertElementAt( this.getChildNodeLength(), tagName, opt_attrs, opt_textContent );
+    return this.insertElementAt( this.getChildNodeCount(), tagName, opt_attrs, opt_textContent );
 };
 /**
  * @param {string} tagName 
@@ -1295,7 +1295,7 @@ VNode.prototype.insertNodeLast = function( nodeType, opt_nodeValueOrTag, opt_att
         return null;
     };
 
-    return this.insertNodeAt( this.getChildNodeLength(), nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
+    return this.insertNodeAt( this.getChildNodeCount(), nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
 };
 /**
  * @param {number} nodeType
