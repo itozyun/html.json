@@ -671,6 +671,22 @@ function m_createTagName( tagName, id, className ){
 };
 
 /**
+ * @param {!Styles} styles 
+ * @return {string}
+ */
+function m_toCSSTest( styles ){
+    var cssText = [],
+        i = -1, name, value;
+
+    for( name in styles ){
+        value = styles[ name ];
+        value === '0px' && ( value = 0 );
+        cssText[ ++i ] = m_toSnakeCase( name ) + ':' + m_escapeForHTML( '' + value );
+    };
+    return cssText.join( ';' ).substr( 1 );
+};
+
+/**
  * cssText は : ; を区切り文字にするが、次のケースがあるため
  *   content:";"; content:":";
  *           ^^^          ^^^

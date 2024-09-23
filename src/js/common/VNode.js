@@ -114,15 +114,19 @@ VNode.prototype.getHTMLJson = function(){
         };
     };
 
-    var json = [ this._nodeType ], childNodes = this._childNodes, args, i, l;
+    var json = [ this._nodeType ], childNodes = this._childNodes, attrs, args, i, l;
 
     switch( this._nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE      :
             json.length = 0;
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             json.push( this._tagName );
-            if( m_isAttributes( this._attrs ) ){
-                json.push( this._attrs );
+            attrs = this._attrs;
+            if( m_isAttributes( attrs ) ){
+                json.push( attrs );
+                if( attrs.style && m_isObject( attrs.style ) ){
+                    attrs.style = m_toCSSTest( /** @type {!Styles} */ (attrs.style) );
+                };
             };
             break;
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :

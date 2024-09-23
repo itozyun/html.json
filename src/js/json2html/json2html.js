@@ -288,7 +288,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
 
                 if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] ){
                     if( name === 'style' && m_isObject( value ) ){
-                        value = toCSSTest( /** @type {!Styles} */ (value) );
+                        value = m_toCSSTest( /** @type {!Styles} */ (value) );
                         if( !value ) continue;
                     };
                     attrText += '=' + m_quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
@@ -296,21 +296,5 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
             };
         };
         return attrText;
-    };
-
-    /**
-     * @param {!Styles} styles 
-     * @return {string}
-     */
-    function toCSSTest( styles ){
-        var cssText = [],
-            i = -1, name, value;
-    
-        for( name in styles ){
-            value = styles[ name ];
-            value === '0px' && ( value = 0 );
-            cssText[ ++i ] = m_toSnakeCase( name ) + ':' + m_escapeForHTML( '' + value );
-        };
-        return cssText.join( ';' ).substr( 1 );
     };
 };
