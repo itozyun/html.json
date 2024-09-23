@@ -6,6 +6,7 @@ goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmljson.DEFINE.USE_XHTML' );
+goog.require( 'VNode' );
 
 /**
  * @param {!HTMLJson} rootHTMLJson
@@ -40,7 +41,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
         if( m_getNodeType( rootHTMLJson ) === htmljson.NODE_TYPE.PROCESSING_INSTRUCTION ){
             rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, rootHTMLJson ];
         };
-        return /** @type {string} */ (walkNode( rootHTMLJson, null, 0, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false ));
+        return /** @type {string} */ (walkNode( rootHTMLJson, null, null, 0, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false ));
     } else if( htmljson.DEFINE.DEBUG ){
         onError( 'Invalid html.json document!' );
     };
@@ -48,13 +49,14 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
     /**
      * 
      * @param {!HTMLJson} currentJSONNode 
-     * @param {HTMLJson | null} parentJSONNode 
+     * @param {HTMLJson | null} parentJSONNode
+     * @param {VNode | null} parentVNode
      * @param {number} myIndex 
      * @param {boolean} pEndTagRequired 
      * @param {boolean} escapeForHTMLDisabled 
      * @return {string | number} html string
      */
-    function walkNode( currentJSONNode, parentJSONNode, myIndex, pEndTagRequired, escapeForHTMLDisabled ){
+    function walkNode( currentJSONNode, parentJSONNode, parentVNode, myIndex, pEndTagRequired, escapeForHTMLDisabled ){
         function appendOmittedEndTagBasedOnFollowingNode(){
             var htmlString = '';
 
@@ -65,22 +67,27 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
             return htmlString;
         };
 
-        var htmlString = '',
+        var currentVNode = onEnterNode ? m_executeEnterNodeHandler( currentJSONNode, parentVNode, onEnterNode ) : null,
+            htmlString = /* currentVNode ? m_getHTMLStringBefore( currentVNode ) : */ '',
             arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
             attrIndex = 1, isElementWithoutEndTag, tagName = arg0, attrs,
             result,
             id, className, childNodesContents, isXMLRoot;
 
+        if( currentVNode && currentVNode._removed ){
+            // return m_getHTMLStringAfter( currentVNode );
+        };
+
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
                 if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
                     isXmlInHTML = true;
                 };
-                htmlString = '<!DOCTYPE ' + arg1 + '>' + walkChildNodes( currentJSONNode, false, escapeForHTMLDisabled );
+                htmlString = '<!DOCTYPE ' + arg1 + '>' + walkChildNodes( currentJSONNode, currentVNode, false, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                htmlString = walkChildNodes( currentJSONNode, pEndTagRequired, escapeForHTMLDisabled );
+                htmlString = walkChildNodes( currentJSONNode, currentVNode, pEndTagRequired, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
                 htmlString = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? arg1 : m_escapeForHTML( '' + arg1 ) );
@@ -102,14 +109,14 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
                 if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     onError( 'COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString = appendOmittedEndTagBasedOnFollowingNode() + '<!--[' + arg1 + ']>' + walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
+                htmlString = appendOmittedEndTagBasedOnFollowingNode() + '<!--[' + arg1 + ']>' + walkChildNodes( currentJSONNode, currentVNode, true, escapeForHTMLDisabled ) + '<![endif]-->';
                 break;
             case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント
                 if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     onError( 'NETSCAPE4_COND_CMT_HIDE_LOWER Error! [' + currentJSONNode + ']' );
                 };
-                htmlString = appendOmittedEndTagBasedOnFollowingNode() + '<!--{' + arg1 + '};' + walkChildNodes( currentJSONNode, true, escapeForHTMLDisabled ) + '-->';
+                htmlString = appendOmittedEndTagBasedOnFollowingNode() + '<!--{' + arg1 + '};' + walkChildNodes( currentJSONNode, currentVNode, true, escapeForHTMLDisabled ) + '-->';
                 break;
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
                 // 下の階層が見える条件付きコメント
@@ -187,7 +194,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
                     htmlString += walkAttributes( /** @type {!Attrs} */ (attrs) );
                 };
                 // childNodes
-                childNodesContents = walkChildNodes( currentJSONNode, m_CHILD_P_MUST_HAVE_END_TAG[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_ELEMENTS[ tagName ] );
+                childNodesContents = walkChildNodes( currentJSONNode, currentVNode, m_CHILD_P_MUST_HAVE_END_TAG[ tagName ], escapeForHTMLDisabled || m_UNESCAPED_ELEMENTS[ tagName ] );
 
                 if( childNodesContents ){
                     htmlString += '>' + childNodesContents;
@@ -230,12 +237,13 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
 
     /**
      * 
-     * @param {!HTMLJson} currentJSONNode 
+     * @param {!HTMLJson} currentJSONNode
+     * @param {VNode | null} currentVNode
      * @param {boolean} pEndTagRequired 
      * @param {boolean} escapeForHTMLDisabled 
      * @return {string}
      */
-    function walkChildNodes( currentJSONNode, pEndTagRequired, escapeForHTMLDisabled ){
+    function walkChildNodes( currentJSONNode, currentVNode, pEndTagRequired, escapeForHTMLDisabled ){
         var htmlString = [],
             i = m_getChildNodeStartIndex( currentJSONNode ),
             j = -1,
@@ -245,9 +253,9 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
             childNode = currentJSONNode[ i ];
 
             if( m_isStringOrNumber( childNode ) ){
-                htmlString[ ++j ] = walkNode( [ htmljson.NODE_TYPE.TEXT_NODE, childNode ], currentJSONNode, i, false, escapeForHTMLDisabled );
+                htmlString[ ++j ] = walkNode( [ htmljson.NODE_TYPE.TEXT_NODE, childNode ], currentJSONNode, currentVNode, i, false, escapeForHTMLDisabled );
             } else if( m_isArray( childNode ) ){
-                htmlPartString = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i, pEndTagRequired, escapeForHTMLDisabled );
+                htmlPartString = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, currentVNode, i, pEndTagRequired, escapeForHTMLDisabled );
                 if( htmlPartString === REMOVED ){
                     --i;
                 } else {
@@ -257,7 +265,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
                 onError( 'Invalid html.json! [' + childNode + ']' );
             };
         };
-        return htmlString.join( '' );
+        return htmlString.join( '' ); // + m_getHTMLStringAfter( currentVNode );
     };
 
     /**
