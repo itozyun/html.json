@@ -4,7 +4,8 @@ goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
-goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
+goog.require( 'htmlparser.isXMLRootElement' );
+goog.require( 'htmlparser.isNamespacedTag' );
 goog.require( 'VNode' );
 
 /**
@@ -210,10 +211,10 @@ json2json = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDo
     function isXML( tagName ){
         if( isXmlInHTML ){
             return true;
-        } else if( htmlparser.XML_ROOT_ELEMENTS[ tagName ] ){
+        } else if( htmlparser.isXMLRootElement( tagName ) ){
             return true;
         };
-        return m_isNamespacedTag( tagName ); 
+        return htmlparser.isNamespacedTag( tagName ); 
     };
 
     /**

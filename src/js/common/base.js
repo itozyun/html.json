@@ -208,16 +208,6 @@ function m_isXML( xmlDeclarationAndDocumentType ){
 };
 
 /**
- * `m_isNamespacedTag("v:path") => true`
- * 
- * @param {string} tagName 
- * @return {boolean}
- */
-function m_isNamespacedTag( tagName ){
-    return htmljson.DEFINE.USE_XML_NS ? 0 < tagName.indexOf( ':' ) : false;
-};
-
-/**
  * 
  * @param {*} value 
  * @return {number} nodeType(htmljson.NODE_TYPE)

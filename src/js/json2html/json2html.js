@@ -1,7 +1,8 @@
 goog.provide( 'json2html' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
-goog.require( 'htmlparser.XML_ROOT_ELEMENTS' );
+goog.require( 'htmlparser.isXMLRootElement' );
+goog.require( 'htmlparser.isNamespacedTag' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -84,7 +85,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
                 if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
                     isXmlInHTML = true;
                 };
-                htmlString = '<!DOCTYPE ' + arg1 + '>' + walkChildNodes( currentJSONNode, currentVNode, false, escapeForHTMLDisabled );
+                htmlString = arg1 + walkChildNodes( currentJSONNode, currentVNode, false, escapeForHTMLDisabled );
                 break;
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                 htmlString = walkChildNodes( currentJSONNode, currentVNode, pEndTagRequired, escapeForHTMLDisabled );
@@ -229,10 +230,10 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
     function isXML( tagName ){
         if( isXmlInHTML ){
             return true;
-        } else if( htmlparser.XML_ROOT_ELEMENTS[ tagName ] ){
+        } else if( htmlparser.isXMLRootElement( tagName ) ){
             return true;
         };
-        return m_isNamespacedTag( tagName ); // v: vml
+        return htmlparser.isNamespacedTag( tagName ); // v: vml
     };
 
     /**

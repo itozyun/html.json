@@ -7,7 +7,7 @@ test('simple', (t) => {
     t.deepEqual(JSON.stringify(html2json('<!DOCTYPE html><html><head></head><body><p>Hello,World!'), null, '    '),
 `[
     9,
-    "html",
+    "<!DOCTYPE html>",
     [
         "HTML",
         [
