@@ -76,19 +76,3 @@ Vinyl.prototype.stat.ctimeMs = 0;
 
 function through2(){};
 through2.obj = function(){};
-
-/**
- * @constructor
- * @extends {stream.Writable}
- */
-function Through(){};
-
-Through.prototype.end     = function( data ){};
-Through.prototype.destroy = function(){};
-Through.prototype.pause   = function(){};
-Through.prototype.resume  = function(){};
-Through.prototype.queue   = function( data ){};
-Through.prototype.push    = function( data ){};
-
-/** {Parser} */
-Through.prototype._parser;

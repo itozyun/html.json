@@ -11,7 +11,7 @@ test('stream', async t => {
     function onInstruction( funcName, args ){
         // console.log( funcName, args );
 
-        return funcName === 'date' ? date.toLocaleString() : undefined
+        return funcName === 'date' ? date.toLocaleString() + args[0] + args[1].aa : undefined
     };
 
     await new Promise((resolve) => {

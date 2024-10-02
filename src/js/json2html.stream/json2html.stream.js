@@ -13,12 +13,9 @@ goog.require( 'json2html' );
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js
 
 goog.require( 'Parser' );
-goog.require( 'through' );
-// import Parser from 'jsonparse';
-
-// import through from 'through';
-
-const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
+goog.require( 'Parser.C' );
+goog.require( 'bufferFrom' );
+goog.require( 'Through' );
 
 /**
  * @param {!InstructionHandler=} opt_onInstruction
@@ -29,7 +26,7 @@ const bufferFrom = Buffer.from && Buffer.from !== Uint8Array.from;
  */
 module.exports = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const parser  = new Parser();
-    const stream  = /** @type {!Through} */ (through( writeHandler, endHandler ));
+    const stream  = /** @type {!Through} */ (new Through( writeHandler, endHandler ));
     const options = opt_options || {};
 
                   stream._parser        = parser;
@@ -67,18 +64,18 @@ module.exports.ELEMENT_END_TAG               = htmljson.NODE_TYPE.ELEMENT_END_TA
 
 /**
  * @this {!Through}
- * @param {!Buffer|string} chunk 
+ * @param {!Buffer | string} chunk 
  */
 function writeHandler( chunk ){
     if( 'string' === typeof chunk ){
-        chunk = bufferFrom ? Buffer.from( chunk ) : new Buffer( chunk );
+        chunk = bufferFrom( chunk );
     };
     this._parser.write( chunk );
 };
 
 /**
  * @this {!Through}
- * @param {Buffer|null|string} data 
+ * @param {(Buffer | null | string)=} data 
  */
 function endHandler( data ){
     if( data ){
@@ -112,8 +109,8 @@ function onError( err ){
  * @param {*} value 
  */
 function onToken( token, value ){
-    if( token === /* Parser.C. */COLON || token === /* Parser.C. */COMMA ){
-        if( this.stack.length ){
+    if( token === Parser.C.COLON || token === Parser.C.COMMA ){
+        if( this.jsonStack.length ){
             this._createValue( token, value );
         };
         return;
@@ -276,12 +273,12 @@ function onToken( token, value ){
     switch( expect ){
         case htmljson.EXPECT.PROCESSING_INSTRUCTION_ARGS :
             switch( token ){
-                case /* Parser.C. */LEFT_BRACKET : // [
-                case /* Parser.C. */LEFT_BRACE   : // {
+                case Parser.C.LEFT_BRACKET : // [
+                case Parser.C.LEFT_BRACE   : // {
                     this._createValue( token, value );
                     return;
-                case /* Parser.C. */RIGHT_BRACKET : // ]
-                    if( this.stack.length === 0 ){ // end of arguments
+                case Parser.C.RIGHT_BRACKET : // ]
+                    if( this.jsonStack.length === 0 ){ // end of arguments
                         const result = executeProcessingInstruction();
 
                         if( m_isArray( result ) ){
@@ -306,19 +303,19 @@ function onToken( token, value ){
                         createEndTag( !!queue );
                         break;
                     };
-                case /* Parser.C. */RIGHT_BRACE : // }
-                    if( this.stack.length === 1 ){
-                        this._args.push( this.value );
-                        this.value = null;
+                case Parser.C.RIGHT_BRACE : // }
+                    if( this.jsonStack.length === 1 ){
+                        this._args.push( this.currentValue );
+                        this.currentValue = null;
                     };
                     this._createValue( token, value );
                     return;
-                case /* Parser.C. */STRING :
-                case /* Parser.C. */NUMBER :
-                case /* Parser.C. */TRUE   :
-                case /* Parser.C. */FALSE  :
-                case /* Parser.C. */NULL   :
-                    if( this.stack.length ){
+                case Parser.C.STRING :
+                case Parser.C.NUMBER :
+                case Parser.C.TRUE   :
+                case Parser.C.FALSE  :
+                case Parser.C.NULL   :
+                    if( this.jsonStack.length ){
                         this._createValue( token, value );
                     } else {
                         this._args.push( value );
@@ -331,35 +328,35 @@ function onToken( token, value ){
             break;
         case htmljson.EXPECT.IN_INSTRUCTION_ATTRIBUTE :
             switch( token ){
-                case /* Parser.C. */LEFT_BRACKET : // [
-                case /* Parser.C. */LEFT_BRACE   : // {
+                case Parser.C.LEFT_BRACKET : // [
+                case Parser.C.LEFT_BRACE   : // {
                     this._createValue( token, value );
                     return;
-                case /* Parser.C. */RIGHT_BRACKET : // ]
-                    if( this.stack.length === 0 ){ // end of arguments
+                case Parser.C.RIGHT_BRACKET : // ]
+                    if( this.jsonStack.length === 0 ){ // end of arguments
                         // !_functionName => error
                         queue  = createAttributeNodeString( executeInstructionAttr() );
                         expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
                         break;
                     };
-                case /* Parser.C. */RIGHT_BRACE   : // }
-                    if( this.stack.length === 1 ){
-                        this._args.push( this.value );
-                        this.value = null;
+                case Parser.C.RIGHT_BRACE   : // }
+                    if( this.jsonStack.length === 1 ){
+                        this._args.push( this.currentValue );
+                        this.currentValue = null;
                     };
                     this._createValue( token, value );
                     return;
-                case /* Parser.C. */STRING :
-                    if( this.stack.length === 0 && !this._functionName ){
+                case Parser.C.STRING :
+                    if( this.jsonStack.length === 0 && !this._functionName ){
                         // _args.length => error
                         this._functionName = value;
                         return;
                     };
-                case /* Parser.C. */NUMBER :
-                case /* Parser.C. */TRUE :
-                case /* Parser.C. */FALSE :
-                case /* Parser.C. */NULL   :
-                    if( this.stack.length ){
+                case Parser.C.NUMBER :
+                case Parser.C.TRUE :
+                case Parser.C.FALSE :
+                case Parser.C.NULL   :
+                    if( this.jsonStack.length ){
                         this._createValue( token, value );
                     } else {
                         this._args.push( value );
@@ -373,7 +370,7 @@ function onToken( token, value ){
         default :
         /** expect => phase */
             switch( token ){
-                case /* Parser.C. */LEFT_BRACKET : // [
+                case Parser.C.LEFT_BRACKET : // [
                     switch( expect ){
                         case htmljson.EXPECT.ATTRIBUTES_START  :
                         case htmljson.EXPECT.CHILD_NODES_START :
@@ -390,28 +387,28 @@ function onToken( token, value ){
                             break;
                     };
                     break;
-                case /* Parser.C. */RIGHT_BRACKET : // ]
+                case Parser.C.RIGHT_BRACKET : // ]
                     phase = expect === htmljson.EXPECT.ATTRIBUTES_START || expect === htmljson.EXPECT.CHILD_NODES_START
                                 ? htmljson.PHASE.CLOSE_EMPTY_ELEMENT
                           : expect === htmljson.EXPECT.IN_CHILD_NODES || expect === htmljson.EXPECT.END_OF_NODE
                                 ? htmljson.PHASE.END_OF_NODE
                                 : htmljson.PHASE.ERROR;
                     break;
-                case /* Parser.C. */LEFT_BRACE : // {
+                case Parser.C.LEFT_BRACE : // {
                     phase = expect === htmljson.EXPECT.ATTRIBUTES_START
                                 ? htmljson.PHASE.ATTRIBUTES_START
                           : expect === htmljson.EXPECT.STYLES_START
                                 ? htmljson.PHASE.STYLES_START
                                 : htmljson.PHASE.ERROR;
                     break;
-                case /* Parser.C. */RIGHT_BRACE : // }
+                case Parser.C.RIGHT_BRACE : // }
                     phase = expect === htmljson.EXPECT.ATTRIBUTE_PROPERTY
                                 ? htmljson.PHASE.END_OF_ATTRIBUTES
                           : expect === htmljson.EXPECT.CSS_PROPERTY
                                 ? htmljson.PHASE.END_OF_STYLES
                                 : htmljson.PHASE.ERROR;
                     break;
-                case /* Parser.C. */STRING :
+                case Parser.C.STRING :
                     switch( expect ){
                         case htmljson.EXPECT.NODE_TYPE :
                         case htmljson.EXPECT.TAG_NAME  :
@@ -476,7 +473,7 @@ function onToken( token, value ){
                             break;
                     };
                     break;
-                case /* Parser.C. */NUMBER :
+                case Parser.C.NUMBER :
                     switch( expect ){
                         case htmljson.EXPECT.NODE_TYPE :
                             phase = value; // nodeType
@@ -510,9 +507,9 @@ function onToken( token, value ){
                             break;
                     };
                     break;
-                case /* Parser.C. */TRUE :
-                case /* Parser.C. */FALSE :
-                case /* Parser.C. */NULL   :
+                case Parser.C.TRUE :
+                case Parser.C.FALSE :
+                case Parser.C.NULL   :
                     phase = expect === htmljson.EXPECT.ATTRIBUTE_VALUE
                             ? htmljson.PHASE.ATTRIBUTE_VALUE
                             : htmljson.PHASE.ERROR;
