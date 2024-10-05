@@ -81,6 +81,16 @@ test('processing-instruction', (t) => {
     t.deepEqual( html2json('<p><? person(777, "ADMIN") ?>'), [11, ['P', [ 7, "person", 777, "ADMIN" ]] ] );
 });
 
+test('instruction attributes', (t) => {
+    t.deepEqual( html2json('<time :datetime="now"></time>'), [11, ['TIME', { ":datetime" : "now" }] ] );
+
+    t.deepEqual( html2json('<time :datetime="now()"></time>'), [11, ['TIME', { ":datetime" : "now" }] ] );
+
+    t.deepEqual( html2json('<a :href=\'toRelative("/top/")\'></a>'), [11, ['A', { ":href" : [ "toRelative", "/top/" ] }] ] );
+
+    t.deepEqual( html2json('<a :href="toRelative(\\"/top/\\")"></a>'), [11, ['A', { ":href" : [ "toRelative", "/top/" ] }] ] );
+});
+
 test('id-class', (t) => {
     t.deepEqual( html2json('<div id=app class="app nojs"></div>'), [11, ['DIV#app.app nojs'] ]);
 });

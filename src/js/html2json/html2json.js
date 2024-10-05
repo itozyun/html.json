@@ -33,7 +33,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
 
         argumentBrackets  = options[ 'argumentBrackets' ] || '()',
         argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
-        argClosingBracket = argumentBrackets.substr( argumentBrackets.length );
+        argClosingBracket = argumentBrackets.substr( argumentBrackets.length / 2 );
 
     let isCcShowLowerStarted = false;
 
@@ -227,8 +227,9 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
      */
     function codeToObject( string ){
         var from = string.indexOf( argOpeningBracket );
+        var to   = string.lastIndexOf( argClosingBracket );
         var name = m_trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ); // 先頭と最後の半角スペースを削除
-        var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, string.lastIndexOf( argClosingBracket ) - 2 ) + ']' ));
+        var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, to ) + ']' ));
 
         if( args.length ){
             return { funcName : name, args : args };
