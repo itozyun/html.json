@@ -207,11 +207,13 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
 
                 if( isElementWithoutEndTag ){
                     omittedEndTagBefore = '';
+                } if( !childNodesContents && htmlparser.VOID_ELEMENTS[ tagName ] ){
+                    omittedEndTagBefore = '';
                 } else if( ( !isXmlInHTML || childNodesContents ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || ( pEndTagRequired && tagName === 'P' ) ) ){
                     htmlString += '</' + tagName + '>';
                     omittedEndTagBefore = '';
                 } else {
-                    omittedEndTagBefore = htmlparser.VOID_ELEMENTS[ tagName ] ? '' : tagName;
+                    omittedEndTagBefore = tagName;
                 };
 
                 if( isXMLRoot ){

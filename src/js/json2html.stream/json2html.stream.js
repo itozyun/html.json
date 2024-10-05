@@ -205,7 +205,10 @@ function onToken( token, value ){
                     } else {
                         queue = '';
                     };
-                    if(
+
+                    if( !childNodesContents && htmlparser.VOID_ELEMENTS[ tagName ] ){
+                        self._omittedEndTagBefore = '';
+                    } else if(
                         ( !( self._isXMLDocument || self._isXmlInHTML ) || childNodesContents ) // XML ではない、または、子を持つ
                         &&
                         ( !m_OMITTABLE_END_TAGS[ tagName ] || ( self._pEndTagRequired && tagName === 'P' ) ) // 閉じタグを省略しない、または親要素によって省略できない
@@ -213,7 +216,7 @@ function onToken( token, value ){
                         queue += '</' + tagName + '>';
                         self._omittedEndTagBefore = '';
                     } else {
-                        self._omittedEndTagBefore = htmlparser.VOID_ELEMENTS[ tagName ] ? '' : tagName;
+                        self._omittedEndTagBefore = tagName;
                     };
                     // update flags
                     updateFlags();
