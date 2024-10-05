@@ -28,6 +28,17 @@ test('simple',
     }
 );
 
+test('quote',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'IMG', { alt : '' } ]
+            ),
+            '<IMG alt="">'
+        );
+    }
+);
+
 test('id-class',
     (t) => {
         t.deepEqual(

@@ -476,6 +476,8 @@ function m_quoteAttributeValue( value, useSingleQuot, quotAlways ){
         // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
         // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
         strValue = _ + strValue + _;
+    } else if( strValue === '' ){
+        strValue = _ + _;
     };
     return strValue;
 };
