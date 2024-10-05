@@ -267,7 +267,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
         };
     } else {
         if( args.length ){
-            result = onInstruction[ functionName ]( args );
+            result = onInstruction[ functionName ].apply( null, args );
         } else {
             result = onInstruction[ functionName ]();
         };
