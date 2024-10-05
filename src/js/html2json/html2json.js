@@ -362,7 +362,7 @@ Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
 };
 
 Handler.prototype.onParseText = function( nodeValue ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, nodeValue );
+    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, m_unescapeForHTML( nodeValue ) );
 };
 
 Handler.prototype.onParseComment = function( nodeValue ){

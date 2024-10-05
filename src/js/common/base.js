@@ -425,12 +425,24 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
  */
 function m_escapeForHTML( unsafeText ){
     return unsafeText
-               /** .split( '&lt;' ).join( '<' )
-               .split( '&gt;' ).join( '>' )
-               .split( '&amp;' ).join( '&' ) */ // 既にエスケープ済かもしれないので、一旦エスケープの解除
-               .split( '&' ).join( '&amp;' )    // エスケープ
+               .split( '&lt;' ).join( '&amp;lt;' )
+               .split( '&gt;' ).join( '&amp;gt;' )
                .split( '<' ).join( '&lt;' )
                .split( '>' ).join( '&gt;' );
+};
+
+
+/**
+ * 
+ * @param {string} unsafeText 
+ * @return {string}
+ */
+function m_unescapeForHTML( unsafeText ){
+    return unsafeText
+               .split( '&lt;' ).join( '<' )
+               .split( '&gt;' ).join( '>' )
+               .split( '&amp;lt;' ).join( '&lt;' )
+               .split( '&amp;gt;' ).join( '&gt;' );
 };
 
 /**
