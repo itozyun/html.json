@@ -213,7 +213,7 @@ function onToken( token, value ){
                         &&
                         ( !m_OMITTABLE_END_TAGS[ tagName ] || ( self._pEndTagRequired && tagName === 'P' ) ) // 閉じタグを省略しない、または親要素によって省略できない
                     ){
-                        queue += '</' + tagName + '>';
+                        queue += '</' + ( self._isXmlInHTML ? tagName : tagName.toLowerCase() ) + '>';
                         self._omittedEndTagBefore = '';
                     } else {
                         self._omittedEndTagBefore = tagName;
@@ -263,7 +263,7 @@ function onToken( token, value ){
         let html = '';
 
         if( self._omittedEndTagBefore ){
-            html = '</' + self._omittedEndTagBefore + '>';
+            html = '</' + ( self._isXmlInHTML ? self._omittedEndTagBefore : self._omittedEndTagBefore.toLowerCase() ) + '>';
             self._omittedEndTagBefore = '';
         };
         return html;
@@ -565,7 +565,14 @@ function onToken( token, value ){
                         this._omittedEndTagBefore = '';
                     };
 
-                    queue += '<' + tagName;
+                    if( phase === htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG ){
+                        tree.push( TAGNAME_WITHOUT_END_TAG );
+                    } else {
+                        tree.push( tagName );
+                    };
+                    updateFlags();
+
+                    queue += '<' + ( this._isXmlInHTML ? tagName : tagName.toLowerCase() );
 
                     if( id ){
                         queue += ' id=' + m_quoteAttributeValue( id, this._useSingleQuot, this._isXmlInHTML || this._quotAlways );
@@ -580,12 +587,6 @@ function onToken( token, value ){
                     if( !this._escapeForHTMLDisabled ){
                         this._escapeForHTMLDisabled = !!m_UNESCAPED_ELEMENTS[ tagName ];
                     };
-                    if( phase === htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG ){
-                        tree.push( TAGNAME_WITHOUT_END_TAG );
-                    } else {
-                        tree.push( tagName );
-                    };
-                    updateFlags();
                     expect = htmljson.EXPECT.ATTRIBUTES_START;
                     break;
             /** Attribute */
@@ -649,7 +650,7 @@ function onToken( token, value ){
                     tree.push( htmljson.NODE_TYPE.ELEMENT_END_TAG );
                     break;
                 case htmljson.PHASE.TAG_NAME_WITHOUT_START_TAG :
-                    queue  = '</' + value + '>';
+                    queue  = '</' + ( this._isXmlInHTML ? value : value.toLowerCase() ) + '>';
                     expect = htmljson.EXPECT.END_OF_NODE;
                     break;
 

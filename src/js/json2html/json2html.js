@@ -62,7 +62,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
             var htmlString = '';
 
             if( omittedEndTagBefore ){
-                htmlString = '</' + omittedEndTagBefore + '>';
+                htmlString = '</' + ( isXmlInHTML ? omittedEndTagBefore : omittedEndTagBefore.toLowerCase() ) + '>';
                 omittedEndTagBefore = '';
             };
             return htmlString;
@@ -176,18 +176,18 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
                     omittedEndTagBefore = '';
                 };
 
-                htmlString += '<' + tagName;
+                // xml;
+                if( !isXmlInHTML ){
+                    isXMLRoot = isXmlInHTML = isXML( tagName );
+                };
+
+                htmlString += '<' + ( isXmlInHTML ? tagName : tagName.toLowerCase() );
 
                 if( id ){
                     htmlString += ' id=' + m_quoteAttributeValue( id, useSingleQuot, isXmlInHTML || quotAlways );
                 };
                 if( className ){
                     htmlString += ' class=' + m_quoteAttributeValue( className, useSingleQuot, isXmlInHTML || quotAlways );;
-                };
-
-                // xml;
-                if( !isXmlInHTML ){
-                    isXMLRoot = isXmlInHTML = isXML( tagName );
                 };
 
                 // attr
@@ -210,7 +210,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
                 } if( !childNodesContents && htmlparser.VOID_ELEMENTS[ tagName ] ){
                     omittedEndTagBefore = '';
                 } else if( ( !isXmlInHTML || childNodesContents ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || ( pEndTagRequired && tagName === 'P' ) ) ){
-                    htmlString += '</' + tagName + '>';
+                    htmlString += '</' + ( isXmlInHTML ? tagName : tagName.toLowerCase() ) + '>';
                     omittedEndTagBefore = '';
                 } else {
                     omittedEndTagBefore = tagName;
