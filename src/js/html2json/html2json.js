@@ -11,14 +11,15 @@ goog.require( 'VNode' );
 /**
  * @param {string} htmlString
  * @param {boolean} allowInvalidTree
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  * @return {!HTMLJson}
  */
-html2json = function( htmlString, allowInvalidTree, opt_options ){
+html2json = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
     const
         json              = [],
         _aryPush          = json.push,
-        vnode             = _createVNodeFromHTML( htmlString, allowInvalidTree ),
+        vnode             = _createVNodeFromHTML( htmlString, allowInvalidTree, opt_onError ),
         options           = opt_options || {},
 
         isTrimWhitespace  = [ 'none', false ].indexOf( options[ 'trimWhitespaces' ] ) === -1,
@@ -149,7 +150,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                 nodeValue = /** @type {string} */ (currentVNode.getNodeValue());
                 if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
                     // htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
-                    vDocFragment    = _createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true );
+                    vDocFragment    = _createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true, opt_onError );
                     currentJSONNode = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeCount(); ++i ){
@@ -160,7 +161,7 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
                     };
                 } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
                     // htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
-                    vDocFragment    = _createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true );
+                    vDocFragment    = _createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true, opt_onError );
                     currentJSONNode = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) ];
 
                     for( i = 0; i < vDocFragment.getChildNodeCount(); ++i ){
@@ -304,10 +305,11 @@ html2json = function( htmlString, allowInvalidTree, opt_options ){
  * 
  * @param {string} html
  * @param {boolean} allowInvalidTree
+ * @param {!function((string | !Error))=} opt_onError
  * @return {!VNode}
  */
-function _createVNodeFromHTML( html, allowInvalidTree ){
-    var handler = new Handler( allowInvalidTree );
+function _createVNodeFromHTML( html, allowInvalidTree, opt_onError ){
+    var handler = new Handler( allowInvalidTree, opt_onError );
 
     htmlparser.exec( html, handler );
 
@@ -319,18 +321,25 @@ function _createVNodeFromHTML( html, allowInvalidTree ){
  * @extends {htmlparser.typedef.Handler}
  * @constructor
  * @param {boolean} allowInvalidTree
+ * @param {!function((string | !Error))=} opt_onError
  */
-function Handler( allowInvalidTree ){
+function Handler( allowInvalidTree, opt_onError ){
     this._allowInvalidTree = allowInvalidTree;
 
     /** @const {!VNode} */
     this._rootNode = new VNode( false, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
     /** @type {!VNode} */
     this._currentNode = this._rootNode;
+
+    this._onError = opt_onError;
 };
 
 Handler.prototype.onParseError = function( msg ){
-    throw msg;
+    if( this._onError ){
+        this._onError( msg );
+    } else if( htmljson.DEFINE.DEBUG ){
+        throw 'Handler.prototype.onParseError: error!' + msg;
+    };
 };
 
 Handler.prototype.onParseDocType = function( doctype ){
@@ -356,7 +365,11 @@ Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
             this._currentNode.finalize();
             this._currentNode = /** @type {!VNode} */ (this._currentNode.getParent());
         } else {
-            throw 'End tag error! ' + tag;
+            if( this._onError ){
+                this._onError( 'End tag error! ' + tag );
+            } else if( htmljson.DEFINE.DEBUG ){
+                throw 'Handler.prototype.onParseEndTag: End tag error! ' + tag;
+            };
         };
     };
 };

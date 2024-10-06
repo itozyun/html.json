@@ -7,7 +7,7 @@ goog.require( 'json2html' );
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function(!VNode)=} opt_onDocumentReady
- * @param {!function(string) | !Object=} opt_onError
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  */
 json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
@@ -25,7 +25,7 @@ json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentRea
          * @this {stream.Readable}
          * @param {!Vinyl} file 
          * @param {string} encoding 
-         * @param {function(Error, Vinyl)} callback
+         * @param {function(Error=, Vinyl=)} callback
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();

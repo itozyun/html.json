@@ -13,7 +13,7 @@ goog.require( 'VNode' );
  * @param {!HTMLJson} rootHTMLJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function(string) | !Object=} opt_onError
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  * @return {string | void} html string
  */

@@ -37,15 +37,15 @@ test('text', (t) => {
 });
 
 test('whitespace', (t) => {
-    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, { trimWhitespaces : 'aggressive' }), [ 11, ['P'] ]);
+    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, null, { trimWhitespaces : 'aggressive' }), [ 11, ['P'] ]);
 
-    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, { trimWhitespaces : 'normal' }), [ 11, ['P', ' '] ]);
+    t.deepEqual( html2json('<p>\n\n \t\t \n\n \t\t', false, null, { trimWhitespaces : 'normal' }), [ 11, ['P', ' '] ]);
 
-    t.deepEqual( html2json('<p>\n\n \t\t &#x20; \n\n \t\t',false, { trimWhitespaces : 'aggressive' }), [11, ['P', ' ']]);
+    t.deepEqual( html2json('<p>\n\n \t\t &#x20; \n\n \t\t', false, null, { trimWhitespaces : 'aggressive' }), [11, ['P', ' ']]);
 
-    t.deepEqual( html2json('<p>\n\n \t\t \\u0020 \n\n \t\t', false, { trimWhitespaces : 'aggressive' }), [11, ['P', ' ']]);
+    t.deepEqual( html2json('<p>\n\n \t\t \\u0020 \n\n \t\t', false, null, { trimWhitespaces : 'aggressive' }), [11, ['P', ' ']]);
 
-    t.deepEqual( html2json('<p>\\u0020\\u0020', false, { trimWhitespaces : 'normal' }), [11, ['P', '  ']]);
+    t.deepEqual( html2json('<p>\\u0020\\u0020', false, null, { trimWhitespaces : 'normal' }), [11, ['P', '  ']]);
     // t.deepEqual( html2json('<p>\\u0020'), ['P', '    ']);
 });
 
@@ -60,7 +60,7 @@ test('number-string', (t) => {
 test('escape', (t) => {
     t.deepEqual( html2json('<p title="&lt;&gt;">&lt;&gt;'), [11, ['P', { title : '<>' }, '<>' ]]);
 
-    t.deepEqual( html2json('<!--&lt;&gt;-->', false, { keepComments : true }), [11, [8, '<>' ]]);
+    t.deepEqual( html2json('<!--&lt;&gt;-->', false, null, { keepComments : true }), [11, [8, '<>' ]]);
 });
 
 test('conditional-comment', (t) => {

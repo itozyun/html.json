@@ -20,7 +20,7 @@ goog.require( 'Through' );
 /**
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
- * @param {!function(string) | !Object=} opt_onError
+ * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  * @return {!Through}
  */
@@ -135,7 +135,9 @@ function onToken( token, value ){
             self._args.length  = 0;
             return result;
         };
-        self.onError( 'onInstruction is void!' );
+        if( htmljson.DEFINE.DEBUG ){
+            self.onError( 'onInstruction is void!' );
+        };
         return '';
     };
 
@@ -149,7 +151,9 @@ function onToken( token, value ){
             self._args.length  = 0;
             return result;
         };
-        self.onError( 'onInstruction is void!' );
+        if( htmljson.DEFINE.DEBUG ){
+            self.onError( 'onInstruction is void!' );
+        };
         return '';
     };
 

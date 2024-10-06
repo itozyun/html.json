@@ -108,10 +108,13 @@ Parser.toknam = function (code) {
   return code && ("0x" + code.toString(16));
 };
 
-Parser.prototype.onError = function (err) { throw err; };
+// Parser.prototype.onError = function (err) { throw err; };
+
 Parser.prototype.charError = function (buffer, i) {
   this.tState = C.STOP;
-  this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + Parser.toknam(this.tState)));
+  if (htmljson.DEFINE.DEBUG) {
+    this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + Parser.toknam(this.tState)));
+  };
 };
 Parser.prototype.appendStringChar = function (char) {
   if (this.stringBufferOffset >= STRING_BUFFER_SIZE) {
@@ -218,7 +221,9 @@ Parser.prototype.write = function (buffer) {
           i = i + j - 1;
         } else if (this.bytes_remaining === 0 && n >= 128) { // else if no remainder bytes carried over, parse multi byte (>=128) chars one at a time
           if (n <= 193 || n > 244) {
-            return this.onError(new Error("Invalid UTF-8 character at position " + i + " in state " + Parser.toknam(this.tState)));
+            if (htmljson.DEFINE.DEBUG) {
+              return this.onError(new Error("Invalid UTF-8 character at position " + i + " in state " + Parser.toknam(this.tState)));
+            };
           }
           if ((n >= 194) && (n <= 223)) this.bytes_in_sequence = 2;
           if ((n >= 224) && (n <= 239)) this.bytes_in_sequence = 3;
@@ -384,7 +389,9 @@ Parser.prototype.write = function (buffer) {
 
 Parser.prototype.parseError = function (token, value) {
   this.tState = C.STOP;
-  this.onError(new Error("Unexpected " + Parser.toknam(token) + (value ? ("(" + JSON.stringify(value) + ")") : "") + " in state " + Parser.toknam(this.state)));
+  if (htmljson.DEFINE.DEBUG) {
+    this.onError(new Error("Unexpected " + Parser.toknam(token) + (value ? ("(" + JSON.stringify(value) + ")") : "") + " in state " + Parser.toknam(this.state)));
+  };
 };
 Parser.prototype.pushToJsonStack = function () {
   this.jsonStack.push({currentValue: this.currentValue, _key: this._key, _mode: this._mode});
