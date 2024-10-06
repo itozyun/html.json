@@ -2,6 +2,9 @@
     "DIV",
     {
         "color": "red",
+        "true": true,
+        "false": false,
+        "null": null,
         ":clock": [
             "date",
             1,

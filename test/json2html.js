@@ -49,3 +49,14 @@ test('id-class',
         );
     }
 );
+
+test('boolean attributes',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'DIV', { checked : true, readonly : false, amp : false, unknown : true, 'null' : null, 'false' : false } ]
+            ),
+            '<div checked unknown false=false></div>'
+        );
+    }
+);

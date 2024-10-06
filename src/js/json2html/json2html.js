@@ -297,7 +297,7 @@ var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_
             if( value != null && ( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] || value !== false ) ){
                 attrText += ' ' + name;
 
-                if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] ){
+                if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value !== true ){
                     if( name === 'style' && m_isObject( value ) ){
                         value = m_toCSSTest( /** @type {!Styles} */ (value) );
                         if( !value ) continue;

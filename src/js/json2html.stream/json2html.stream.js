@@ -159,6 +159,8 @@ function onToken( token, value ){
                 if( value !== false ){
                     return ' ' + self._attribute;
                 };
+            } else if( value === true ){
+                return ' ' + self._attribute;
             } else {
                 return ' ' + self._attribute + '=' + m_quoteAttributeValue( value, self._useSingleQuot, self._isXmlInHTML || self._quotAlways );
             };
