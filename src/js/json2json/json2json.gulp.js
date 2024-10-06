@@ -25,7 +25,7 @@ json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentRea
          * @this {stream.Readable}
          * @param {!Vinyl} file 
          * @param {string} encoding 
-         * @param {function()} callback 
+         * @param {function(Error, Vinyl)} callback
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
@@ -60,14 +60,11 @@ json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentRea
                     };
 
                     file.contents = Buffer.from( /** @type {string} */ (content) );
-                    this.push( file );
                 } catch( O_o ) {
                     this.emit( 'error', new PluginError( pluginName, O_o ) );
                 };
-            } else {
-                this.push( file );
             };
-            callback();
+            callback( null, file );
         }
     );
 };

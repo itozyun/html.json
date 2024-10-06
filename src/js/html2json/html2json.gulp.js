@@ -19,7 +19,7 @@ html2json.gulp = function( opt_options ){
          * @this {stream.Readable}
          * @param {!Vinyl} file 
          * @param {string} encoding 
-         * @param {function()} callback 
+         * @param {function(Error, Vinyl)} callback
          */
         function( file, encoding, callback ){
             if( file.isNull() ) return callback();
@@ -50,8 +50,7 @@ html2json.gulp = function( opt_options ){
                     return callback();
                 };
             };
-            this.push( file );
-            callback();
+            callback( null, file );
         },
         function( callback ){
             console.log( '[html2json] done!' )
