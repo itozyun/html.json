@@ -27,7 +27,7 @@ Text, Comment, CDATA Section, 下の階層が見える条件付きコメント�
 
 (2) Current Node の子ノードの情報も利用できないため、限られた情報を元に Current Node の操作や、その前後と子に新規 Node を挿入する．(下の図で細い枠線のノード)
 
-(ただし Current Node が空の場合はや、`empty()`、`setTextContent`、を実施した後は、新規 Node と同レベルの子に対する操作が可能)
+(ただし Current Node が空の場合と、`empty()`、`setTextContent`、を実施した後は、新規 Node と同レベルの子に対する操作が可能)
 
 (3) Current Node を起点にして新規に挿入された Node は、自身の子に対しては完全な操作ができる．(下の図で太い枠線のノード)
 
@@ -35,13 +35,17 @@ Text, Comment, CDATA Section, 下の階層が見える条件付きコメント�
 
 ### Parent Node(点線の枠線)
 
-* `getNodeType`, `getTagName`, `getClassName`, `hasClassName`, `getAttribute`, `hasAttribute`, `getPrevNode`, `getParent`, `getMyIndex`
+* `getNodeType`, `getTagName`, `getClassName`, `hasClassName`, `getAttribute`, `hasAttribute`, `getPrevNode`, `getParent`, `getMyIndex`, `getTextContent`
+* insert*After, insert*Last, insert*First(但し currentNode jsonNodeIndex(srcIndex)=0 の場合)
+* `getNextNode`(insertAfter している場合)
 
 ### Current Node(細い枠線)
 
-* `getNodeType`, `getTagName`, `getClassName`, `hasClassName`, `getAttribute`, `hasAttribute`, `getPrevNode`, `getParent`
+* `getNodeType`, `getTagName`, `getClassName`, `hasClassName`, `getAttribute`, `hasAttribute`, `getPrevNode`, `getParent`, `getMyIndex`, `getTextContent`
 * `setTagName`, `addClassName`, `removeClassName`, `setAttribute`, `removeAttribute`,  
-* `insert*`
-* `remove`, `empty`, `setTextContent`, `replaceNode`, `wrap`
+* `insert*Before`, `insert*First`, `insert*Last`, `insert*After`
+* `remove`, `empty`, `setTextContent`, `replaceNode`, `wrapNode`
 
-### Inserted New Nodes(太い枠線)
+#### Current Node(empty), Inserted New Nodes(太い枠線)
+
+* `insert*At`, `getChildNodeCount`

@@ -9,7 +9,7 @@ test('simple',
             json2html(
                 [ 'P', 'Hello, world!' ]
             ),
-            '<P>Hello, world!'
+            '<p>Hello, world!'
         );
 
         let random = Math.random();
@@ -34,7 +34,7 @@ test('quote',
             json2html(
                 [ 'IMG', { alt : '' } ]
             ),
-            '<IMG alt="">'
+            '<img alt="">'
         );
     }
 );
@@ -45,7 +45,7 @@ test('id-class',
             json2html(
                 [ 'DIV#app.app nojs', 'Hello, Application!' ]
             ),
-            '<DIV id=app class="app nojs">Hello, Application!</DIV>'
+            '<div id=app class="app nojs">Hello, Application!</div>'
         );
     }
 );
