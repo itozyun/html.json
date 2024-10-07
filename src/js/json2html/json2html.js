@@ -97,13 +97,13 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                 if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     onError( 'CDATA_SECTION Error! [' + currentJSONNode + ']' );
                 };
-                htmlString = '<![CDATA[' + arg1 + ']]>';
+                htmlString = '<![CDATA[' + m_escapeForHTML( '' + arg1 ) + ']]>';
                 break;
             case htmljson.NODE_TYPE.COMMENT_NODE :
                 if( htmljson.DEFINE.DEBUG && !m_isString( arg1 ) ){
                     onError( 'COMMENT_NODE Error! [' + currentJSONNode + ']' );
                 };
-                htmlString = '<!--' + arg1 + '-->';
+                htmlString = '<!--' + m_escapeForHTML( '' + arg1 ) + '-->';
                 break;
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 // 下の階層が隠れる条件付きコメント

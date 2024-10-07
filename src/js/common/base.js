@@ -431,20 +431,6 @@ function m_escapeForHTML( unsafeText ){
                .split( '>' ).join( '&gt;' );
 };
 
-
-/**
- * 
- * @param {string} unsafeText 
- * @return {string}
- */
-function m_unescapeForHTML( unsafeText ){
-    return unsafeText
-               .split( '&lt;' ).join( '<' )
-               .split( '&gt;' ).join( '>' )
-               .split( '&amp;lt;' ).join( '&lt;' )
-               .split( '&amp;gt;' ).join( '&gt;' );
-};
-
 /**
  * 
  * @param {string|number|boolean} value 

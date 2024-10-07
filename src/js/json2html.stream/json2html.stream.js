@@ -681,7 +681,7 @@ function onToken( token, value ){
                     tree.push( htmljson.NODE_TYPE.CDATA_SECTION );
                     break;
                 case htmljson.PHASE.CDATA_SECTION_VALUE:
-                    queue  = value;
+                    queue  = m_escapeForHTML( '' + value );
                     expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!-- --> */
@@ -691,7 +691,7 @@ function onToken( token, value ){
                     tree.push( htmljson.NODE_TYPE.COMMENT_NODE );
                     break;
                 case htmljson.PHASE.COMMENT_NODE_VALUE:
-                    queue  = value;
+                    queue  = m_escapeForHTML( '' + value );
                     expect = htmljson.EXPECT.END_OF_NODE;
                     break;
             /** <!--[if IE]> --> */
