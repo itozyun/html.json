@@ -35,7 +35,7 @@ Text, Comment, CDATA Section, 下の階層が見える条件付きコメント�
 
 ### Parent Node(点線の枠線)
 
-* `getNodeType`, `getTagName`, `getClassName`, `hasClassName`, `getAttribute`, `hasAttribute`, `getPrevNode`, `getParent`, `getMyIndex`, `getTextContent`
+* `getNodeType`, `getTagName`, `getClassName`, `hasClassName`, `getAttribute`, `hasAttribute`, `getPrevNode`, `getParent`, `getMyIndex`
 * insert*After, insert*Last, insert*First(但し currentNode jsonNodeIndex(srcIndex)=0 の場合)
 * `getNextNode`(insertAfter している場合)
 
@@ -48,4 +48,4 @@ Text, Comment, CDATA Section, 下の階層が見える条件付きコメント�
 
 #### Current Node(empty), Inserted New Nodes(太い枠線)
 
-* `insert*At`, `getChildNodeCount`
+* `insert*At`, `getChildNodeCount`, `getTextContent`
