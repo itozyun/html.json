@@ -11,8 +11,8 @@ C.TH = C.DT;
 C.RB = C.RP = C.RT = C.P;
 C.TFOOT = C.THEAD = C.TBODY;
 C.RTC = C.RBC;
-var ca = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, D = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, da = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, H = {SCRIPT:!0, 
-STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0}, I = !1, K = !1, L = !1;
+var ca = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, D = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, da = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, G = {SCRIPT:!0, 
+STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0}, I = !1, J = !1, L = !1;
 function M(a) {
   return !(!a || a.pop !== [].pop);
 }
@@ -208,31 +208,31 @@ function ya(a, b, c, g, d) {
     }
     var A = e ? ha(r, m, e) : null;
     m = "";
-    var na = r[0], G = r[1], J = 1, w = na, oa;
+    var na = r[0], H = r[1], K = 1, w = na, oa;
     switch(na) {
       case 9:
-        m = G + l(r, A, !1, t);
+        m = H + l(r, A, !1, t);
         break;
       case 11:
         m = l(r, A, p, t);
         break;
       case 3:
-        m = x() + (t ? G : R("" + G));
+        m = x() + (t ? H : R("" + H));
         break;
       case 4:
-        m = "<![CDATA[" + G + "]]\x3e";
+        m = "<![CDATA[" + R("" + H) + "]]\x3e";
         break;
       case 8:
-        m = "\x3c!--" + G + "--\x3e";
+        m = "\x3c!--" + R("" + H) + "--\x3e";
         break;
       case 13:
-        m = x() + "\x3c!--[" + G + "]>" + l(r, A, !0, t) + "<![endif]--\x3e";
+        m = x() + "\x3c!--[" + H + "]>" + l(r, A, !0, t) + "<![endif]--\x3e";
         break;
       case 16:
-        m = x() + "\x3c!--{" + G + "};" + l(r, A, !0, t) + "--\x3e";
+        m = x() + "\x3c!--{" + H + "};" + l(r, A, !0, t) + "--\x3e";
         break;
       case 14:
-        m = "\x3c!--[" + G + "]>\x3c!--\x3e";
+        m = "\x3c!--[" + H + "]>\x3c!--\x3e";
         break;
       case 15:
         m = "\x3c!--<![endif]--\x3e";
@@ -247,14 +247,14 @@ function ya(a, b, c, g, d) {
         }
         break;
       case 18:
-        m = "</" + G + ">";
+        m = "</" + H + ">";
         break;
       case 17:
         var pa = !0;
       case 1:
-        w = r[1], J = 2;
+        w = r[1], K = 2;
       default:
-        w = la(w), F = w[1], E = w[2], w = w[0], J = r[J], "P" !== u || da[w] ? u = "" : m = x(), v || (oa = v = v || aa[w] ? !0 : 0 < w.indexOf(":")), m += "<" + (v ? w : w.toLowerCase()), F && (m += " id=" + S(F, k, v || f)), E && (m += " class=" + S(E, k, v || f)), !M(J) && N(J) && (m += B(J)), m = (r = l(r, A, D[w], t || H[w])) ? m + (">" + r) : pa ? m + ">" : m + (v ? " />" : ">"), pa && (u = ""), !r && ba[w] ? u = "" : v && !r || ca[w] && (!p || "P" !== w) ? u = w : (m += "</" + (v ? w : w.toLowerCase()) + 
+        w = la(w), F = w[1], E = w[2], w = w[0], K = r[K], "P" !== u || da[w] ? u = "" : m = x(), v || (oa = v = v || aa[w] ? !0 : 0 < w.indexOf(":")), m += "<" + (v ? w : w.toLowerCase()), F && (m += " id=" + S(F, k, v || f)), E && (m += " class=" + S(E, k, v || f)), !M(K) && N(K) && (m += B(K)), m = (r = l(r, A, D[w], t || G[w])) ? m + (">" + r) : pa ? m + ">" : m + (v ? " />" : ">"), pa && (u = ""), !r && ba[w] ? u = "" : v && !r || ca[w] && (!p || "P" !== w) ? u = w : (m += "</" + (v ? w : w.toLowerCase()) + 
         ">", u = ""), oa && (v = !1);
     }
     return m;
@@ -297,7 +297,7 @@ function ya(a, b, c, g, d) {
   b = d || {};
   var f = !0 === b.quotAlways, k = !0 === b.useSingleQuot, q = b.instructionAttrPrefix || ":", u, v = L;
   if (M(a)) {
-    return 7 === ea(a) && (a = [11, a]), h(a, null, null, 0, I || !1, K || !1);
+    return 7 === ea(a) && (a = [11, a]), h(a, null, null, 0, I || !1, J || !1);
   }
 }
 const U = Buffer.from ? Buffer.from : (...a) => new Buffer(...a), V = Buffer.alloc ? Buffer.alloc : (...a) => new Buffer(...a);
@@ -791,7 +791,7 @@ function Ha(a, b) {
     f.O = f.V = f.C = !1;
     for (let q = 0, u = n.length; q < u; ++q) {
       const v = n[q];
-      13 === v || 16 === v ? f.O = !0 : O(v) && (q === u - 1 && (f.O = f.O || D[v]), H[v] && (f.V = !0), aa[v] || 0 < v.indexOf(":")) && (f.C = !0);
+      13 === v || 16 === v ? f.O = !0 : O(v) && (q === u - 1 && (f.O = f.O || D[v]), G[v] && (f.V = !0), aa[v] || 0 < v.indexOf(":")) && (f.C = !0);
     }
   }
   function B() {
@@ -815,10 +815,10 @@ function Ha(a, b) {
               a = c();
               if (M(a)) {
                 I = this.O;
-                K = this.V;
+                J = this.V;
                 L = this.ka || this.C;
                 var k = ya(a, this.W, this.pa, this.aa, {quotAlways:this.ba, useSingleQuot:this.ca, instructionAttrPrefix:this.ea});
-                I = K = L = !1;
+                I = J = L = !1;
               } else {
                 k = P(a) ? "" + a : "";
               }
@@ -1030,7 +1030,7 @@ function Ha(a, b) {
             y && (k += " id=" + S(y, this.ca, this.C || this.ba));
             q && (k += " class=" + S(q, this.ca, this.C || this.ba));
             this.O || (this.O = !!D[b]);
-            this.V || (this.V = !!H[b]);
+            this.V || (this.V = !!G[b]);
             e = 30;
             break;
           case 30:
@@ -1098,7 +1098,7 @@ function Ha(a, b) {
             n.push(4);
             break;
           case 21:
-            k = b;
+            k = R("" + b);
             e = 37;
             break;
           case 8:
@@ -1107,7 +1107,7 @@ function Ha(a, b) {
             n.push(8);
             break;
           case 22:
-            k = b;
+            k = R("" + b);
             e = 37;
             break;
           case 13:

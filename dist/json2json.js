@@ -921,7 +921,7 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
     b && (c.onParseText(h(a.substring(0, b))), a = a.substring(b), b = 0);
   }
   function h(z) {
-    return z.split("&lt;").join("<").split("&gt;").join(">").split("&amp;").join("&");
+    return z.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;");
   }
   function x(z, n, p) {
     for (var k = 0, u = p.length, y = 3, m, B; y < u && 2 !== k;) {
@@ -969,7 +969,7 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
   function w(z, n, p, k) {
     function u(O, P) {
       function Q(R) {
-        return h(R).split('\\"').join('"').split("\\'").join("'");
+        return h(R).split('\\"').join('"').split("\\'").join("'").split("&quot;").join('"').split("&apos;").join("'");
       }
       I[O] = !0 === P ? !0 : htmlparser.BOOLEAN_ATTRIBUTES[O.toLowerCase()] ? D ? Q(P || O) : !0 : Q(P || "");
       ++A;
@@ -1233,9 +1233,6 @@ function m_executeEnterNodeHandler(a, b, c) {
 }
 function m_escapeForHTML(a) {
   return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
-}
-function m_unescapeForHTML(a) {
-  return a.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;");
 }
 function m_quoteAttributeValue(a, b, c) {
   a = m_escapeForHTML("" + a);
@@ -2387,11 +2384,11 @@ var json2html = {main:function(a, b, c, d, e) {
         break;
       case htmljson.NODE_TYPE.CDATA_SECTION:
         htmljson.DEFINE.DEBUG && !m_isString(v) && t("CDATA_SECTION Error! [" + l + "]");
-        n = "<![CDATA[" + v + "]]\x3e";
+        n = "<![CDATA[" + m_escapeForHTML("" + v) + "]]\x3e";
         break;
       case htmljson.NODE_TYPE.COMMENT_NODE:
         htmljson.DEFINE.DEBUG && !m_isString(v) && t("COMMENT_NODE Error! [" + l + "]");
-        n = "\x3c!--" + v + "--\x3e";
+        n = "\x3c!--" + m_escapeForHTML("" + v) + "--\x3e";
         break;
       case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
         htmljson.DEFINE.DEBUG && !m_isString(v) && t("COND_CMT_HIDE_LOWER Error! [" + l + "]");

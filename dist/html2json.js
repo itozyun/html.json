@@ -18,7 +18,7 @@ function ea(a, b) {
     d && (fa(b, g(a.substring(0, d))), a = a.substring(d), d = 0);
   }
   function g(x) {
-    return x.split("&lt;").join("<").split("&gt;").join(">").split("&amp;").join("&");
+    return x.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;");
   }
   function y(x, E, G) {
     for (var u = 0, A = G.length, v = 3, l, K; v < A && 2 !== u;) {
@@ -61,7 +61,7 @@ function ea(a, b) {
   function S(x, E, G, u) {
     function A(h, t) {
       function J(oa) {
-        return g(oa).split('\\"').join('"').split("\\'").join("'");
+        return g(oa).split('\\"').join('"').split("\\'").join("'").split("&quot;").join('"').split("&apos;").join("'");
       }
       k[h] = !0 === t ? !0 : ba[h.toLowerCase()] ? n ? J(t || h) : !0 : J(t || "");
       ++m;
@@ -521,7 +521,7 @@ function ha(a, b, d, e) {
   e ? a.da && Y(a.$, 18, b) : d && a.da || (b === a.$.ea ? (a.$.$ = 1, a.$ = a.$.ba) : a.aa && a.aa("End tag error! " + b));
 }
 function fa(a, b) {
-  Y(a.$, 3, b.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;"));
+  Y(a.$, 3, b);
 }
 function ma(a, b) {
   Y(a.$, 8, b);
