@@ -4,7 +4,7 @@ var require = function( name ){};
 var module = {};
 
 module.exports;
-module.exports.gulp = function(){};
+module.exports.gulp;
 
 var __NAME_PROTECTION__ = [
     {
