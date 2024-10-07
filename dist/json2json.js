@@ -718,21 +718,21 @@ goog.createTrustedTypesPolicy = function(a) {
   goog.Dependency.call(this, a, b, c, d, e);
 }, goog.inherits(goog.Es6ModuleDependency, goog.Dependency), goog.Es6ModuleDependency.prototype.load = function(a) {
   function b(q, w) {
-    var r = "", G = goog.getScriptNonce_();
-    G && (r = ' nonce="' + G + '"');
-    q = w ? '<script type="module" crossorigin' + r + ">" + w + "\x3c/script>" : '<script type="module" crossorigin src="' + q + '"' + r + ">\x3c/script>";
+    var t = "", H = goog.getScriptNonce_();
+    H && (t = ' nonce="' + H + '"');
+    q = w ? '<script type="module" crossorigin' + t + ">" + w + "\x3c/script>" : '<script type="module" crossorigin src="' + q + '"' + t + ">\x3c/script>";
     d.write(goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createHTML(q) : q);
   }
   function c(q, w) {
-    var r = d.createElement("script");
-    r.defer = !0;
-    r.async = !1;
-    r.type = "module";
-    r.setAttribute("crossorigin", !0);
-    var G = goog.getScriptNonce_();
-    G && (r.nonce = G);
-    w ? r.text = goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createScript(w) : w : r.src = goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createScriptURL(q) : q;
-    d.head.appendChild(r);
+    var t = d.createElement("script");
+    t.defer = !0;
+    t.async = !1;
+    t.type = "module";
+    t.setAttribute("crossorigin", !0);
+    var H = goog.getScriptNonce_();
+    H && (t.nonce = H);
+    w ? t.text = goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createScript(w) : w : t.src = goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createScriptURL(q) : q;
+    d.head.appendChild(t);
   }
   if (goog.global.CLOSURE_IMPORT_SCRIPT) {
     goog.global.CLOSURE_IMPORT_SCRIPT(this.path) ? a.loaded() : a.pause();
@@ -799,9 +799,9 @@ goog.createTrustedTypesPolicy = function(a) {
     var q = goog.global.document, w = goog.Dependency.registerCallback_(function() {
       goog.Dependency.unregisterCallback_(w);
       c();
-    }), r = goog.getScriptNonce_();
-    r = "<script" + (r ? ' nonce="' + r + '"' : "") + ">" + goog.protectScriptTag_('goog.Dependency.callback_("' + w + '");') + "\x3c/script>";
-    q.write(goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createHTML(r) : r);
+    }), t = goog.getScriptNonce_();
+    t = "<script" + (t ? ' nonce="' + t + '"' : "") + ">" + goog.protectScriptTag_('goog.Dependency.callback_("' + w + '");') + "\x3c/script>";
+    q.write(goog.TRUSTED_TYPES_POLICY_ ? goog.TRUSTED_TYPES_POLICY_.createHTML(t) : t);
   }
   var e = this;
   if (goog.global.CLOSURE_IMPORT_SCRIPT) {
@@ -868,14 +868,14 @@ if (!COMPILED) {
   }
   goog.CLOSURE_EVAL_PREFILTER_ = goog.global.trustedTypes && isChrome87 && goog.createTrustedTypesPolicy("goog#base#devonly#eval") || {createScript:goog.identity_};
 }
-;var htmlparser = {XML_ROOT_ELEMENTS:{xml:!0, svg:!0, math:!0}, BOOLEAN_ATTRIBUTES:{checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, ismap:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, nowrap:!0, readonly:!0, selected:!0}, VOID_ELEMENTS:{AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, 
-command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, RAW_TEXT_ELEMENTS:{SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0}}, OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN = {CAPTION:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, 
-UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, 
-DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DD:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, 
-PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DT:{ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, 
-CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, P:{A:!0, EM:!0, STRONG:!0, SMALL:!0, 
-S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, HTML:{HEAD:!0, BODY:!0}, HEAD:{TITLE:!0, 
-BASE:!0, BGSOUND:!0, LINK:!0, META:!0, STYLE:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLETE:!0}, COLGROUP:{COL:!0}, OPTGROUP:{OPTION:!0}, OPTION:{}, TBODY:{TR:!0}, TR:{TH:!0, TD:!0}, RBC:{RB:!0, RP:!0, RT:!0}};
+;var htmlparser = {XML_ROOT_ELEMENTS:{xml:!0, svg:!0, math:!0}, BOOLEAN_ATTRIBUTES:{async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, VOID_ELEMENTS:{AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, 
+META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, RAW_TEXT_ELEMENTS:{SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0}}, OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN = {CAPTION:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, 
+H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, FORM:!0, LABEL:!0, 
+INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DD:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, 
+KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DT:{ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, 
+DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, 
+DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, P:{A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, 
+PROGRESS:!0, METER:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, HTML:{HEAD:!0, BODY:!0}, HEAD:{TITLE:!0, BASE:!0, BGSOUND:!0, LINK:!0, META:!0, STYLE:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLETE:!0}, COLGROUP:{COL:!0}, OPTGROUP:{OPTION:!0}, OPTION:{}, TBODY:{TR:!0}, TR:{TH:!0, TD:!0}, RBC:{RB:!0, RP:!0, RT:!0}};
 htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN = OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN;
 OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN.LI = OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN.TD = OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN.DD;
 OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN.TH = OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN.DT;
@@ -924,7 +924,7 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
     return z.split("&lt;").join("<").split("&gt;").join(">").split("&amp;").join("&");
   }
   function x(z, n, p) {
-    for (var k = 0, t = p.length, y = 3, m, B; y < t && 2 !== k;) {
+    for (var k = 0, u = p.length, y = 3, m, B; y < u && 2 !== k;) {
       B = p.charAt(y);
       switch(k) {
         case 0:
@@ -939,21 +939,21 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
     return 2 === k ? !htmlparser.VOID_ELEMENTS[m] && q(z, n, D || F ? m : m.toUpperCase(), !1) && htmlparser.DEFINE.parsingStop ? $jscomp$scope$1759477293$0$PARSING_STOP : y : 0;
   }
   function q(z, n, p, k) {
-    var t = 0, y = z.length;
+    var u = 0, y = z.length;
     if (p) {
-      for (t = y; 0 <= t && z[--t] !== p;) {
+      for (u = y; 0 <= u && z[--u] !== p;) {
       }
     }
-    if (0 <= t) {
-      for (; t < y;) {
+    if (0 <= u) {
+      for (; u < y;) {
         if (!0 === n.onParseEndTag(z[--y], k && !OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[z[y]], !1) && htmlparser.DEFINE.parsingStop) {
           return !0;
         }
         htmlparser.DEFINE.useXML && D && htmlparser.isXMLRootElement(z[y]) && (D = !!n.isXHTML);
       }
-      z.length = t;
+      z.length = u;
       if (htmlparser.DEFINE.useVML && F) {
-        for (F = !1, y = t; y;) {
+        for (F = !1, y = u; y;) {
           if (htmlparser.isNamespacedTag(z[--y])) {
             F = !0;
             break;
@@ -967,8 +967,11 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
     }
   }
   function w(z, n, p, k) {
-    function t(O, P) {
-      I[O] = !0 === P ? !0 : htmlparser.BOOLEAN_ATTRIBUTES[O.toLowerCase()] ? D ? h(P || O) : !0 : h(P || "");
+    function u(O, P) {
+      function Q(R) {
+        return h(R).split('\\"').join('"').split("\\'").join("'");
+      }
+      I[O] = !0 === P ? !0 : htmlparser.BOOLEAN_ATTRIBUTES[O.toLowerCase()] ? D ? Q(P || O) : !0 : Q(P || "");
       ++A;
     }
     function y() {
@@ -994,22 +997,22 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
           } else if (htmlparser.isWhitespace(C)) {
             m = 4, E = k.substring(J, v);
           } else if (">" === C || y()) {
-            m = 9, t(k.substring(J, v), !0);
+            m = 9, u(k.substring(J, v), !0);
           }
           break;
         case 4:
-          "=" === C ? m = 5 : ">" === C || y() ? (m = 9, t(E, !0)) : htmlparser.isWhitespace(C) || (m = 3, t(E, !0), J = v);
+          "=" === C ? m = 5 : ">" === C || y() ? (m = 9, u(E, !0)) : htmlparser.isWhitespace(C) || (m = 3, u(E, !0), J = v);
           break;
         case 5:
           '"' === C || "'" === C ? (m = 6, L = C, J = v + 1) : htmlparser.isWhitespace(C) || (m = 7, J = v);
           N = !1;
           break;
         case 6:
-          N || C !== L || (m = 2, t(E, k.substring(J, v)));
+          N || C !== L || (m = 2, u(E, k.substring(J, v)));
           N = "\\" === C && !N;
           break;
         case 7:
-          htmlparser.isWhitespace(C) ? m = 2 : ">" === C && (m = 9), 7 !== m && t(E, k.substring(J, v));
+          htmlparser.isWhitespace(C) ? m = 2 : ">" === C && (m = 9), 7 !== m && u(E, k.substring(J, v));
       }
       ++v;
     }
@@ -1034,23 +1037,23 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
     }
     return 0;
   }
-  var r = d ? +new Date() : 0, G = c.intervalMs || 16;
+  var t = d ? +new Date() : 0, H = c.intervalMs || 16;
   f = f || [];
-  for (var D = htmlparser.DEFINE.useXML && !!c.isXHTML, F = !1, H = a.length - b, u, l; a;) {
-    u = f[f.length - 1];
-    if (htmlparser.RAW_TEXT_ELEMENTS[u]) {
-      if ("PLAINTEXT" === u || "plaintext" === u) {
+  for (var D = htmlparser.DEFINE.useXML && !!c.isXHTML, F = !1, G = a.length - b, r, l; a;) {
+    r = f[f.length - 1];
+    if (htmlparser.RAW_TEXT_ELEMENTS[r]) {
+      if ("PLAINTEXT" === r || "plaintext" === r) {
         c.onParseText(h(a)), a = "";
       } else {
-        if (l = a.indexOf("</" + (D || F ? u : u.toLowerCase())), -1 === l && (l = a.indexOf("</" + (D || F ? u.toUpperCase() : u))), 0 <= l) {
+        if (l = a.indexOf("</" + (D || F ? r : r.toLowerCase())), -1 === l && (l = a.indexOf("</" + (D || F ? r.toUpperCase() : r))), 0 <= l) {
           b = l;
           g();
-          u = x(f, c, a);
-          if (u === $jscomp$scope$1759477293$0$PARSING_STOP && htmlparser.DEFINE.parsingStop) {
+          r = x(f, c, a);
+          if (r === $jscomp$scope$1759477293$0$PARSING_STOP && htmlparser.DEFINE.parsingStop) {
             return;
           }
-          if (u) {
-            a = a.substring(u);
+          if (r) {
+            a = a.substring(r);
           } else {
             c.onParseError(a);
             return;
@@ -1090,24 +1093,24 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
       }
     } else if (a.indexOf("</") === b && htmlparser.isAlphabet(a.charAt(b + 2))) {
       g();
-      u = x(f, c, a);
-      if (htmlparser.DEFINE.parsingStop && u === $jscomp$scope$1759477293$0$PARSING_STOP) {
+      r = x(f, c, a);
+      if (htmlparser.DEFINE.parsingStop && r === $jscomp$scope$1759477293$0$PARSING_STOP) {
         return;
       }
-      if (u) {
-        a = a.substring(u);
+      if (r) {
+        a = a.substring(r);
       } else {
         c.onParseError(a);
         return;
       }
     } else if ("<" === a.charAt(b) && htmlparser.isAlphabet(a.charAt(b + 1))) {
       g();
-      u = w(f, u, c, a);
-      if (htmlparser.DEFINE.parsingStop && u === $jscomp$scope$1759477293$0$PARSING_STOP) {
+      r = w(f, r, c, a);
+      if (htmlparser.DEFINE.parsingStop && r === $jscomp$scope$1759477293$0$PARSING_STOP) {
         return;
       }
-      if (u) {
-        a = a.substring(u);
+      if (r) {
+        a = a.substring(r);
       } else {
         c.onParseError(a);
         return;
@@ -1115,16 +1118,16 @@ var $jscomp$scope$1759477293$1$exec = function(a, b, c, d, e, f) {
     } else {
       l = a.indexOf("<", b), -1 === l ? (c.onParseText(h(a)), a = "") : b < l ? b = l : ++b;
     }
-    u = a.length - b;
-    if (u === H) {
+    r = a.length - b;
+    if (r === G) {
       c.onParseError(a);
       return;
     }
-    if (htmlparser.DEFINE.useLazy && d && a && r + G <= +new Date()) {
-      c.onParseProgress(1 - u / e, $jscomp$scope$1759477293$1$exec, [a, b, c, d, e, f]);
+    if (htmlparser.DEFINE.useLazy && d && a && t + H <= +new Date()) {
+      c.onParseProgress(1 - r / e, $jscomp$scope$1759477293$1$exec, [a, b, c, d, e, f]);
       return;
     }
-    H = u;
+    G = r;
   }
   g();
   q(f, c, "", !0);
@@ -1186,7 +1189,7 @@ function m_isInstructionAttr(a, b) {
 }
 function m_executeProcessingInstruction(a, b, c, d, e) {
   var f = b[1], g = b.slice(2);
-  a = "function" === typeof a ? g.length ? a(f, g) : a(f) : g.length ? a[f](g) : a[f]();
+  a = "function" === typeof a ? g.length ? a(f, g) : a(f) : g.length ? a[f].apply(null, g) : a[f]();
   void 0 !== a && null !== a && "" !== a && (m_isStringOrNumber(a) ? c ? c.splice(d, 1, a) : (b.length = 0, b.push(htmljson.NODE_TYPE.TEXT_NODE, b)) : m_isArray(a) ? a[0] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? c ? (a.shift(), a.unshift(d, 1), c.splice.apply(c, a)) : (b.length = 0, b.push.apply(b, a)) : m_isArray(a[0]) ? c ? (a.unshift(d, 1), c.splice.apply(c, a)) : (b.length = 0, b.push(htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE), b.push.apply(b, a)) : c ? c.splice(d, 1, a) : (b.length = 
   0, b.push(htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, a)) : htmljson.DEFINE.DEBUG && e("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(b) + "]"));
   return a;
@@ -1229,20 +1232,15 @@ function m_executeEnterNodeHandler(a, b, c) {
   return a;
 }
 function m_escapeForHTML(a) {
-  return a.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+  return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
+}
+function m_unescapeForHTML(a) {
+  return a.split("&lt;").join("<").split("&gt;").join(">").split("&amp;lt;").join("&lt;").split("&amp;gt;").join("&gt;");
 }
 function m_quoteAttributeValue(a, b, c) {
   a = m_escapeForHTML("" + a);
   var d = a.match('"'), e = a.match("'"), f = b ? "'" : '"';
-  if (d && e) {
-    a = b ? f + a.split("'").join("\\'") + f : f + a.split('"').join('\\"') + f;
-  } else if (d) {
-    a = "'" + a + "'";
-  } else if (e) {
-    a = b ? f + a.split("'").join("\\'") + f : f + a + f;
-  } else if (c || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length) {
-    a = f + a + f;
-  }
+  d && e ? a = b ? f + a.split("'").join("\\'") + f : f + a.split('"').join('\\"') + f : d ? a = "'" + a + "'" : e ? a = b ? f + a.split("'").join("\\'") + f : f + a + f : c || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length ? a = f + a + f : "" === a && (a = f + f);
   return a;
 }
 function m_toSnakeCase(a) {
@@ -1398,8 +1396,8 @@ function m_isStaticDocument(a, b) {
 }
 function m_createVNodeFromHTMLJson(a, b) {
   function c(e, f) {
-    function g(G, D, F) {
-      return h ? h.insertNodeLast(G, D, F) : new VNode(b, 0, G, D, F);
+    function g(H, D, F) {
+      return h ? h.insertNodeLast(H, D, F) : new VNode(b, 0, H, D, F);
     }
     var h = m_isBoolean(f) ? null : f;
     f = e[0];
@@ -1414,28 +1412,28 @@ function m_createVNodeFromHTMLJson(a, b) {
       case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END:
         return g(f);
       case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION:
-        var r = [];
+        var t = [];
         q = 2;
         for (w = e.length; q < w; ++q) {
-          r[q - 2] = e[q];
+          t[q - 2] = e[q];
         }
-        return g(f, x, w ? r : null);
+        return g(f, x, w ? t : null);
       case htmljson.NODE_TYPE.DOCUMENT_NODE:
       case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
       case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER:
-        r = g(f, x);
+        t = g(f, x);
         break;
       case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
-        r = g(f);
+        t = g(f);
         break;
       case htmljson.NODE_TYPE.ELEMENT_NODE:
       case htmljson.NODE_TYPE.ELEMENT_START_TAG:
         w = x, q = 2;
       default:
-        m_isString(w) && (r = g(1 === q ? htmljson.NODE_TYPE.ELEMENT_NODE : f, w, e[q]));
+        m_isString(w) && (t = g(1 === q ? htmljson.NODE_TYPE.ELEMENT_NODE : f, w, e[q]));
     }
-    b || d(e, r);
-    return r;
+    b || d(e, t);
+    return t;
   }
   function d(e, f) {
     for (var g = m_getChildNodeStartIndex(e), h; g < e.length; ++g) {
@@ -1500,7 +1498,11 @@ function m_createVNodeFromHTMLJson(a, b) {
   }
 };
 VNode.currentRestrictedVNode = null;
+VNode.parentRestrictedVNode = null;
 VNode.treeIsUpdated = !1;
+VNode.prototype.getRestrictedMode = function() {
+  return this._isRestrictedMode ? VNode.currentRestrictedVNode === this ? this._removed ? _RESTRICTED_MODE.CURRENT_NODE_REMOVED : this._hasUnknownChildren ? _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN : _RESTRICTED_MODE.CURRENT_NODE_IS_EMPTY : VNode.currentRestrictedVNode._parent === this ? _RESTRICTED_MODE.READ_ONLY : _RESTRICTED_MODE.NEW_NODE : _RESTRICTED_MODE.NO_RESTRICTIONS;
+};
 VNode.prototype.getHTMLJson = function() {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
     throw "restricted mode \u3067\u306f getHTMLJSON() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
@@ -1545,8 +1547,8 @@ VNode.prototype.getNodeType = function() {
 };
 VNode.prototype.setNodeType = function(a) {
   if (htmljson.DEFINE.DEBUG) {
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f setNodeType() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute setNodeType()!";
     }
     if (a !== htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE) {
       throw "nodeType \u306e\u5909\u66f4\u306f DOCUMENT_FRAGMENT_NODE -> DOCUMENT_NODE \u3060\u3051\u3092\u30b5\u30dd\u30fc\u30c8\u3057\u307e\u3059!";
@@ -1573,8 +1575,8 @@ VNode.prototype.getNodeValue = function() {
   }
 };
 VNode.prototype.setNodeValue = function(a) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNode(this)) {
-    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setNodeValue() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute setNodeValue()!";
   }
   switch(this._nodeType) {
     case htmljson.NODE_TYPE.TEXT_NODE:
@@ -1596,7 +1598,7 @@ VNode.prototype.isElement = function() {
 };
 VNode.prototype.finalize = function() {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "restricted mode \u3067\u306f finalize() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    throw "In Restricted Mode. VNode cannot execute finalize()!";
   }
   if (htmljson.DEFINE.DEBUG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG) {
     throw "finalize() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
@@ -1608,22 +1610,27 @@ VNode.prototype.isClosed = function() {
   return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
 VNode.prototype.isValid = function() {
-  var a = this._childNodes, b;
-  if (a) {
-    var c = 0;
-    for (b = a.length; c < b; ++c) {
-      var d = a[c];
-      if (d._nodeType !== htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER && d._nodeType !== htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER && !d.isValid()) {
-        return !1;
-      }
+  var a = !0;
+  _walkAllDescendantNodes(this, function(b) {
+    if (b._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || b._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER) {
+      return _WALK.SKIP;
     }
-  }
-  return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG;
+    if (b._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || b._nodeType === htmljson.NODE_TYPE.ELEMENT_END_TAG) {
+      return a = !1, _WALK.BREAK;
+    }
+  });
+  return a;
 };
 VNode.prototype.walkNodes = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute walkNodes()!";
+  }
   _walkAllDescendantNodes(this, a);
 };
 VNode.prototype.walkElements = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute walkElements()!";
+  }
   _walkAllDescendantNodes(this, function(b) {
     if (b.isElement()) {
       return a(b);
@@ -1631,22 +1638,43 @@ VNode.prototype.walkElements = function(a) {
   });
 };
 VNode.prototype.walkText = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute walkText()!";
+  }
   _walkAllDescendantNodes(this, function(b) {
     if (b._nodeType === htmljson.NODE_TYPE.TEXT_NODE) {
       return a(b);
     }
   });
 };
+VNode.prototype.contains = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute walkText()!";
+  }
+  var b = !1;
+  _walkAllDescendantNodes(this, function(c) {
+    if (c === a) {
+      return b = !0, _WALK.BREAK;
+    }
+  });
+  return b;
+};
 VNode.prototype.getElementByID = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute getElementByID()!";
+  }
   var b = null;
   this.walkElements(function(c) {
     if (c.getAttr("id") === a) {
-      return b = c, !0;
+      return b = c, _WALK.BREAK;
     }
   });
   return b;
 };
 VNode.prototype.getElementListByTag = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute getElementListByTag()!";
+  }
   var b = [], c = -1;
   this.walkElements(function(d) {
     d._tagName === a && (b[++c] = d);
@@ -1654,6 +1682,9 @@ VNode.prototype.getElementListByTag = function(a) {
   return b;
 };
 VNode.prototype.getElementListByClass = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute getElementListByClass()!";
+  }
   var b = [], c = -1;
   this.walkElements(function(d) {
     d.hasClassName(a) && (b[++c] = d);
@@ -1661,6 +1692,9 @@ VNode.prototype.getElementListByClass = function(a) {
   return b;
 };
 VNode.prototype.getElementListByName = function(a) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute getElementListByName()!";
+  }
   var b = [], c = -1;
   this.walkElements(function(d) {
     d.getAttr("name") === a && (b[++c] = d);
@@ -1674,8 +1708,13 @@ VNode.prototype.getTagName = function() {
   return this._tagName;
 };
 VNode.prototype.setTagName = function(a) {
-  if (htmljson.DEFINE.DEBUG && !this.isElement() && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG) {
-    throw "getTagName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG) {
+    if (!this.isElement() && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG) {
+      throw "getTagName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+    }
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute setTagName()!";
+    }
   }
   _compareValuesAndSetUpdatedFlag(this._tagName, a);
   this._tagName = a;
@@ -1702,11 +1741,11 @@ VNode.prototype.addClassName = function(a) {
     if (!this.isElement()) {
       throw "addClassName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e addClassName() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
     if (-1 !== a.indexOf(" ")) {
       throw "addClassName() \u306f\u534a\u89d2\u6587\u5b57\u3092\u542b\u3080 className \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u307e\u305b\u3093!";
+    }
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute addClassName()!";
     }
   }
   this.hasClassName(a) || (this._className = (this._className ? " " : "") + a, VNode.treeIsUpdated = !0);
@@ -1716,11 +1755,11 @@ VNode.prototype.removeClassName = function(a) {
     if (!this.isElement()) {
       throw "removeClassName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e removeClassName() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
     if (-1 !== a.indexOf(" ")) {
       throw "removeClassName() \u306f\u534a\u89d2\u6587\u5b57\u3092\u542b\u3080 className \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u307e\u305b\u3093!";
+    }
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute removeClassName()!";
     }
   }
   if (this.hasClassName(a)) {
@@ -1755,8 +1794,8 @@ VNode.prototype.setAttr = function(a, b) {
     if (!this.isElement()) {
       throw "setAttr() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setAttr() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute setAttr()!";
     }
   }
   "class" === a || "className" === a ? (_compareValuesAndSetUpdatedFlag(this._className, b), this._className = b) : "id" === a ? (_compareValuesAndSetUpdatedFlag(this._id, b), this._id = b) : (m_isAttributes(this._attrs) || (this._attrs = {}), _compareValuesAndSetUpdatedFlag(this._attrs[a], b), this._attrs[a] = b);
@@ -1766,8 +1805,8 @@ VNode.prototype.removeAttr = function(a) {
     if (!this.isElement()) {
       throw "removeAttr() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e removeAttr() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute removeAttr()!";
     }
   }
   "class" === a || "className" === a ? (_compareValuesAndSetUpdatedFlag(this._className, ""), this._className = "") : "id" === a ? (_compareValuesAndSetUpdatedFlag(this._id, ""), this._id = "") : m_isAttributes(this._attrs) && (_compareValuesAndSetUpdatedFlag(this._attrs[a], void 0), delete this._attrs[a]);
@@ -1787,8 +1826,8 @@ VNode.prototype.setStyle = function(a, b) {
     if (!this.isElement()) {
       throw "setStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setStyle() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute setStyle()!";
     }
   }
   var c = this.getAttr("style");
@@ -1802,8 +1841,8 @@ VNode.prototype.removeStyle = function(a) {
     if (!this.isElement()) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e removeStyle() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute removeStyle()!";
     }
   }
   var b = this.getAttr("style");
@@ -1815,8 +1854,8 @@ VNode.prototype.getTextContent = function() {
     if (!this.isElement()) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e getTextContent() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute getTextContent()!";
     }
   }
   var a = "";
@@ -1830,32 +1869,23 @@ VNode.prototype.setTextContent = function(a) {
     if (!this.isElement()) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setTextContent() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute setTextContent()!";
     }
   }
+  _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() && (this._hasUnknownChildren = !0);
   this.empty();
   this.insertNodeFirst(htmljson.NODE_TYPE.TEXT_NODE, a);
 };
 VNode.prototype.getParent = function() {
-  if (htmljson.DEFINE.DEBUG) {
-    if (_isDocOrDocFragment(this)) {
-      throw "getParent() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
-    }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e getParent() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
+  if (htmljson.DEFINE.DEBUG && _isDocOrDocFragment(this)) {
+    throw "getParent() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
   }
   return this._parent;
 };
 VNode.prototype.getPrevNode = function() {
-  if (htmljson.DEFINE.DEBUG) {
-    if (_isDocOrDocFragment(this)) {
-      throw "getPrevNode() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
-    }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getPrevNode() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
+  if (htmljson.DEFINE.DEBUG && _isDocOrDocFragment(this)) {
+    throw "getPrevNode() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
   }
   return this._parent && this._parent.getChildNodeAt(this.getMyIndex() - 1);
 };
@@ -1864,20 +1894,16 @@ VNode.prototype.getNextNode = function() {
     if (this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || _isDocOrDocFragment(this)) {
       throw "getNextNode() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getNextNode() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.CURRENT_NODE_IS_EMPTY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute getNextNode()!";
     }
   }
+  this.getRestrictedMode();
   return this._parent && this._parent.getChildNodeAt(this.getMyIndex() + 1);
 };
 VNode.prototype.getMyIndex = function() {
-  if (htmljson.DEFINE.DEBUG) {
-    if (_isDocOrDocFragment(this)) {
-      throw "getMyIndex() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
-    }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getMyIndex() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
+  if (htmljson.DEFINE.DEBUG && _isDocOrDocFragment(this)) {
+    throw "getMyIndex() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
   }
   return this._parent ? this._parent._childNodes.indexOf(this) : -1;
 };
@@ -1886,21 +1912,17 @@ VNode.prototype.getChildNodeCount = function() {
     if (!_canHasChildren(this)) {
       throw "getChildNodeCount() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getChildNodeCount() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute getChildNodeCount()!";
     }
   }
   return this._childNodes && this._childNodes.length;
 };
 VNode.prototype.getFirstChild = function() {
-  if (htmljson.DEFINE.DEBUG) {
-    if (!_canHasChildren(this)) {
-      throw "getFirstChild() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
-    }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getFirstChild() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
+  if (htmljson.DEFINE.DEBUG && !_canHasChildren(this)) {
+    throw "getFirstChild() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
   }
+  this.getRestrictedMode();
   return this.getChildNodeAt(0);
 };
 VNode.prototype.getLastChild = function() {
@@ -1908,10 +1930,11 @@ VNode.prototype.getLastChild = function() {
     if (!_canHasChildren(this)) {
       throw "getLastChild() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getLastChild() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute getLastChild()!";
     }
   }
+  this.getRestrictedMode();
   return this.getChildNodeAt(this.getChildNodeCount() - 1);
 };
 VNode.prototype.getChildNodeAt = function(a) {
@@ -1919,8 +1942,8 @@ VNode.prototype.getChildNodeAt = function(a) {
     if (!_canHasChildren(this)) {
       throw "getChildNodeAt() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f getChildNodeAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute getChildNodeAt()!";
     }
   }
   return this._childNodes && this._childNodes[a] || null;
@@ -1930,11 +1953,11 @@ VNode.prototype.remove = function() {
     if (_isDocOrDocFragment(this)) {
       throw "remove() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e discard() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute remove()!";
     }
   }
-  if (this._isRestrictedMode) {
+  if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
     return this._removed = VNode.treeIsUpdated = !0, null;
   }
   var a = this.getMyIndex();
@@ -1945,12 +1968,12 @@ VNode.prototype.empty = function() {
     if (!_canHasChildren(this)) {
       throw "empty() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e empty() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute empty()!";
     }
   }
-  if (this._isRestrictedMode) {
-    this._emptied = VNode.treeIsUpdated = !0, this._nodesInsertedFirst && (this._nodesInsertedFirst.length = 0), this._nodesInsertedLast && (this._nodesInsertedLast.length = 0);
+  if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    this._hasUnknownChildren = !1, VNode.treeIsUpdated = !0, this._nodesInsertedFirst && (this._nodesInsertedFirst.length = 0), this._nodesInsertedLast && (this._nodesInsertedLast.length = 0);
   } else {
     var a = this._childNodes, b;
     if (a) {
@@ -1960,26 +1983,47 @@ VNode.prototype.empty = function() {
     }
   }
 };
+VNode.prototype.wrap = function(a, b, c) {
+  if (htmljson.DEFINE.DEBUG) {
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e empty() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute wrap()!";
+    }
+  }
+  a = this.insertNodeBefore(a, b, c);
+  _insertAt(a, 0, [this]);
+  return a;
+};
+VNode.prototype.replace = function(a, b, c) {
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute replace()!";
+  }
+  a = this.insertNodeBefore(a, b, c);
+  this.remove();
+  return a;
+};
 VNode.prototype.insertBefore = function(a) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this)) {
       throw "insertBefore() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f insertBefore() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute insertBefore()!";
     }
   }
   this._parent && _insertAt(this._parent, this.getMyIndex(), arguments);
 };
 VNode.prototype.insertFirst = function(a) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "restricted mode \u3067\u306f insertFirst() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertFirst()!";
   }
   _insertAt(this, 0, arguments);
 };
 VNode.prototype.insertAt = function(a, b) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "restricted mode \u3067\u306f insertAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertAt()!";
   }
   var c = [], d;
   for (d = arguments.length; 1 < d;) {
@@ -1988,8 +2032,8 @@ VNode.prototype.insertAt = function(a, b) {
   _insertAt(this, a, c);
 };
 VNode.prototype.insertLast = function(a) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "restricted mode \u3067\u306f insertLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertLast()!";
   }
   _insertAt(this, this.getChildNodeCount(), arguments);
 };
@@ -1998,8 +2042,8 @@ VNode.prototype.insertAfter = function(a) {
     if (_isDocOrDocFragment(this) || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
       throw "insertAfter() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode) {
-      throw "restricted mode \u3067\u306f insertAfter() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.CURRENT_NODE_REMOVED <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute insertAfter()!";
     }
   }
   this._parent && _insertAt(this._parent, this.getMyIndex() + 1, arguments);
@@ -2029,21 +2073,21 @@ VNode.prototype.insertElementBefore = function(a, b, c) {
     if (_isDocOrDocFragment(this)) {
       throw "insertElementBefore() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementBefore() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute insertFirst()!";
     }
   }
-  return this._isRestrictedMode ? (this._nodesInsertedBefore = this._nodesInsertedBefore || [], this._nodesInsertedBefore.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex(), a, b, c) : null;
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedBefore = this._nodesInsertedBefore || [], this._nodesInsertedBefore.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex(), a, b, c) : null;
 };
 VNode.prototype.insertElementFirst = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementFirst() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return this._isRestrictedMode ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(0, a, b, c);
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(0, a, b, c);
 };
 VNode.prototype.insertElementAt = function(a, b, c, d) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "restricted mode \u3067\u306f insertElementAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertElementAt()!";
   }
   a = new VNode(this, a, htmljson.NODE_TYPE.ELEMENT_NODE, b, c);
   null != d && a.insertNodeAt(0, htmljson.NODE_TYPE.TEXT_NODE, d);
@@ -2051,64 +2095,64 @@ VNode.prototype.insertElementAt = function(a, b, c, d) {
   return a;
 };
 VNode.prototype.insertElementLast = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
-    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertElementLast()!";
   }
-  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(this.getChildNodeCount(), a, b, c);
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(this.getChildNodeCount(), a, b, c);
 };
 VNode.prototype.insertElementAfter = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this) || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
       throw "insertElementAfter() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementAfter() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute insertElementLast()!";
     }
   }
-  return this._isRestrictedMode ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex() + 1, a, b, c) : null;
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex() + 1, a, b, c) : null;
 };
 VNode.prototype.insertNodeBefore = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this)) {
       throw "insertNodeBefore() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeBefore() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute insertNodeBefore()!";
     }
   }
   return this._isRestrictedMode ? (this._nodesInsertedBefore = this._nodesInsertedBefore || [], this._nodesInsertedBefore.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex(), a, b, c) : null;
 };
 VNode.prototype.insertNodeFirst = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
-    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeFirst() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertNodeFirst()!";
   }
-  return this._isRestrictedMode ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(0, a, b, c);
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(0, a, b, c);
 };
 VNode.prototype.insertNodeAt = function(a, b, c, d) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "restricted mode \u3067\u306f insertNodeAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertNodeAt()!";
   }
   VNode.treeIsUpdated = !0;
   return new VNode(this, a, b, c, d);
 };
 VNode.prototype.insertNodeLast = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
-    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+    throw "In Restricted Mode. VNode cannot execute insertNodeFirst()!";
   }
-  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(this.getChildNodeCount(), a, b, c);
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(this.getChildNodeCount(), a, b, c);
 };
 VNode.prototype.insertNodeAfter = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this) || a === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
       throw "insertNodeAfter() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeAfter() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
+      throw "In Restricted Mode. VNode cannot execute insertNodeFirst()!";
     }
   }
-  return this._isRestrictedMode ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex() + 1, a, b, c) : null;
+  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex() + 1, a, b, c) : null;
 };
-var _RESTRICTED_MODE = {NO_RESTRICTIONS:0, NEW_NODE:1, CURRENT_NODE_EMPTY:2, CURRENT_NODE_HAS_CHILDREN:3, READ_ONLY:4};
+var _RESTRICTED_MODE = {NO_RESTRICTIONS:0, NEW_NODE:1, CURRENT_NODE_IS_EMPTY:2, CURRENT_NODE_HAS_UNKNOWN_CHILDREN:3, CURRENT_NODE_REMOVED:4, READ_ONLY:5}, _WALK = {NODE:0, BREAK:1, SKIP:2};
 function _canHasChildren(a) {
   return a._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE || a._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || a._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || a._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER || _isDocOrDocFragment(a);
 }
@@ -2132,22 +2176,18 @@ function _walkAllDescendantNodes(a, b) {
     do {
       var f = ++e[c];
       if (f = a[f]) {
-        if (!0 === b(f)) {
+        if (b(f) === _WALK.BREAK) {
           break;
         }
-        if (f = f._childNodes) {
-          if (d = f.length) {
-            c += 2, e[c + 0] = -1, e[c + 1] = a = f;
-          }
-        }
+        b(f) !== _WALK.SKIP && (f = f._childNodes) && (d = f.length) && (c += 2, e[c + 0] = -1, e[c + 1] = a = f);
       } else {
         e.length = c, c -= 2, a = e[c + 1];
       }
     } while (0 <= c);
   }
 }
-;var json2json = function(a, b, c, d, e, f) {
-  function g(p, k, t, y, m, B) {
+;var json2json = {main:function(a, b, c, d, e, f) {
+  function g(p, k, u, y, m, B) {
     var v = p[0], I = p[1], A = 1, M = v;
     switch(v) {
       case htmljson.NODE_TYPE.DOCUMENT_NODE:
@@ -2156,46 +2196,46 @@ function _walkAllDescendantNodes(a, b) {
         h(p, y, m, B);
         break;
       case htmljson.NODE_TYPE.TEXT_NODE:
-        I = m_trimWhiteSpaces("" + I, m, B, w, r, G);
+        I = m_trimWhiteSpaces("" + I, m, B, w, t, H);
         if ("" !== I) {
-          k[t] = I;
+          k[u] = I;
         } else {
-          return k.splice(t, 1), -1;
+          return k.splice(u, 1), -1;
         }
         break;
       case htmljson.NODE_TYPE.CDATA_SECTION:
         if (!D && k) {
-          return k.splice(t, 1), -1;
+          return k.splice(u, 1), -1;
         }
         break;
       case htmljson.NODE_TYPE.COMMENT_NODE:
         if (!F && k) {
-          return k.splice(t, 1), -1;
+          return k.splice(u, 1), -1;
         }
         break;
       case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
         h(p, y, m, B);
-        if (!H && k && 2 === p.length) {
-          return k.splice(t, 1), -1;
+        if (!G && k && 2 === p.length) {
+          return k.splice(u, 1), -1;
         }
         break;
       case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END:
-        p = k[t - 1];
-        if (!H && p && p[0] === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START && p) {
-          return k.splice(t - 1, 2), -2;
+        p = k[u - 1];
+        if (!G && p && p[0] === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START && p) {
+          return k.splice(u - 1, 2), -2;
         }
         break;
       case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER:
         h(p, y, m, B);
-        if (!H && k && 2 === p.length) {
-          return k.splice(t, 1), -1;
+        if (!G && k && 2 === p.length) {
+          return k.splice(u, 1), -1;
         }
         break;
       case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION:
         if (x) {
-          if (p = m_executeProcessingInstruction(x, p, k, t, q), void 0 !== p) {
+          if (p = m_executeProcessingInstruction(x, p, k, u, q), void 0 !== p) {
             if (null === p || "" === p) {
-              return k ? k.splice(t, 1) : (a.length = 0, a.push(htmljson.NODE_TYPE.COMMENT_NODE, "")), -1;
+              return k ? k.splice(u, 1) : (a.length = 0, a.push(htmljson.NODE_TYPE.COMMENT_NODE, "")), -1;
             }
             if (!m_isStringOrNumber(p) && m_isArray(p)) {
               return -1;
@@ -2215,18 +2255,18 @@ function _walkAllDescendantNodes(a, b) {
           if (1 + A <= p.length) {
             k = p[A];
             if (m_isAttributes(k)) {
-              t = A - 1;
+              u = A - 1;
               B = 0;
               var C;
-              v = m_parseTagName(p[t]);
+              v = m_parseTagName(p[u]);
               I = v[1];
               var K = v[2];
               v = v[0];
               for (L in k) {
                 var J = L;
                 var E = k[L];
-                if (C = m_isInstructionAttr(u, L)) {
-                  var L = L.substr(u.length);
+                if (C = m_isInstructionAttr(r, L)) {
+                  var L = L.substr(r.length);
                   "className" === L && (L = "class");
                   x ? E = m_executeInstructionAttr(!1, x, L, E, q) : q("onInstruction is void!");
                   if (void 0 !== E) {
@@ -2255,7 +2295,7 @@ function _walkAllDescendantNodes(a, b) {
                   ++B;
                 }
               }
-              p[t] = m_createTagName(v, I, K);
+              p[u] = m_createTagName(v, I, K);
               0 === B && p.splice(A, 1);
             }
             if (!l) {
@@ -2273,13 +2313,13 @@ function _walkAllDescendantNodes(a, b) {
     }
     return 0;
   }
-  function h(p, k, t, y) {
+  function h(p, k, u, y) {
     var m = m_getChildNodeStartIndex(p);
     for (k.push(p); m < p.length; ++m) {
       var B = p[m];
       if (!m_isStringOrNumber(B)) {
         if (m_isArray(B)) {
-          if (B = g(B, p, m, k, t, y)) {
+          if (B = g(B, p, m, k, u, y)) {
             m += B, z = !0;
           }
         } else {
@@ -2294,12 +2334,12 @@ function _walkAllDescendantNodes(a, b) {
   var q = "function" === typeof e ? e : function(p) {
   };
   e = f || {};
-  var w = -1 !== ["normal", !0, "aggressive"].indexOf(e.trimWhitespaces), r = "aggressive" === e.trimWhitespaces, G = !!e.removeNewlineBetweenFullWidthChars, D = !1 !== e.keepCDATASections, F = !1 !== e.keepComments, H = !0 === e.keepEmptyConditionalComment, u = e.instructionAttrPrefix || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX, l = !1, z = !1, n = !0;
+  var w = -1 !== ["normal", !0, "aggressive"].indexOf(e.trimWhitespaces), t = "aggressive" === e.trimWhitespaces, H = !!e.removeNewlineBetweenFullWidthChars, D = !1 !== e.keepCDATASections, F = !1 !== e.keepComments, G = !0 === e.keepEmptyConditionalComment, r = e.instructionAttrPrefix || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX, l = !1, z = !1, n = !0;
   if (m_isArray(a)) {
-    return g(a, null, 0, [], !1, !1), z && m_normalizeTextNodes(a), b && _dispatchDocumentReadyEvent(b, a) && (n = m_isStaticDocument(a, u)), n;
+    return g(a, null, 0, [], !1, !1), z && m_normalizeTextNodes(a), b && _dispatchDocumentReadyEvent(b, a) && (n = m_isStaticDocument(a, r)), n;
   }
   htmljson.DEFINE.DEBUG && q("Invalid html.json document!");
-};
+}};
 function _dispatchDocumentReadyEvent(a, b) {
   var c = m_createVNodeFromHTMLJson(b, !1);
   VNode.treeIsUpdated = !1;
@@ -2310,25 +2350,25 @@ function _dispatchDocumentReadyEvent(a, b) {
   return a;
 }
 ;json2json.module = {};
-module.exports = json2json;
-json2json.DOCUMENT_NODE = htmljson.NODE_TYPE.DOCUMENT_NODE;
-json2json.DOCUMENT_FRAGMENT_NODE = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-json2json.ELEMENT_NODE = htmljson.NODE_TYPE.ELEMENT_NODE;
-json2json.TEXT_NODE = htmljson.NODE_TYPE.TEXT_NODE;
-json2json.CDATA_SECTION = htmljson.NODE_TYPE.CDATA_SECTION;
-json2json.PROCESSING_INSTRUCTION = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
-json2json.COMMENT_NODE = htmljson.NODE_TYPE.COMMENT_NODE;
-json2json.COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER;
-json2json.COND_CMT_SHOW_LOWER_START = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
-json2json.COND_CMT_SHOW_LOWER_END = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END;
-json2json.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
-json2json.ELEMENT_START_TAG = htmljson.NODE_TYPE.ELEMENT_START_TAG;
-json2json.ELEMENT_END_TAG = htmljson.NODE_TYPE.ELEMENT_END_TAG;
-var json2html = function(a, b, c, d, e) {
-  function f(l, z, n, p, k, t) {
+module.exports = json2json.main;
+json2json.main.DOCUMENT_NODE = htmljson.NODE_TYPE.DOCUMENT_NODE;
+json2json.main.DOCUMENT_FRAGMENT_NODE = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
+json2json.main.ELEMENT_NODE = htmljson.NODE_TYPE.ELEMENT_NODE;
+json2json.main.TEXT_NODE = htmljson.NODE_TYPE.TEXT_NODE;
+json2json.main.CDATA_SECTION = htmljson.NODE_TYPE.CDATA_SECTION;
+json2json.main.PROCESSING_INSTRUCTION = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
+json2json.main.COMMENT_NODE = htmljson.NODE_TYPE.COMMENT_NODE;
+json2json.main.COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER;
+json2json.main.COND_CMT_SHOW_LOWER_START = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
+json2json.main.COND_CMT_SHOW_LOWER_END = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END;
+json2json.main.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
+json2json.main.ELEMENT_START_TAG = htmljson.NODE_TYPE.ELEMENT_START_TAG;
+json2json.main.ELEMENT_END_TAG = htmljson.NODE_TYPE.ELEMENT_END_TAG;
+var json2html = {main:function(a, b, c, d, e) {
+  function f(l, z, n, p, k, u) {
     function y() {
       var K = "";
-      H && (K = "</" + H + ">", H = "");
+      G && (K = "</" + (r ? G : G.toLowerCase()) + ">", G = "");
       return K;
     }
     var m = w ? m_executeEnterNodeHandler(l, n, w) : null;
@@ -2336,33 +2376,33 @@ var json2html = function(a, b, c, d, e) {
     var B = l[0], v = l[1], I = 1, A = B, M;
     switch(B) {
       case htmljson.NODE_TYPE.DOCUMENT_NODE:
-        htmljson.DEFINE.USE_XHTML && m_isXML(v) && (u = !0);
-        n = v + h(l, m, !1, t);
+        htmljson.DEFINE.USE_XHTML && m_isXML(v) && (r = !0);
+        n = v + h(l, m, !1, u);
         break;
       case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
-        n = h(l, m, k, t);
+        n = h(l, m, k, u);
         break;
       case htmljson.NODE_TYPE.TEXT_NODE:
-        n = y() + (t ? v : m_escapeForHTML("" + v));
+        n = y() + (u ? v : m_escapeForHTML("" + v));
         break;
       case htmljson.NODE_TYPE.CDATA_SECTION:
-        htmljson.DEFINE.DEBUG && !m_isString(v) && r("CDATA_SECTION Error! [" + l + "]");
+        htmljson.DEFINE.DEBUG && !m_isString(v) && t("CDATA_SECTION Error! [" + l + "]");
         n = "<![CDATA[" + v + "]]\x3e";
         break;
       case htmljson.NODE_TYPE.COMMENT_NODE:
-        htmljson.DEFINE.DEBUG && !m_isString(v) && r("COMMENT_NODE Error! [" + l + "]");
+        htmljson.DEFINE.DEBUG && !m_isString(v) && t("COMMENT_NODE Error! [" + l + "]");
         n = "\x3c!--" + v + "--\x3e";
         break;
       case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
-        htmljson.DEFINE.DEBUG && !m_isString(v) && r("COND_CMT_HIDE_LOWER Error! [" + l + "]");
-        n = y() + "\x3c!--[" + v + "]>" + h(l, m, !0, t) + "<![endif]--\x3e";
+        htmljson.DEFINE.DEBUG && !m_isString(v) && t("COND_CMT_HIDE_LOWER Error! [" + l + "]");
+        n = y() + "\x3c!--[" + v + "]>" + h(l, m, !0, u) + "<![endif]--\x3e";
         break;
       case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER:
-        htmljson.DEFINE.DEBUG && !m_isString(v) && r("NETSCAPE4_COND_CMT_HIDE_LOWER Error! [" + l + "]");
-        n = y() + "\x3c!--{" + v + "};" + h(l, m, !0, t) + "--\x3e";
+        htmljson.DEFINE.DEBUG && !m_isString(v) && t("NETSCAPE4_COND_CMT_HIDE_LOWER Error! [" + l + "]");
+        n = y() + "\x3c!--{" + v + "};" + h(l, m, !0, u) + "--\x3e";
         break;
       case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START:
-        htmljson.DEFINE.DEBUG && !m_isString(v) && r("COND_CMT_SHOW_LOWER_START Error! [" + l + "]");
+        htmljson.DEFINE.DEBUG && !m_isString(v) && t("COND_CMT_SHOW_LOWER_START Error! [" + l + "]");
         n = "\x3c!--[" + v + "]>\x3c!--\x3e";
         break;
       case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END:
@@ -2370,18 +2410,18 @@ var json2html = function(a, b, c, d, e) {
         break;
       case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION:
         if (q) {
-          if (k = m_executeProcessingInstruction(q, l, z, p, r), void 0 !== k && null !== k && "" !== k) {
+          if (k = m_executeProcessingInstruction(q, l, z, p, t), void 0 !== k && null !== k && "" !== k) {
             if (m_isStringOrNumber(k) || m_isArray(k)) {
               return -1;
             }
-            htmljson.DEFINE.DEBUG && r("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(l) + "] result:" + JSON.stringify(k));
+            htmljson.DEFINE.DEBUG && t("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(l) + "] result:" + JSON.stringify(k));
           }
         } else {
-          r("onInstruction is void!");
+          t("onInstruction is void!");
         }
         break;
       case htmljson.NODE_TYPE.ELEMENT_END_TAG:
-        htmljson.DEFINE.DEBUG && !m_isString(v) && r("ELEMENT_END_TAG Error! [" + l + "]");
+        htmljson.DEFINE.DEBUG && !m_isString(v) && t("ELEMENT_END_TAG Error! [" + l + "]");
         n = "</" + v + ">";
         break;
       case htmljson.NODE_TYPE.ELEMENT_START_TAG:
@@ -2389,17 +2429,17 @@ var json2html = function(a, b, c, d, e) {
       case htmljson.NODE_TYPE.ELEMENT_NODE:
         A = l[1], I = 2;
       default:
-        htmljson.DEFINE.DEBUG && !m_isString(A) && r("Not html.json! [" + l + "]"), A = m_parseTagName(A), z = A[1], p = A[2], A = A[0], I = l[I], "P" !== H || m_P_END_TAG_LESS_TAGS[A] ? H = "" : n = y(), n += "<" + A, z && (n += " id=" + m_quoteAttributeValue(z, D, u || G)), p && (n += " class=" + m_quoteAttributeValue(p, D, u || G)), u || (M = u = g(A)), m_isAttributes(I) && (n += x(I)), n = (l = h(l, m, m_CHILD_P_MUST_HAVE_END_TAG[A], t || m_UNESCAPED_ELEMENTS[A])) ? n + (">" + l) : C ? n + ">" : 
-        n + (u ? " />" : ">"), C ? H = "" : u && !l || m_OMITTABLE_END_TAGS[A] && (!k || "P" !== A) ? H = htmlparser.VOID_ELEMENTS[A] ? "" : A : (n += "</" + A + ">", H = ""), M && (u = !1);
+        htmljson.DEFINE.DEBUG && !m_isString(A) && t("Not html.json! [" + l + "]"), A = m_parseTagName(A), z = A[1], p = A[2], A = A[0], I = l[I], "P" !== G || m_P_END_TAG_LESS_TAGS[A] ? G = "" : n = y(), r || (M = r = g(A)), n += "<" + (r ? A : A.toLowerCase()), z && (n += " id=" + m_quoteAttributeValue(z, D, r || H)), p && (n += " class=" + m_quoteAttributeValue(p, D, r || H)), m_isAttributes(I) && (n += x(I)), n = (l = h(l, m, m_CHILD_P_MUST_HAVE_END_TAG[A], u || m_UNESCAPED_ELEMENTS[A])) ? n + 
+        (">" + l) : C ? n + ">" : n + (r ? " />" : ">"), C && (G = ""), !l && htmlparser.VOID_ELEMENTS[A] ? G = "" : r && !l || m_OMITTABLE_END_TAGS[A] && (!k || "P" !== A) ? G = A : (n += "</" + (r ? A : A.toLowerCase()) + ">", G = ""), M && (r = !1);
     }
     return n;
   }
   function g(l) {
-    return u || htmlparser.isXMLRootElement(l) ? !0 : htmlparser.isNamespacedTag(l);
+    return r || htmlparser.isXMLRootElement(l) ? !0 : htmlparser.isNamespacedTag(l);
   }
   function h(l, z, n, p) {
-    for (var k = [], t = m_getChildNodeStartIndex(l), y = -1, m; t < l.length; ++t) {
-      m = l[t], m_isStringOrNumber(m) ? k[++y] = f([htmljson.NODE_TYPE.TEXT_NODE, m], l, z, t, !1, p) : m_isArray(m) ? (m = f(m, l, z, t, n, p), -1 === m ? --t : k[++y] = m) : htmljson.DEFINE.DEBUG && r("Invalid html.json! [" + m + "]");
+    for (var k = [], u = m_getChildNodeStartIndex(l), y = -1, m; u < l.length; ++u) {
+      m = l[u], m_isStringOrNumber(m) ? k[++y] = f([htmljson.NODE_TYPE.TEXT_NODE, m], l, z, u, !1, p) : m_isArray(m) ? (m = f(m, l, z, u, n, p), -1 === m ? --u : k[++y] = m) : htmljson.DEFINE.DEBUG && t("Invalid html.json! [" + m + "]");
     }
     return k.join("");
   }
@@ -2409,61 +2449,59 @@ var json2html = function(a, b, c, d, e) {
       var k = l[n];
       (p = m_isInstructionAttr(F, n)) && (n = n.substr(F.length));
       "className" === n && (n = "class");
-      p && (q ? k = m_executeInstructionAttr(!0, q, n, k, r) : r("onInstruction is void!"));
-      if (!(null == k || htmlparser.BOOLEAN_ATTRIBUTES[n] && !1 === k || (z += " " + n, htmlparser.BOOLEAN_ATTRIBUTES[n]))) {
+      p && (q ? k = m_executeInstructionAttr(!0, q, n, k, t) : t("onInstruction is void!"));
+      if (!(null == k || htmlparser.BOOLEAN_ATTRIBUTES[n] && !1 === k || (z += " " + n, htmlparser.BOOLEAN_ATTRIBUTES[n] || !0 === k))) {
         if ("style" === n && m_isObject(k) && (k = m_toCSSTest(k), !k)) {
           continue;
         }
-        z += "=" + m_quoteAttributeValue(k, D, u || G);
+        z += "=" + m_quoteAttributeValue(k, D, r || H);
       }
     }
     return z;
   }
-  var q = b || null, w = c || null, r = "function" === typeof d ? d : function(l) {
+  var q = b || null, w = c || null, t = "function" === typeof d ? d : function(l) {
   };
   b = e || {};
-  var G = !0 === b.quotAlways, D = !0 === b.useSingleQuot, F = b.instructionAttrPrefix || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX, H, u = m_isXMLDocument;
+  var H = !0 === b.quotAlways, D = !0 === b.useSingleQuot, F = b.instructionAttrPrefix || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX, G, r = m_isXMLDocument;
   if (m_isArray(a)) {
     return m_getNodeType(a) === htmljson.NODE_TYPE.PROCESSING_INSTRUCTION && (a = [htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, a]), f(a, null, null, 0, m_pEndTagRequired || !1, m_escapeForHTMLDisabled || !1);
   }
-  htmljson.DEFINE.DEBUG && r("Invalid html.json document!");
-};
-json2json.gulp = function(a, b, c, d, e) {
+  htmljson.DEFINE.DEBUG && t("Invalid html.json document!");
+}};
+json2json.gulp = {};
+json2json.main.gulp = function(a, b, c, d, e) {
   const f = require("plugin-error"), g = require("through2"), h = e || {}, x = h.outputStaticPagesAsHTML, q = h.staticPages && "object" === typeof h.staticPages ? h.staticPages : {};
   h.staticPages = q;
-  return g.obj(function(w, r, G) {
+  return g.obj(function(w, t, H) {
     if (w.isNull()) {
-      return G();
+      return H();
     }
     if (w.isStream()) {
-      return this.emit("error", new f("json2json", "Streaming not supported")), G();
+      return this.emit("error", new f("json2json", "Streaming not supported")), H();
     }
     if (".json" === w.extname) {
       try {
-        const D = JSON.parse(w.contents.toString(r)), F = json2json(D, a, b, c, d, h);
-        let H;
+        const D = JSON.parse(w.contents.toString(t)), F = json2json.main(D, a, b, c, d, h);
+        let G;
         if (x) {
-          const u = w.path.split("\\").join("/").split(".");
-          u.pop();
-          q[u.join(".")] = F;
+          const r = w.path.split("\\").join("/").split(".");
+          r.pop();
+          q[r.join(".")] = F;
         }
         if (F && x) {
-          H = json2html(D, void 0, b, d, h);
-          const u = "." + w.stem.split(".").pop();
+          G = json2html.main(D, void 0, b, d, h);
+          const r = "." + w.stem.split(".").pop();
           w.stem = w.stem.substr(0, w.stem.length - w.extname.length);
-          w.extname = u;
+          w.extname = r;
         } else {
-          H = JSON.stringify(D, null, h.prettify ? "    " : "");
+          G = JSON.stringify(D, null, h.prettify ? "    " : "");
         }
-        w.contents = Buffer.from(H);
-        this.push(w);
+        w.contents = Buffer.from(G);
       } catch (D) {
         this.emit("error", new f("json2json", D));
       }
-    } else {
-      this.push(w);
     }
-    G();
+    H(null, w);
   });
 };
 

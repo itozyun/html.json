@@ -1,12 +1,13 @@
 goog.provide( 'html2json.gulp' );
 
 goog.require( 'html2json.module' );
+goog.require( 'html2json.main' );
 
 /**
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  */
-html2json.gulp = function( opt_onError, opt_options ){
+html2json.main.gulp = function( opt_onError, opt_options ){
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'html2json',
@@ -34,7 +35,7 @@ html2json.gulp = function( opt_onError, opt_options ){
                 try {
                     const html = file.contents.toString( encoding );
                     const now  = performance.now();
-                    const json = html2json( html, false, opt_onError, options );
+                    const json = html2json.main( html, false, opt_onError, options );
 
                     ++numHTMLFiles;
                     totalFileSize += html.length;

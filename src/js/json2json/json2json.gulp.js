@@ -1,7 +1,8 @@
 goog.provide( 'json2json.gulp' );
 
 goog.require( 'json2json.module' );
-goog.require( 'json2html' );
+goog.require( 'json2json.main' );
+goog.require( 'json2html.main' );
 
 /**
  * @param {!InstructionHandler=} opt_onInstruction
@@ -10,7 +11,7 @@ goog.require( 'json2html' );
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  */
-json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
+json2json.main.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'json2json',
@@ -38,7 +39,7 @@ json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentRea
             if( file.extname === '.json' ){
                 try {
                     const json = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ) );
-                    const isStaticWebPage = json2json( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, options );
+                    const isStaticWebPage = json2json.main( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, options );
                     let content;
 
                     if( outputStaticPagesAsHTML ){
@@ -49,7 +50,7 @@ json2json.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocumentRea
                     };
 
                     if( isStaticWebPage && outputStaticPagesAsHTML ){
-                        content = json2html( json, undefined, opt_onEnterNode, opt_onError, options );
+                        content = json2html.main( json, undefined, opt_onEnterNode, opt_onError, options );
                         // .html <= .html.json
                         const extname = '.' + file.stem.split( '.' ).pop();
 

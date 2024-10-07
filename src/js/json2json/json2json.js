@@ -1,4 +1,4 @@
-goog.provide( 'json2json' );
+goog.provide( 'json2json.main' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.NODE_TYPE' );
@@ -17,7 +17,7 @@ goog.require( 'VNode' );
  * @param {!Object=} opt_options
  * @return {boolean | void} isStaticWebPage
  */
-json2json = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
+json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
 

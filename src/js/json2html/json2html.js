@@ -1,4 +1,4 @@
-goog.provide( 'json2html' );
+goog.provide( 'json2html.main' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.isXMLRootElement' );
@@ -17,7 +17,7 @@ goog.require( 'VNode' );
  * @param {!Object=} opt_options
  * @return {string | void} html string
  */
-var json2html = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     /** @const {number} */
     var REMOVED = -1;
 

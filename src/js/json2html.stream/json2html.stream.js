@@ -8,7 +8,7 @@ goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmljson.DEFINE.USE_XHTML' );
-goog.require( 'json2html' );
+goog.require( 'json2html.main' );
 
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js
 
@@ -294,7 +294,7 @@ function onToken( token, value ){
                             m_pEndTagRequired       = this._pEndTagRequired;
                             m_escapeForHTMLDisabled = this._escapeForHTMLDisabled;
                             m_isXMLDocument         = this._isXMLDocument || this._isXmlInHTML;
-                            queue = json2html(
+                            queue = json2html.main(
                                 result,
                                 this._onInstruction,
                                 this._onEnterNode,

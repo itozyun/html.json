@@ -1,4 +1,4 @@
-goog.provide( 'html2json' );
+goog.provide( 'html2json.main' );
 
 goog.requireType( 'htmlparser.typedef.Handler' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
@@ -15,7 +15,7 @@ goog.require( 'VNode' );
  * @param {!Object=} opt_options
  * @return {!HTMLJson}
  */
-html2json = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
+html2json.main = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
     const
         json              = [],
         _aryPush          = json.push,
