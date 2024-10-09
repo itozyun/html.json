@@ -1478,7 +1478,7 @@ function m_createVNodeFromHTMLJson(a, b) {
   switch(c) {
     case htmljson.NODE_TYPE.ELEMENT_NODE:
     case htmljson.NODE_TYPE.ELEMENT_START_TAG:
-      this._attrs = e || null;
+      this._attrs = e || null, d = m_parseTagName(d), this._id = d[1], this._className = d[2], d = d[0];
     case htmljson.NODE_TYPE.ELEMENT_END_TAG:
       this._tagName = d;
       break;
@@ -1495,11 +1495,7 @@ function m_createVNodeFromHTMLJson(a, b) {
   }
 };
 VNode.currentRestrictedVNode = null;
-VNode.parentRestrictedVNode = null;
 VNode.treeIsUpdated = !1;
-VNode.prototype.getRestrictedMode = function() {
-  return this._isRestrictedMode ? VNode.currentRestrictedVNode === this ? this._removed ? _RESTRICTED_MODE.CURRENT_NODE_REMOVED : this._hasUnknownChildren ? _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN : _RESTRICTED_MODE.CURRENT_NODE_IS_EMPTY : VNode.currentRestrictedVNode._parent === this ? _RESTRICTED_MODE.READ_ONLY : _RESTRICTED_MODE.NEW_NODE : _RESTRICTED_MODE.NO_RESTRICTIONS;
-};
 VNode.prototype.getHTMLJson = function() {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
     throw "restricted mode \u3067\u306f getHTMLJSON() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
@@ -1509,7 +1505,7 @@ VNode.prototype.getHTMLJson = function() {
     case htmljson.NODE_TYPE.ELEMENT_NODE:
       a.length = 0;
     case htmljson.NODE_TYPE.ELEMENT_START_TAG:
-      a.push(this._tagName);
+      a.push(m_createTagName(this._tagName, this._id, this._className));
       var d = this._attrs;
       m_isAttributes(d) && (a.push(d), d.style && m_isObject(d.style) && (d.style = m_toCSSTest(d.style)));
       break;
@@ -1544,8 +1540,8 @@ VNode.prototype.getNodeType = function() {
 };
 VNode.prototype.setNodeType = function(a) {
   if (htmljson.DEFINE.DEBUG) {
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute setNodeType()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f setNodeType() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
     if (a !== htmljson.NODE_TYPE.DOCUMENT_NODE || this._nodeType !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE) {
       throw "nodeType \u306e\u5909\u66f4\u306f DOCUMENT_FRAGMENT_NODE -> DOCUMENT_NODE \u3060\u3051\u3092\u30b5\u30dd\u30fc\u30c8\u3057\u307e\u3059!";
@@ -1572,8 +1568,8 @@ VNode.prototype.getNodeValue = function() {
   }
 };
 VNode.prototype.setNodeValue = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute setNodeValue()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNode(this)) {
+    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setNodeValue() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   switch(this._nodeType) {
     case htmljson.NODE_TYPE.TEXT_NODE:
@@ -1595,7 +1591,7 @@ VNode.prototype.isElement = function() {
 };
 VNode.prototype.finalize = function() {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "In Restricted Mode. VNode cannot execute finalize()!";
+    throw "restricted mode \u3067\u306f finalize() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   if (htmljson.DEFINE.DEBUG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG) {
     throw "finalize() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
@@ -1607,27 +1603,22 @@ VNode.prototype.isClosed = function() {
   return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
 VNode.prototype.isValid = function() {
-  var a = !0;
-  _walkAllDescendantNodes(this, function(b) {
-    if (b._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || b._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER) {
-      return _WALK.SKIP;
+  var a = this._childNodes, b;
+  if (a) {
+    var c = 0;
+    for (b = a.length; c < b; ++c) {
+      var d = a[c];
+      if (d._nodeType !== htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER && d._nodeType !== htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER && !d.isValid()) {
+        return !1;
+      }
     }
-    if (b._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || b._nodeType === htmljson.NODE_TYPE.ELEMENT_END_TAG) {
-      return a = !1, _WALK.BREAK;
-    }
-  });
-  return a;
+  }
+  return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG;
 };
 VNode.prototype.walkNodes = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute walkNodes()!";
-  }
   _walkAllDescendantNodes(this, a);
 };
 VNode.prototype.walkElements = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute walkElements()!";
-  }
   _walkAllDescendantNodes(this, function(b) {
     if (b.isElement()) {
       return a(b);
@@ -1635,43 +1626,22 @@ VNode.prototype.walkElements = function(a) {
   });
 };
 VNode.prototype.walkText = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute walkText()!";
-  }
   _walkAllDescendantNodes(this, function(b) {
     if (b._nodeType === htmljson.NODE_TYPE.TEXT_NODE) {
       return a(b);
     }
   });
 };
-VNode.prototype.contains = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute walkText()!";
-  }
-  var b = !1;
-  _walkAllDescendantNodes(this, function(c) {
-    if (c === a) {
-      return b = !0, _WALK.BREAK;
-    }
-  });
-  return b;
-};
 VNode.prototype.getElementByID = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute getElementByID()!";
-  }
   var b = null;
   this.walkElements(function(c) {
     if (c.getAttr("id") === a) {
-      return b = c, _WALK.BREAK;
+      return b = c, !0;
     }
   });
   return b;
 };
 VNode.prototype.getElementListByTag = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute getElementListByTag()!";
-  }
   var b = [], c = -1;
   this.walkElements(function(d) {
     d._tagName === a && (b[++c] = d);
@@ -1679,9 +1649,6 @@ VNode.prototype.getElementListByTag = function(a) {
   return b;
 };
 VNode.prototype.getElementListByClass = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute getElementListByClass()!";
-  }
   var b = [], c = -1;
   this.walkElements(function(d) {
     d.hasClassName(a) && (b[++c] = d);
@@ -1689,9 +1656,6 @@ VNode.prototype.getElementListByClass = function(a) {
   return b;
 };
 VNode.prototype.getElementListByName = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute getElementListByName()!";
-  }
   var b = [], c = -1;
   this.walkElements(function(d) {
     d.getAttr("name") === a && (b[++c] = d);
@@ -1705,13 +1669,8 @@ VNode.prototype.getTagName = function() {
   return this._tagName;
 };
 VNode.prototype.setTagName = function(a) {
-  if (htmljson.DEFINE.DEBUG) {
-    if (!this.isElement() && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG) {
-      throw "getTagName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
-    }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute setTagName()!";
-    }
+  if (htmljson.DEFINE.DEBUG && !this.isElement() && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_END_TAG) {
+    throw "getTagName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
   }
   _compareValuesAndSetUpdatedFlag(this._tagName, a);
   this._tagName = a;
@@ -1738,11 +1697,11 @@ VNode.prototype.addClassName = function(a) {
     if (!this.isElement()) {
       throw "addClassName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e addClassName() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
     if (-1 !== a.indexOf(" ")) {
       throw "addClassName() \u306f\u534a\u89d2\u6587\u5b57\u3092\u542b\u3080 className \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u307e\u305b\u3093!";
-    }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute addClassName()!";
     }
   }
   this.hasClassName(a) || (this._className = (this._className ? " " : "") + a, VNode.treeIsUpdated = !0);
@@ -1752,11 +1711,11 @@ VNode.prototype.removeClassName = function(a) {
     if (!this.isElement()) {
       throw "removeClassName() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e removeClassName() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
     if (-1 !== a.indexOf(" ")) {
       throw "removeClassName() \u306f\u534a\u89d2\u6587\u5b57\u3092\u542b\u3080 className \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u307e\u305b\u3093!";
-    }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute removeClassName()!";
     }
   }
   if (this.hasClassName(a)) {
@@ -1791,8 +1750,8 @@ VNode.prototype.setAttr = function(a, b) {
     if (!this.isElement()) {
       throw "setAttr() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute setAttr()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setAttr() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   "class" === a || "className" === a ? (_compareValuesAndSetUpdatedFlag(this._className, b), this._className = b) : "id" === a ? (_compareValuesAndSetUpdatedFlag(this._id, b), this._id = b) : (m_isAttributes(this._attrs) || (this._attrs = {}), _compareValuesAndSetUpdatedFlag(this._attrs[a], b), this._attrs[a] = b);
@@ -1802,8 +1761,8 @@ VNode.prototype.removeAttr = function(a) {
     if (!this.isElement()) {
       throw "removeAttr() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute removeAttr()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e removeAttr() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   "class" === a || "className" === a ? (_compareValuesAndSetUpdatedFlag(this._className, ""), this._className = "") : "id" === a ? (_compareValuesAndSetUpdatedFlag(this._id, ""), this._id = "") : m_isAttributes(this._attrs) && (_compareValuesAndSetUpdatedFlag(this._attrs[a], void 0), delete this._attrs[a]);
@@ -1823,8 +1782,8 @@ VNode.prototype.setStyle = function(a, b) {
     if (!this.isElement()) {
       throw "setStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute setStyle()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setStyle() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   var c = this.getAttr("style");
@@ -1838,8 +1797,8 @@ VNode.prototype.removeStyle = function(a) {
     if (!this.isElement()) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute removeStyle()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e removeStyle() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   var b = this.getAttr("style");
@@ -1851,8 +1810,8 @@ VNode.prototype.getTextContent = function() {
     if (!this.isElement()) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute getTextContent()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e getTextContent() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   var a = "";
@@ -1866,23 +1825,32 @@ VNode.prototype.setTextContent = function(a) {
     if (!this.isElement()) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute setTextContent()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e setTextContent() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() && (this._hasUnknownChildren = !0);
   this.empty();
   this.insertNodeFirst(htmljson.NODE_TYPE.TEXT_NODE, a);
 };
 VNode.prototype.getParent = function() {
-  if (htmljson.DEFINE.DEBUG && _isDocOrDocFragment(this)) {
-    throw "getParent() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG) {
+    if (_isDocOrDocFragment(this)) {
+      throw "getParent() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+    }
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e getParent() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
   }
   return this._parent;
 };
 VNode.prototype.getPrevNode = function() {
-  if (htmljson.DEFINE.DEBUG && _isDocOrDocFragment(this)) {
-    throw "getPrevNode() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG) {
+    if (_isDocOrDocFragment(this)) {
+      throw "getPrevNode() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+    }
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getPrevNode() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
   }
   return this._parent && this._parent.getChildNodeAt(this.getMyIndex() - 1);
 };
@@ -1891,16 +1859,20 @@ VNode.prototype.getNextNode = function() {
     if (this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || _isDocOrDocFragment(this)) {
       throw "getNextNode() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.CURRENT_NODE_IS_EMPTY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute getNextNode()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getNextNode() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  this.getRestrictedMode();
   return this._parent && this._parent.getChildNodeAt(this.getMyIndex() + 1);
 };
 VNode.prototype.getMyIndex = function() {
-  if (htmljson.DEFINE.DEBUG && _isDocOrDocFragment(this)) {
-    throw "getMyIndex() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG) {
+    if (_isDocOrDocFragment(this)) {
+      throw "getMyIndex() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+    }
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getMyIndex() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
   }
   return this._parent ? this._parent._childNodes.indexOf(this) : -1;
 };
@@ -1909,17 +1881,21 @@ VNode.prototype.getChildNodeCount = function() {
     if (!_canHasChildren(this)) {
       throw "getChildNodeCount() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute getChildNodeCount()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getChildNodeCount() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   return this._childNodes && this._childNodes.length;
 };
 VNode.prototype.getFirstChild = function() {
-  if (htmljson.DEFINE.DEBUG && !_canHasChildren(this)) {
-    throw "getFirstChild() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+  if (htmljson.DEFINE.DEBUG) {
+    if (!_canHasChildren(this)) {
+      throw "getFirstChild() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
+    }
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getFirstChild() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
+    }
   }
-  this.getRestrictedMode();
   return this.getChildNodeAt(0);
 };
 VNode.prototype.getLastChild = function() {
@@ -1927,11 +1903,10 @@ VNode.prototype.getLastChild = function() {
     if (!_canHasChildren(this)) {
       throw "getLastChild() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute getLastChild()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getLastChild() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  this.getRestrictedMode();
   return this.getChildNodeAt(this.getChildNodeCount() - 1);
 };
 VNode.prototype.getChildNodeAt = function(a) {
@@ -1939,8 +1914,8 @@ VNode.prototype.getChildNodeAt = function(a) {
     if (!_canHasChildren(this)) {
       throw "getChildNodeAt() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute getChildNodeAt()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f getChildNodeAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   return this._childNodes && this._childNodes[a] || null;
@@ -1950,11 +1925,11 @@ VNode.prototype.remove = function() {
     if (_isDocOrDocFragment(this)) {
       throw "remove() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute remove()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e discard() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
+  if (this._isRestrictedMode) {
     return this._removed = VNode.treeIsUpdated = !0, null;
   }
   var a = this.getMyIndex();
@@ -1965,12 +1940,12 @@ VNode.prototype.empty = function() {
     if (!_canHasChildren(this)) {
       throw "empty() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute empty()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e empty() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  if (_RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    this._hasUnknownChildren = !1, VNode.treeIsUpdated = !0, this._nodesInsertedFirst && (this._nodesInsertedFirst.length = 0), this._nodesInsertedLast && (this._nodesInsertedLast.length = 0);
+  if (this._isRestrictedMode) {
+    this._emptied = VNode.treeIsUpdated = !0, this._nodesInsertedFirst && (this._nodesInsertedFirst.length = 0), this._nodesInsertedLast && (this._nodesInsertedLast.length = 0);
   } else {
     var a = this._childNodes, b;
     if (a) {
@@ -1980,47 +1955,26 @@ VNode.prototype.empty = function() {
     }
   }
 };
-VNode.prototype.wrap = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG) {
-    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
-      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e empty() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
-    }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute wrap()!";
-    }
-  }
-  a = this.insertNodeBefore(a, b, c);
-  _insertAt(a, 0, [this]);
-  return a;
-};
-VNode.prototype.replace = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute replace()!";
-  }
-  a = this.insertNodeBefore(a, b, c);
-  this.remove();
-  return a;
-};
 VNode.prototype.insertBefore = function(a) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this)) {
       throw "insertBefore() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute insertBefore()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f insertBefore() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   this._parent && _insertAt(this._parent, this.getMyIndex(), arguments);
 };
 VNode.prototype.insertFirst = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertFirst()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
+    throw "restricted mode \u3067\u306f insertFirst() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   _insertAt(this, 0, arguments);
 };
 VNode.prototype.insertAt = function(a, b) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertAt()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
+    throw "restricted mode \u3067\u306f insertAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   var c = [], d;
   for (d = arguments.length; 1 < d;) {
@@ -2029,8 +1983,8 @@ VNode.prototype.insertAt = function(a, b) {
   _insertAt(this, a, c);
 };
 VNode.prototype.insertLast = function(a) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertLast()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
+    throw "restricted mode \u3067\u306f insertLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   _insertAt(this, this.getChildNodeCount(), arguments);
 };
@@ -2039,8 +1993,8 @@ VNode.prototype.insertAfter = function(a) {
     if (_isDocOrDocFragment(this) || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
       throw "insertAfter() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.CURRENT_NODE_REMOVED <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute insertAfter()!";
+    if (this._isRestrictedMode) {
+      throw "restricted mode \u3067\u306f insertAfter() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   this._parent && _insertAt(this._parent, this.getMyIndex() + 1, arguments);
@@ -2070,21 +2024,21 @@ VNode.prototype.insertElementBefore = function(a, b, c) {
     if (_isDocOrDocFragment(this)) {
       throw "insertElementBefore() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute insertFirst()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementBefore() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedBefore = this._nodesInsertedBefore || [], this._nodesInsertedBefore.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex(), a, b, c) : null;
+  return this._isRestrictedMode ? (this._nodesInsertedBefore = this._nodesInsertedBefore || [], this._nodesInsertedBefore.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex(), a, b, c) : null;
 };
 VNode.prototype.insertElementFirst = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
     throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementFirst() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(0, a, b, c);
+  return this._isRestrictedMode ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(0, a, b, c);
 };
 VNode.prototype.insertElementAt = function(a, b, c, d) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertElementAt()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
+    throw "restricted mode \u3067\u306f insertElementAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   a = new VNode(this, a, htmljson.NODE_TYPE.ELEMENT_NODE, b, c);
   null != d && a.insertNodeAt(0, htmljson.NODE_TYPE.TEXT_NODE, d);
@@ -2092,64 +2046,64 @@ VNode.prototype.insertElementAt = function(a, b, c, d) {
   return a;
 };
 VNode.prototype.insertElementLast = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertElementLast()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
+    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(this.getChildNodeCount(), a, b, c);
+  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertElementAt(this.getChildNodeCount(), a, b, c);
 };
 VNode.prototype.insertElementAfter = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this) || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
       throw "insertElementAfter() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute insertElementLast()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertElementAfter() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex() + 1, a, b, c) : null;
+  return this._isRestrictedMode ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([htmljson.NODE_TYPE.ELEMENT_NODE, a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertElementAt(this.getMyIndex() + 1, a, b, c) : null;
 };
 VNode.prototype.insertNodeBefore = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this)) {
       throw "insertNodeBefore() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute insertNodeBefore()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeBefore() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
   return this._isRestrictedMode ? (this._nodesInsertedBefore = this._nodesInsertedBefore || [], this._nodesInsertedBefore.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex(), a, b, c) : null;
 };
 VNode.prototype.insertNodeFirst = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertNodeFirst()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
+    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeFirst() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(0, a, b, c);
+  return this._isRestrictedMode ? (this._nodesInsertedFirst = this._nodesInsertedFirst || [], this._nodesInsertedFirst.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(0, a, b, c);
 };
 VNode.prototype.insertNodeAt = function(a, b, c, d) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertNodeAt()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
+    throw "restricted mode \u3067\u306f insertNodeAt() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
   VNode.treeIsUpdated = !0;
   return new VNode(this, a, b, c, d);
 };
 VNode.prototype.insertNodeLast = function(a, b, c) {
-  if (htmljson.DEFINE.DEBUG && _RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-    throw "In Restricted Mode. VNode cannot execute insertNodeFirst()!";
+  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode && !_isCurrentVNodeAndCanHaveChildren(this)) {
+    throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeLast() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(this.getChildNodeCount(), a, b, c);
+  return this._isRestrictedMode ? (this._nodesInsertedLast = this._nodesInsertedLast || [], this._nodesInsertedLast.push([a, b, c]), VNode.treeIsUpdated = !0, null) : this.insertNodeAt(this.getChildNodeCount(), a, b, c);
 };
 VNode.prototype.insertNodeAfter = function(a, b, c) {
   if (htmljson.DEFINE.DEBUG) {
     if (_isDocOrDocFragment(this) || a === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
       throw "insertNodeAfter() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
-    if (_RESTRICTED_MODE.READ_ONLY <= this.getRestrictedMode()) {
-      throw "In Restricted Mode. VNode cannot execute insertNodeFirst()!";
+    if (this._isRestrictedMode && !_isCurrentVNode(this)) {
+      throw "restricted mode \u3067\u306f\u73fe\u5728\u306e\u30ce\u30fc\u30c9\u4ee5\u5916\u3078\u306e insertNodeAfter() \u306f\u975e\u5bfe\u5fdc\u3067\u3059!";
     }
   }
-  return _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex() + 1, a, b, c) : null;
+  return this._isRestrictedMode ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex() + 1, a, b, c) : null;
 };
-var _RESTRICTED_MODE = {NO_RESTRICTIONS:0, NEW_NODE:1, CURRENT_NODE_IS_EMPTY:2, CURRENT_NODE_HAS_UNKNOWN_CHILDREN:3, CURRENT_NODE_REMOVED:4, READ_ONLY:5}, _WALK = {NODE:0, BREAK:1, SKIP:2};
+var _RESTRICTED_MODE = {NO_RESTRICTIONS:0, NEW_NODE:1, CURRENT_NODE_EMPTY:2, CURRENT_NODE_HAS_CHILDREN:3, READ_ONLY:4};
 function _canHasChildren(a) {
   return a._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE || a._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || a._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || a._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER || _isDocOrDocFragment(a);
 }
@@ -2173,10 +2127,14 @@ function _walkAllDescendantNodes(a, b) {
     do {
       var f = ++e[c];
       if (f = a[f]) {
-        if (b(f) === _WALK.BREAK) {
+        if (!0 === b(f)) {
           break;
         }
-        b(f) !== _WALK.SKIP && (f = f._childNodes) && (d = f.length) && (c += 2, e[c + 0] = -1, e[c + 1] = a = f);
+        if (f = f._childNodes) {
+          if (d = f.length) {
+            c += 2, e[c + 0] = -1, e[c + 1] = a = f;
+          }
+        }
       } else {
         e.length = c, c -= 2, a = e[c + 1];
       }

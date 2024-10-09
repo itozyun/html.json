@@ -74,6 +74,10 @@ VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, op
         case htmljson.NODE_TYPE.ELEMENT_NODE      :
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             this._attrs   = /** @type {Attrs | null} */ (opt_attrsOrArgs || null);
+            opt_nodeValueOrTag = m_parseTagName(  /** @type {string} */ (opt_nodeValueOrTag) );
+            this._id           = opt_nodeValueOrTag[ 1 ];
+            this._className    = opt_nodeValueOrTag[ 2 ];
+            opt_nodeValueOrTag = opt_nodeValueOrTag[ 0 ];
         case htmljson.NODE_TYPE.ELEMENT_END_TAG :
             this._tagName = /** @type {string} */ (opt_nodeValueOrTag);
             break;
@@ -120,7 +124,7 @@ VNode.prototype.getHTMLJson = function(){
         case htmljson.NODE_TYPE.ELEMENT_NODE      :
             json.length = 0;
         case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-            json.push( this._tagName );
+            json.push( m_createTagName( this._tagName, this._id, this._className ) );
             attrs = this._attrs;
             if( m_isAttributes( attrs ) ){
                 json.push( attrs );

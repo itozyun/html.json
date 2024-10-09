@@ -11,23 +11,23 @@ E.TH = E.DT;
 E.RB = E.RP = E.RT = E.P;
 E.TFOOT = E.THEAD = E.TBODY;
 E.RTC = E.RBC;
-var aa = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, ba = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, ca = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, da = 
-{SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0};
-function I(a) {
+var I = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, L = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, M = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, aa = {SCRIPT:!0, 
+STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0};
+function N(a) {
   return !(!a || a.pop !== [].pop);
 }
-function K(a) {
+function O(a) {
   return !(!a || "object" !== typeof a);
 }
-function M(a) {
+function P(a) {
   return "" + a === a;
 }
-function N(a) {
-  if (M(a) || a === +a) {
+function Q(a) {
+  if (P(a) || a === +a) {
     a = 3;
   } else {
-    if (I(a)) {
-      if (M(a[0])) {
+    if (N(a)) {
+      if (P(a[0])) {
         a = 1;
       } else {
         var b = a[0];
@@ -39,39 +39,38 @@ function N(a) {
   }
   return a;
 }
-function ea(a, b, c, h) {
-  var e = b[1], d = b.slice(2), f;
-  "function" === typeof a ? f = d.length ? a(e, d) : a(e) : f = d.length ? a[e].apply(null, d) : a[e]();
-  void 0 !== f && null !== f && "" !== f && (M(f) || f === +f ? c ? c.splice(h, 1, f) : (b.length = 0, b.push(3, b)) : I(f) && (11 === f[0] ? c ? (f.shift(), f.unshift(h, 1), c.splice.apply(c, f)) : (b.length = 0, b.push.apply(b, f)) : I(f[0]) ? c ? (f.unshift(h, 1), c.splice.apply(c, f)) : (b.length = 0, b.push(11), b.push.apply(b, f)) : c ? c.splice(h, 1, f) : (b.length = 0, b.push(11, f))));
-  return f;
+function ba(a, b, c, h) {
+  var g = b[1], d = b.slice(2), e;
+  "function" === typeof a ? e = d.length ? a(g, d) : a(g) : e = d.length ? a[g].apply(null, d) : a[g]();
+  void 0 !== e && null !== e && "" !== e && (P(e) || e === +e ? c ? c.splice(h, 1, e) : (b.length = 0, b.push(3, b)) : N(e) && (11 === e[0] ? c ? (e.shift(), e.unshift(h, 1), c.splice.apply(c, e)) : (b.length = 0, b.push.apply(b, e)) : N(e[0]) ? c ? (e.unshift(h, 1), c.splice.apply(c, e)) : (b.length = 0, b.push(11), b.push.apply(b, e)) : c ? c.splice(h, 1, e) : (b.length = 0, b.push(11, e))));
+  return e;
 }
-function O(a, b, c, h) {
-  var e;
-  if (I(c) && M(c[0])) {
+function R(a, b, c, h) {
+  var g;
+  if (N(c) && P(c[0])) {
     var d = c[0];
     c = c.slice(1);
-    "function" === typeof a ? e = c.length ? a(d, c) : a(d) : e = c.length ? a[d](c) : a[d]();
+    "function" === typeof a ? g = c.length ? a(d, c) : a(d) : g = c.length ? a[d](c) : a[d]();
   } else {
-    M(c) && ("function" === typeof a ? e = a(c) : e = a[c]());
+    P(c) && ("function" === typeof a ? g = a(c) : g = a[c]());
   }
-  return I(e) ? O(a, b, e, h) : e;
+  return N(g) ? R(a, b, g, h) : g;
 }
-function fa(a, b, c) {
-  a = ha(a);
+function ca(a, b, c) {
+  a = da(a);
   var h;
-  P = a;
   b && (b.h ? b.h.push(a) : b.h = [a]);
-  if (I(c)) {
-    var e = 1 === a.m || 17 === a.m;
+  if (N(c)) {
+    var g = 1 === a.m || 17 === a.m;
     b = 0;
     for (h = c.length; b < h; b += 2) {
       var d = c[b];
-      var f = c[b + 1];
+      var e = c[b + 1];
       if (d === +d) {
-        if (d === a.m && !0 === f(a)) {
+        if (d === a.m && !0 === e(a)) {
           break;
         }
-      } else if (e && M(d) && d === a.D && !0 === f(a)) {
+      } else if (g && P(d) && d === a.v && !0 === e(a)) {
         break;
       }
     }
@@ -80,34 +79,34 @@ function fa(a, b, c) {
   }
   return a;
 }
-function Q(a) {
+function V(a) {
   return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
 }
-function R(a, b, c) {
-  a = Q("" + a);
-  var h = a.match('"'), e = a.match("'"), d = b ? "'" : '"';
-  h && e ? a = b ? d + a.split("'").join("\\'") + d : d + a.split('"').join('\\"') + d : h ? a = "'" + a + "'" : e ? a = b ? d + a.split("'").join("\\'") + d : d + a + d : c || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length ? a = d + a + d : "" === a && (a = d + d);
+function W(a, b, c) {
+  a = V("" + a);
+  var h = a.match('"'), g = a.match("'"), d = b ? "'" : '"';
+  h && g ? a = b ? d + a.split("'").join("\\'") + d : d + a.split('"').join('\\"') + d : h ? a = "'" + a + "'" : g ? a = b ? d + a.split("'").join("\\'") + d : d + a + d : c || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length ? a = d + a + d : "" === a && (a = d + d);
   return a;
 }
-function ia(a) {
-  var b = a.indexOf("#"), c = a.indexOf("."), h = "", e = "";
-  b < c ? (h = a.split(".")[1], a = a.split(".")[0], 0 < b && (e = a.split("#")[1], a = a.split("#")[0])) : c < b && (e = a.split("#")[1], a = a.split("#")[0], 0 < c && (h = a.split(".")[1], a = a.split(".")[0]));
-  return [a, e, h];
+function X(a) {
+  var b = a.indexOf("#"), c = a.indexOf("."), h = "", g = "";
+  b < c ? (h = a.split(".")[1], a = a.split(".")[0], 0 < b && (g = a.split("#")[1], a = a.split("#")[0])) : c < b && (g = a.split("#")[1], a = a.split("#")[0], 0 < c && (h = a.split(".")[1], a = a.split(".")[0]));
+  return [a, g, h];
 }
-function ha(a) {
+function da(a) {
   return function(b, c) {
     function h(u, F, J) {
-      if (e) {
-        var B = e;
-        S <= T(B) ? (B.v = B.v || [], B.v.push([u, F, J]), u = null) : u = new U(B, B.h && B.h.length, u, F);
+      if (g) {
+        var B = g;
+        B.j ? (B.o = B.o || [], B.o.push([u, F, J]), u = null) : u = new Y(B, B.h && B.h.length, u, F);
       } else {
-        u = new U(!0, 0, u, F);
+        u = new Y(!0, 0, u, F);
       }
       return u;
     }
-    var e = c === !!c ? null : c;
+    var g = c === !!c ? null : c;
     c = b[0];
-    var d = b[1], f = 1, z = c;
+    var d = b[1], e = 1, z = c;
     switch(c) {
       case 3:
       case 4:
@@ -119,9 +118,9 @@ function ha(a) {
         return h(c);
       case 7:
         var v = [];
-        f = 2;
-        for (z = b.length; f < z; ++f) {
-          v[f - 2] = b[f];
+        e = 2;
+        for (z = b.length; e < z; ++e) {
+          v[e - 2] = b[e];
         }
         return h(c, d, z ? v : null);
       case 9:
@@ -134,103 +133,79 @@ function ha(a) {
         break;
       case 1:
       case 17:
-        z = d, f = 2;
+        z = d, e = 2;
       default:
-        M(z) && (v = h(1 === f ? 1 : c, z, b[f]));
+        P(z) && (v = h(1 === e ? 1 : c, z, b[e]));
     }
     return v;
   }(a, !0);
 }
-;function U(a, b, c, h) {
+;function Y(a, b, c, h) {
   if (a === !!a) {
-    var e = null;
-    this.l = a;
+    var g = null;
+    this.j = a;
   } else {
-    e = a, this.l = e.l;
+    g = a, this.j = g.j;
   }
-  this.j = e;
+  this.l = g;
   this.m = c;
-  e && (e.h || (e.h = []), a = e.h, 0 <= b && b < a.length ? a.splice(b, 0, this) : a.push(this));
+  g && (g.h || (g.h = []), a = g.h, 0 <= b && b < a.length ? a.splice(b, 0, this) : a.push(this));
   switch(c) {
     case 1:
     case 17:
+      h = X(h), h = h[0];
     case 18:
-      this.D = h;
+      this.v = h;
   }
 }
-var P = null;
-function T(a) {
-  return a.l ? P === a ? a.C ? ja : a.F ? S : ka : P.j === a ? la : ma : na;
-}
-U.prototype.remove = function() {
-  if (S <= T(this)) {
-    return this.C = !0, null;
+Y.prototype.remove = function() {
+  if (this.j) {
+    return null;
   }
-  var a = this.j ? this.j.h.indexOf(this) : -1;
-  0 <= a && (this.j.h.splice(a, 1), this.j = null);
+  var a = this.l ? this.l.h.indexOf(this) : -1;
+  0 <= a && (this.l.h.splice(a, 1), this.l = null);
 };
-U.prototype.wrap = function(a, b, c) {
-  if (this.l) {
-    this.o = this.o || [], this.o.push([a, b, c]), a = null;
-  } else {
-    if (this.j) {
-      var h = (c = this.j) ? this.j.h.indexOf(this) : -1;
-      a = new U(c, h, a, b);
-    } else {
-      a = null;
-    }
-  }
-  Y(a, 0, [this]);
-  return a;
-};
-function Y(a, b, c) {
-  var h = a.h = a.h || [], e = h.length, d = c.length;
-  for (b = b < e ? b : e; d;) {
-    e = c[--d], 11 === e.m ? e.h && e.h.length && Y(a, b, e.h) : (e.remove(), h.splice(b, 0, e), e.j = a);
-  }
-}
-var na = 0, ma = 1, ka = 2, S = 3, ja = 4, la = 5;
-function Z(a, b, c, h, e) {
-  function d(l, C, g, x, k, m) {
+function Z(a, b, c, h, g) {
+  function d(l, C, f, x, k, m) {
     function p() {
-      var V = "";
-      D && (V = "</" + (A ? D : D.toLowerCase()) + ">", D = "");
-      return V;
+      var S = "";
+      D && (S = "</" + (A ? D : D.toLowerCase()) + ">", D = "");
+      return S;
     }
-    var q = u ? fa(l, g, u) : null;
-    g = "";
-    var L = l[0], t = l[1], G = 1, n = L, H;
-    switch(L) {
+    var q = u ? ca(l, f, u) : null;
+    f = "";
+    var K = l[0], t = l[1], G = 1, n = K, H;
+    switch(K) {
       case 9:
-        g = t + f(l, q, !1, m);
+        f = t + e(l, q, !1, m);
         break;
       case 11:
-        g = f(l, q, k, m);
+        f = e(l, q, k, m);
         break;
       case 3:
-        g = p() + (m ? t : Q("" + t));
+        f = p() + (m ? t : V("" + t));
         break;
       case 4:
-        g = "<![CDATA[" + Q("" + t) + "]]\x3e";
+        f = "<![CDATA[" + V("" + t) + "]]\x3e";
         break;
       case 8:
-        g = "\x3c!--" + Q("" + t) + "--\x3e";
+        f = "\x3c!--" + V("" + t) + "--\x3e";
         break;
       case 13:
-        g = p() + "\x3c!--[" + t + "]>" + f(l, q, !0, m) + "<![endif]--\x3e";
+        f = p() + "\x3c!--[" + t + "]>" + e(l, q, !0, m) + "<![endif]--\x3e";
         break;
       case 16:
-        g = p() + "\x3c!--{" + t + "};" + f(l, q, !0, m) + "--\x3e";
+        f = p() + "\x3c!--{" + t + "};" + e(l, q, !0, m) + "--\x3e";
         break;
       case 14:
-        g = "\x3c!--[" + t + "]>\x3c!--\x3e";
+        f = "\x3c!--[" + t + "]>\x3c!--\x3e";
         break;
       case 15:
-        g = "\x3c!--<![endif]--\x3e";
+        f = "\x3c!--<![endif]--\x3e";
         break;
       case 7:
         if (v) {
-          if (k = ea(v, l, C, x), void 0 !== k && null !== k && "" !== k && (M(k) || k === +k || I(k))) {
+          if (k = ba(v, l, C, x), void 0 !== k && null !== k && "" !== k && (P(k) || k === +k || N(k))) {
             return -1;
           }
         } else {
@@ -238,63 +213,63 @@ function Z(a, b, c, h, e) {
         }
         break;
       case 18:
-        g = "</" + t + ">";
+        f = "</" + t + ">";
         break;
       case 17:
-        var W = !0;
+        var T = !0;
       case 1:
         n = l[1], G = 2;
       default:
-        n = ia(n), C = n[1], x = n[2], n = n[0], G = l[G], "P" !== D || ca[n] ? D = "" : g = p(), A || (H = A = A || r[n] ? !0 : 0 < n.indexOf(":")), g += "<" + (A ? n : n.toLowerCase()), C && (g += " id=" + R(C, B, A || J)), x && (g += " class=" + R(x, B, A || J)), !I(G) && K(G) && (g += z(G)), g = (l = f(l, q, ba[n], m || da[n])) ? g + (">" + l) : W ? g + ">" : g + (A ? " />" : ">"), W && (D = ""), !l && y[n] ? D = "" : A && !l || aa[n] && (!k || "P" !== n) ? D = n : (g += "</" + (A ? n : n.toLowerCase()) + 
+        n = X(n), C = n[1], x = n[2], n = n[0], G = l[G], "P" !== D || M[n] ? D = "" : f = p(), A || (H = A = A || r[n] ? !0 : 0 < n.indexOf(":")), f += "<" + (A ? n : n.toLowerCase()), C && (f += " id=" + W(C, B, A || J)), x && (f += " class=" + W(x, B, A || J)), !N(G) && O(G) && (f += z(G)), f = (l = e(l, q, L[n], m || aa[n])) ? f + (">" + l) : T ? f + ">" : f + (A ? " />" : ">"), T && (D = ""), !l && y[n] ? D = "" : A && !l || I[n] && (!k || "P" !== n) ? D = n : (f += "</" + (A ? n : n.toLowerCase()) + 
         ">", D = ""), H && (A = !1);
     }
-    return g;
+    return f;
   }
-  function f(l, C, g, x) {
+  function e(l, C, f, x) {
     var k = [], m = l[0];
     var p = m === +m ? 2 : 1;
-    1 === N(l) || 17 === m ? (m = l[p], p = !I(m) && K(m) ? p + 1 : p) : p = 11 === m ? 1 : 9 === m || 13 === m || 16 === m ? 2 : Infinity;
+    1 === Q(l) || 17 === m ? (m = l[p], p = !N(m) && O(m) ? p + 1 : p) : p = 11 === m ? 1 : 9 === m || 13 === m || 16 === m ? 2 : Infinity;
     m = -1;
     for (var q; p < l.length; ++p) {
-      q = l[p], M(q) || q === +q ? k[++m] = d([3, q], l, C, p, !1, x) : I(q) && (q = d(q, l, C, p, g, x), -1 === q ? --p : k[++m] = q);
+      q = l[p], P(q) || q === +q ? k[++m] = d([3, q], l, C, p, !1, x) : N(q) && (q = d(q, l, C, p, f, x), -1 === q ? --p : k[++m] = q);
     }
     return k.join("");
   }
   function z(l) {
-    var C = "", g, x;
-    for (g in l) {
-      var k = l[g];
-      (x = 0 === g.indexOf(X)) && (g = g.substr(X.length));
-      "className" === g && (g = "class");
-      x && (v ? k = O(v, g, k, F) : F("onInstruction is void!"));
-      if (!(null == k || w[g] && !1 === k || (C += " " + g, w[g] || !0 === k))) {
-        if ("style" === g && K(k)) {
+    var C = "", f, x;
+    for (f in l) {
+      var k = l[f];
+      (x = 0 === f.indexOf(U)) && (f = f.substr(U.length));
+      "className" === f && (f = "class");
+      x && (v ? k = R(v, f, k, F) : F("onInstruction is void!"));
+      if (!(null == k || w[f] && !1 === k || (C += " " + f, w[f] || !0 === k))) {
+        if ("style" === f && O(k)) {
           x = void 0;
           var m = k, p = [], q = -1;
           for (x in m) {
             k = m[x];
             "0px" === k && (k = 0);
-            for (var L = ++q, t, G = [], n = x.split(""), H = n.length; H;) {
+            for (var K = ++q, t, G = [], n = x.split(""), H = n.length; H;) {
               t = n[--H], "A" <= t && "Z" >= t && (t = "-" + t.toLowerCase()), G[H] = t;
             }
-            p[L] = G.join("") + ":" + Q("" + k);
+            p[K] = G.join("") + ":" + V("" + k);
           }
           k = p.join(";").substr(1);
           if (!k) {
             continue;
           }
         }
-        C += "=" + R(k, B, A || J);
+        C += "=" + W(k, B, A || J);
       }
     }
     return C;
   }
   var v = b || null, u = c || null, F = "function" === typeof h ? h : function() {
   };
-  b = e || {};
-  var J = !0 === b.quotAlways, B = !0 === b.useSingleQuot, X = b.instructionAttrPrefix || ":", D, A = !1;
-  if (I(a)) {
-    return 7 === N(a) && (a = [11, a]), d(a, null, null, 0, !1, !1);
+  b = g || {};
+  var J = !0 === b.quotAlways, B = !0 === b.useSingleQuot, U = b.instructionAttrPrefix || ":", D, A = !1;
+  if (N(a)) {
+    return 7 === Q(a) && (a = [11, a]), d(a, null, null, 0, !1, !1);
   }
 }
 ;module.exports = Z;
@@ -312,26 +287,26 @@ Z.NETSCAPE4_COND_CMT_HIDE_LOWER = 16;
 Z.ELEMENT_START_TAG = 17;
 Z.ELEMENT_END_TAG = 18;
 Z.gulp = function(a, b, c, h) {
-  const e = require("plugin-error");
-  return require("through2").obj(function(d, f, z) {
+  const g = require("plugin-error");
+  return require("through2").obj(function(d, e, z) {
     if (d.isNull()) {
       return z();
     }
     if (d.isStream()) {
-      return this.emit("error", new e("json2html", "Streaming not supported")), z();
+      return this.emit("error", new g("json2html", "Streaming not supported")), z();
     }
     const v = "." + d.stem.split(".").pop();
     if (".json" === d.extname && [".html", ".htm", ".xhtml", ".php"].indexOf(v)) {
       try {
-        const u = JSON.parse(d.contents.toString(f));
-        if (I(u)) {
+        const u = JSON.parse(d.contents.toString(e));
+        if (N(u)) {
           const F = Z(u, a, b, c, h);
           d.stem = d.stem.substr(0, d.stem.length - v.length);
           d.extname = v;
           d.contents = Buffer.from(F);
         }
       } catch (u) {
-        this.emit("error", new e("json2html", u));
+        this.emit("error", new g("json2html", u));
       }
     }
     z(null, d);
