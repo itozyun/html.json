@@ -388,7 +388,8 @@ function Y(a, b, d, e) {
             c = c.split("\\u0020").join(" ").split("&#x20;").join(" ").split("&#32;").join(" ");
           }
         }
-        (f = Q(c)) && h.push(f);
+        f = Q(c);
+        "" !== f && h.push(f);
         break;
       case 4:
         E && (f = V(c), h.push([4, Q(f)]));

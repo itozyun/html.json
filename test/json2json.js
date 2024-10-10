@@ -36,8 +36,6 @@ test('simple',
     }
 );
 
-
-
 test('optimaize',
     (t) => {
         var json = html2json('<code>A<? empty ?>B</code>');
@@ -55,5 +53,37 @@ test('optimaize',
         );
 
         t.deepEqual(json, [11, ['CODE', 'AB']]);
+    }
+);
+
+test('onDocumentReady',
+    (t) => {
+        var json = html2json('<p><b>Hello</b> <i>World!</i>'), text;
+
+        json2json(
+            json,
+            null,
+            null,
+            function( vnodeRoot ){
+                vnodeRoot.walkElements(
+                    function( vnode ){
+                        console.log( vnode.getTagName() )
+                    }
+                );
+            }  
+        );
+
+
+        json2json(
+            json,
+            null,
+            null,
+            function( vnodeRoot ){
+                console.log( vnodeRoot.getFirstChild() )
+                text = vnodeRoot.getTextContent();
+            }  
+        );
+
+        t.deepEqual(text, 'Hello World!');
     }
 );

@@ -2103,7 +2103,7 @@ VNode.prototype.insertNodeAfter = function(a, b, c) {
   }
   return this._isRestrictedMode ? (this._nodesInsertedAfter = this._nodesInsertedAfter || [], this._nodesInsertedAfter.unshift([a, b, c]), VNode.treeIsUpdated = !0, null) : this._parent ? this._parent.insertNodeAt(this.getMyIndex() + 1, a, b, c) : null;
 };
-var _RESTRICTED_MODE = {NO_RESTRICTIONS:0, NEW_NODE:1, CURRENT_NODE_EMPTY:2, CURRENT_NODE_HAS_CHILDREN:3, READ_ONLY:4};
+var _RESTRICTED_MODE = {NO_RESTRICTIONS:0, NEW_NODE:1, CURRENT_NODE_EMPTY:2, CURRENT_NODE_HAS_CHILDREN:3, READ_ONLY:4}, _WALK = {NONE:0, BREAK:1, SKIP:2};
 function _canHasChildren(a) {
   return a._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE || a._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG || a._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || a._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER || _isDocOrDocFragment(a);
 }
@@ -2127,14 +2127,11 @@ function _walkAllDescendantNodes(a, b) {
     do {
       var f = ++e[c];
       if (f = a[f]) {
-        if (!0 === b(f)) {
+        d = b(f);
+        if (d === _WALK.BREAK) {
           break;
         }
-        if (f = f._childNodes) {
-          if (d = f.length) {
-            c += 2, e[c + 0] = -1, e[c + 1] = a = f;
-          }
-        }
+        d !== _WALK.SKIP && (f = f._childNodes) && (d = f.length) && (c += 2, e[c + 0] = -1, e[c + 1] = a = f);
       } else {
         e.length = c, c -= 2, a = e[c + 1];
       }

@@ -1351,6 +1351,16 @@ var _RESTRICTED_MODE = {
 
 /**
  * @private
+ * @enum {number}
+ */
+var _WALK = {
+    NONE  : 0,
+    BREAK : 1,
+    SKIP  : 2
+};
+
+/**
+ * @private
  * @param {!VNode} vnode 
  * @return {boolean} 
  */
@@ -1410,13 +1420,13 @@ function _compareValuesAndSetUpdatedFlag( oldValue, newValue ){
 function _walkAllDescendantNodes( vnode, onEnterNode ){
     var currentChildNodes = vnode._childNodes,
         depthX2           = 0,
-        combiList, currentIndex, childNode, childsChildNodes, length;
+        combiList, currentIndex, childNode, childsChildNodes, length, operation;
 
     if( currentChildNodes ){
         length = currentChildNodes.length;
         if( length ){
             combiList = [ -1, currentChildNodes ];
-            do{
+            do {
                 currentIndex = ++combiList[ depthX2 ];
                 childNode = currentChildNodes[ currentIndex ];
                 if( !childNode ){
@@ -1424,16 +1434,19 @@ function _walkAllDescendantNodes( vnode, onEnterNode ){
                     depthX2 -= 2;
                     currentChildNodes = combiList[ depthX2 + 1 ];
                 } else {
-                    if( onEnterNode( childNode ) === true ){
+                    operation = onEnterNode( childNode );
+                    if( operation === _WALK.BREAK ){
                         break;
                     };
-                    childsChildNodes = childNode._childNodes;
-                    if( childsChildNodes ){
-                        length = childsChildNodes.length;
-                        if( length ){
-                            depthX2 += 2;
-                            combiList[ depthX2 + 0 ] = -1;
-                            combiList[ depthX2 + 1 ] = currentChildNodes = childsChildNodes;
+                    if( operation !== _WALK.SKIP ){
+                        childsChildNodes = childNode._childNodes;
+                        if( childsChildNodes ){
+                            length = childsChildNodes.length;
+                            if( length ){
+                                depthX2 += 2;
+                                combiList[ depthX2 + 0 ] = -1;
+                                combiList[ depthX2 + 1 ] = currentChildNodes = childsChildNodes;
+                            };
                         };
                     };
                 };
