@@ -125,7 +125,7 @@ html2json.main = function( htmlString, allowInvalidTree, opt_onError, opt_option
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
                 nodeValue = m_trimWhiteSpaces( '' + currentVNode.getNodeValue(), isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
-                if( nodeValue ){
+                if( nodeValue !== '' ){
                     parentJSONNode.push( nodeValue );
                 };
                 break;

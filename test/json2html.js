@@ -60,3 +60,15 @@ test('boolean attributes',
         );
     }
 );
+
+
+test('0',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'DIV', 0 ]
+            ),
+            '<div>0</div>'
+        );
+    }
+);

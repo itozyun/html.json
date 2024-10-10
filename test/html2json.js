@@ -34,6 +34,8 @@ test('text', (t) => {
     t.deepEqual( html2json('12<!-- -->34<!-- -->56'), [11, 123456]);
 
     t.deepEqual( html2json('<span>1,100<!-- --> yen</span>'), [11, ['SPAN', '1,100 yen']]);
+
+    t.deepEqual( html2json('0'), [11, 0]);
 });
 
 test('whitespace', (t) => {
