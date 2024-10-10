@@ -1807,7 +1807,7 @@ VNode.prototype.removeStyle = function(a) {
 };
 VNode.prototype.getTextContent = function() {
   if (htmljson.DEFINE.DEBUG) {
-    if (!this.isElement()) {
+    if (!this.isElement() && !_isDocOrDocFragment(this)) {
       throw "getStyle() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
     }
     if (this._isRestrictedMode && !_isCurrentVNode(this)) {

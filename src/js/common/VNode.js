@@ -731,7 +731,7 @@ VNode.prototype.removeStyle = function( name ){
  */
 VNode.prototype.getTextContent = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( !this.isElement() ){
+        if( !this.isElement() && !_isDocOrDocFragment( this ) ){
             throw 'getStyle() をサポートしない nodeType です!';
         };
         if( this._isRestrictedMode && !_isCurrentVNode( this ) ){
