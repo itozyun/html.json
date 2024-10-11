@@ -65,21 +65,6 @@ test('onDocumentReady',
             null,
             null,
             function( vnodeRoot ){
-                vnodeRoot.walkElements(
-                    function( vnode ){
-                        console.log( vnode.getTagName() )
-                    }
-                );
-            }  
-        );
-
-
-        json2json(
-            json,
-            null,
-            null,
-            function( vnodeRoot ){
-                console.log( vnodeRoot.getFirstChild() )
                 text = vnodeRoot.getTextContent();
             }  
         );

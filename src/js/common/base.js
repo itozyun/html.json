@@ -325,7 +325,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
  * @param {!InstructionHandler} onInstruction
  * @param {string} attrName 
  * @param {!InstructionArgs | string} value 
- * @param {!function(string)} onError 
+ * @param {!function((string | !Error)=)} onError
  * @return {!InstructionArgs | string | number | boolean | null | void}
  */
 function m_executeInstructionAttr( recursion, onInstruction, attrName, value, onError ){

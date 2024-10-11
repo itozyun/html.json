@@ -37,12 +37,39 @@ module.exports = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_
     /** @const */ parser._expect        = htmljson.EXPECT.NODE_START;
     /** @const */ parser._tree          = [];
     /** @const */ parser._args          = [];
-    /** @const */ parser._onInstruction = opt_onInstruction || null;
-    /** @const */ parser._onEnterNode   = opt_onEnterNode || null;
     /** @const */ parser._onerror       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
     /** @const */ parser._quotAlways    = !!options[ 'quotAlways' ];
     /** @const */ parser._useSingleQuot = !!options[ 'useSingleQuot' ];
     /** @const */ parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
+
+    if( typeof opt_onInstruction === 'function' ){
+        opt_onInstruction = opt_onInstruction.bind( stream );
+    } else if( opt_onInstruction ){
+        const _onInstruction = {};
+
+        for( const funcName in opt_onInstruction ){
+            _onInstruction[ funcName ] = opt_onInstruction[ funcName ].bind( stream );
+        };
+        opt_onInstruction = _onInstruction;
+    };
+    /** @const {InstructionHandler | void} */ parser._onInstruction = opt_onInstruction;
+
+    if( typeof opt_onEnterNode === 'function' ){
+        opt_onEnterNode = opt_onEnterNode.bind( stream );
+    } else if( opt_onEnterNode ){
+        const _onEnterNode = [];
+
+        for( let i = 0, l = opt_onEnterNode.length; i < l; i += 2 ){
+            _onEnterNode[ i + 0 ] = opt_onEnterNode[ i + 0 ];
+            _onEnterNode[ i + 1 ] = opt_onEnterNode[ i + 1 ].bind( stream );
+        };
+        opt_onEnterNode = _onEnterNode;
+    };
+
+    /** @const {EnterNodeHandler | void} */ parser._onEnterNode = opt_onEnterNode;
+
+    stream.on( 'resume', resumeHandler );
+
     parser._cssText = '';
 
     return stream;
@@ -91,6 +118,19 @@ function endHandler( data ){
 };
 
 /**
+ * @this {!Through}
+ */
+function resumeHandler(){
+    var parser = this._parser;
+    var token = parser._lastToken;
+    var value = parser._lastValue;
+
+    parser._lastToken = parser._lastValue = NaN;
+
+    onToken.call( parser, token, value );
+};
+
+/**
  * @this {Parser}
  * @param {!Error} err 
  */
@@ -125,15 +165,37 @@ function onToken( token, value ){
 
     const self = this;
 
+    function saveArgs(){
+        self._lastToken = token;
+        self._lastValue = value;
+    };
+
     function executeProcessingInstruction(){
         if( self._onInstruction ){
-            const result = self._args.length
-                        ? self._onInstruction.call( self._stream, self._functionName, self._args )
-                        : self._onInstruction.call( self._stream, self._functionName );
+            let result;
 
-            self._functionName = null;
-            self._args.length  = 0;
-            return result;
+            if( typeof self._onInstruction === 'function' ){
+                if( self._args.length ){
+                    result = self._onInstruction( self._functionName, self._args );
+                } else {
+                    result = self._onInstruction( self._functionName );
+                };
+            } else {
+                if( self._args.length ){
+                    result = self._onInstruction[ self._functionName ].apply( self._stream, self._args );
+                } else {
+                    result = self._onInstruction[ self._functionName ]();
+                };
+            };
+
+            if( !self._stream.paused ){
+                self._functionName = null;
+                self._args.length  = 0;
+                return result;
+            } else {
+                saveArgs();
+                return;
+            };
         };
         if( htmljson.DEFINE.DEBUG ){
             self.onError( 'onInstruction is void!' );
@@ -145,11 +207,16 @@ function onToken( token, value ){
         if( self._onInstruction ){
             self._args.unshift( self._functionName );
 
-            const result = m_executeInstructionAttr( true, self._onInstruction.bind( self._stream ), self._attribute, self._args, self._onerror );
+            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, self._args, self._onerror );
     
-            self._functionName = null;
-            self._args.length  = 0;
-            return result;
+            if( !self._stream.paused ){
+                self._functionName = null;
+                self._args.length  = 0;
+                return result;
+            } else {
+                saveArgs();
+                return;
+            };
         };
         if( htmljson.DEFINE.DEBUG ){
             self.onError( 'onInstruction is void!' );
@@ -290,26 +357,30 @@ function onToken( token, value ){
                     if( this.jsonStack.length === 0 ){ // end of arguments
                         const result = executeProcessingInstruction();
 
-                        if( m_isArray( result ) ){
-                            m_pEndTagRequired       = this._pEndTagRequired;
-                            m_escapeForHTMLDisabled = this._escapeForHTMLDisabled;
-                            m_isXMLDocument         = this._isXMLDocument || this._isXmlInHTML;
-                            queue = json2html.main(
-                                result,
-                                this._onInstruction,
-                                this._onEnterNode,
-                                this._onerror,
-                                {
-                                    'quotAlways'            : this._quotAlways,
-                                    'useSingleQuot'         : this._useSingleQuot,
-                                    'instructionAttrPrefix' : this._attrPrefix
-                                }
-                            );
-                            m_pEndTagRequired = m_escapeForHTMLDisabled = m_isXMLDocument = false;
+                        if( !this._stream.paused ){
+                            if( m_isArray( result ) ){
+                                m_pEndTagRequired       = this._pEndTagRequired;
+                                m_escapeForHTMLDisabled = this._escapeForHTMLDisabled;
+                                m_isXMLDocument         = this._isXMLDocument || this._isXmlInHTML;
+                                queue = json2html.main(
+                                    result,
+                                    this._onInstruction,
+                                    this._onEnterNode,
+                                    this._onerror,
+                                    {
+                                        'quotAlways'            : this._quotAlways,
+                                        'useSingleQuot'         : this._useSingleQuot,
+                                        'instructionAttrPrefix' : this._attrPrefix
+                                    }
+                                );
+                                m_pEndTagRequired = m_escapeForHTMLDisabled = m_isXMLDocument = false;
+                            } else {
+                                queue = m_isStringOrNumber( result ) ? '' + result : '';
+                            };
+                            createEndTag( !!queue );
                         } else {
-                            queue = m_isStringOrNumber( result ) ? '' + result : '';
+                            return;
                         };
-                        createEndTag( !!queue );
                         break;
                     };
                 case Parser.C.RIGHT_BRACE : // }
@@ -344,8 +415,13 @@ function onToken( token, value ){
                 case Parser.C.RIGHT_BRACKET : // ]
                     if( this.jsonStack.length === 0 ){ // end of arguments
                         // !_functionName => error
-                        queue  = createAttributeNodeString( executeInstructionAttr() );
-                        expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
+                        queue = executeInstructionAttr();
+                        if( !this._stream.paused ){
+                            queue  = createAttributeNodeString( queue );
+                            expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
+                        } else {
+                            return;
+                        };
                         break;
                     };
                 case Parser.C.RIGHT_BRACE   : // }
@@ -614,6 +690,9 @@ function onToken( token, value ){
                 case htmljson.PHASE.INSTRUCTION_ATTRIBUTE_NAME :
                     this._functionName = value;
                     value = executeInstructionAttr();
+                    if( this._stream.paused ){
+                        return;
+                    };
                 case htmljson.PHASE.ATTRIBUTE_VALUE :
                     queue  = createAttributeNodeString( value );
                     expect = htmljson.EXPECT.ATTRIBUTE_PROPERTY;
