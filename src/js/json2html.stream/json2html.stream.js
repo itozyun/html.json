@@ -37,7 +37,7 @@ module.exports = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_
     /** @const */ parser._expect        = htmljson.EXPECT.NODE_START;
     /** @const */ parser._tree          = [];
     /** @const */ parser._args          = [];
-    /** @const */ parser._onerror       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
+    /** @const */ parser._onError       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
     /** @const */ parser._quotAlways    = !!options[ 'quotAlways' ];
     /** @const */ parser._useSingleQuot = !!options[ 'useSingleQuot' ];
     /** @const */ parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
@@ -144,7 +144,7 @@ function onError( err ){
     if( -1 < err.message.indexOf( 'at position' ) ){
         err.message = 'Invalid JSON (' + err.message + ')';
     };
-    this._onerror( err.message );
+    this._onError( err.message );
     this._stream.emit( 'error', err );
 };
 
@@ -218,7 +218,7 @@ function onToken( token, value ){
 
     function executeInstructionAttr(){
         if( self._onInstruction ){
-            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, [ self._functionName ].concat( self._args ), self._onerror );
+            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, [ self._functionName ].concat( self._args ), self._onError );
     
             if( !self._stream.paused ){
                 self._functionName = null;
@@ -377,13 +377,14 @@ function onToken( token, value ){
                                     result,
                                     this._onInstruction,
                                     this._onEnterNode,
-                                    this._onerror,
+                                    this._onError,
                                     {
                                         'quotAlways'            : this._quotAlways,
                                         'useSingleQuot'         : this._useSingleQuot,
                                         'instructionAttrPrefix' : this._attrPrefix
                                     }
                                 );
+                                // TODO .paused
                                 m_pEndTagRequired = m_escapeForHTMLDisabled = m_isXMLDocument = false;
                             } else {
                                 queue = m_isStringOrNumber( result ) ? '' + result : '';
@@ -839,7 +840,7 @@ function onToken( token, value ){
     // console.log( '- ' + queue, expect, this._tree );
 
     if( expect === htmljson.EXPECT.ERROR ){
-        this._onerror( 'Not html.json format!' );
+        this._onError( 'Not html.json format!' );
         this._stream.emit( 'error', 'Not html.json format!' );
     } else {
         this._expect = expect;
