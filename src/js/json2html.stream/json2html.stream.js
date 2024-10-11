@@ -122,12 +122,18 @@ function endHandler( data ){
  */
 function resumeHandler(){
     var parser = this._parser;
-    var token = parser._lastToken;
-    var value = parser._lastValue;
+    var args = parser._lastArgs;
 
-    parser._lastToken = parser._lastValue = NaN;
+    while( args.length ){
+        onToken.call( parser, args.shift(), args.shift() );
+        if( this.paused ){
+            break;
+        };
+    };
 
-    onToken.call( parser, token, value );
+    if( !args.length ){
+        parser._lastArgs = null;
+    };
 };
 
 /**
@@ -149,6 +155,10 @@ function onError( err ){
  * @param {*} value 
  */
 function onToken( token, value ){
+    if( this._stream.paused ){
+        this._lastArgs.push( token, value );
+        return;
+    };
     if( token === Parser.C.COLON || token === Parser.C.COMMA ){
         if( this.jsonStack.length ){
             this._createValue( token, value );
@@ -166,8 +176,11 @@ function onToken( token, value ){
     const self = this;
 
     function saveArgs(){
-        self._lastToken = token;
-        self._lastValue = value;
+        if( self._lastArgs ){
+            self._lastArgs.unshift( token, value );
+        } else {
+            self._lastArgs = [ token, value ];
+        };
     };
 
     function executeProcessingInstruction(){
@@ -182,7 +195,7 @@ function onToken( token, value ){
                 };
             } else {
                 if( self._args.length ){
-                    result = self._onInstruction[ self._functionName ].apply( self._stream, self._args );
+                    result = self._onInstruction[ self._functionName ].call( self._stream, self._args );
                 } else {
                     result = self._onInstruction[ self._functionName ]();
                 };
@@ -205,9 +218,7 @@ function onToken( token, value ){
 
     function executeInstructionAttr(){
         if( self._onInstruction ){
-            self._args.unshift( self._functionName );
-
-            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, self._args, self._onerror );
+            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, [ self._functionName ].concat( self._args ), self._onerror );
     
             if( !self._stream.paused ){
                 self._functionName = null;
