@@ -808,67 +808,10 @@ function m_parseCSSText( cssText ){
  * @return {boolean} isStatic
  */
 function m_isStaticDocument( rootHTMLJson, attrPrefix ){
-    return !walkNode( rootHTMLJson );
-    /**
-     * 
-     * @param {!HTMLJson} currentJSONNode 
-     * @return {boolean} isDynamic
-     */
-    function walkNode( currentJSONNode ){
-        var arg0 = currentJSONNode[ 0 ],
-            arg1 = currentJSONNode[ 1 ],
-            tagName = arg0, attrsIndex = 1;
-
-        switch( arg0 ){
-            case htmljson.NODE_TYPE.DOCUMENT_NODE :
-            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
-            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                return walkChildNodes( currentJSONNode );
-            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                return true;
-            case htmljson.NODE_TYPE.ELEMENT_NODE :
-            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                tagName = arg1;
-                attrsIndex = 2;
-            default :
-                if( m_isString( tagName ) ){
-                    if( m_isAttributes( currentJSONNode[ attrsIndex ] ) ){
-                        if( walkAttributes( /** @type {!Attrs} */ (currentJSONNode[ attrsIndex ] )) ){
-                            return true;
-                        };
-                    };
-                    return walkChildNodes( currentJSONNode );
-                };
-        };
-        return false;
-    };
-
-    /**
-     * 
-     * @param {!HTMLJson} currentJSONNode 
-     * @return {boolean} isDynamic
-     */
-    function walkChildNodes( currentJSONNode ){
-        var i = m_getChildNodeStartIndex( currentJSONNode ), l = currentJSONNode.length, childNode;
-
-        for( ; i < l; ++i ){
-            childNode = currentJSONNode[ i ];
-
-            if( m_isArray( childNode ) ){
-                if( walkNode( /** @type {!HTMLJson} */ (childNode) ) ){
-                    return true;
-                };
-            };
-        };
-        return false;
-    };
-
     /**
      * @param {!Attrs} attrs
-     * @return {boolean} isDynamic
-     */
-    function walkAttributes( attrs ){
+     * @return {boolean} isDynamic */
+    function hasDynamicAttribute( attrs ){
         for( var name in attrs ){
             if( m_isInstructionAttr( attrPrefix, name ) ){
                 return true;
@@ -876,6 +819,47 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
         };
         return false;
     };
+
+    var isDynamic = false;
+
+    _traverseAllDescendantHTMLJsonNodes(
+        rootHTMLJson,
+        /**
+         * 
+         * @param {!HTMLJson | string | number} currentJSONNode 
+         * @param {HTMLJson | null} parentJSONNode 
+         * @param {number} myIndex
+         * @param {number} depth
+         * @return {number | void} 
+         */
+        function( currentJSONNode, parentJSONNode, myIndex, depth ){
+            if( m_isArray( currentJSONNode ) ){
+                var arg0 = currentJSONNode[ 0 ],
+                    arg1 = currentJSONNode[ 1 ],
+                    tagName = arg0, attrsIndex = 1;
+
+                switch( arg0 ){
+                    case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+                        isDynamic = true;
+                        return VISITOR_OPTION.BREAK;
+                    case htmljson.NODE_TYPE.ELEMENT_NODE :
+                    case htmljson.NODE_TYPE.ELEMENT_START_TAG :
+                        tagName = arg1;
+                        attrsIndex = 2;
+                    default :
+                        if( m_isString( tagName ) ){
+                            if( m_isAttributes( currentJSONNode[ attrsIndex ] ) ){
+                                if( hasDynamicAttribute( /** @type {!Attrs} */ (currentJSONNode[ attrsIndex ] )) ){
+                                    isDynamic = true;
+                                    return VISITOR_OPTION.BREAK;
+                                };
+                            };
+                        };
+                };
+            };
+        }
+    );
+    return !isDynamic;
 };
 
 /**
@@ -884,92 +868,157 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
  * @return {!VNode}
  */
 function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
-    return walkNode( rootHTMLJson, isRestrictedMode );
+    var vnodeRoot, parentNodeStack;
 
-    /**
-     * 
-     * @param {!HTMLJson} currentJSONNode 
-     * @param {!VNode | boolean} parentOrMode
-     * @return {!VNode}
-     */
-    function walkNode( currentJSONNode, parentOrMode ){
+    _traverseAllDescendantHTMLJsonNodes(
+        rootHTMLJson,
         /**
-         * @param {number} nodeType 
-         * @param {(string | number)=} opt_nodeValueOrTag 
-         * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs
-         * @return {!VNode}
+         * 
+         * @param {!HTMLJson | string | number} currentJSONNode 
+         * @param {HTMLJson | null} parentJSONNode 
+         * @param {number} myIndex
+         * @param {number} depth
+         * @return {number | void} 
          */
-        function insertNode( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
-            if( parentVNode ){
-                return /** @type {!VNode} */ (parentVNode.insertNodeLast( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ));
-            } else {
-                return new VNode( isRestrictedMode, 0, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
+        function( currentJSONNode, parentJSONNode, myIndex, depth ){
+            /**
+             * @param {number} nodeType 
+             * @param {(string | number)=} opt_nodeValueOrTag 
+             * @param {(Attrs | InstructionArgs | null)=} opt_attrsOrArgs
+             */
+            function insertNode( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
+                if( vnodeRoot ){
+                    if( depth + 1 < parentNodeStack.length ){
+                        parentNodeStack.length = depth + 1;
+                    };
+
+                    var parentVNode  = parentNodeStack[ parentNodeStack.length - 1 ],
+                        currentVNode = /** @type {!VNode} */ (parentVNode.insertNodeLast( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ));
+
+                    if( hasChildren() ){
+                        parentNodeStack[ depth + 1 ] = currentVNode;
+                    };
+                } else {
+                    vnodeRoot = new VNode( isRestrictedMode, 0, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
+                    parentNodeStack = [ vnodeRoot ];
+                };
             };
-        };
 
-        var parentVNode = m_isBoolean( parentOrMode ) ? null : parentOrMode,
-            arg0        = currentJSONNode[ 0 ],
-            arg1        = currentJSONNode[ 1 ],
-            attrIndex   = 1,
-            tagName     = arg0,
-            args, i, l, vnode;
+            function hasChildren(){
+                currentJSONNode = /** @type {!HTMLJson} */ (currentJSONNode);
 
-        switch( arg0 ){
-            case htmljson.NODE_TYPE.TEXT_NODE :
-            case htmljson.NODE_TYPE.CDATA_SECTION :
-            case htmljson.NODE_TYPE.COMMENT_NODE :
-            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
-            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                return insertNode( arg0, /** @type {string | number} */ (arg1) );
-            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
-                return insertNode( arg0 );
-            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                for( args = [], i = 2, l = currentJSONNode.length; i < l; ++i ){
-                    args[ i - 2 ] = currentJSONNode[ i ];
+                return m_isArray( currentJSONNode ) ? m_getChildNodeStartIndex( currentJSONNode ) < currentJSONNode.length : false;
+            };
+
+            if( m_isStringOrNumber( currentJSONNode ) ){
+                insertNode( htmljson.NODE_TYPE.TEXT_NODE, /** @type {string | number} */ (currentJSONNode) );
+            } else {
+                currentJSONNode = /** @type {!HTMLJson} */ (currentJSONNode);
+
+                var arg0      = currentJSONNode[ 0 ],
+                    arg1      = currentJSONNode[ 1 ],
+                    attrIndex = 1,
+                    tagName   = arg0,
+                    args, i, l;
+
+                switch( arg0 ){
+                    case htmljson.NODE_TYPE.DOCUMENT_NODE :
+                    case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+                    case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                        insertNode( arg0, /** @type {string} */ (arg1) );
+                        break;
+                    case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+                        insertNode( arg0 );
+                        break;
+                    case htmljson.NODE_TYPE.TEXT_NODE :
+                    case htmljson.NODE_TYPE.CDATA_SECTION :
+                    case htmljson.NODE_TYPE.COMMENT_NODE :
+                    case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
+                    case htmljson.NODE_TYPE.ELEMENT_END_TAG :
+                        insertNode( arg0, /** @type {string | number} */ (arg1) );
+                        break;
+                    case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
+                        insertNode( arg0 );
+                        break;
+                    case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+                        for( args = [], i = 2, l = currentJSONNode.length; i < l; ++i ){
+                            args[ i - 2 ] = currentJSONNode[ i ];
+                        };
+                        insertNode( arg0, /** @type {string} */ (arg1), l - 2 ? args : null );
+                        break;
+                    case htmljson.NODE_TYPE.ELEMENT_NODE :
+                    case htmljson.NODE_TYPE.ELEMENT_START_TAG :
+                        tagName   = arg1;
+                        attrIndex = 2;
+                    default :
+                        if( m_isString( tagName ) ){
+                            insertNode( /** @type {number} */ (attrIndex === 1 ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0), /** @type {string} */ (tagName), /** @type {Attr | void} */ (currentJSONNode[ attrIndex ] ) );
+                        };
                 };
-                return insertNode( arg0, /** @type {string} */ (arg1), l ? args : null );
+            };
+            if( isRestrictedMode ){
+                return VISITOR_OPTION.BREAK;
+            };
+        }
+    );
+    return vnodeRoot;
+};
 
-            case htmljson.NODE_TYPE.DOCUMENT_NODE :
-            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
-            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                vnode = insertNode( arg0, /** @type {string} */ (arg1) );
-                break;
-            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                vnode = insertNode( arg0 );
-                break;
-            case htmljson.NODE_TYPE.ELEMENT_NODE :
-            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                tagName   = arg1;
-                attrIndex = 2;
-            default :
-                if( m_isString( tagName ) ){
-                    vnode = insertNode( /** @type {number} */ (attrIndex === 1 ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0), /** @type {string} */ (tagName), /** @type {Attr | void} */ (currentJSONNode[ attrIndex ] ) );
-                };
-        };
+/**
+ * @enum {number}
+ */
+var VISITOR_OPTION = {
+    REMOVED : -1,
+    NONE    : 0,
+    BREAK   : 1,
+    SKIP    : 2
+};
 
-        if( !isRestrictedMode ){
-            walkChildNodes( currentJSONNode, /** @type {!VNode} */ (vnode) );
-        };
-
-        return /** @type {!VNode} */ (vnode);
+/**
+ * 再帰呼び出しを使わずに html.json ツリーを遡っています
+ * 
+ * @param {!HTMLJson} rootHTMLJson
+ * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)} onEnterNode コールバック内で要素の削除と追加はできません、index が狂います
+ */
+function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){
+    var parentNode     = rootHTMLJson,
+        childNodeStart = m_getChildNodeStartIndex( rootHTMLJson ),
+        depthX3        = 0,
+        operation      = onEnterNode( rootHTMLJson, null, -1, 0 ),
+        torioList      = [ -1, rootHTMLJson, childNodeStart ],
+        currentIndex, childNode;
+    
+    if( operation === VISITOR_OPTION.BREAK || operation === VISITOR_OPTION.SKIP ){
+        return;
     };
 
-    /**
-     * 
-     * @param {!HTMLJson} currentJSONNode 
-     * @param {!VNode} parentVNode 
-     */
-    function walkChildNodes( currentJSONNode, parentVNode ){
-        var i = m_getChildNodeStartIndex( currentJSONNode ), childNode;
-
-        for( ; i < currentJSONNode.length; ++i ){
-            childNode = currentJSONNode[ i ];
-
-            if( m_isStringOrNumber( childNode ) ){
-                parentVNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, /** @type {string | number} */ (childNode) );
-            } else if( m_isArray( childNode ) ){
-                walkNode( /** @type {!HTMLJson} */ (childNode), parentVNode );
+    if( 0 < parentNode.length - childNodeStart ){
+        do {
+            currentIndex = ++torioList[ depthX3 ];
+            childNode = parentNode[ currentIndex + childNodeStart ];
+            if( childNode === undefined ){
+                torioList.length = depthX3;
+                depthX3 -= 3;
+                parentNode     = torioList[ depthX3 + 1 ];
+                childNodeStart = torioList[ depthX3 + 2 ];
+            } else {
+                operation = onEnterNode( childNode, parentNode, currentIndex, depthX3 / 3 );
+                if( operation === VISITOR_OPTION.BREAK ){
+                    break;
+                };
+                if( operation !== VISITOR_OPTION.SKIP ){
+                    if( operation <= VISITOR_OPTION.REMOVED ){
+                        torioList[ depthX3 ] -= operation;
+                    } else {
+                        if( 0 < childNode.length - m_getChildNodeStartIndex( childNode ) ){
+                            depthX3 += 3;
+                            torioList[ depthX3 + 0 ] = -1;
+                            torioList[ depthX3 + 1 ] = parentNode     = childNode;
+                            torioList[ depthX3 + 2 ] = childNodeStart = m_getChildNodeStartIndex( childNode );
+                        };
+                    };
+                };
             };
-        };
+        } while( 0 <= depthX3 );
     };
 };
