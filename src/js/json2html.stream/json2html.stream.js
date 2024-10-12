@@ -42,7 +42,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
     /** @const */ parser._useSingleQuot = !!options[ 'useSingleQuot' ];
     /** @const */ parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
-    if( typeof opt_onInstruction === 'function' ){
+    /* if( typeof opt_onInstruction === 'function' ){
         opt_onInstruction = opt_onInstruction.bind( stream );
     } else if( opt_onInstruction ){
         const _onInstruction = {};
@@ -51,10 +51,10 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
             _onInstruction[ funcName ] = opt_onInstruction[ funcName ].bind( stream );
         };
         opt_onInstruction = _onInstruction;
-    };
+    }; */
     /** @const {InstructionHandler | void} */ parser._onInstruction = opt_onInstruction;
 
-    if( typeof opt_onEnterNode === 'function' ){
+    /* if( typeof opt_onEnterNode === 'function' ){
         opt_onEnterNode = opt_onEnterNode.bind( stream );
     } else if( opt_onEnterNode ){
         const _onEnterNode = [];
@@ -64,8 +64,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
             _onEnterNode[ i + 1 ] = opt_onEnterNode[ i + 1 ].bind( stream );
         };
         opt_onEnterNode = _onEnterNode;
-    };
-
+    }; */
     /** @const {EnterNodeHandler | void} */ parser._onEnterNode = opt_onEnterNode;
 
     stream.on( 'resume', resumeHandler );
@@ -180,15 +179,15 @@ function onToken( token, value ){
 
             if( typeof self._onInstruction === 'function' ){
                 if( self._args.length ){
-                    result = self._onInstruction( self._functionName, self._args );
+                    result = self._onInstruction.call( self._stream, self._functionName, self._args );
                 } else {
-                    result = self._onInstruction( self._functionName );
+                    result = self._onInstruction.call( self._stream, self._functionName );
                 };
             } else {
                 if( self._args.length ){
-                    result = self._onInstruction[ self._functionName ].call( self._stream, self._args );
+                    result = self._onInstruction[ self._functionName ].apply( self._stream, self._args );
                 } else {
-                    result = self._onInstruction[ self._functionName ]();
+                    result = self._onInstruction[ self._functionName ].call( self._stream );
                 };
             };
 
@@ -209,7 +208,7 @@ function onToken( token, value ){
 
     function executeInstructionAttr(){
         if( self._onInstruction ){
-            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, [ self._functionName ].concat( self._args ), self._onError );
+            const result = m_executeInstructionAttr( true, self._onInstruction, self._attribute, [ self._functionName ].concat( self._args ), self._onError, self._stream );
     
             if( !self._stream.paused ){
                 self._functionName = null;

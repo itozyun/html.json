@@ -1,4 +1,6 @@
 goog.provide( 'htmljson.base' );
+goog.provide( 'InstructionHandler' );
+goog.provide( 'EnterNodeHandler' );
 
 goog.requireType( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
@@ -325,10 +327,11 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
  * @param {!InstructionHandler} onInstruction
  * @param {string} attrName 
  * @param {!InstructionArgs | string} value 
- * @param {!function((string | !Error)=)} onError
+ * @param {!function((string | !Error))} onError
+ * @param {*=} opt_context
  * @return {!InstructionArgs | string | number | boolean | null | void}
  */
-function m_executeInstructionAttr( recursion, onInstruction, attrName, value, onError ){
+function m_executeInstructionAttr( recursion, onInstruction, attrName, value, onError, opt_context ){
     var result;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
@@ -338,15 +341,15 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, on
 
         if( typeof onInstruction === 'function' ){
             if( args.length ){
-                result = onInstruction( functionName, args );
+                result = onInstruction.call( opt_context, functionName, args );
             } else {
-                result = onInstruction( functionName );
+                result = onInstruction.call( opt_context, functionName );
             };
         } else {
             if( args.length ){
-                result = onInstruction[ functionName ].apply( null, args );
+                result = onInstruction[ functionName ].apply( opt_context || onInstruction, args );
             } else {
-                result = onInstruction[ functionName ]();
+                result = onInstruction[ functionName ].call( opt_context || onInstruction );
             };
         };
     } else if( m_isString( value ) ){
@@ -362,7 +365,7 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, on
     if( recursion && m_isArray( result ) ){
         result = /** @type {!InstructionArgs} */ (result);
 
-        return m_executeInstructionAttr( true, onInstruction, attrName, result, onError );
+        return m_executeInstructionAttr( true, onInstruction, attrName, result, onError, opt_context );
     };
     return result;
 };
