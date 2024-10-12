@@ -518,42 +518,49 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
 
 /**
  * 連続する Text の結合
- * @param {!HTMLJson} htmlJsonNode 
+ * @param {!HTMLJson} rootHTMLJson 
  */
-function m_normalizeTextNodes( htmlJsonNode ){
-    var startIndex = m_getChildNodeStartIndex( htmlJsonNode );
+function m_normalizeTextNodes( rootHTMLJson ){
+    function insertText(){
+        lastParentJSONNode.splice( textNodeIndex, 0, /** @type {string | number} */ (m_tryToFiniteNumber( text )) );
+        text = '';
+    };
+    var text = '', lastDepth, lastParentJSONNode, textNodeIndex;
 
-    var node, nodeType, text = '', i;
-
-    if( startIndex < htmlJsonNode.length ){
-        for( i = startIndex; i < htmlJsonNode.length; ){
-            node     = htmlJsonNode[ i ];
-            nodeType = m_getNodeType( node );
-            if( nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
-                if( m_isStringOrNumber( node ) ){
-                    text += node;
+    _traverseAllDescendantHTMLJsonNodes(
+        rootHTMLJson,
+        /**
+         * 
+         * @param {!HTMLJson | string | number} currentJSONNode 
+         * @param {HTMLJson | null} parentJSONNode 
+         * @param {number} myIndex
+         * @param {number} depth
+         * @return {number | void} 
+         */
+        function( currentJSONNode, parentJSONNode, myIndex, depth ){
+            if( text && lastDepth !== depth ){
+                insertText();
+                return VISITOR_OPTION.INSERTED_BEFORER;
+            } else if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                if( m_isStringOrNumber( currentJSONNode ) ){
+                    text += currentJSONNode;
                 } else {
-                    text += node[ 1 ];
+                    text += currentJSONNode[ 1 ];
                 };
-                htmlJsonNode.splice( i, 1 );
-            } else {
-                if( text ){
-                    htmlJsonNode.splice( i, 0, /** @type {string | number} */ (m_tryToFiniteNumber( text )) );
-                    text = '';
-                };
-                ++i;
-                if( nodeType === htmljson.NODE_TYPE.ELEMENT_NODE               ||
-                    nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG          ||
-                    nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER        ||
-                    nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
-                ){
-                    m_normalizeTextNodes( /** @type {!HTMLJson} */ (node) );
-                };
+                parentJSONNode.splice( myIndex, 1 );
+                lastDepth          = depth;
+                lastParentJSONNode = parentJSONNode;
+                textNodeIndex      = myIndex;
+                return VISITOR_OPTION.REMOVED;
+            } else if( text ){
+                insertText();
+                return VISITOR_OPTION.INSERTED_BEFORER;
             };
-        };
-        if( text ){
-            htmlJsonNode[ i ] = /** @type {string | number} */ (m_tryToFiniteNumber( text ));
-        };
+        }
+    );
+
+    if( text ){
+        insertText();
     };
 };
 
@@ -808,18 +815,6 @@ function m_parseCSSText( cssText ){
  * @return {boolean} isStatic
  */
 function m_isStaticDocument( rootHTMLJson, attrPrefix ){
-    /**
-     * @param {!Attrs} attrs
-     * @return {boolean} isDynamic */
-    function hasDynamicAttribute( attrs ){
-        for( var name in attrs ){
-            if( m_isInstructionAttr( attrPrefix, name ) ){
-                return true;
-            };
-        };
-        return false;
-    };
-
     var isDynamic = false;
 
     _traverseAllDescendantHTMLJsonNodes(
@@ -833,6 +828,18 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
          * @return {number | void} 
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
+            /**
+             * @param {!Attrs} attrs
+             * @return {boolean} isDynamic */
+            function hasDynamicAttribute( attrs ){
+                for( var name in attrs ){
+                    if( m_isInstructionAttr( attrPrefix, name ) ){
+                        return true;
+                    };
+                };
+                return false;
+            };
+
             if( m_isArray( currentJSONNode ) ){
                 var arg0 = currentJSONNode[ 0 ],
                     arg1 = currentJSONNode[ 1 ],
@@ -968,10 +975,11 @@ function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
  * @enum {number}
  */
 var VISITOR_OPTION = {
-    REMOVED : -1,
-    NONE    : 0,
-    BREAK   : 1,
-    SKIP    : 2
+    REMOVED          : -1,
+    NONE             : 0,
+    INSERTED_BEFORER : 1,
+    BREAK            : Infinity,
+    SKIP             : Infinity
 };
 
 /**
@@ -1002,14 +1010,17 @@ function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){
                 parentNode     = torioList[ depthX3 + 1 ];
                 childNodeStart = torioList[ depthX3 + 2 ];
             } else {
-                operation = onEnterNode( childNode, parentNode, currentIndex, depthX3 / 3 );
+                operation = onEnterNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 );
                 if( operation === VISITOR_OPTION.BREAK ){
                     break;
                 };
                 if( operation !== VISITOR_OPTION.SKIP ){
                     if( operation <= VISITOR_OPTION.REMOVED ){
-                        torioList[ depthX3 ] -= operation;
+                        torioList[ depthX3 ] += operation;
                     } else {
+                        if( VISITOR_OPTION.INSERTED_BEFORER <= operation ){
+                            torioList[ depthX3 ] += operation;
+                        };
                         if( 0 < childNode.length - m_getChildNodeStartIndex( childNode ) ){
                             depthX3 += 3;
                             torioList[ depthX3 + 0 ] = -1;
