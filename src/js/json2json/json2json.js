@@ -52,7 +52,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
         isStaticWebPage = true;
 
     if( m_isArray( rootHTMLJson ) ){
-        walkNode( rootHTMLJson, null, 0, [], false, false );
+        walkNode( rootHTMLJson, null, 0, false, false );
         if( isTreeUpdated ){
             m_normalizeTextNodes( rootHTMLJson );
         };
@@ -71,12 +71,11 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
      * @param {!HTMLJson} currentJSONNode 
      * @param {!Array|null} parentJSONNode 
      * @param {number} myIndex
-     * @param {!Array.<!HTMLJson>} ancestorJSONNodes
      * @param {boolean} isDescendantOfPre 
      * @param {boolean} isTrimNewlines
      * @return {number} Node Increase/Decrease
      */
-    function walkNode( currentJSONNode, parentJSONNode, myIndex, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines ){
+    function walkNode( currentJSONNode, parentJSONNode, myIndex, isDescendantOfPre, isTrimNewlines ){
         var arg0 = currentJSONNode[ 0 ],
             arg1 = currentJSONNode[ 1 ],
             attrIndex = 1, tagName = arg0,
@@ -88,7 +87,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                     isXmlInHTML = true;
                 };
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
+                walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines );
                 break;
             case htmljson.NODE_TYPE.TEXT_NODE :
                 arg1 = m_trimWhiteSpaces( '' + arg1, isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
@@ -112,7 +111,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                 };
                 break;
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
-                walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
+                walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines );
                 if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
                     parentJSONNode.splice( myIndex, 1 );
                     return REMOVED;
@@ -129,7 +128,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                 };
                 break;
             case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
+                walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines );
                 if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
                     parentJSONNode.splice( myIndex, 1 );
                     return REMOVED;
@@ -191,7 +190,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                         };
 
                         // childNodes
-                        walkChildNodes( currentJSONNode, ancestorJSONNodes, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
+                        walkChildNodes( currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
 
                         if( isXMLRoot ){
                             isXmlInHTML = false;
@@ -220,14 +219,11 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
     /**
      * 
      * @param {!HTMLJson} currentJSONNode 
-     * @param {!Array.<!HTMLJson>} ancestorJSONNodes
      * @param {boolean} isDescendantOfPre 
      * @param {boolean} isTrimNewlines
      */
-    function walkChildNodes( currentJSONNode, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines ){
+    function walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines ){
         var i = m_getChildNodeStartIndex( currentJSONNode ), childNode, nodeIncreaseOrDecrease;
-
-        ancestorJSONNodes.push( currentJSONNode );
 
         for( ; i < currentJSONNode.length; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
             childNode = currentJSONNode[ i ];
@@ -235,7 +231,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
             if( m_isStringOrNumber( childNode ) ){
 
             } else if( m_isArray( childNode ) ){
-                nodeIncreaseOrDecrease = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i, ancestorJSONNodes, isDescendantOfPre, isTrimNewlines );
+                nodeIncreaseOrDecrease = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i, isDescendantOfPre, isTrimNewlines );
                 if( nodeIncreaseOrDecrease ){
                     i += nodeIncreaseOrDecrease; // Node Increase/Decrease
                     isTreeUpdated = true;
@@ -244,8 +240,6 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                 onError( 'Invalid html.json! [' + childNode + ']' );
             };
         };
-
-        ancestorJSONNodes.pop();
     };
 
     /**
