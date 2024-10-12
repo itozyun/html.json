@@ -344,7 +344,7 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, on
             };
         } else {
             if( args.length ){
-                result = onInstruction[ functionName ]( args );
+                result = onInstruction[ functionName ].apply( null, args );
             } else {
                 result = onInstruction[ functionName ]();
             };

@@ -169,7 +169,7 @@ gulp.task(
                     ClosureCompiler(
                         {
                             dependency_mode   : 'PRUNE',
-                            entry_point       : 'goog:json2html.stream',
+                            entry_point       : 'goog:json2html.stream.module',
                             externs           : [
                                 './node_modules/@externs/nodejs/v8/nodejs.js',
                                 './node_modules/@externs/nodejs/v8/global.js',

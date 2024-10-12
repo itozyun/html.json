@@ -24,7 +24,7 @@ goog.require( 'Through' );
  * @param {!Object=} opt_options
  * @return {!Through}
  */
-module.exports = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const parser  = new Parser();
     const stream  = /** @type {!Through} */ (new Through( writeHandler, endHandler ));
     const options = opt_options || {};
@@ -75,21 +75,8 @@ module.exports = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_
     return stream;
 };
 
-module.exports.DOCUMENT_NODE                 = htmljson.NODE_TYPE.DOCUMENT_NODE;
-module.exports.DOCUMENT_FRAGMENT_NODE        = htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE;
-module.exports.ELEMENT_NODE                  = htmljson.NODE_TYPE.ELEMENT_NODE;
-module.exports.TEXT_NODE                     = htmljson.NODE_TYPE.TEXT_NODE;
-module.exports.CDATA_SECTION                 = htmljson.NODE_TYPE.CDATA_SECTION;
-module.exports.PROCESSING_INSTRUCTION        = htmljson.NODE_TYPE.PROCESSING_INSTRUCTION;
-module.exports.COMMENT_NODE                  = htmljson.NODE_TYPE.COMMENT_NODE;
-module.exports.COND_CMT_HIDE_LOWER           = htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER;
-module.exports.COND_CMT_SHOW_LOWER_START     = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START;
-module.exports.COND_CMT_SHOW_LOWER_END       = htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END;
-module.exports.NETSCAPE4_COND_CMT_HIDE_LOWER = htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER;
-module.exports.ELEMENT_START_TAG             = htmljson.NODE_TYPE.ELEMENT_START_TAG;
-module.exports.ELEMENT_END_TAG               = htmljson.NODE_TYPE.ELEMENT_END_TAG;
-
 /**
+ * @private
  * @this {!Through}
  * @param {!Buffer | string} chunk 
  */
@@ -101,6 +88,7 @@ function writeHandler( chunk ){
 };
 
 /**
+ * @private
  * @this {!Through}
  * @param {(Buffer | null | string)=} data 
  */
@@ -118,6 +106,7 @@ function endHandler( data ){
 };
 
 /**
+ * @private
  * @this {!Through}
  */
 function resumeHandler(){
@@ -137,6 +126,7 @@ function resumeHandler(){
 };
 
 /**
+ * @private
  * @this {Parser}
  * @param {!Error} err 
  */
@@ -150,6 +140,7 @@ function onError( err ){
 
 
 /**
+ * @private
  * @this {Parser}
  * @param {number} token 
  * @param {*} value 
