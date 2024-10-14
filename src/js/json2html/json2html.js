@@ -289,7 +289,7 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
             if( isInstruction ){
                 if( onInstruction ){
                     value = m_executeInstructionAttr( true, onInstruction, name, /** @type {!InstructionArgs | string} */ (value), onError );
-                } else {
+                } else if( htmljson.DEFINE.DEBUG ){
                     onError( 'onInstruction is void!' );
                 };
             };

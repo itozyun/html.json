@@ -409,12 +409,18 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
                         break;
                     };
                 };
+            } else if( selector === '*' ){
+                if( handler( currentVNode ) === true ){
+                    break;
+                };
             } else if( isElement && m_isString( selector ) ){
                 if( selector === currentVNode._tagName ){
                     if( handler( currentVNode ) === true ){
                         break;
                     };
                 };
+            } else if( htmljson.DEFINE.DEBUG ){
+                throw 'onEnterNode: invalid selector found! ' + selector;
             };
         };
     };
@@ -988,14 +994,14 @@ var VISITOR_OPTION = {
  * @param {!HTMLJson} rootHTMLJson
  * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)} onEnterNode コールバック内で要素の削除と追加はできません、index が狂います
  */
-function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){
+function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){ // onLeaveNode
     var parentNode     = rootHTMLJson,
         childNodeStart = m_getChildNodeStartIndex( rootHTMLJson ),
         depthX3        = 0,
         operation      = onEnterNode( rootHTMLJson, null, -1, 0 ),
         torioList      = [ -1, rootHTMLJson, childNodeStart ],
         currentIndex, childNode;
-    
+
     if( operation === VISITOR_OPTION.BREAK || operation === VISITOR_OPTION.SKIP ){
         return;
     };
@@ -1009,6 +1015,7 @@ function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){
                 depthX3 -= 3;
                 parentNode     = torioList[ depthX3 + 1 ];
                 childNodeStart = torioList[ depthX3 + 2 ];
+                // parentNode && onLeaveNode( parentNode[ torioList[ depthX3 ] + childNodeStart ], parentNode, torioList[ depthX3 ] + childNodeStart )
             } else {
                 operation = onEnterNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 );
                 if( operation === VISITOR_OPTION.BREAK ){
