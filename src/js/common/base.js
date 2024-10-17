@@ -267,7 +267,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
         } else {
             result = onInstruction( functionName );
         };
-    } else {
+    } else if( onInstruction[ functionName ] ){
         if( args.length ){
             result = onInstruction[ functionName ].apply( null, args );
         } else {
@@ -345,7 +345,7 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, on
             } else {
                 result = onInstruction.call( opt_context, functionName );
             };
-        } else {
+        } else if( onInstruction[ functionName ] ){
             if( args.length ){
                 result = onInstruction[ functionName ].apply( opt_context || onInstruction, args );
             } else {
