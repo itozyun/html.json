@@ -29,8 +29,13 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
     const stream  = /** @type {!Through} */ (new Through( writeHandler, endHandler ));
     const options = opt_options || {};
 
-                  stream._parser        = parser;
-                  parser._stream        = stream;
+    /**
+     * @suppress {checkTypes}
+     * @type {Parser | null}  */
+    stream._parser = parser;
+    /** @type {Through | null} */
+    parser._stream = stream;
+
     /** @const */ parser._createValue   = parser.onToken;
     /** @const */ parser.onToken        = onToken;
     /** @const */ parser.onError        = onError;
@@ -77,30 +82,35 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
 /**
  * @private
  * @this {!Through}
- * @param {!Buffer | string} chunk 
+ * @param {Buffer | string | null} chunk 
  */
 function writeHandler( chunk ){
     if( 'string' === typeof chunk ){
         chunk = bufferFrom( chunk );
     };
+    /** @suppress {missingProperties} */
     this._parser.write( chunk );
 };
 
 /**
  * @private
  * @this {!Through}
- * @param {(Buffer | null | string)=} data 
+ * @param {(Buffer | string | null)=} data 
  */
 function endHandler( data ){
     if( data ){
         this.write( data );
     };
-    if( this._parser._expect !== htmljson.EXPECT.END_OF_DOCUMENT ){
+    /** @suppress {checkTypes} */
+    var expect = this._parser._expect;
+
+    if( expect !== htmljson.EXPECT.END_OF_DOCUMENT ){
         this.emit( 'error', 'Invalid html.json' );
     };
 
     this.queue( null );
 
+    /** @suppress {checkTypes} */
     this._parser = this._parser._stream = null;
 };
 
@@ -109,6 +119,7 @@ function endHandler( data ){
  * @this {!Through}
  */
 function resumeHandler(){
+    /** @suppress {checkTypes} */
     var parser = this._parser;
     var args = parser._lastArgs;
 

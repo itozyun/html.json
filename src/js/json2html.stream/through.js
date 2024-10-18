@@ -7,14 +7,14 @@
 goog.provide( 'Through' )
 
 /** @private */
-var Stream = require('node:stream')
+var stream = require('node:stream')
 
 
-Through = class extends Stream {
+Through = class extends stream.Stream {
   /**
    * create a readable writable stream.
    * 
-   * @param {!function(this:Through, (!Buffer | string))} write
+   * @param {!function(this:Through, (Buffer | null | string))} write
    * @param {!function(this:Through, (Buffer | null | string)=)} end
    */
   constructor(write, end) {
