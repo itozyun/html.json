@@ -597,9 +597,9 @@ function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrim
     };
 
     if( isDescendantOfPre ){
-        if( isAggressiveTrim ){
+        // if( isAggressiveTrim ){
             // 改行文字の前のスペース、タブを削除する
-        };
+        // };
     } else if( isTrimWhitespace ){
         if( isTrimNewlines ){
             // 先頭と最後の改行文字を削除

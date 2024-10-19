@@ -76,9 +76,9 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
             result,
             id, className, childNodesContents, isXMLRoot;
 
-        if( currentVNode && currentVNode._removed ){
+        // if( currentVNode && currentVNode._removed ){
             // return m_getHTMLStringAfter( currentVNode );
-        };
+        // };
 
         switch( arg0 ){
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
