@@ -48,29 +48,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
     /** @const */ parser._useSingleQuot = !!options[ 'useSingleQuot' ];
     /** @const */ parser._attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
-    /* if( typeof opt_onInstruction === 'function' ){
-        opt_onInstruction = opt_onInstruction.bind( stream );
-    } else if( opt_onInstruction ){
-        const _onInstruction = {};
-
-        for( const funcName in opt_onInstruction ){
-            _onInstruction[ funcName ] = opt_onInstruction[ funcName ].bind( stream );
-        };
-        opt_onInstruction = _onInstruction;
-    }; */
     /** @const {InstructionHandler | void} */ parser._onInstruction = opt_onInstruction;
-
-    /* if( typeof opt_onEnterNode === 'function' ){
-        opt_onEnterNode = opt_onEnterNode.bind( stream );
-    } else if( opt_onEnterNode ){
-        const _onEnterNode = [];
-
-        for( let i = 0, l = opt_onEnterNode.length; i < l; i += 2 ){
-            _onEnterNode[ i + 0 ] = opt_onEnterNode[ i + 0 ];
-            _onEnterNode[ i + 1 ] = opt_onEnterNode[ i + 1 ].bind( stream );
-        };
-        opt_onEnterNode = _onEnterNode;
-    }; */
     /** @const {EnterNodeHandler | void} */ parser._onEnterNode = opt_onEnterNode;
 
     stream.on( 'resume', resumeHandler );
@@ -123,15 +101,17 @@ function resumeHandler(){
     var parser = this._parser;
     var args = parser._lastArgs;
 
-    while( args.length ){
-        onToken.call( parser, args.shift(), args.shift() );
-        if( this.paused ){
-            break;
+    if( args ){
+        while( args.length ){
+            onToken.call( parser, args.shift(), args.shift() );
+            if( this.paused ){
+                break;
+            };
         };
-    };
-
-    if( !args.length ){
-        parser._lastArgs = null;
+    
+        if( !args.length ){
+            parser._lastArgs = null;
+        };
     };
 };
 
