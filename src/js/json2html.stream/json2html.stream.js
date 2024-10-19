@@ -1,4 +1,5 @@
 goog.provide( 'json2html.stream' );
+goog.provide( 'json2html.stream.writeHandler' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.isXMLRootElement' );
@@ -26,7 +27,7 @@ goog.require( 'Through' );
  */
 json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const parser  = new Parser();
-    const stream  = /** @type {!Through} */ (new Through( writeHandler, endHandler ));
+    const stream  = /** @type {!Through} */ (new Through( json2html.stream.writeHandler, json2html.stream.endHandler ));
     const options = opt_options || {};
 
     /**
@@ -80,11 +81,10 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
 };
 
 /**
- * @private
  * @this {!Through}
  * @param {Buffer | string | null} chunk 
  */
-function writeHandler( chunk ){
+json2html.stream.writeHandler = function( chunk ){
     if( 'string' === typeof chunk ){
         chunk = bufferFrom( chunk );
     };
@@ -97,7 +97,7 @@ function writeHandler( chunk ){
  * @this {!Through}
  * @param {(Buffer | string | null)=} data 
  */
-function endHandler( data ){
+json2html.stream.endHandler = function( data ){
     if( data ){
         this.write( data );
     };

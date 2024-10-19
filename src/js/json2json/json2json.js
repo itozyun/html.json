@@ -184,10 +184,10 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
 
                         isPreTag = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ];
 
-                        if( isPreTag && isTrimWhitespace ){
+                        // if( isPreTag && isTrimWhitespace ){
                             // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
                             // 各行の改行の前の空白文字も削除
-                        };
+                        // };
 
                         // childNodes
                         walkChildNodes( currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );

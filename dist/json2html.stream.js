@@ -1,4 +1,4 @@
-var aa = {xml:!0, svg:!0, math:!0}, y = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, ba = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, 
+var aa = {xml:!0, svg:!0, math:!0}, v = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, ba = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, 
 area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, z = {CAPTION:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, 
 VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DD:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, 
 H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, 
@@ -129,7 +129,7 @@ function ka(a) {
     } else {
       d = g[0];
       e = g[1];
-      var x = 1, r = d, h;
+      var y = 1, r = d, h;
       switch(d) {
         case 9:
         case 13:
@@ -150,18 +150,18 @@ function ka(a) {
           E(d);
           break;
         case 7:
-          x = [];
+          y = [];
           r = 2;
           for (h = g.length; r < h; ++r) {
-            x[r - 2] = g[r];
+            y[r - 2] = g[r];
           }
-          E(d, e, h - 2 ? x : null);
+          E(d, e, h - 2 ? y : null);
           break;
         case 1:
         case 17:
-          r = e, x = 2;
+          r = e, y = 2;
         default:
-          N(r) && E(1 === x ? 1 : d, r, g[x]);
+          N(r) && E(1 === y ? 1 : d, r, g[y]);
       }
     }
     return va;
@@ -240,7 +240,7 @@ function Ea(a, b, c) {
 }
 var Da = 0, Ca = 1, Aa = 2, pa = 3, za = 4, Ba = 5;
 function Fa(a, b, c, g, d) {
-  function e(n, w, p, D, u, A) {
+  function e(n, x, p, D, u, A) {
     function G() {
       var qa = "";
       k && (qa = "</" + (q ? k : k.toLowerCase()) + ">", k = "");
@@ -248,7 +248,7 @@ function Fa(a, b, c, g, d) {
     }
     var B = r ? ja(n, p, r) : null;
     p = "";
-    var ra = n[0], I = n[1], M = 1, v = ra, sa;
+    var ra = n[0], I = n[1], M = 1, w = ra, sa;
     switch(ra) {
       case 9:
         p = I + l(n, B, !1, A);
@@ -278,8 +278,8 @@ function Fa(a, b, c, g, d) {
         p = "\x3c!--<![endif]--\x3e";
         break;
       case 7:
-        if (x) {
-          if (u = ha(x, n, w, D), void 0 !== u && null !== u && "" !== u && (O(u) || L(u))) {
+        if (y) {
+          if (u = ha(y, n, x, D), void 0 !== u && null !== u && "" !== u && (O(u) || L(u))) {
             return -1;
           }
         } else {
@@ -292,27 +292,27 @@ function Fa(a, b, c, g, d) {
       case 17:
         var ta = !0;
       case 1:
-        v = n[1], M = 2;
+        w = n[1], M = 2;
       default:
-        v = na(v), w = v[1], D = v[2], v = v[0], M = n[M], "P" !== k || da[v] ? k = "" : p = G(), q || (sa = q = q || aa[v] ? !0 : 0 < v.indexOf(":")), p += "<" + (q ? v : v.toLowerCase()), w && (p += " id=" + Q(w, f, q || t)), D && (p += " class=" + Q(D, f, q || t)), !L(M) && ea(M) && (p += E(M)), p = (n = l(n, B, C[v], A || F[v])) ? p + (">" + n) : ta ? p + ">" : p + (q ? " />" : ">"), ta && (k = ""), !n && ba[v] ? k = "" : q && !n || ca[v] && (!u || "P" !== v) ? k = v : (p += "</" + (q ? v : v.toLowerCase()) + 
+        w = na(w), x = w[1], D = w[2], w = w[0], M = n[M], "P" !== k || da[w] ? k = "" : p = G(), q || (sa = q = q || aa[w] ? !0 : 0 < w.indexOf(":")), p += "<" + (q ? w : w.toLowerCase()), x && (p += " id=" + Q(x, f, q || t)), D && (p += " class=" + Q(D, f, q || t)), !L(M) && ea(M) && (p += E(M)), p = (n = l(n, B, C[w], A || F[w])) ? p + (">" + n) : ta ? p + ">" : p + (q ? " />" : ">"), ta && (k = ""), !n && ba[w] ? k = "" : q && !n || ca[w] && (!u || "P" !== w) ? k = w : (p += "</" + (q ? w : w.toLowerCase()) + 
         ">", k = ""), sa && (q = !1);
     }
     return p;
   }
-  function l(n, w, p, D) {
+  function l(n, x, p, D) {
     for (var u = [], A = R(n), G = -1, B; A < n.length; ++A) {
-      B = n[A], O(B) ? u[++G] = e([3, B], n, w, A, !1, D) : L(B) && (B = e(B, n, w, A, p, D), -1 === B ? --A : u[++G] = B);
+      B = n[A], O(B) ? u[++G] = e([3, B], n, x, A, !1, D) : L(B) && (B = e(B, n, x, A, p, D), -1 === B ? --A : u[++G] = B);
     }
     return u.join("");
   }
   function E(n) {
-    var w = "", p, D;
+    var x = "", p, D;
     for (p in n) {
       var u = n[p];
       (D = 0 === p.indexOf(m)) && (p = p.substr(m.length));
       "className" === p && (p = "class");
-      D && x && (u = ia(x, p, u, h));
-      if (!(null == u || y[p] && !1 === u || (w += " " + p, y[p] || !0 === u))) {
+      D && y && (u = ia(y, p, u, h));
+      if (!(null == u || v[p] && !1 === u || (x += " " + p, v[p] || !0 === u))) {
         if ("style" === p && ea(u)) {
           D = void 0;
           var A = u, G = [], B = -1;
@@ -324,12 +324,12 @@ function Fa(a, b, c, g, d) {
             continue;
           }
         }
-        w += "=" + Q(u, f, q || t);
+        x += "=" + Q(u, f, q || t);
       }
     }
-    return w;
+    return x;
   }
-  var x = b || null, r = c || null, h = "function" === typeof g ? g : function() {
+  var y = b || null, r = c || null, h = "function" === typeof g ? g : function() {
   };
   b = d || {};
   var t = !0 === b.quotAlways, f = !0 === b.useSingleQuot, m = b.instructionAttrPrefix || ":", k, q = K;
@@ -692,9 +692,9 @@ function Ia(a) {
 function Ja(a, b) {
   a.F || (null === b && (a.F = !0), a.l.push(b), Ha(a));
 }
-var Ma = class extends stream.Stream {
+var Ka = class extends stream.Stream {
   constructor() {
-    var a = Ka, b = La;
+    var a = Z.ma, b = Z.la;
     super();
     this.C = a;
     this.v = b;
@@ -726,15 +726,15 @@ var Ma = class extends stream.Stream {
   }
 };
 function Z(a, b, c, g) {
-  const d = new V(), e = new Ma();
+  const d = new V(), e = new Ka();
   g = g || {};
   e.h = d;
   d.D = e;
   d.R = d.l;
-  d.l = Na;
-  d.la = Oa;
+  d.l = La;
+  d.na = Ma;
   d.fa = 0;
-  d.ia = [];
+  d.ka = [];
   d.F = [];
   d.ba = "function" === typeof c ? c : function() {
   };
@@ -742,32 +742,32 @@ function Z(a, b, c, g) {
   d.da = !!g.useSingleQuot;
   d.ea = g.instructionAttrPrefix || ":";
   d.N = a;
-  d.ka = b;
-  e.on("resume", Pa);
+  d.ja = b;
+  e.on("resume", Na);
   d.Z = "";
   return e;
 }
-function Ka(a) {
+Z.ma = function(a) {
   "string" === typeof a && (a = T(a));
   this.h.write(a);
-}
-function La(a) {
+};
+Z.la = function(a) {
   a && this.write(a);
   43 !== this.h.fa && this.emit("error", "Invalid html.json");
   Ja(this, null);
   this.h = this.h.D = null;
-}
-function Pa() {
-  for (var a = this.h, b = a.aa; b.length && (Na.call(a, b.shift(), b.shift()), !this.paused);) {
+};
+function Na() {
+  for (var a = this.h, b = a.aa; b.length && (La.call(a, b.shift(), b.shift()), !this.paused);) {
   }
   b.length || (a.aa = null);
 }
-function Oa(a) {
+function Ma(a) {
   -1 < a.message.indexOf("at position") && (a.message = "Invalid JSON (" + a.message + ")");
   this.ba(a.message);
   this.D.emit("error", a);
 }
-function Na(a, b) {
+function La(a, b) {
   function c() {
     f.aa ? f.aa.unshift(a, b) : f.aa = [a, b];
   }
@@ -800,7 +800,7 @@ function Na(a, b) {
   }
   function e(q) {
     if (null != q) {
-      if (y[f.V]) {
+      if (v[f.V]) {
         if (!1 !== q) {
           return " " + f.V;
         }
@@ -831,11 +831,11 @@ function Na(a, b) {
   function E() {
     f.T = f.W = f.C = !1;
     for (let q = 0, n = r.length; q < n; ++q) {
-      const w = r[q];
-      13 === w || 16 === w ? f.T = !0 : N(w) && (q === n - 1 && (f.T = f.T || C[w]), F[w] && (f.W = !0), aa[w] || 0 < w.indexOf(":")) && (f.C = !0);
+      const x = r[q];
+      13 === x || 16 === x ? f.T = !0 : N(x) && (q === n - 1 && (f.T = f.T || C[x]), F[x] && (f.W = !0), aa[x] || 0 < x.indexOf(":")) && (f.C = !0);
     }
   }
-  function x() {
+  function y() {
     let q = "";
     f.M && (q = "</" + (f.C ? f.M : f.M.toLowerCase()) + ">", f.M = "");
     return q;
@@ -845,8 +845,7 @@ function Na(a, b) {
   } else if (5 === a || 6 === a) {
     this.J.length && this.R(a, b);
   } else {
-    var r = this.ia, h = this.fa, t = !1, f = this;
-    console.log(a, b);
+    var r = this.ka, h = this.fa, t = !1, f = this;
     switch(h) {
       case 39:
         switch(a) {
@@ -864,7 +863,7 @@ function Na(a, b) {
                 H = this.T;
                 J = this.W;
                 K = this.ha || this.C;
-                var k = Fa(m, this.N, this.ka, this.ba, {quotAlways:this.ca, useSingleQuot:this.da, instructionAttrPrefix:this.ea});
+                var k = Fa(m, this.N, this.ja, this.ba, {quotAlways:this.ca, useSingleQuot:this.da, instructionAttrPrefix:this.ea});
                 H = J = K = !1;
               } else {
                 k = O(m) ? "" + m : "";
@@ -1071,7 +1070,7 @@ function Na(a, b) {
             t = na(b);
             const q = t[1], n = t[2];
             t = t[0];
-            "P" !== this.M || da[t] ? this.M = k = "" : k = x();
+            "P" !== this.M || da[t] ? this.M = k = "" : k = y();
             28 === m ? r.push("") : r.push(t);
             E();
             k += "<" + (this.C ? t : t.toLowerCase());
@@ -1105,11 +1104,11 @@ function Na(a, b) {
             h = 34;
             break;
           case 34:
-            this.ja = b;
+            this.ia = b;
             h = 35;
             break;
           case 35:
-            "" !== b && null !== b && (this.Z += ";" + ma(this.ja) + ":" + b);
+            "" !== b && null !== b && (this.Z += ";" + ma(this.ia) + ":" + b);
             h = 34;
             break;
           case 40:
@@ -1135,11 +1134,11 @@ function Na(a, b) {
             r.push(3);
             break;
           case 20:
-            k = x() + (f.W ? "" + b : P("" + b));
+            k = y() + (f.W ? "" + b : P("" + b));
             h = 37;
             break;
           case 41:
-            k = (t ? (t = !1, ">") : "") + x() + (f.W ? "" + b : P("" + b));
+            k = (t ? (t = !1, ">") : "") + y() + (f.W ? "" + b : P("" + b));
             h = 42;
             break;
           case 4:
@@ -1161,7 +1160,7 @@ function Na(a, b) {
             h = 37;
             break;
           case 13:
-            k = x() + "\x3c!--[";
+            k = y() + "\x3c!--[";
             h = 23;
             r.push(13);
             break;
@@ -1170,7 +1169,7 @@ function Na(a, b) {
             h = 41;
             break;
           case 16:
-            k = x() + "\x3c!--{";
+            k = y() + "\x3c!--{";
             h = 25;
             r.push(16);
             break;
@@ -1204,7 +1203,6 @@ function Na(a, b) {
             h = -1;
         }
     }
-    console.log("- " + k, h, this.ia);
     -1 === h ? (this.ba("Not html.json format!"), this.D.emit("error", "Not html.json format!")) : (this.fa = h, k && Ja(this.D, k));
   }
 }
