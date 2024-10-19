@@ -734,7 +734,7 @@ function Z(a, b, c, g) {
   d.l = Na;
   d.la = Oa;
   d.fa = 0;
-  d.ka = [];
+  d.ia = [];
   d.F = [];
   d.ba = "function" === typeof c ? c : function() {
   };
@@ -742,7 +742,7 @@ function Z(a, b, c, g) {
   d.da = !!g.useSingleQuot;
   d.ea = g.instructionAttrPrefix || ":";
   d.N = a;
-  d.ja = b;
+  d.ka = b;
   e.on("resume", Pa);
   d.Z = "";
   return e;
@@ -845,7 +845,8 @@ function Na(a, b) {
   } else if (5 === a || 6 === a) {
     this.J.length && this.R(a, b);
   } else {
-    var r = this.ka, h = this.fa, t = !1, f = this;
+    var r = this.ia, h = this.fa, t = !1, f = this;
+    console.log(a, b);
     switch(h) {
       case 39:
         switch(a) {
@@ -863,7 +864,7 @@ function Na(a, b) {
                 H = this.T;
                 J = this.W;
                 K = this.ha || this.C;
-                var k = Fa(m, this.N, this.ja, this.ba, {quotAlways:this.ca, useSingleQuot:this.da, instructionAttrPrefix:this.ea});
+                var k = Fa(m, this.N, this.ka, this.ba, {quotAlways:this.ca, useSingleQuot:this.da, instructionAttrPrefix:this.ea});
                 H = J = K = !1;
               } else {
                 k = O(m) ? "" + m : "";
@@ -982,10 +983,8 @@ function Na(a, b) {
                 m = 31;
                 break;
               case 32:
-                m = 32;
-                break;
               case 33:
-                m = 33;
+                m = 32;
                 break;
               case 34:
                 m = 34;
@@ -1106,11 +1105,11 @@ function Na(a, b) {
             h = 34;
             break;
           case 34:
-            this.ia = b;
+            this.ja = b;
             h = 35;
             break;
           case 35:
-            "" !== b && null !== b && (this.Z += ";" + ma(this.ia) + ":" + b);
+            "" !== b && null !== b && (this.Z += ";" + ma(this.ja) + ":" + b);
             h = 34;
             break;
           case 40:
@@ -1205,6 +1204,7 @@ function Na(a, b) {
             h = -1;
         }
     }
+    console.log("- " + k, h, this.ia);
     -1 === h ? (this.ba("Not html.json format!"), this.D.emit("error", "Not html.json format!")) : (this.fa = h, k && Ja(this.D, k));
   }
 }

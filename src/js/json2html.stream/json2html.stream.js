@@ -543,10 +543,8 @@ function onToken( token, value ){
                             phase = htmljson.PHASE.ATTRIBUTE_PROPERTY;
                             break;
                         case htmljson.EXPECT.ATTRIBUTE_VALUE :
-                            phase = htmljson.PHASE.ATTRIBUTE_VALUE;
-                            break;
                         case htmljson.EXPECT.STYLES_START :
-                            phase = htmljson.PHASE.STYLES_START;
+                            phase = htmljson.PHASE.ATTRIBUTE_VALUE;
                             break;
                         case htmljson.EXPECT.CSS_PROPERTY :
                             phase = htmljson.PHASE.CSS_PROPERTY;
