@@ -4,6 +4,7 @@ goog.provide( 'json2html.stream.writeHandler' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.isXMLRootElement' );
 goog.require( 'htmlparser.isNamespacedTag' );
+goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
@@ -60,10 +61,13 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
 
 /**
  * @this {!Through}
- * @param {Buffer | string | null} chunk 
+ * @param {Buffer | string | number | boolean | null} chunk 
  */
 json2html.stream.writeHandler = function( chunk ){
-    if( 'string' === typeof chunk ){
+    if( m_isNumber( chunk ) || m_isBoolean( chunk ) ){
+        chunk = '' + chunk;
+    };
+    if( m_isString( chunk ) ){
         chunk = bufferFrom( chunk );
     };
     /** @suppress {missingProperties} */
@@ -73,10 +77,10 @@ json2html.stream.writeHandler = function( chunk ){
 /**
  * @private
  * @this {!Through}
- * @param {(Buffer | string | null)=} data 
+ * @param {Buffer | string | number | boolean | null=} data 
  */
 json2html.stream.endHandler = function( data ){
-    if( data ){
+    if( data != null ){
         this.write( data );
     };
     /** @suppress {checkTypes} */

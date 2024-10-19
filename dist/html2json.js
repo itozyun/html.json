@@ -422,11 +422,11 @@ function Z(a, b, d, e) {
         break;
       case 3:
         c = "" + V(c);
+        c = c.split("\r\n").join("\n").split("\r").join("\n");
         if (!p && u) {
           if (t) {
             c = S(R(c, "\n"), "\n");
           } else {
-            c = c.split("\r\n").join("\n");
             z && (c = c.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2"));
             for (c = c.split("\t").join(" "); 0 <= c.indexOf("\n\n");) {
               c = c.split("\n\n").join("\n");

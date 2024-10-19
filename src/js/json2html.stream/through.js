@@ -14,8 +14,8 @@ Through = class extends stream.Stream {
   /**
    * create a readable writable stream.
    * 
-   * @param {!function(this:Through, (Buffer | null | string))} write
-   * @param {!function(this:Through, (Buffer | null | string)=)} end
+   * @param {!function(this:Through, (Buffer | string | number | boolean | null))} write
+   * @param {!function(this:Through, (Buffer | string | number | boolean | null)=)} end
    */
   constructor(write, end) {
     super();
@@ -32,7 +32,7 @@ Through = class extends stream.Stream {
     
     /** @const {boolean} */ this.autoDestroy = true;
 
-    /** @const {!Array.<Buffer | null | string>} */ this._buffer = [];
+    /** @const {!Array.<Buffer | string | number | boolean | null>} */ this._buffer = [];
 
     //this will be registered as the first 'end' listener
     //must call destroy next tick, to make sure we're after any
@@ -47,7 +47,7 @@ Through = class extends stream.Stream {
     })
   }
 
-  /** @param {Buffer | null | string} data */
+  /** @param {Buffer | string | number | boolean | null} data */
   write(data) {
     this._writeHandler.call(this, data)
     return !this.paused
@@ -80,7 +80,7 @@ Through = class extends stream.Stream {
     };
   }
 
-  /** @param {Buffer | null | string} data */
+  /** @param {Buffer | string | number | boolean | null} data */
   queue(data) {
     if(!this._ended){
       if(data === null) this._ended = true
@@ -98,7 +98,7 @@ Through = class extends stream.Stream {
     }
   } */
 
-  /** @param {Buffer | null | string} data */
+  /** @param {Buffer | string | number | boolean | null} data */
   end(data) {
     if(!this.ended){
       this.ended = true

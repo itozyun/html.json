@@ -1281,11 +1281,11 @@ function m_normalizeTextNodes(a) {
   c && b();
 }
 function m_trimWhiteSpaces(a, b, c, d, e, f) {
+  a = a.split("\r\n").join("\n").split("\r").join("\n");
   if (!b && d) {
     if (c) {
       a = m_trimChar(a, "\n");
     } else {
-      a = a.split("\r\n").join("\n");
       f && (a = a.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2"));
       for (a = a.split("\t").join(" "); 0 <= a.indexOf("\n\n");) {
         a = a.split("\n\n").join("\n");
