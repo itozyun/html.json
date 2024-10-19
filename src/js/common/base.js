@@ -596,6 +596,8 @@ function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrim
         return string.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2");
     };
 
+    nodeValue = nodeValue.split( '\r\n' ).join( '\n' ).split( '\r' ).join( '\n' )
+
     if( isDescendantOfPre ){
         // if( isAggressiveTrim ){
             // 改行文字の前のスペース、タブを削除する
@@ -605,7 +607,6 @@ function m_trimWhiteSpaces( nodeValue, isDescendantOfPre, isTrimNewlines, isTrim
             // 先頭と最後の改行文字を削除
             nodeValue = m_trimChar( /** @type {string} */ (nodeValue), '\n' );
         } else {
-            nodeValue = nodeValue.split( '\r\n' ).join( '\n' );
             if( isRemoveNewlineBetweenFullWidthChars ){
                 nodeValue = removeNewlineBetweenFullWidthChars( nodeValue );
             };
