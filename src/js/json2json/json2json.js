@@ -268,9 +268,10 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                 if( onInstruction ){
                     value = m_executeInstructionAttr( false, onInstruction, name, /** @type {!InstructionArgs | string} */ (value), onError );
                 } else {
-                    onError( 'onInstruction is void!' );
+                    isStaticWebPage = false;
+                    ++numAttributes;
+                    continue;
                 };
-
                 if( value !== undefined ){
                     delete attrs[ originalName ];
                     if( m_isArray( value ) ){

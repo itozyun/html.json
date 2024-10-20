@@ -2295,25 +2295,28 @@ function _walkAllDescendantNodes(a, b) {
                 if (L = m_isInstructionAttr(q, H)) {
                   var H = H.substr(q.length);
                   "className" === H && (H = "class");
-                  v ? D = m_executeInstructionAttr(!1, v, H, D, r) : r("onInstruction is void!");
-                  if (void 0 !== D) {
-                    if (delete k[J], m_isArray(D)) {
-                      m_isString(D[0]) ? (k[J] = D, n = !1, ++m) : htmljson.DEFINE.DEBUG && r("Invalid dynamic attribute callback value! [" + J + "=" + D + "]");
-                    } else if ((!htmlparser.BOOLEAN_ATTRIBUTES[H] || !1 !== D) && null !== D) {
-                      if (m_isString(D)) {
-                        if ("id" === H) {
-                          u = D;
-                          continue;
-                        } else if ("class" === H) {
-                          J = D.split(" ");
-                          for (D = J.length; D;) {
-                            L = J[--D], -1 === (" " + B + " ").indexOf(" " + L + " ") && (B = (B ? " " : "") + L);
+                  if (v) {
+                    if (D = m_executeInstructionAttr(!1, v, H, D, r), void 0 !== D) {
+                      if (delete k[J], m_isArray(D)) {
+                        m_isString(D[0]) ? (k[J] = D, n = !1, ++m) : htmljson.DEFINE.DEBUG && r("Invalid dynamic attribute callback value! [" + J + "=" + D + "]");
+                      } else if ((!htmlparser.BOOLEAN_ATTRIBUTES[H] || !1 !== D) && null !== D) {
+                        if (m_isString(D)) {
+                          if ("id" === H) {
+                            u = D;
+                            continue;
+                          } else if ("class" === H) {
+                            J = D.split(" ");
+                            for (D = J.length; D;) {
+                              L = J[--D], -1 === (" " + B + " ").indexOf(" " + L + " ") && (B = (B ? " " : "") + L);
+                            }
+                            continue;
                           }
-                          continue;
                         }
+                        k[H] = D;
+                        ++m;
                       }
-                      k[H] = D;
-                      ++m;
+                    } else {
+                      n = !1, ++m;
                     }
                   } else {
                     n = !1, ++m;
