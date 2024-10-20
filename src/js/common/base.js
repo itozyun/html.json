@@ -332,12 +332,12 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
  * @return {!InstructionArgs | string | number | boolean | null | void}
  */
 function m_executeInstructionAttr( recursion, onInstruction, attrName, value, onError, opt_context ){
-    var result;
+    var result, functionName, args;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
-        value = /** @type {!Array} */ (value);
-        var functionName = /** @type {string} */ (value[ 0 ]);
-        var args         = value.slice( 1 );
+        value        = /** @type {!Array} */ (value);
+        functionName = /** @type {string} */ (value[ 0 ]);
+        args         = value.slice( 1 );
 
         if( typeof onInstruction === 'function' ){
             if( args.length ){
@@ -353,10 +353,11 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, on
             };
         };
     } else if( m_isString( value ) ){
+        value = /** @type {string} */ (value);
         if( typeof onInstruction === 'function' ){
-            result = onInstruction.call( opt_context,  /** @type {string} */ (value) );
+            result = onInstruction.call( opt_context, value  );
         } else if( onInstruction[ value ] ){
-            result = onInstruction[ /** @type {string} */ (value) ].call( opt_context || onInstruction);
+            result = onInstruction[ value ].call( opt_context || onInstruction );
         };
     } else if( htmljson.DEFINE.DEBUG ){
         onError( 'Invalid InstructionAttr value! [' + attrName + '=' + value + ']' );
