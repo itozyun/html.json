@@ -354,9 +354,9 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, on
         };
     } else if( m_isString( value ) ){
         if( typeof onInstruction === 'function' ){
-            result = onInstruction( /** @type {string} */ (value) );
-        } else {
-            result = onInstruction[ /** @type {string} */ (value) ]();
+            result = onInstruction.call( opt_context,  /** @type {string} */ (value) );
+        } else if( onInstruction[ value ] ){
+            result = onInstruction[ /** @type {string} */ (value) ].call( opt_context || onInstruction);
         };
     } else if( htmljson.DEFINE.DEBUG ){
         onError( 'Invalid InstructionAttr value! [' + attrName + '=' + value + ']' );
