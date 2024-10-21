@@ -178,7 +178,7 @@ function onToken( token, value ){
                 } else {
                     result = self._onInstruction.call( self._stream, self._functionName );
                 };
-            } else {
+            } else if( self._onInstruction[ self._functionName ] ){
                 if( self._args.length ){
                     result = self._onInstruction[ self._functionName ].apply( self._stream, self._args );
                 } else {
