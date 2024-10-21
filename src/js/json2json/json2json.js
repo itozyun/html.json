@@ -18,9 +18,6 @@ goog.require( 'VNode' );
  * @return {boolean | void} isStaticWebPage
  */
 json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    /** @const {number} */
-    var REMOVED = -1;
-
     /** @const */
     var onInstruction     = opt_onInstruction || null;
     /** @const */
@@ -47,12 +44,156 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
     /** @const */
     var attrPrefix        = options[ 'instructionAttrPrefix'       ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
-    var isXmlInHTML     = false,
-        isTreeUpdated   = false,
+    var isTreeUpdated,
         isStaticWebPage = true;
+    /** @const */
+    var statusStack = [ false, false ];
 
     if( m_isArray( rootHTMLJson ) ){
-        walkNode( rootHTMLJson, null, 0, false, false );
+        isTreeUpdated = m_traverseAllDescendantHTMLJsonNodes(
+            rootHTMLJson,
+            /**
+             * 
+             * @param {!HTMLJson | string | number} currentJSONNode 
+             * @param {HTMLJson | null} parentJSONNode 
+             * @param {number} myIndex
+             * @param {number} depth
+             * @return {number | void} VISITOR_OPTION.*
+             */
+            function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                var isDescendantOfPre = statusStack[ depth * 2 + 0 ],
+                    isTrimNewlines    = statusStack[ depth * 2 + 1 ],
+                    tagName           = currentJSONNode[ 0 ],
+                    arg1              = currentJSONNode[ 1 ],
+                    attrIndex         = 1,
+                    prevJSONNode, attrs, result, isPreTag;
+
+                if( depth * 2 + 2 < statusStack.length ){
+                    statusStack.length = depth * 2 + 2;
+                };
+
+                switch( m_getNodeType( currentJSONNode ) ){
+                    case htmljson.NODE_TYPE.DOCUMENT_NODE :
+                        break;
+                    case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
+                        break;
+                    case htmljson.NODE_TYPE.TEXT_NODE :
+                        if( !m_isArray( currentJSONNode ) ){
+                            arg1 = currentJSONNode;
+                        };
+                        arg1 = m_trimWhiteSpaces( '' + arg1, isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
+                        if( arg1 !== '' ){
+                            parentJSONNode[ myIndex ] = arg1;
+                        } else {
+                            parentJSONNode.splice( myIndex, 1 );
+                            return VISITOR_OPTION.REMOVED;
+                        };
+                        return;
+                    case htmljson.NODE_TYPE.CDATA_SECTION :
+                        if( !keepCDATASections && parentJSONNode ){
+                            parentJSONNode.splice( myIndex, 1 );
+                            return VISITOR_OPTION.REMOVED;
+                        };
+                        break;
+                    case htmljson.NODE_TYPE.COMMENT_NODE :
+                        if( !keepComments && parentJSONNode ){
+                            parentJSONNode.splice( myIndex, 1 );
+                            return VISITOR_OPTION.REMOVED;
+                        };
+                        break;
+                    case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+                        break;
+                    case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
+                        break;
+                    case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
+                        prevJSONNode = parentJSONNode[ myIndex - 1 ];
+
+                        if( !keepEmptyCondCmt && prevJSONNode && prevJSONNode[ 0 ] === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
+                            parentJSONNode.splice( myIndex - 1, 2 );
+                            return VISITOR_OPTION.REMOVED * 2;
+                        };
+                        break;
+                    case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                        break;
+                    case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
+                        if( onInstruction ){
+                            result = m_executeProcessingInstruction( onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), parentJSONNode, myIndex, onError );
+
+                            if( result !== undefined ){
+                                if( result === null || result === '' ){
+                                    if( parentJSONNode ){
+                                        parentJSONNode.splice( myIndex, 1 );
+                                    } else {
+                                        rootHTMLJson.length = 0;
+                                        rootHTMLJson.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
+                                    };
+                                    return VISITOR_OPTION.REMOVED;
+                                } else if( m_isStringOrNumber( result ) ){
+                                    // just replaced
+                                } else if( m_isArray( result ) ){
+                                    return VISITOR_OPTION.REMOVED;
+                                // } else if( htmljson.DEFINE.DEBUG ){
+                                    // onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
+                                };
+                            } else {
+                                isStaticWebPage = false;
+                            };
+                        } else if( htmljson.DEFINE.DEBUG ){
+                            onError( 'onInstruction is void!' );
+                        };
+                        break;
+                    case htmljson.NODE_TYPE.ELEMENT_NODE :
+                    case htmljson.NODE_TYPE.ELEMENT_START_TAG :
+                        if( m_isNumber( tagName ) ){
+                            tagName   = arg1;
+                            attrIndex = 2;
+                        };
+                        tagName = /** @type {string} */ (tagName);
+                        attrs = currentJSONNode[ attrIndex ];
+                        // attr
+                        if( m_isAttributes( attrs ) ){
+                            if( walkAttributes( /** @type {!HTMLJson} */ (currentJSONNode), attrIndex - 1, /** @type {!Attrs} */ (attrs) ) === 0 ){
+                                currentJSONNode.splice( attrIndex, 1 );
+                            };
+                        };
+                        isPreTag          = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ];
+                        // if( isPreTag && isTrimWhitespace ){
+                            // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
+                            // 各行の改行の前の空白文字も削除
+                        // };
+                        isDescendantOfPre = isDescendantOfPre || isPreTag;
+                        isTrimNewlines    = !!m_TRIM_NEWLINES_ELEMENTS[ tagName ];
+                        break;
+                    default :
+                        if( htmljson.DEFINE.DEBUG ){
+                            onError( 'Not html.json! [' + currentJSONNode + ']' );
+                        };
+                };
+
+                if( 0 < currentJSONNode.length - m_getChildNodeStartIndex( /** @type {!HTMLJson} */ (currentJSONNode) ) ){
+                    statusStack.push( isDescendantOfPre, isTrimNewlines );
+                };
+            },
+            /**
+             * 
+             * @param {!HTMLJson | string | number} currentJSONNode 
+             * @param {HTMLJson | null} parentJSONNode 
+             * @param {number} myIndex
+             * @param {number} depth
+             * @return {number | void} VISITOR_OPTION.*
+             */
+            function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                switch( m_getNodeType( currentJSONNode ) ){
+                    case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+                    case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                        if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
+                            parentJSONNode.splice( myIndex, 1 );
+                            return VISITOR_OPTION.REMOVED;
+                        };
+                };
+            }
+        );
+
         if( isTreeUpdated ){
             m_normalizeTextNodes( rootHTMLJson );
         };
@@ -65,183 +206,6 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
     } else if( htmljson.DEFINE.DEBUG ){
         onError( 'Invalid html.json document!' );
     };
-
-    /**
-     * 
-     * @param {!HTMLJson} currentJSONNode 
-     * @param {!Array|null} parentJSONNode 
-     * @param {number} myIndex
-     * @param {boolean} isDescendantOfPre 
-     * @param {boolean} isTrimNewlines
-     * @return {number} Node Increase/Decrease
-     */
-    function walkNode( currentJSONNode, parentJSONNode, myIndex, isDescendantOfPre, isTrimNewlines ){
-        var arg0 = currentJSONNode[ 0 ],
-            arg1 = currentJSONNode[ 1 ],
-            attrIndex = 1, tagName = arg0,
-            prevJSONNode, attrs, result, isPreTag, isXMLRoot;
-
-        switch( arg0 ){
-            case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
-                    isXmlInHTML = true;
-                };
-            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines );
-                break;
-            case htmljson.NODE_TYPE.TEXT_NODE :
-                arg1 = m_trimWhiteSpaces( '' + arg1, isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
-                if( arg1 !== '' ){
-                    parentJSONNode[ myIndex ] = arg1;
-                } else {
-                    parentJSONNode.splice( myIndex, 1 );
-                    return REMOVED;
-                };
-                break;
-            case htmljson.NODE_TYPE.CDATA_SECTION :
-                if( !keepCDATASections && parentJSONNode ){
-                    parentJSONNode.splice( myIndex, 1 );
-                    return REMOVED;
-                };
-                break;
-            case htmljson.NODE_TYPE.COMMENT_NODE :
-                if( !keepComments && parentJSONNode ){
-                    parentJSONNode.splice( myIndex, 1 );
-                    return REMOVED;
-                };
-                break;
-            case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
-                walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines );
-                if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
-                    parentJSONNode.splice( myIndex, 1 );
-                    return REMOVED;
-                };
-                break;
-            case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
-                prevJSONNode = parentJSONNode[ myIndex - 1 ];
-
-                if( keepEmptyCondCmt || !prevJSONNode || prevJSONNode[ 0 ] !== htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
-                    
-                } else if( prevJSONNode ){
-                    parentJSONNode.splice( myIndex - 1, 2 );
-                    return REMOVED * 2;
-                };
-                break;
-            case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines );
-                if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
-                    parentJSONNode.splice( myIndex, 1 );
-                    return REMOVED;
-                };
-                break;
-            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                if( onInstruction ){
-                    result = m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJSONNode, myIndex, onError );
-
-                    if( result !== undefined ){
-                        if( result === null || result === '' ){
-                            if( parentJSONNode ){
-                                parentJSONNode.splice( myIndex, 1 );
-                            } else {
-                                rootHTMLJson.length = 0;
-                                rootHTMLJson.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
-                            };
-                            return REMOVED;
-                        } else if( m_isStringOrNumber( result ) ){
-                            // just replaced
-                        } else if( m_isArray( result ) ){
-                            return REMOVED;
-                        // } else if( htmljson.DEFINE.DEBUG ){
-                            // onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
-                        };
-                    } else {
-                        isStaticWebPage = false;
-                    };
-                } else {
-                    onError( 'onInstruction is void!' );
-                };
-                break;
-            case htmljson.NODE_TYPE.ELEMENT_NODE :
-            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                tagName   = arg1;
-                attrIndex = 2;
-            default :
-                if( m_isString( tagName ) ){
-                    tagName = /** @type {string} */ (tagName);
-                    if( 1 + attrIndex <= currentJSONNode.length ){
-                        attrs = currentJSONNode[ attrIndex ];
-                        // attr
-                        if( m_isAttributes( attrs ) ){
-                            if( walkAttributes( currentJSONNode, attrIndex - 1, /** @type {!Attrs} */ (attrs) ) === 0 ){
-                                currentJSONNode.splice( attrIndex, 1 );
-                            };
-                        };
-
-                        // xml;
-                        if( !isXmlInHTML ){
-                            isXMLRoot = isXmlInHTML = isXML( tagName );
-                        };
-
-                        isPreTag = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ];
-
-                        // if( isPreTag && isTrimWhitespace ){
-                            // pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除, 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
-                            // 各行の改行の前の空白文字も削除
-                        // };
-
-                        // childNodes
-                        walkChildNodes( currentJSONNode, isPreTag || isDescendantOfPre, !!m_TRIM_NEWLINES_ELEMENTS[ tagName ] );
-
-                        if( isXMLRoot ){
-                            isXmlInHTML = false;
-                        };
-                    };
-                } else if( htmljson.DEFINE.DEBUG ){
-                    onError( 'Not html.json! [' + currentJSONNode + ']' );
-                };
-        };
-        return 0;
-    };
-
-    /**
-     * @param {string} tagName 
-     * @return {boolean} 
-     */
-    function isXML( tagName ){
-        if( isXmlInHTML ){
-            return true;
-        } else if( htmlparser.isXMLRootElement( tagName ) ){
-            return true;
-        };
-        return htmlparser.isNamespacedTag( tagName ); 
-    };
-
-    /**
-     * 
-     * @param {!HTMLJson} currentJSONNode 
-     * @param {boolean} isDescendantOfPre 
-     * @param {boolean} isTrimNewlines
-     */
-    function walkChildNodes( currentJSONNode, isDescendantOfPre, isTrimNewlines ){
-        var i = m_getChildNodeStartIndex( currentJSONNode ), childNode, nodeIncreaseOrDecrease;
-
-        for( ; i < currentJSONNode.length; ++i ){ // PROCESSING_INSTRUCTION で配列が変化する
-            childNode = currentJSONNode[ i ];
-
-            if( m_isStringOrNumber( childNode ) ){
-
-            } else if( m_isArray( childNode ) ){
-                nodeIncreaseOrDecrease = walkNode( /** @type {!HTMLJson} */ (childNode), currentJSONNode, i, isDescendantOfPre, isTrimNewlines );
-                if( nodeIncreaseOrDecrease ){
-                    i += nodeIncreaseOrDecrease; // Node Increase/Decrease
-                    isTreeUpdated = true;
-                };
-            } else if( htmljson.DEFINE.DEBUG ){
-                onError( 'Invalid html.json! [' + childNode + ']' );
-            };
-        };
-    };
-
     /**
      * @param {!HTMLJson} currentJSONNode
      * @param {number} tagNameIndex
@@ -252,7 +216,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
         var numAttributes = 0, name, originalName, value, isInstruction;
         var classList, i, newClass;
 
-        var tagName = m_parseTagName( /** @type {string} */ (currentJSONNode[ tagNameIndex ]) );
+        var tagName   = m_parseTagName( /** @type {string} */ (currentJSONNode[ tagNameIndex ]) );
         var id        = tagName[ 1 ];
         var className = tagName[ 2 ];
         tagName = tagName[ 0 ];

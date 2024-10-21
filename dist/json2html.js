@@ -163,9 +163,9 @@ function la(a) {
   });
   return b;
 }
-var na = -1, oa = 1, X = Infinity, Y = Infinity;
+var na = -1, oa = 1, X = Infinity, Y = -Infinity;
 function ma(a, b) {
-  var d = a, g = S(a), c = 0, e = b(a, null, -1, 0);
+  var d = a, g = S(a), c = 0, e = b(a, null, -1, c / 3);
   a = [-1, a, g];
   if (e !== X && e !== Y && 0 < d.length - g) {
     do {

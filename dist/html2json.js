@@ -253,9 +253,9 @@ function S(a, b) {
   }
   return a;
 }
-var va = -1, ua = 1, wa = Infinity, xa = Infinity;
+var va = -1, ua = 1, wa = Infinity, xa = -Infinity;
 function ta(a, b) {
-  var d = a, e = qa(a), f = 0, l = b(a, null, -1, 0);
+  var d = a, e = qa(a), f = 0, l = b(a, null, -1, f / 3);
   a = [-1, a, e];
   if (l !== wa && l !== xa && 0 < d.length - e) {
     do {

@@ -168,9 +168,9 @@ function ka(a) {
   });
   return b;
 }
-var wa = -1, xa = 1, va = Infinity, ya = Infinity;
+var wa = -1, xa = 1, va = Infinity, ya = -Infinity;
 function oa(a, b) {
-  var c = a, g = R(a), d = 0, f = b(a, null, -1, 0);
+  var c = a, g = R(a), d = 0, f = b(a, null, -1, d / 3);
   a = [-1, a, g];
   if (f !== va && f !== ya && 0 < c.length - g) {
     do {

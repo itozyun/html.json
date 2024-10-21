@@ -534,7 +534,7 @@ function m_normalizeTextNodes( rootHTMLJson ){
     };
     var text = '', lastDepth, lastParentJSONNode, textNodeIndex;
 
-    _traverseAllDescendantHTMLJsonNodes(
+    m_traverseAllDescendantHTMLJsonNodes(
         rootHTMLJson,
         /**
          * 
@@ -542,7 +542,7 @@ function m_normalizeTextNodes( rootHTMLJson ){
          * @param {HTMLJson | null} parentJSONNode 
          * @param {number} myIndex
          * @param {number} depth
-         * @return {number | void} 
+         * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
             if( text && lastDepth !== depth ){
@@ -825,7 +825,7 @@ function m_parseCSSText( cssText ){
 function m_isStaticDocument( rootHTMLJson, attrPrefix ){
     var isDynamic = false;
 
-    _traverseAllDescendantHTMLJsonNodes(
+    m_traverseAllDescendantHTMLJsonNodes(
         rootHTMLJson,
         /**
          * 
@@ -833,7 +833,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
          * @param {HTMLJson | null} parentJSONNode 
          * @param {number} myIndex
          * @param {number} depth
-         * @return {number | void} 
+         * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
             /**
@@ -885,7 +885,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
 function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
     var vnodeRoot, parentNodeStack;
 
-    _traverseAllDescendantHTMLJsonNodes(
+    m_traverseAllDescendantHTMLJsonNodes(
         rootHTMLJson,
         /**
          * 
@@ -893,7 +893,7 @@ function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
          * @param {HTMLJson | null} parentJSONNode 
          * @param {number} myIndex
          * @param {number} depth
-         * @return {number | void} 
+         * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
             /**
@@ -987,25 +987,28 @@ var VISITOR_OPTION = {
     NONE             : 0,
     INSERTED_BEFORER : 1,
     BREAK            : Infinity,
-    SKIP             : Infinity
+    SKIP             : -Infinity
 };
 
 /**
  * 再帰呼び出しを使わずに html.json ツリーを遡っています
  * 
  * @param {!HTMLJson} rootHTMLJson
- * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)} onEnterNode コールバック内で要素の削除と追加はできません、index が狂います
+ * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)} onEnterNode
+ * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)=} opt_onLeaveNode
+ * @return {boolean} treeIsUpdated
  */
-function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){ // onLeaveNode
+function m_traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode, opt_onLeaveNode ){
     var parentNode     = rootHTMLJson,
         childNodeStart = m_getChildNodeStartIndex( rootHTMLJson ),
         depthX3        = 0,
-        operation      = onEnterNode( rootHTMLJson, null, -1, 0 ),
+        operation      = onEnterNode( rootHTMLJson, null, -1, depthX3 / 3 ),
         torioList      = [ -1, rootHTMLJson, childNodeStart ],
+        treeIsUpdated  = false,
         currentIndex, childNode;
 
     if( operation === VISITOR_OPTION.BREAK || operation === VISITOR_OPTION.SKIP ){
-        return;
+        return false;
     };
 
     if( 0 < parentNode.length - childNodeStart ){
@@ -1017,18 +1020,33 @@ function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){ // on
                 depthX3 -= 3;
                 parentNode     = torioList[ depthX3 + 1 ];
                 childNodeStart = torioList[ depthX3 + 2 ];
-                // parentNode && onLeaveNode( parentNode[ torioList[ depthX3 ] + childNodeStart ], parentNode, torioList[ depthX3 ] + childNodeStart )
+                if( opt_onLeaveNode ){
+                    if( parentNode ){
+                        currentIndex = torioList[ depthX3 ] + childNodeStart;
+                        operation = parentNode && opt_onLeaveNode( parentNode[ currentIndex ], parentNode, currentIndex, depthX3 / 3 );
+                        if( operation === VISITOR_OPTION.BREAK ){
+                            return treeIsUpdated;
+                        } else if( operation !== VISITOR_OPTION.SKIP ){
+                            if( operation <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= operation ){
+                                torioList[ depthX3 ] += operation;
+                                treeIsUpdated = true;
+                            };
+                        };
+                    };
+                };
             } else {
                 operation = onEnterNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 );
                 if( operation === VISITOR_OPTION.BREAK ){
-                    break;
+                    return treeIsUpdated;
                 };
                 if( operation !== VISITOR_OPTION.SKIP ){
                     if( operation <= VISITOR_OPTION.REMOVED ){
                         torioList[ depthX3 ] += operation;
+                        treeIsUpdated = true;
                     } else {
                         if( VISITOR_OPTION.INSERTED_BEFORER <= operation ){
                             torioList[ depthX3 ] += operation;
+                            treeIsUpdated = true;
                         };
                         if( 0 < childNode.length - m_getChildNodeStartIndex( childNode ) ){
                             depthX3 += 3;
@@ -1041,4 +1059,8 @@ function _traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode ){ // on
             };
         } while( 0 <= depthX3 );
     };
+    if( opt_onLeaveNode ){
+        opt_onLeaveNode( rootHTMLJson, null, -1, 0 / 3 );
+    };
+    return treeIsUpdated;
 };

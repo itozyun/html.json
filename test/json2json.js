@@ -36,6 +36,21 @@ test('simple',
     }
 );
 
+test('normalizeText',
+    (t) => {
+        const json = [ 11, [ 'A', '', '', 9, '', 9 ] ];
+
+        t.deepEqual(
+            json2json(
+                json
+            ),
+            true
+        );
+
+        t.deepEqual(json, [11, [ 'A', 99 ]]);
+    }
+);
+
 test('optimaize',
     (t) => {
         var json = html2json('<code>A<? empty ?>B</code>');
@@ -70,5 +85,31 @@ test('onDocumentReady',
         );
 
         t.deepEqual(text, 'Hello World!');
+    }
+);
+
+test('cc',
+    (t) => {
+        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ] ];
+
+        t.deepEqual(
+            json2json(
+                json, 0, 0, 0, 0, {keepComments:false, trimWhitespaces:true}
+            ),
+            true
+        );
+
+        t.deepEqual(json, [11, [ 'P', '  ' ]]);
+
+        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ] ];
+
+        t.deepEqual(
+            json2json(
+                json, 0, 0, 0, 0, {keepComments:false}
+            ),
+            true
+        );
+
+        t.deepEqual(json, [11, [ 'P', '  ' ]]);
     }
 );
