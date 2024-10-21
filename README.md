@@ -9,7 +9,7 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 1. html を json で表現する(変換する)
 2. json から html への変換時に処理を追加できる
    * HTML を予め json 化しておけば、実行環境に HTML パーサーが不要になる
-     * Web サーバ側での動的生成のソース(AMP HTML)
+     * Web サーバ側での動的生成のソース(AMP HTML, モバイル専用ページのソース)
      * オフラインドキュメントのコンテンツデータ
      * PJAX のコンテンツデータ
      * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ
