@@ -1447,7 +1447,7 @@ function m_createVNodeFromHTMLJson(a, b) {
   var c, d;
   htmljson.Traverser.traverseAllDescendantNodes(a, function(e, f, g, h) {
     function m(G, C, F) {
-      c ? (h + 1 < d.length && (d.length = h + 1), G = d[d.length - 1].insertNodeLast(G, C, F), m_isArray(e) && m_getChildNodeStartIndex(e) < e.length && (d[h + 1] = G)) : (c = new VNode(b, 0, G, C, F), d = [c]);
+      c ? (h < d.length && (d.length = h), G = d[d.length - 1].insertNodeLast(G, C, F), m_isArray(e) && m_getChildNodeStartIndex(e) < e.length && (d[h] = G)) : (c = new VNode(b, 0, G, C, F), d = [c]);
     }
     if (m_isStringOrNumber(e)) {
       m(htmljson.NODE_TYPE.TEXT_NODE, e);
@@ -2487,16 +2487,16 @@ json2html._main = function(a, b, c, d, e, f, g, h) {
         m_isNumber(q) && (q = H, M = 2), q = m_parseTagName(q), r = q[1], w = q[2], q = q[0], k = k[M], "P" !== t || m_P_END_TAG_LESS_TAGS[q] ? t = "" : l[++x] = m(), I = I || A(q), z = !!m_CHILD_P_MUST_HAVE_END_TAG[q], D = D || !!m_UNESCAPED_ELEMENTS[q], l[++x] = "<" + (I ? q : q.toLowerCase()), r && (l[++x] = " id=" + m_quoteAttributeValue(r, C, I || G)), w && (l[++x] = " class=" + m_quoteAttributeValue(w, C, I || G)), m_isAttributes(k) && (l[++x] = v(k)), !I || E || N ? l[++x] = ">" : l[++x] = 
         " />";
     }
-    B[5 * u] = I;
-    B[5 * u + 1] = L;
-    B[5 * u + 2] = z;
-    B[5 * u + 3] = D;
-    B[5 * u + 4] = E;
+    B[5 * u + 5] = I;
+    B[5 * u + 6] = L;
+    B[5 * u + 7] = z;
+    B[5 * u + 8] = D;
+    B[5 * u + 9] = E;
     c.onChunk(l.join(""));
   }, function(k, r, w, u) {
     r = [];
     w = -1;
-    var z = B[5 * u], A = B[5 * u + 2], v = B[5 * u + 4], l = k[0];
+    var z = B[5 * u + 5], A = B[5 * u + 7], v = B[5 * u + 9], l = k[0];
     5 * u + 5 < B.length && (B.length = 5 * u + 5);
     switch(m_getNodeType(k)) {
       case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:

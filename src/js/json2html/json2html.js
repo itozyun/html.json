@@ -284,11 +284,11 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                     break;
             };
 
-            statusStack[ depth * 5 + 0 ] = isXmlInHTML;
-            statusStack[ depth * 5 + 1 ] = currentVNode;
-            statusStack[ depth * 5 + 2 ] = pEndTagRequired;
-            statusStack[ depth * 5 + 3 ] = escapeForHTMLDisabled;
-            statusStack[ depth * 5 + 4 ] = hasChildren;
+            statusStack[ depth * 5 + 5 ] = isXmlInHTML;
+            statusStack[ depth * 5 + 6 ] = currentVNode;
+            statusStack[ depth * 5 + 7 ] = pEndTagRequired;
+            statusStack[ depth * 5 + 8 ] = escapeForHTMLDisabled;
+            statusStack[ depth * 5 + 9 ] = hasChildren;
 
             json2htmlContext.onChunk( chunk.join( '' ) );
         },
@@ -303,11 +303,11 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
             var chunk = [], j = -1;
 
-            var isXmlInHTML           = statusStack[ depth * 5 + 0 ],
-                // parentVNode           = statusStack[ depth * 5 + 1 ],
-                pEndTagRequired       = statusStack[ depth * 5 + 2 ],
-                // escapeForHTMLDisabled = statusStack[ depth * 5 + 3 ],
-                hasChildren           = statusStack[ depth * 5 + 4 ],
+            var isXmlInHTML           = statusStack[ depth * 5 + 5 ],
+             // parentVNode           = statusStack[ depth * 5 + 6 ],
+                pEndTagRequired       = statusStack[ depth * 5 + 7 ],
+             // escapeForHTMLDisabled = statusStack[ depth * 5 + 8 ],
+                hasChildren           = statusStack[ depth * 5 + 9 ],
                 tagName               = currentJSONNode[ 0 ];
 
             if( depth * 5 + 5 < statusStack.length ){

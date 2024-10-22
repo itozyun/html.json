@@ -72,3 +72,14 @@ test('0',
         );
     }
 );
+
+test('unescaped elements',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'SCRIPT', '<!--\nd=document;//-->' ]
+            ),
+            '<script><!--\nd=document;//--></script>'
+        );
+    }
+);

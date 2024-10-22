@@ -124,10 +124,10 @@ function na(a) {
   da(a, function(h, d, f, l) {
     function t(w, e, m) {
       if (b) {
-        l + 1 < c.length && (c.length = l + 1);
+        l < c.length && (c.length = l);
         var k = c[c.length - 1];
         oa <= pa(k) ? (k.v = k.v || [], k.v.push([w, e, m]), w = null) : w = new R(k, k.D && k.D.length, w, e, m);
-        F(h) && E(h) < h.length && (c[l + 1] = w);
+        F(h) && E(h) < h.length && (c[l] = w);
       } else {
         b = new R(!0, 0, w, e, m), c = [b];
       }
@@ -359,16 +359,16 @@ function Ca(a, b, c, h, d, f) {
         }
         !y || O || P ? B[++v] = ">" : B[++v] = " />";
     }
-    k[5 * G] = y;
-    k[5 * G + 1] = I;
-    k[5 * G + 2] = va;
-    k[5 * G + 3] = X;
-    k[5 * G + 4] = O;
+    k[5 * G + 5] = y;
+    k[5 * G + 6] = I;
+    k[5 * G + 7] = va;
+    k[5 * G + 8] = X;
+    k[5 * G + 9] = O;
     a.ja(B.join(""));
   }, function(q, x, D, G) {
     x = [];
     D = -1;
-    var B = k[5 * G], v = k[5 * G + 2], O = k[5 * G + 4], y = q[0];
+    var B = k[5 * G + 5], v = k[5 * G + 7], O = k[5 * G + 9], y = q[0];
     5 * G + 5 < k.length && (k.length = 5 * G + 5);
     switch(ka(q)) {
       case 13:

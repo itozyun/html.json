@@ -118,10 +118,10 @@ function na(a) {
   da(a, function(f, d, b, g) {
     function k(F, J, R) {
       if (e) {
-        g + 1 < c.length && (c.length = g + 1);
+        g < c.length && (c.length = g);
         var t = c[c.length - 1];
         V <= oa(t) ? (t.v = t.v || [], t.v.push([F, J, R]), F = null) : F = new W(t, t.h && t.h.length, F, J);
-        C(f) && A(f) < f.length && (c[g + 1] = F);
+        C(f) && A(f) < f.length && (c[g] = F);
       } else {
         e = new W(!0, 0, F, J), c = [e];
       }
@@ -360,16 +360,16 @@ function va(a, e, c, f, d, b) {
         }
         !r || K || L ? v[++l] = ">" : v[++l] = " />";
     }
-    t[5 * z] = r;
-    t[5 * z + 1] = D;
-    t[5 * z + 2] = fa;
-    t[5 * z + 3] = S;
-    t[5 * z + 4] = K;
+    t[5 * z + 5] = r;
+    t[5 * z + 6] = D;
+    t[5 * z + 7] = fa;
+    t[5 * z + 8] = S;
+    t[5 * z + 9] = K;
     a.C(v.join(""));
   }, function(q, w, y, z) {
     w = [];
     y = -1;
-    var v = t[5 * z], l = t[5 * z + 2], K = t[5 * z + 4], r = q[0];
+    var v = t[5 * z + 5], l = t[5 * z + 7], K = t[5 * z + 9], r = q[0];
     5 * z + 5 < t.length && (t.length = 5 * z + 5);
     switch(O(q)) {
       case 13:
