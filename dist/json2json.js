@@ -2513,6 +2513,7 @@ json2html._main = function(a, b, c, d, e, f, g, h) {
     }
     c.onChunk(r.join(""));
   });
+  b = null;
 };
 json2json.gulp = {};
 json2json.main.gulp = function(a, b, c, d, e) {

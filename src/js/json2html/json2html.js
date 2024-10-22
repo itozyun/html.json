@@ -346,4 +346,5 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
             json2htmlContext.onChunk( chunk.join( '' ) );
         }
     );
+    traverserOrStreamingHTMLJsonParser = null;
 };
