@@ -59,7 +59,7 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
  * @param {boolean} isInStreaming
  * @param {!function(!HTMLJson, !htmljson.Traverser.EnterHandler, !htmljson.Traverser.LeaveHandler):(boolean | void)} traverserOrStreamingHTMLJsonParser
  * @param {{onChunk : !function(string)}} json2htmlContext
- * @param {HTMLJson | null} rootHTMLJson
+ * @param {!HTMLJson} rootHTMLJson
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function((string | !Error))=} opt_onError
@@ -346,5 +346,6 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
             json2htmlContext.onChunk( chunk.join( '' ) );
         }
     );
+    /** @suppress {checkTypes} */
     traverserOrStreamingHTMLJsonParser = null;
 };

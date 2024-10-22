@@ -879,15 +879,15 @@ function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
              */
             function insertNode( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
                 if( vnodeRoot ){
-                    if( depth + 1 < parentNodeStack.length ){
-                        parentNodeStack.length = depth + 1;
+                    if( depth < parentNodeStack.length ){
+                        parentNodeStack.length = depth;
                     };
 
                     var parentVNode  = parentNodeStack[ parentNodeStack.length - 1 ],
                         currentVNode = /** @type {!VNode} */ (parentVNode.insertNodeLast( nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ));
 
                     if( hasChildren() ){
-                        parentNodeStack[ depth + 1 ] = currentVNode;
+                        parentNodeStack[ depth ] = currentVNode;
                     };
                 } else {
                     vnodeRoot = new VNode( isRestrictedMode, 0, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs );
