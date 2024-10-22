@@ -7,6 +7,10 @@ goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmlparser.isXMLRootElement' );
 goog.require( 'htmlparser.isNamespacedTag' );
 goog.require( 'VNode' );
+goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
+goog.requireType( 'htmljson.Traverser.EnterHandler' );
+goog.requireType( 'htmljson.Traverser.LeaveHandler' );
+goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
 
 /**
  * @param {!HTMLJson} rootHTMLJson
@@ -50,7 +54,10 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
     var statusStack = [ false, false ];
 
     if( m_isArray( rootHTMLJson ) ){
-        isTreeUpdated = m_traverseAllDescendantHTMLJsonNodes(
+        if( rootHTMLJson[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_NODE && rootHTMLJson[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, rootHTMLJson ];
+        };
+        isTreeUpdated = htmljson.Traverser.traverseAllDescendantNodes(
             rootHTMLJson,
             /**
              * 
@@ -68,10 +75,6 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                     attrIndex         = 1,
                     prevJSONNode, attrs, result, isPreTag;
 
-                if( depth * 2 + 2 < statusStack.length ){
-                    statusStack.length = depth * 2 + 2;
-                };
-
                 switch( m_getNodeType( currentJSONNode ) ){
                     case htmljson.NODE_TYPE.DOCUMENT_NODE :
                         break;
@@ -86,19 +89,19 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                             parentJSONNode[ myIndex ] = arg1;
                         } else {
                             parentJSONNode.splice( myIndex, 1 );
-                            return VISITOR_OPTION.REMOVED;
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                         };
                         return;
                     case htmljson.NODE_TYPE.CDATA_SECTION :
-                        if( !keepCDATASections && parentJSONNode ){
-                            parentJSONNode.splice( myIndex, 1 );
-                            return VISITOR_OPTION.REMOVED;
+                        if( !keepCDATASections ){
+                            /** @type {!HTMLJson} */ (parentJSONNode).splice( myIndex, 1 );
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                         };
                         break;
                     case htmljson.NODE_TYPE.COMMENT_NODE :
-                        if( !keepComments && parentJSONNode ){
-                            parentJSONNode.splice( myIndex, 1 );
-                            return VISITOR_OPTION.REMOVED;
+                        if( !keepComments ){
+                            /** @type {!HTMLJson} */ (parentJSONNode).splice( myIndex, 1 );
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                         };
                         break;
                     case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
@@ -110,36 +113,29 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
 
                         if( !keepEmptyCondCmt && prevJSONNode && prevJSONNode[ 0 ] === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START ){
                             parentJSONNode.splice( myIndex - 1, 2 );
-                            return VISITOR_OPTION.REMOVED * 2;
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED * 2;
                         };
                         break;
                     case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
                         break;
                     case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                         if( onInstruction ){
-                            result = m_executeProcessingInstruction( onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), parentJSONNode, myIndex, onError );
+                            result = m_executeProcessingInstruction( onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), /** @type {!HTMLJson} */ (parentJSONNode), myIndex, onError );
 
                             if( result !== undefined ){
                                 if( result === null || result === '' ){
-                                    if( parentJSONNode ){
-                                        parentJSONNode.splice( myIndex, 1 );
-                                    } else {
-                                        rootHTMLJson.length = 0;
-                                        rootHTMLJson.push( htmljson.NODE_TYPE.COMMENT_NODE, '' );
-                                    };
-                                    return VISITOR_OPTION.REMOVED;
+                                    parentJSONNode.splice( myIndex, 1 );
+                                    return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                                 } else if( m_isStringOrNumber( result ) ){
                                     // just replaced
                                 } else if( m_isArray( result ) ){
-                                    return VISITOR_OPTION.REMOVED;
+                                    return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                                 // } else if( htmljson.DEFINE.DEBUG ){
                                     // onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                                 };
                             } else {
                                 isStaticWebPage = false;
                             };
-                        } else if( htmljson.DEFINE.DEBUG ){
-                            onError( 'onInstruction is void!' );
                         };
                         break;
                     case htmljson.NODE_TYPE.ELEMENT_NODE :
@@ -170,9 +166,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                         };
                 };
 
-                if( 0 < currentJSONNode.length - m_getChildNodeStartIndex( /** @type {!HTMLJson} */ (currentJSONNode) ) ){
-                    statusStack.push( isDescendantOfPre, isTrimNewlines );
-                };
+                statusStack.push( isDescendantOfPre, isTrimNewlines );
             },
             /**
              * 
@@ -183,12 +177,16 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
              * @return {number | void} VISITOR_OPTION.*
              */
             function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                if( depth * 2 + 2 < statusStack.length ){
+                    statusStack.length = depth * 2 + 2;
+                };
+
                 switch( m_getNodeType( currentJSONNode ) ){
                     case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                     case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                        if( !keepEmptyCondCmt && parentJSONNode && currentJSONNode.length === 2 ){
-                            parentJSONNode.splice( myIndex, 1 );
-                            return VISITOR_OPTION.REMOVED;
+                        if( !keepEmptyCondCmt && currentJSONNode.length === 2 ){
+                            /** @type {!HTMLJson} */ (parentJSONNode).splice( myIndex, 1 );
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                         };
                 };
             }

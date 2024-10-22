@@ -6,6 +6,9 @@ goog.requireType( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
+goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
+goog.requireType( 'htmljson.Traverser.EnterHandler' );
+goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
 
 /**
  * @typedef {Object.<string, (string | number | boolean)>}
@@ -52,7 +55,7 @@ var m_OMITTABLE_END_TAGS = {
 
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
- *   子の <p> が終了タグを省略できないタグの一覧
+ *   子である <p> の終了タグの省略ができない親タグの一覧
  * 
  *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * @const {!Object.<string, boolean>}
@@ -106,11 +109,6 @@ var m_FAMILY_OF_PRE_ELEMENT = {
     PRE : true, LISTING : true,
     pre : true, listing : true
 };
-
-// json2html.stream から json2html を呼ぶときに使用
-var m_pEndTagRequired       = false;
-var m_escapeForHTMLDisabled = false;
-var m_isXMLDocument         = false;
 
 /**
  * 
@@ -251,7 +249,7 @@ function m_isInstructionAttr( prefix, name ){
  * 
  * @param {!InstructionHandler} onInstruction
  * @param {!HTMLJson} currentJSONNode 
- * @param {HTMLJson | null} parentJSONNode 
+ * @param {!HTMLJson} parentJSONNode 
  * @param {number} myIndex
  * @param {!function(string)} onError 
  * @return {!HTMLJson | string | number | boolean | null | void}
@@ -279,40 +277,19 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, parentJ
         if( result === null || result === '' ){
             //
         } else if( m_isStringOrNumber( result ) ){
-            if( parentJSONNode ){
-                parentJSONNode.splice( myIndex, 1, result );
-            } else {
-                currentJSONNode.length = 0;
-                currentJSONNode.push( htmljson.NODE_TYPE.TEXT_NODE, currentJSONNode );
-            };
+            parentJSONNode.splice( myIndex, 1, result );
         } else if( m_isArray( result ) ){
             result = /** @type {!HTMLJson} */ (result);
 
             if( result[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
-                if( parentJSONNode ){
-                    result.shift();
-                    result.unshift( myIndex, 1 );
-                    parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
-                } else {
-                    currentJSONNode.length = 0;
-                    currentJSONNode.push.apply( currentJSONNode, result ); // <= [ DOCUMENT_FRAGMENT_NODE, ...result ]
-                };
+                result.shift();
+                result.unshift( myIndex, 1 );
+                parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
             } else if( m_isArray( result[ 0 ] ) ){ // nodeType を省略した DOCUMENT_FRAGMENT_NODE
-                if( parentJSONNode ){
-                    result.unshift( myIndex, 1 );
-                    parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
-                } else {
-                    currentJSONNode.length = 0;
-                    currentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
-                    currentJSONNode.push.apply( currentJSONNode, result );
-                };
+                result.unshift( myIndex, 1 );
+                parentJSONNode.splice.apply( parentJSONNode, result ); // <= parentJSONNode.splice( myIndex, 1, ...result );
             } else {
-                if( parentJSONNode ){
-                    parentJSONNode.splice( myIndex, 1, result );
-                } else {
-                    currentJSONNode.length = 0;
-                    currentJSONNode.push( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, result );
-                };
+                parentJSONNode.splice( myIndex, 1, result );
             };
         } else if( htmljson.DEFINE.DEBUG ){
             onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
@@ -384,7 +361,7 @@ function m_isEnterNodeHandler( v ){
  */
 function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandler ){
     var currentVNode = m_createVNodeFromHTMLJson( currentJsonNode, true );
-    var i, l, isElement, selector, handler;
+    var i, l, selector, handler;
 
     VNode.currentRestrictedVNode = currentVNode;
 
@@ -400,7 +377,6 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
         /** @type {!function(!VNode)} */ (enterNodeHandler)( currentVNode );
     } else {
         enterNodeHandler = /** @type {!Array.<string | number | !function(!VNode):(boolean | void)>} */ (enterNodeHandler);
-        isElement = currentVNode.isElement();
         for( i = 0, l = enterNodeHandler.length; i < l; i += 2 ){
             selector = /** @type {string | number}                    */ (enterNodeHandler[ i + 0 ]);
             handler  = /** @type {!function(!VNode):(boolean | void)} */ (enterNodeHandler[ i + 1 ]);
@@ -414,7 +390,7 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
                 if( handler( currentVNode ) === true ){
                     break;
                 };
-            } else if( isElement && m_isString( selector ) ){
+            } else if( m_isString( selector ) ){
                 if( selector === currentVNode._tagName ){
                     if( handler( currentVNode ) === true ){
                         break;
@@ -534,7 +510,7 @@ function m_normalizeTextNodes( rootHTMLJson ){
     };
     var text = '', lastDepth, lastParentJSONNode, textNodeIndex;
 
-    m_traverseAllDescendantHTMLJsonNodes(
+    htmljson.Traverser.traverseAllDescendantNodes(
         rootHTMLJson,
         /**
          * 
@@ -547,7 +523,7 @@ function m_normalizeTextNodes( rootHTMLJson ){
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
             if( text && lastDepth !== depth ){
                 insertText();
-                return VISITOR_OPTION.INSERTED_BEFORER;
+                return htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
             } else if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
                 if( m_isStringOrNumber( currentJSONNode ) ){
                     text += currentJSONNode;
@@ -558,10 +534,10 @@ function m_normalizeTextNodes( rootHTMLJson ){
                 lastDepth          = depth;
                 lastParentJSONNode = parentJSONNode;
                 textNodeIndex      = myIndex;
-                return VISITOR_OPTION.REMOVED;
+                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
             } else if( text ){
                 insertText();
-                return VISITOR_OPTION.INSERTED_BEFORER;
+                return htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
             };
         }
     );
@@ -825,7 +801,7 @@ function m_parseCSSText( cssText ){
 function m_isStaticDocument( rootHTMLJson, attrPrefix ){
     var isDynamic = false;
 
-    m_traverseAllDescendantHTMLJsonNodes(
+    htmljson.Traverser.traverseAllDescendantNodes(
         rootHTMLJson,
         /**
          * 
@@ -856,7 +832,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
                 switch( arg0 ){
                     case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                         isDynamic = true;
-                        return VISITOR_OPTION.BREAK;
+                        return htmljson.Traverser.VISITOR_OPTION.BREAK;
                     case htmljson.NODE_TYPE.ELEMENT_NODE :
                     case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                         tagName = arg1;
@@ -866,7 +842,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
                             if( m_isAttributes( currentJSONNode[ attrsIndex ] ) ){
                                 if( hasDynamicAttribute( /** @type {!Attrs} */ (currentJSONNode[ attrsIndex ] )) ){
                                     isDynamic = true;
-                                    return VISITOR_OPTION.BREAK;
+                                    return htmljson.Traverser.VISITOR_OPTION.BREAK;
                                 };
                             };
                         };
@@ -885,7 +861,7 @@ function m_isStaticDocument( rootHTMLJson, attrPrefix ){
 function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
     var vnodeRoot, parentNodeStack;
 
-    m_traverseAllDescendantHTMLJsonNodes(
+    htmljson.Traverser.traverseAllDescendantNodes(
         rootHTMLJson,
         /**
          * 
@@ -972,95 +948,9 @@ function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
                 };
             };
             if( isRestrictedMode ){
-                return VISITOR_OPTION.BREAK;
+                return htmljson.Traverser.VISITOR_OPTION.BREAK;
             };
         }
     );
     return vnodeRoot;
-};
-
-/**
- * @enum {number}
- */
-var VISITOR_OPTION = {
-    REMOVED          : -1,
-    NONE             : 0,
-    INSERTED_BEFORER : 1,
-    BREAK            : Infinity,
-    SKIP             : -Infinity
-};
-
-/**
- * 再帰呼び出しを使わずに html.json ツリーを遡っています
- * 
- * @param {!HTMLJson} rootHTMLJson
- * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)} onEnterNode
- * @param {!function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)=} opt_onLeaveNode
- * @return {boolean} treeIsUpdated
- */
-function m_traverseAllDescendantHTMLJsonNodes( rootHTMLJson, onEnterNode, opt_onLeaveNode ){
-    var parentNode     = rootHTMLJson,
-        childNodeStart = m_getChildNodeStartIndex( rootHTMLJson ),
-        depthX3        = 0,
-        operation      = onEnterNode( rootHTMLJson, null, -1, depthX3 / 3 ),
-        torioList      = [ -1, rootHTMLJson, childNodeStart ],
-        treeIsUpdated  = false,
-        currentIndex, childNode;
-
-    if( operation === VISITOR_OPTION.BREAK || operation === VISITOR_OPTION.SKIP ){
-        return false;
-    };
-
-    if( 0 < parentNode.length - childNodeStart ){
-        do {
-            currentIndex = ++torioList[ depthX3 ];
-            childNode = parentNode[ currentIndex + childNodeStart ];
-            if( childNode === undefined ){
-                torioList.length = depthX3;
-                depthX3 -= 3;
-                parentNode     = torioList[ depthX3 + 1 ];
-                childNodeStart = torioList[ depthX3 + 2 ];
-                if( opt_onLeaveNode ){
-                    if( parentNode ){
-                        currentIndex = torioList[ depthX3 ] + childNodeStart;
-                        operation = parentNode && opt_onLeaveNode( parentNode[ currentIndex ], parentNode, currentIndex, depthX3 / 3 );
-                        if( operation === VISITOR_OPTION.BREAK ){
-                            return treeIsUpdated;
-                        } else if( operation !== VISITOR_OPTION.SKIP ){
-                            if( operation <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= operation ){
-                                torioList[ depthX3 ] += operation;
-                                treeIsUpdated = true;
-                            };
-                        };
-                    };
-                };
-            } else {
-                operation = onEnterNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 );
-                if( operation === VISITOR_OPTION.BREAK ){
-                    return treeIsUpdated;
-                };
-                if( operation !== VISITOR_OPTION.SKIP ){
-                    if( operation <= VISITOR_OPTION.REMOVED ){
-                        torioList[ depthX3 ] += operation;
-                        treeIsUpdated = true;
-                    } else {
-                        if( VISITOR_OPTION.INSERTED_BEFORER <= operation ){
-                            torioList[ depthX3 ] += operation;
-                            treeIsUpdated = true;
-                        };
-                        if( 0 < childNode.length - m_getChildNodeStartIndex( childNode ) ){
-                            depthX3 += 3;
-                            torioList[ depthX3 + 0 ] = -1;
-                            torioList[ depthX3 + 1 ] = parentNode     = childNode;
-                            torioList[ depthX3 + 2 ] = childNodeStart = m_getChildNodeStartIndex( childNode );
-                        };
-                    };
-                };
-            };
-        } while( 0 <= depthX3 );
-    };
-    if( opt_onLeaveNode ){
-        opt_onLeaveNode( rootHTMLJson, null, -1, 0 / 3 );
-    };
-    return treeIsUpdated;
 };
