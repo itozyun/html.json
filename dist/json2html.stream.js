@@ -110,9 +110,8 @@ function ma(a) {
   return b.join("");
 }
 function E(a) {
-  var b = a[0], c = b === +b ? 2 : 1;
-  1 === ka(a) || 17 === b ? (a = a[c], c = !F(a) && ja(a) ? c + 1 : c) : c = 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
-  return c;
+  var b = a[0];
+  return 1 === ka(a) ? (b = b === +b ? 2 : 1, a = a[b], !F(a) && ja(a) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
 function Q(a) {
   var b = a.indexOf("#"), c = a.indexOf("."), h = "", d = "";
