@@ -107,7 +107,7 @@ function resumeHandler(){
 
     if( args ){
         while( args.length ){
-            onToken.call( parser, args.shift(), args.shift() );
+            parser.onToken( args.shift(), args.shift() );
             if( this.paused ){
                 break;
             };
