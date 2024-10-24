@@ -10,7 +10,6 @@ goog.requireType( 'ThroughLike' );
 
 goog.scope(
   function(){
-    /** @private */
     var stream = require('stream')
 
     /**
