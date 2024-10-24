@@ -121,8 +121,8 @@ function M(a, b, c) {
   return a;
 }
 function y(a) {
-  var b = a[0];
-  return 1 === I(a) ? (b = G(b) ? 2 : 1, a = a[b], !B(a) && D(a) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
+  var b = a[0], c = I(a);
+  return 1 === c || 17 === c ? (b = G(b) ? 2 : 1, a = a[b], !B(a) && D(a) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
 function N(a) {
   var b = a.indexOf("#"), c = a.indexOf("."), g = "", f = "";
@@ -148,7 +148,7 @@ function oa(a) {
       if (b) {
         k < c.length && (c.length = k);
         var u = c[c.length - 1];
-        Q <= qa(u) ? (u.D = u.D || [], u.D.push([p, n, r]), p = null) : p = new R(u, u.h && u.h.length, p, n, r);
+        O <= qa(u) ? (u.D = u.D || [], u.D.push([p, n, r]), p = null) : p = new R(u, u.h && u.h.length, p, n, r);
         y(g) < g.length && (c[k] = p);
       } else {
         b = new R(!0, 0, p, n, r), c = [b];
@@ -229,10 +229,10 @@ function R(a, b, c, g, f) {
 }
 var J = null;
 function qa(a) {
-  return a.m ? J === a ? a.G ? ra : a.K ? Q : sa : J.j === a ? ta : ua : va;
+  return a.m ? J === a ? a.G ? ra : a.K ? O : sa : J.j === a ? ta : ua : va;
 }
 R.prototype.remove = function() {
-  if (Q <= qa(this)) {
+  if (O <= qa(this)) {
     return this.G = !0, null;
   }
   var a = this.j ? this.j.h.indexOf(this) : -1;
@@ -256,7 +256,7 @@ function wa(a, b, c) {
     f = c[--e], 11 === f.W ? f.h && f.h.length && wa(a, b, f.h) : (f.remove(), g.splice(b, 0, f), f.j = a);
   }
 }
-var va = 0, ua = 1, sa = 2, Q = 3, ra = 4, ta = 5, xa = !1, ya = !1, za = !1;
+var va = 0, ua = 1, sa = 2, O = 3, ra = 4, ta = 5, xa = !1, ya = !1, za = !1;
 function Aa(a, b, c, g, f, e) {
   function k() {
     var n = "";
@@ -269,7 +269,7 @@ function Aa(a, b, c, g, f, e) {
   var p;
   b(function(n, r, u, w, z, H) {
     function L(ka) {
-      q[++v] = k() + (O ? ka : K("" + ka));
+      q[++v] = k() + (P ? ka : K("" + ka));
     }
     var q = [], v = -1;
     r = !1;
@@ -277,9 +277,9 @@ function Aa(a, b, c, g, f, e) {
     z = m[5 * w];
     var Z = m[5 * w + 1];
     u = m[5 * w + 2];
-    var O = m[5 * w + 3];
+    var P = m[5 * w + 3];
     Z = g ? na(n, Z, g) : null;
-    var t = n[0], A = n[1], P = 1, C;
+    var t = n[0], A = n[1], Q = 1, C;
     switch(I(n)) {
       case 9:
         q[++v] = A;
@@ -325,25 +325,25 @@ function Aa(a, b, c, g, f, e) {
       case 17:
         F = !0;
       case 1:
-        G(t) && (t = A, P = 2);
+        G(t) && (t = A, Q = 2);
         t = N(t);
         A = t[1];
         var la = t[2];
         t = t[0];
-        n = n[P];
+        n = n[Q];
         "P" !== p || ha[t] ? p = "" : q[++v] = k();
         z = z || (z || aa[t] ? !0 : 0 < t.indexOf(":"));
         u = !!fa[t];
-        O = O || !!ia[t];
+        P = P || !!ia[t];
         q[++v] = "<" + (z ? t : t.toLowerCase());
         A && (q[++v] = " id=" + M(A, d, z || h));
         la && (q[++v] = " class=" + M(la, d, z || h));
         if (!B(n) && D(n)) {
           for (C in n) {
             t = n[C];
-            (P = 0 === C.indexOf(l)) && (C = C.substr(l.length));
+            (Q = 0 === C.indexOf(l)) && (C = C.substr(l.length));
             "className" === C && (C = "class");
-            if (P && c && (t = ma(c, C, t, f, H), H && H.paused)) {
+            if (Q && c && (t = ma(c, C, t, f, H), H && H.paused)) {
               return;
             }
             null == t || ba[C] && !1 === t || (q[++v] = " " + C, ba[C] || !0 === t) || "style" === C && D(t) && (t = pa(t), !t) || (q[++v] = "=" + M(t, d, z || h));
@@ -354,7 +354,7 @@ function Aa(a, b, c, g, f, e) {
     m[5 * w + 5] = z;
     m[5 * w + 6] = Z;
     m[5 * w + 7] = u;
-    m[5 * w + 8] = O;
+    m[5 * w + 8] = P;
     m[5 * w + 9] = r;
     -1 !== v && Ba(a, q.join(""));
   }, function(n, r, u, w) {
@@ -1163,7 +1163,7 @@ function Na(a, b, c, g) {
       e.h = !0;
     }
   }, function(e, k, h, d) {
-    e !== a && !e.j && y(e) < e.length && (g(e, k, h, d), e.j = !0);
+    e === a || e.left || -1 === [9, 11, 1, 17, 13, 16].indexOf(I(e)) || (g(e, k, h, d), e.left = !0);
   });
   return f;
 }

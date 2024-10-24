@@ -134,9 +134,9 @@ function processSync( unprocessedHTMLJson, through, onEnterNode, onLeaveNode ){
             };
         },
         function( currentNode, parentNode, myIndex, depth ){
-            if( currentNode !== unprocessedHTMLJson && !currentNode.leaved && m_hasChildren( currentNode ) ){
+            if( currentNode !== unprocessedHTMLJson && !currentNode.left && m_canHasChildren( currentNode ) ){
                 onLeaveNode( currentNode, parentNode, myIndex, depth );
-                currentNode.leaved = true;
+                currentNode.left = true;
             };
         }
     );

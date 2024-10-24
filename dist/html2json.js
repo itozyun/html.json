@@ -237,8 +237,8 @@ function sa(a) {
   return a;
 }
 function pa(a) {
-  var b = a[0];
-  return 1 === sa(a) ? (b = b === +b ? 2 : 1, (a = a[b]) && a.pop === [].pop || !a || "object" !== typeof a ? b : b + 1) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
+  var b = a[0], d = sa(a);
+  return 1 === d || 17 === d ? (b = b === +b ? 2 : 1, (a = a[b]) && a.pop === [].pop || !a || "object" !== typeof a ? b : b + 1) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
 function ta(a) {
   function b() {

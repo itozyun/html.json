@@ -139,8 +139,8 @@ function Q(a, c, e) {
   return a;
 }
 function E(a) {
-  var c = a[0];
-  return 1 === M(a) ? (c = c === +c ? 2 : 1, a = a[c], !H(a) && I(a) ? c + 1 : c) : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
+  var c = a[0], e = M(a);
+  return 1 === e || 17 === e ? (c = c === +c ? 2 : 1, a = a[c], !H(a) && I(a) ? c + 1 : c) : 11 === c ? 1 : 9 === c || 13 === c || 16 === c ? 2 : Infinity;
 }
 function R(a) {
   var c = a.indexOf("#"), e = a.indexOf("."), f = "", d = "";

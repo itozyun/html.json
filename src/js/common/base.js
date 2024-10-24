@@ -484,7 +484,8 @@ function m_toSnakeCase( cssProperty ){
  */
 function m_getChildNodeStartIndex( htmlJsonNode ){
     var nodeTypeOrTagName = htmlJsonNode[ 0 ];
-    var isElement         = m_getNodeType( htmlJsonNode ) === htmljson.NODE_TYPE.ELEMENT_NODE;
+    var nodeTYpe          = m_getNodeType( htmlJsonNode );
+    var isElement         = nodeTYpe === htmljson.NODE_TYPE.ELEMENT_NODE || nodeTYpe === htmljson.NODE_TYPE.ELEMENT_START_TAG;
     var indexAttrs;
 
     if( isElement ){
@@ -508,6 +509,18 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
  */
 function m_hasChildren( htmlJsonNode ){
     return m_getChildNodeStartIndex( htmlJsonNode ) < htmlJsonNode.length;
+};
+
+/**
+ * 
+ * @param {!HTMLJson | string | number} htmlJsonNode string | number を与えても正しく動作する
+ * @return {boolean}
+ */
+function m_canHasChildren( htmlJsonNode ){
+    return [ htmljson.NODE_TYPE.DOCUMENT_NODE, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE,
+             htmljson.NODE_TYPE.ELEMENT_NODE , htmljson.NODE_TYPE.ELEMENT_START_TAG,
+             htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER,
+             htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ].indexOf( m_getNodeType( htmlJsonNode ) ) !== -1;
 };
 
 /**
