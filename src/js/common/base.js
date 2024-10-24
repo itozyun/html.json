@@ -959,3 +959,68 @@ function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
     );
     return vnodeRoot;
 };
+
+/**
+ * pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除
+ * 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
+ * 各行の改行の前の空白文字も削除
+ * テキストノードが改行1文字だけの場合、直前のタグに含める
+ * 
+ * @param {!HTMLJson} htmlJsonPre
+ */
+function m_trimWhitespaceInPre( htmlJsonPre ){
+    var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text;
+
+    htmljson.Traverser.traverseAllDescendantNodes(
+        htmlJsonPre,
+        function( currentJSONNode, parentJSONNode, myIndex, depth ){
+            if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                var text = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
+
+                if( !removeWhitespaces( text ) ){
+                    parentJSONNode.splice( myIndex, 1 );
+                } else {
+                    parentJSONNode.splice( myIndex, 1, m_trimFirstChar( text, '\n' ) );
+                    return htmljson.Traverser.VISITOR_OPTION.BREAK;
+                };
+            };
+        }
+    );
+
+    while( nodeAndPosition = getLastTextNode( htmlJsonPre ) ){
+        htmlJsonText   = nodeAndPosition[ 0 ];
+        htmlJsonParent = nodeAndPosition[ 1 ];
+        index          = nodeAndPosition[ 2 ];
+
+        text = '' + ( m_isStringOrNumber( htmlJsonText ) ? htmlJsonText : htmlJsonText[ 1 ] );
+
+        if( !removeWhitespaces( text ) ){
+            htmlJsonParent.splice( index, 1 );
+        } else {
+            htmlJsonParent.splice( index, 1, m_trimLastChar( text, '\n' ) );
+            break;
+        };
+    };
+
+    function getLastTextNode( htmlJsonTarget ){
+        var nodeAndPosition;
+
+        htmljson.Traverser.traverseAllDescendantNodes(
+            htmlJsonTarget,
+            function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                    nodeAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
+                };
+            }
+        );
+        return nodeAndPosition;
+    };
+    /**
+     * 
+     * @param {string} string 
+     * @return {string} 
+     */
+    function removeWhitespaces( string ){
+        return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
+    };
+};
