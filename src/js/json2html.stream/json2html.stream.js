@@ -52,16 +52,16 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                     isNewNodeGeneratedByInstruction = m_isArray( result ), // ProcessingInstruction の場合だけ HTMLJson(Array) が返る
                     i, l;
 
-                if( paused && result == null ){
+                if( paused ){
+                    if( htmljson.DEFINE.DEBUG ){
+                        if( result != null ){
+                            throw 'ProcessingInstruction のハンドラで htmlJson の返却と pause の両方を行うことは出来ません!';
+                        };
+                    };
                     // ProcessingInstruction で pause した( HTMLJson の return 無し )
                     // InstructionAttribute で pause した
                     return;
                 } else if( isNewNodeGeneratedByInstruction ){
-                    if( htmljson.DEFINE.DEBUG ){
-                        if( paused ){
-                            throw 'ProcessingInstruction のハンドラで htmlJson の返却と pause の両方を行うことは出来ません!';
-                        };
-                    };
                     parentJSONNode = /** @type {!HTMLJson} */ (parentJSONNode);
                     result = /** @type {!HTMLJson} */ (result);
 
@@ -77,8 +77,8 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                     if( processSync( parentJSONNode, through, onEnterNode, onLeaveNode ) ){
                         unprocessedHTMLJson = parentJSONNode;
                     };
-                    return VISITOR_OPTION.REMOVED; // pause したが、もともとの ProcessingInstruction(currentJSONNode) は既に処理済
                 };
+                return VISITOR_OPTION.REMOVED; // pause したが、もともとの ProcessingInstruction(currentJSONNode) は既に処理済
             };
 
             /** @type {HTMLJson | null} この node は currentJSONNode を子に持つ, 接続されている */

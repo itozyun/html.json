@@ -126,6 +126,7 @@ goog.scope(
       pause() {
         if(!this.paused){
           this.paused = true
+          this.emit('pause')
         }
       }
 
