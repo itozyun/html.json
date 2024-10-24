@@ -4,7 +4,7 @@ goog.provide( 'htmljson.Traverser.LeaveHandler' );
 goog.provide( 'htmljson.Traverser.traverseAllDescendantNodes' );
 
 // goog.require( 'htmljson.base' );
-
+goog.requireType( 'Through' );
 // htmljson.Traverser = {};
 
 /**
@@ -21,7 +21,7 @@ var VISITOR_OPTION = {
 htmljson.Traverser.VISITOR_OPTION = VISITOR_OPTION;
 
 /**
- * @typedef {function((!HTMLJson | string | number), (HTMLJson | null), number, number, boolean=):(number | void)}
+ * @typedef {function((!HTMLJson | string | number), (HTMLJson | null), number, number, boolean=, !Through=):(number | !HTMLJson | void)}
  */
 htmljson.Traverser.EnterHandler;
 
@@ -45,7 +45,7 @@ htmljson.Traverser.traverseAllDescendantNodes = function( rootHTMLJson, onEnterN
         operation      = onEnterNode( rootHTMLJson, null, -1, depthX3 / 3 ),
         torioList      = [ -1, rootHTMLJson, childNodeStart ],
         treeIsUpdated  = false,
-        currentIndex, childNode, _childNodeStart;
+        currentIndex, childNode;
 
     if( operation === VISITOR_OPTION.BREAK || operation === VISITOR_OPTION.SKIP ){
         return false;
@@ -88,12 +88,11 @@ htmljson.Traverser.traverseAllDescendantNodes = function( rootHTMLJson, onEnterN
                             torioList[ depthX3 ] += operation;
                             treeIsUpdated = true;
                         };
-                        _childNodeStart = m_getChildNodeStartIndex( childNode );
-                        if( 0 < childNode.length - _childNodeStart ){
+                        if( m_hasChildren( childNode ) ){
                             depthX3 += 3;
                             torioList[ depthX3 + 0 ] = -1;
                             torioList[ depthX3 + 1 ] = parentNode     = childNode;
-                            torioList[ depthX3 + 2 ] = childNodeStart = _childNodeStart;
+                            torioList[ depthX3 + 2 ] = childNodeStart = m_getChildNodeStartIndex( childNode );
                         } else if( opt_onLeaveNode ){
                             if( parentNode ){
                                 operation = opt_onLeaveNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 + 1 );

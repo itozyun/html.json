@@ -1,5 +1,5 @@
 goog.provide( 'json2html.main' );
-goog.provide( 'json2html._main' );
+goog.provide( 'json2html.createJSON2HTMLTransformaer' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.isXMLRootElement' );
@@ -12,6 +12,8 @@ goog.require( 'VNode' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 goog.requireType( 'htmljson.Traverser.EnterHandler' );
 goog.requireType( 'htmljson.Traverser.LeaveHandler' );
+goog.requireType( 'ThroughLike' );
+goog.requireType( 'Through' );
 goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
 
 // json2html.stream から json2html を呼ぶときに使用
@@ -40,32 +42,40 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
     var html = [];
     var j = -1;
 
-    json2html._main(
+    json2html.createJSON2HTMLTransformaer(
         false,
-        htmljson.Traverser.traverseAllDescendantNodes,
-        {
-            onChunk : function( chunk ){
+        /** @type {!ThroughLike} */ ({
+            queue : function( chunk ){
                 html[ ++j ] = chunk;
             }
+        }),
+        /**
+         * @param {!htmljson.Traverser.EnterHandler} onEnterNode
+         * @param {!htmljson.Traverser.LeaveHandler=} opt_onLeaveNode
+         */
+        function( onEnterNode, opt_onLeaveNode ){
+            htmljson.Traverser.traverseAllDescendantNodes(
+                rootHTMLJson,
+                onEnterNode,
+                opt_onLeaveNode
+            );
         },
-        rootHTMLJson,
         opt_onInstruction, opt_onEnterNode, opt_onError, opt_options
     );
     return html.join( '' );
 };
 
 /**
- * @package
+ * (a) package
  * @param {boolean} isInStreaming
- * @param {!function(!HTMLJson, !htmljson.Traverser.EnterHandler, !htmljson.Traverser.LeaveHandler):(boolean | void)} traverserOrStreamingHTMLJsonParser
- * @param {{onChunk : !function(string)}} json2htmlContext
- * @param {!HTMLJson} rootHTMLJson
+ * @param {!ThroughLike} transformer
+ * @param {!function(!htmljson.Traverser.EnterHandler, !htmljson.Traverser.LeaveHandler)} traverserOrHTMLJsonParser
  * @param {!InstructionHandler=} opt_onInstruction
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  */
-json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, json2htmlContext, rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, traverserOrHTMLJsonParser, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     function getHTMLTagName( tagName ){
         return tagName.toLowerCase(); // TODO upperCase
     };
@@ -80,12 +90,6 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
     };
 
     /** @const */
-    var onInstruction = opt_onInstruction || null;
-    /** @const */
-    var onEnterNode   = opt_onEnterNode || null;
-    /** @const */
-    var onError       = typeof opt_onError === 'function' ? opt_onError : function( error ){};
-    /** @const */
     var options       = opt_options || {};
     /** @const */
     var quotAlways    = options[ 'quotAlways'            ] === true;
@@ -94,22 +98,23 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
     /** @const */
     var attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
     /** @const */
-    var statusStack = [ m_isXMLDocument, null, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false, false ];
+    var statusStack   = [ m_isXMLDocument, null, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false, false ];
+
+    m_isXMLDocument = m_pEndTagRequired = m_escapeForHTMLDisabled = false;
 
     var omittedEndTagBefore;
 
-    traverserOrStreamingHTMLJsonParser(
-        rootHTMLJson,
+    traverserOrHTMLJsonParser(
         /**
-         * 
          * @param {!HTMLJson | string | number} currentJSONNode 
          * @param {HTMLJson | null} parentJSONNode 
          * @param {number} myIndex
          * @param {number} depth
          * @param {boolean=} opt_hasUnknownChildren for json2html.stream
-         * @return {number | void} VISITOR_OPTION.*
+         * @param {!Through=} opt_instructionContext
+         * @return {number | !HTMLJson | void} number:VISITOR_OPTION.*, HTMLJson は json2html.stream のみ
          */
-        function( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren ){
+        function enterNodeHandler( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, opt_instructionContext ){
             /**
              * @param {string} tagName 
              * @return {boolean} */
@@ -121,40 +126,8 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                 };
                 return htmlparser.isNamespacedTag( tagName ); // <v:vml>
             };
-            /**
-             * @param {!Attrs} attrs 
-             * @return {string} 先頭に ' ' 付き */
-            function walkAttributes( attrs ){
-                var attrText = '',
-                    name, value, isInstruction;
-            
-                for( name in attrs ){
-                    value = attrs[ name ];
-                    isInstruction = m_isInstructionAttr( attrPrefix, name );
-                    isInstruction && ( name = name.substr( attrPrefix.length ) );
-                    name === 'className' && ( name = 'class' );
-
-                    if( isInstruction ){
-                        if( onInstruction ){
-                            value = m_executeInstructionAttr( true, onInstruction, name, /** @type {!InstructionArgs | string} */ (value), onError );
-                        } else if( htmljson.DEFINE.DEBUG ){
-                            onError( 'onInstruction is void!' );
-                        };
-                    };
-
-                    if( value != null && ( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] || value !== false ) ){
-                        attrText += ' ' + name;
-
-                        if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value !== true ){
-                            if( name === 'style' && m_isObject( value ) ){
-                                value = m_toCSSTest( /** @type {!Styles} */ (value) );
-                                if( !value ) continue;
-                            };
-                            attrText += '=' + m_quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
-                        };
-                    };
-                };
-                return attrText;
+            function processTextNode( nodeValue ){
+                chunk[ ++j ] = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? nodeValue : m_escapeForHTML( '' + nodeValue ) );
             };
 
             var chunk = [], j = -1;
@@ -162,7 +135,7 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
 
             if( m_isArray( currentJSONNode ) ){
                 if( !isInStreaming ){
-                    hasChildren = 0 < currentJSONNode.length - m_getChildNodeStartIndex( /** @type {!HTMLJson} */ (currentJSONNode) );
+                    hasChildren = m_hasChildren( /** @type {!HTMLJson} */ (currentJSONNode) );
                 } else {
                     hasChildren = opt_hasUnknownChildren;
                 };
@@ -173,11 +146,13 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                 pEndTagRequired       = statusStack[ depth * 5 + 2 ],
                 escapeForHTMLDisabled = statusStack[ depth * 5 + 3 ];
 
-            var currentVNode = onEnterNode ? m_executeEnterNodeHandler( /** @type {!HTMLJson} */ (currentJSONNode), parentVNode, onEnterNode ) : null,
+            var currentVNode = opt_onEnterNode ? m_executeEnterNodeHandler( /** @type {!HTMLJson} */ (currentJSONNode), parentVNode, opt_onEnterNode ) : null,
                 tagName      = currentJSONNode[ 0 ],
                 arg1         = currentJSONNode[ 1 ],
                 attrIndex    = 1,
-                attrs, result, isElementWithoutEndTag, id, className;
+                isNewNodeGeneratedByInstruction, result,
+                isElementWithoutEndTag,
+                id, className, attrs, name, value, isInstruction;
 
             // if( currentVNode && currentVNode._removed ){
                 // return m_getHTMLStringAfter( currentVNode );
@@ -196,7 +171,7 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                     if( !m_isArray( currentJSONNode ) ){
                         arg1 = currentJSONNode;
                     };
-                    chunk[ ++j ] = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? arg1 : m_escapeForHTML( '' + arg1 ) );
+                    processTextNode( arg1 );
                     break;
                 case htmljson.NODE_TYPE.CDATA_SECTION :
                     chunk[ ++j ] = '<![CDATA[' + m_escapeForHTML( '' + arg1 ) + ']]>';
@@ -220,18 +195,20 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                     chunk[ ++j ] = '<!--<![endif]-->';
                     break;
                 case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                    if( onInstruction ){
-                        result = m_executeProcessingInstruction( onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), /** @type {!HTMLJson} */ (parentJSONNode), myIndex, onError );
+                    if( opt_onInstruction ){
+                        result = m_executeProcessingInstruction( opt_onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), opt_onError, opt_instructionContext );
+                        isNewNodeGeneratedByInstruction = m_isArray( result );
 
-                        if( result !== undefined ){
-                            if( result === null || result === '' ){
-                                // empty
-                            } else if( m_isStringOrNumber( result ) ){
-                                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                            } else if( m_isArray( result ) ){
-                                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                            } else if( htmljson.DEFINE.DEBUG ){
-                                onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + '] result:' + JSON.stringify( result ) );
+                        if( result != null && result !== '' ){
+                            if( m_isStringOrNumber( result ) ){
+                                processTextNode( result );
+                            } else if( isNewNodeGeneratedByInstruction ){
+                                if( isInStreaming ){
+                                    return /** @type {!HTMLJson} */ (result);
+                                } else {
+                                    m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentJSONNode), myIndex, /** @type {!HTMLJson} */ (result) );
+                                    return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                                };
                             };
                         };
                     };
@@ -273,7 +250,35 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                     };
                     // attr
                     if( m_isAttributes( attrs ) ){
-                        chunk[ ++j ] = walkAttributes( /** @type {!Attrs} */ (attrs) );
+                        for( name in attrs ){
+                            value = attrs[ name ];
+                            isInstruction = m_isInstructionAttr( attrPrefix, name );
+                            isInstruction && ( name = name.substr( attrPrefix.length ) );
+                            name === 'className' && ( name = 'class' );
+
+                            if( isInstruction ){
+                                if( opt_onInstruction ){
+                                    value = m_executeInstructionAttr( true, opt_onInstruction, name, /** @type {!InstructionArgs | string} */ (value), opt_onError, opt_instructionContext );
+                                    if( isInStreaming ){
+                                        if( opt_instructionContext && opt_instructionContext.paused ){
+                                            return;
+                                        };
+                                    };
+                                };
+                            };
+
+                            if( value != null && ( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] || value !== false ) ){
+                                chunk[ ++j ] = ' ' + name;
+
+                                if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value !== true ){
+                                    if( name === 'style' && m_isObject( value ) ){
+                                        value = m_toCSSTest( /** @type {!Styles} */ (value) );
+                                        if( !value ) continue;
+                                    };
+                                    chunk[ ++j ] = '=' + m_quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
+                                };
+                            };
+                        };
                     };
                     // hasUnknownChildren
                     if( !isXmlInHTML || hasChildren || isElementWithoutEndTag ){
@@ -290,10 +295,9 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
             statusStack[ depth * 5 + 8 ] = escapeForHTMLDisabled;
             statusStack[ depth * 5 + 9 ] = hasChildren;
 
-            json2htmlContext.onChunk( chunk.join( '' ) );
+            j !== -1 && transformer.queue( chunk.join( '' ) );
         },
         /**
-         * 
          * @param {!HTMLJson | string | number} currentJSONNode 
          * @param {HTMLJson | null} parentJSONNode 
          * @param {number} myIndex
@@ -343,9 +347,14 @@ json2html._main = function( isInStreaming, traverserOrStreamingHTMLJsonParser, j
                     };
                     break;
             };
-            json2htmlContext.onChunk( chunk.join( '' ) );
+            j !== -1 && transformer.queue( chunk.join( '' ) );
+
+            if( depth === 0 ){
+                /** @suppress {const|checkTypes} */
+                transformer = null;
+            };
         }
     );
     /** @suppress {checkTypes} */
-    traverserOrStreamingHTMLJsonParser = null;
+    traverserOrHTMLJsonParser = null;
 };

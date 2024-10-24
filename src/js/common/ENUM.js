@@ -57,30 +57,25 @@ htmljson.PHASE = {
     COND_CMT_HIDE_LOWER_FORMURA     : htmljson.NODE_TYPE.ELEMENT_END_TAG +  5,
     COND_CMT_SHOW_LOWER_FORMURA     : htmljson.NODE_TYPE.ELEMENT_END_TAG +  6,
     NN4_COND_CMT_SHOW_LOWER_FORMURA : htmljson.NODE_TYPE.ELEMENT_END_TAG +  7,
-    PROCESSING_INSTRUCTION_NAME     : htmljson.NODE_TYPE.ELEMENT_END_TAG +  8,
+    INSTRUCTION_FUNC_NAME_SND_ARGS  : htmljson.NODE_TYPE.ELEMENT_END_TAG +  8,
 
     TAG_NAME                        : htmljson.NODE_TYPE.ELEMENT_END_TAG +  9,
     TAG_NAME_WITHOUT_END_TAG        : htmljson.NODE_TYPE.ELEMENT_END_TAG + 10,
     TAG_NAME_WITHOUT_START_TAG      : htmljson.NODE_TYPE.ELEMENT_END_TAG + 11,
 
     ATTRIBUTES_START                : htmljson.NODE_TYPE.ELEMENT_END_TAG + 12,
-    ATTRIBUTE_PROPERTY              : htmljson.NODE_TYPE.ELEMENT_END_TAG + 13,
-    ATTRIBUTE_VALUE                 : htmljson.NODE_TYPE.ELEMENT_END_TAG + 14,
 
-    STYLES_START                    : htmljson.NODE_TYPE.ELEMENT_END_TAG + 15,
-    CSS_PROPERTY                    : htmljson.NODE_TYPE.ELEMENT_END_TAG + 16,
-    CSS_VALUE                       : htmljson.NODE_TYPE.ELEMENT_END_TAG + 17,
-    
-    IN_INSTRUCTION_ATTRIBUTE        : htmljson.NODE_TYPE.ELEMENT_END_TAG + 18,
-
-    END_OF_NODE                     : htmljson.NODE_TYPE.ELEMENT_END_TAG + 19,
+    END_OF_NODE                     : htmljson.NODE_TYPE.ELEMENT_END_TAG + 13,
     // copy to EXPECT -->
 
-    CLOSE_EMPTY_ELEMENT             : htmljson.NODE_TYPE.ELEMENT_END_TAG + 20,
-    END_OF_ATTRIBUTES               : htmljson.NODE_TYPE.ELEMENT_END_TAG + 21,
-    END_OF_STYLES                   : htmljson.NODE_TYPE.ELEMENT_END_TAG + 22,
-    TEXT_DATA                       : htmljson.NODE_TYPE.ELEMENT_END_TAG + 23,
-    INSTRUCTION_ATTRIBUTE_NAME      : htmljson.NODE_TYPE.ELEMENT_END_TAG + 24
+    END_START_TAG_AND_START_CHILD   : htmljson.NODE_TYPE.ELEMENT_END_TAG + 14,
+    END_START_TAG_AND_TEXT_DATA     : htmljson.NODE_TYPE.ELEMENT_END_TAG + 15,
+    LEAVE_EMPTY_NODE                : htmljson.NODE_TYPE.ELEMENT_END_TAG + 16,
+    LEAVE_NODE                      : htmljson.NODE_TYPE.ELEMENT_END_TAG + 17,
+    END_OF_ATTRIBUTES               : htmljson.NODE_TYPE.ELEMENT_END_TAG + 18,
+    END_OF_STYLES                   : htmljson.NODE_TYPE.ELEMENT_END_TAG + 19,
+    TEXT_DATA                       : htmljson.NODE_TYPE.ELEMENT_END_TAG + 20,
+    INSTRUCTION_ATTRIBUTE_FUNC_NAME : htmljson.NODE_TYPE.ELEMENT_END_TAG + 21
 };
 
 /**
@@ -98,28 +93,20 @@ htmljson.EXPECT = {
     COND_CMT_HIDE_LOWER_FORMURA     : htmljson.PHASE.COND_CMT_HIDE_LOWER_FORMURA, //
     COND_CMT_SHOW_LOWER_FORMURA     : htmljson.PHASE.COND_CMT_SHOW_LOWER_FORMURA, //
     NN4_COND_CMT_SHOW_LOWER_FORMURA : htmljson.PHASE.NN4_COND_CMT_SHOW_LOWER_FORMURA,
-    PROCESSING_INSTRUCTION_NAME     : htmljson.PHASE.PROCESSING_INSTRUCTION_NAME, //
+    INSTRUCTION_FUNC_NAME_SND_ARGS  : htmljson.PHASE.INSTRUCTION_FUNC_NAME_SND_ARGS, //
 
     TAG_NAME                        : htmljson.PHASE.TAG_NAME, //
     TAG_NAME_WITHOUT_END_TAG        : htmljson.PHASE.TAG_NAME_WITHOUT_END_TAG,
     TAG_NAME_WITHOUT_START_TAG      : htmljson.PHASE.TAG_NAME_WITHOUT_START_TAG,
 
     ATTRIBUTES_START                : htmljson.PHASE.ATTRIBUTES_START, //
-    ATTRIBUTE_PROPERTY              : htmljson.PHASE.ATTRIBUTE_PROPERTY,
-    ATTRIBUTE_VALUE                 : htmljson.PHASE.ATTRIBUTE_VALUE,
-
-    STYLES_START                    : htmljson.PHASE.STYLES_START,
-    CSS_PROPERTY                    : htmljson.PHASE.CSS_PROPERTY, //
-    CSS_VALUE                       : htmljson.PHASE.CSS_VALUE, //
-
-    IN_INSTRUCTION_ATTRIBUTE        : htmljson.PHASE.IN_INSTRUCTION_ATTRIBUTE,
 
     END_OF_NODE                     : htmljson.PHASE.END_OF_NODE, //
     // copy from PHASE -->
 
     NODE_TYPE                       : htmljson.PHASE.END_OF_NODE + 1,
     PROCESSING_INSTRUCTION_ARGS     : htmljson.PHASE.END_OF_NODE + 2,
-    INSTRUCTION_ATTRIBUTE_START     : htmljson.PHASE.END_OF_NODE + 3,
+    IN_ATTRIBUTES                   : htmljson.PHASE.END_OF_NODE + 3,
     CHILD_NODES_START               : htmljson.PHASE.END_OF_NODE + 4,
     IN_CHILD_NODES                  : htmljson.PHASE.END_OF_NODE + 5,
     END_OF_DOCUMENT                 : htmljson.PHASE.END_OF_NODE + 6

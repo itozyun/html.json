@@ -2,8 +2,8 @@
  * @see https://github.com/creationix/jsonparse/blob/a5d5260e263d67929236e282ca7947d7b385fcd1/jsonparse.js
  * 
  */
-goog.provide( 'Parser' );
-goog.provide( 'Parser.C' );
+goog.provide( 'JsonParser' );
+goog.provide( 'JsonParser.C' );
 goog.provide( 'bufferFrom' );
 goog.provide( 'bufferAlloc' );
 
@@ -73,7 +73,7 @@ goog.scope(
     var STRING_BUFFER_SIZE = 64 * 1024;
 
     /** @constructor */
-    Parser = function() {
+    JsonParser = function() {
       this.currentValue = undefined;
 
       /** @const {!Array.<!{currentValue : *, _key : (string | number | void), _mode : (number | void)}>} */
@@ -99,10 +99,10 @@ goog.scope(
     };
 
     /** @const */
-    Parser.C = C;
+    JsonParser.C = C;
 
     // Slow code to string converter (only used when throwing syntax errors)
-    Parser.toknam = function (code) {
+    JsonParser.toknam = function (code) {
       if (htmljson.DEFINE.DEBUG) {
           var keys = Object.keys(C);
           for (var i = 0, l = keys.length; i < l; i++) {
@@ -113,15 +113,15 @@ goog.scope(
       return code && ("0x" + code.toString(16));
     };
 
-    // Parser.prototype.onError = function (err) { throw err; };
+    // JsonParser.prototype.onError = function (err) { throw err; };
 
-    Parser.prototype.charError = function (buffer, i) {
+    JsonParser.prototype.charError = function (buffer, i) {
       this.tState = C.STOP;
       if (htmljson.DEFINE.DEBUG) {
-        this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + Parser.toknam(this.tState)));
+        this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + JsonParser.toknam(this.tState)));
       };
     };
-    Parser.prototype.appendStringChar = function (char) {
+    JsonParser.prototype.appendStringChar = function (char) {
       if (this.stringBufferOffset >= STRING_BUFFER_SIZE) {
         this._string += this.stringBuffer.toString('utf8');
         this.stringBufferOffset = 0;
@@ -135,7 +135,7 @@ goog.scope(
      * @param {number=} start 
      * @param {number=} end 
      */
-    Parser.prototype.appendStringBuf = function (buf, start, end) {
+    JsonParser.prototype.appendStringBuf = function (buf, start, end) {
       var size = buf.length;
       if (typeof start === 'number') {
         if (typeof end === 'number') {
@@ -167,7 +167,7 @@ goog.scope(
      * @param {!Buffer | string} buffer 
      * @returns 
      */
-    Parser.prototype.write = function (buffer) {
+    JsonParser.prototype.write = function (buffer) {
       if (typeof buffer === "string") buffer = bufferFrom(buffer);
       var n;
       for (var i = 0, l = buffer.length; i < l; i++) {
@@ -227,7 +227,7 @@ goog.scope(
             } else if (this.bytes_remaining === 0 && n >= 128) { // else if no remainder bytes carried over, parse multi byte (>=128) chars one at a time
               if (n <= 193 || n > 244) {
                 if (htmljson.DEFINE.DEBUG) {
-                  return this.onError(new Error("Invalid UTF-8 character at position " + i + " in state " + Parser.toknam(this.tState)));
+                  return this.onError(new Error("Invalid UTF-8 character at position " + i + " in state " + JsonParser.toknam(this.tState)));
                 };
               }
               if ((n >= 194) && (n <= 223)) this.bytes_in_sequence = 2;
@@ -392,16 +392,16 @@ goog.scope(
       }
     };
 
-    Parser.prototype.parseError = function (token, value) {
+    JsonParser.prototype.parseError = function (token, value) {
       this.tState = C.STOP;
       if (htmljson.DEFINE.DEBUG) {
-        this.onError(new Error("Unexpected " + Parser.toknam(token) + (value ? ("(" + JSON.stringify(value) + ")") : "") + " in state " + Parser.toknam(this.state)));
+        this.onError(new Error("Unexpected " + JsonParser.toknam(token) + (value ? ("(" + JSON.stringify(value) + ")") : "") + " in state " + JsonParser.toknam(this.state)));
       };
     };
-    Parser.prototype.pushToJsonStack = function () {
+    JsonParser.prototype.pushToJsonStack = function () {
       this.jsonStack.push({currentValue: this.currentValue, _key: this._key, _mode: this._mode});
     };
-    Parser.prototype.popFromJsonStack = function () {
+    JsonParser.prototype.popFromJsonStack = function () {
       var value = this.currentValue;
       var parent = this.jsonStack.pop();
       this.currentValue = parent.currentValue;
@@ -410,14 +410,14 @@ goog.scope(
       this.emit(value);
       if (!this._mode) { this.state = C.VALUE; }
     };
-    Parser.prototype.emit = function (value) {
+    JsonParser.prototype.emit = function (value) {
       if (this._mode) { this.state = C.COMMA; }
       this.onValue(value);
     };
-    Parser.prototype.onValue = function (value) {
+    JsonParser.prototype.onValue = function (value) {
       // Override me
     };
-    Parser.prototype.onToken = function (token, value) {
+    JsonParser.prototype.onToken = function (token, value) {
       switch (this.state) {
         case C.VALUE:
           switch (token) {

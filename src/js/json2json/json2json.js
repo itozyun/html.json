@@ -120,18 +120,18 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
                         break;
                     case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                         if( onInstruction ){
-                            result = m_executeProcessingInstruction( onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), /** @type {!HTMLJson} */ (parentJSONNode), myIndex, onError );
+                            result = m_executeProcessingInstruction( onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), onError );
 
                             if( result !== undefined ){
+                                parentJSONNode = /** @type {!HTMLJson} */ (parentJSONNode);
                                 if( result === null || result === '' ){
                                     parentJSONNode.splice( myIndex, 1 );
                                     return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                                } else if( m_isStringOrNumber( result ) ){
-                                    // just replaced
-                                } else if( m_isArray( result ) ){
+                                } else if( m_isNumber( result ) ){
+                                    parentJSONNode.splice( myIndex, 1, /** @type {number} */ (result) );
+                                } else if( m_isArray( result ) || m_isString( result ) ){
+                                    m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, myIndex, /** @type {!HTMLJson | string} */ (result) );
                                     return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                                // } else if( htmljson.DEFINE.DEBUG ){
-                                    // onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
                                 };
                             } else {
                                 isStaticWebPage = false;
