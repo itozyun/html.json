@@ -11,12 +11,12 @@ goog.requireType( 'htmljson.Traverser.EnterHandler' );
 goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
 
 /**
- * @typedef {Object.<string, (string | number | boolean)>}
+ * @typedef {Object.<string, (string | number | boolean | null)>}
  */
 var Styles;
 
 /**
- * @typedef {Object.<string, (string | number | boolean | Styles)>}
+ * @typedef {Object.<string, (string | number | boolean | Styles | null)>}
  */
 var Attrs;
 

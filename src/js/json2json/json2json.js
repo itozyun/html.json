@@ -178,7 +178,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     isDescendantOfPre = isDescendantOfPre || isPreTag;
                     isTrimNewlines    = !!m_TRIM_NEWLINES_ELEMENTS[ tagName ];
                     if( isPreTag && isTrimWhitespace ){
-                        m_trimWhitespaceInPre( currentJSONNode );
+                        m_trimWhitespaceInPre( /** @type {!HTMLJson} */ (currentJSONNode) );
                     };
                     break;
                 default :

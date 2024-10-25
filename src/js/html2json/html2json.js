@@ -7,7 +7,6 @@ goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'json2json.process' );
-goog.require( 'VNode' );
 
 /**
  * @param {string} htmlString
@@ -17,18 +16,17 @@ goog.require( 'VNode' );
  * @return {!HTMLJson}
  */
 html2json.main = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
-    const
-        _aryPush          = [].push,
-        rootVNode         = _createVNodeFromHTML( htmlString, allowInvalidTree, opt_onError ),
-        options           = opt_options || {},
-        attrPrefix        = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX,
-        argumentBrackets  = options[ 'argumentBrackets'      ] || '()',
-        argOpeningBracket = argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
-        argClosingBracket = argumentBrackets.substr( argumentBrackets.length / 2 );
-
-    let isCcShowLowerStarted = false, rootHTMLJson;
-
-    walkNode( rootVNode, null );
+    const options          = opt_options || {},
+          argumentBrackets = options[ 'argumentBrackets' ] || '()',
+          attrPrefix       = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX,
+          rootHTMLJson     = _createHTMLJsonFromHTML(
+                  htmlString,
+                  attrPrefix,
+                  argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
+                  argumentBrackets.substr( argumentBrackets.length / 2 ),
+                  allowInvalidTree,
+                  opt_onError
+              );
 
     if( options[ 'trimWhitespaces' ] == null ){
         options[ 'trimWhitespaces' ] = true;
@@ -45,261 +43,219 @@ html2json.main = function( htmlString, allowInvalidTree, opt_onError, opt_option
     json2json.process( rootHTMLJson, undefined, undefined, opt_onError, options );
 
     return rootHTMLJson;
-
-    /**
-     * 
-     * @param {!VNode} currentVNode 
-     * @param {!HTMLJson | null} parentHTMLJson
-     */
-    function walkNode( currentVNode, parentHTMLJson ){
-        var nodeValue, functionNameAndArgs, currentHTMLJson, vDocFragment,
-            attrs, tagName, attributes, numAttrs,
-            i, attrName, attrValue, id, className;
-
-            // console.log( currentVNode )
-        switch( currentVNode.getNodeType() ){
-            case htmljson.NODE_TYPE.ELEMENT_NODE :
-            case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                attrs      = {};
-                tagName    = currentVNode.getTagName();
-                attributes = currentVNode._attrs;
-                numAttrs   = 0;
-
-                if( attributes ){
-                    for( attrName in attributes ){
-                        attrValue = /** @type {string} */ (htmlparser.BOOLEAN_ATTRIBUTES[ attrName ] ? 1 : attributes[ attrName ]);
-
-                        if( attrName === 'id' ){
-                            id = attrValue;
-                            continue;
-                        } else if( attrName === 'class' ){
-                            className = attrValue;
-                            continue;
-                        } else if( attrName.startsWith( attrPrefix ) ){
-                            functionNameAndArgs = codeToObject( attrValue );
-    
-                            if( functionNameAndArgs.args ){
-                                attrValue = [ functionNameAndArgs.funcName ];
-                                _aryPush.apply( attrValue, functionNameAndArgs.args );
-                            } else {
-                                attrValue = functionNameAndArgs.funcName;
-                            };
-                        };
-                        attrs[ attrName ] = /** @type {number | string} */ (m_tryToFiniteNumber( attrValue ));
-                        ++numAttrs;
-                    };
-                };
-                tagName = m_createTagName( tagName, id, className );
-
-                currentHTMLJson = numAttrs ? [ tagName, attrs ] : [ tagName ];
-
-                for( i = 0; i < currentVNode.getChildNodeCount(); ++i ){
-                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), currentHTMLJson );
-                };
-                parentHTMLJson.push( currentHTMLJson );
-
-                if( !currentVNode.isClosed() ){
-                    currentHTMLJson.unshift( htmljson.NODE_TYPE.ELEMENT_START_TAG );
-                };
-                break;
-            case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                parentHTMLJson.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, currentVNode.getTagName() ] );
-                break;
-            case htmljson.NODE_TYPE.TEXT_NODE :
-                nodeValue = currentVNode.getNodeValue();
-                if( nodeValue !== '' ){
-                    parentHTMLJson.push( nodeValue );
-                };
-                break;
-            case htmljson.NODE_TYPE.CDATA_SECTION :
-                parentHTMLJson.push(
-                    [
-                        htmljson.NODE_TYPE.CDATA_SECTION,
-                        m_tryToFiniteNumber( /** @type {string} */ (currentVNode.getNodeValue()) )
-                    ]
-                );
-                break;
-            case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                nodeValue = currentVNode.getNodeValue();
-                functionNameAndArgs = codeToObject( /** @type {string} */ (nodeValue) );
-
-                currentHTMLJson = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.funcName ];
-
-                if( functionNameAndArgs.args ){
-                    _aryPush.apply( currentHTMLJson, functionNameAndArgs.args );
-                };
-                parentHTMLJson.push( currentHTMLJson );
-                break;
-            case htmljson.NODE_TYPE.COMMENT_NODE :
-                nodeValue = /** @type {string} */ (currentVNode.getNodeValue());
-
-                if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
-                    vDocFragment    = _createVNodeFromHTML( extractStringBetween( nodeValue, '>', '<![endif]', true ), true, opt_onError );
-                    currentHTMLJson = [ htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) ];
-
-                    for( i = 0; i < vDocFragment.getChildNodeCount(); ++i ){
-                        walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentHTMLJson );
-                    };
-                    parentHTMLJson.push( currentHTMLJson );
-                } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
-                    vDocFragment    = _createVNodeFromHTML( nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ), true, opt_onError );
-                    currentHTMLJson = [ htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) ];
-
-                    for( i = 0; i < vDocFragment.getChildNodeCount(); ++i ){
-                        walkNode( /** @type {!VNode} */ (vDocFragment.getChildNodeAt( i )), currentHTMLJson );
-                    };
-                    parentHTMLJson.push( currentHTMLJson );
-                } else if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '><!' ) ){
-                    // 8:"[if !(IE)]><!"
-                    parentHTMLJson.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START, getIECondition( nodeValue ) ] );
-                    isCcShowLowerStarted = true;
-                } else if( nodeValue === '<![endif]' && isCcShowLowerStarted ){
-                    parentHTMLJson.push( [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END ] );
-                    isCcShowLowerStarted = false;
-                } else {
-                    parentHTMLJson.push( [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToFiniteNumber( nodeValue ) ] );
-                };
-                break;
-            case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_NODE, currentVNode.getNodeValue() ];
-                for( i = 0; i < currentVNode.getChildNodeCount(); ++i ){
-                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), rootHTMLJson );
-                };
-                break;
-            case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ];
-                for( i = 0; i < currentVNode.getChildNodeCount(); ++i ){
-                    walkNode( /** @type {!VNode} */ (currentVNode.getChildNodeAt( i )), rootHTMLJson );
-                };
-                break;
-        };
-    };
-
-    /**
-     * @param {string} nodeValue 
-     * @return {string} */
-    function getIECondition( nodeValue ){
-        return extractStringBetween( nodeValue, '[', ']', false );
-    };
-
-    /**
-     * @param {string} string 
-     * @return {{ funcName : string, args : (!Array | void) }} */
-    function codeToObject( string ){
-        var from = string.indexOf( argOpeningBracket );
-        var to   = string.lastIndexOf( argClosingBracket );
-        var name = m_trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ); // 先頭と最後の半角スペースを削除
-        var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, to ) + ']' ));
-
-        if( args.length ){
-            return { funcName : name, args : args };
-        };
-        return { funcName : name };
-    };
-
-    /**
-     * @param {string} string 
-     * @param {string} fromString 
-     * @param {string} toString 
-     * @param {boolean} useLastIndexOf
-     * @return {string} */
-    function extractStringBetween( string, fromString, toString, useLastIndexOf ){
-        var from = string.indexOf( fromString ) + fromString.length,
-            to   = useLastIndexOf ? string.lastIndexOf( toString ) : string.indexOf( toString, from );
-
-        return string.substring( from, to );
-    };
-
-    /**
-     * 
-     * @param {string} html
-     * @param {boolean} allowInvalidTree
-     * @param {!function((string | !Error))=} opt_onError
-     * @return {!VNode}
-     */
-    function _createVNodeFromHTML( html, allowInvalidTree, opt_onError ){
-        var handler = new Handler( allowInvalidTree, opt_onError );
-
-        htmlparser.exec( html, handler );
-
-        return handler._rootNode;
-    };
 };
 
 /*-----------------------------------------------------------------------------
  *   private
  */
+/**
+ * @param {string} nodeValue 
+ * @return {string} */
+function getIECondition( nodeValue ){
+    return extractStringBetween( nodeValue, '[', ']', false );
+};
+
+/**
+ * @param {string} string
+ * @param {string} argOpeningBracket (
+ * @param {string} argClosingBracket )
+ * @return {{ funcName : string, args : (!Array | void) }} */
+function codeToObject( string, argOpeningBracket, argClosingBracket ){
+    var from = string.indexOf( argOpeningBracket );
+    var to   = string.lastIndexOf( argClosingBracket );
+    var name = m_trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ); // 先頭と最後の半角スペースを削除
+    var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, to ) + ']' ));
+
+    if( args.length ){
+        return { funcName : name, args : args };
+    };
+    return { funcName : name };
+};
+
+/**
+ * @param {string} string 
+ * @param {string} fromString 
+ * @param {string} toString 
+ * @param {boolean} useLastIndexOf
+ * @return {string} */
+function extractStringBetween( string, fromString, toString, useLastIndexOf ){
+    var from = string.indexOf( fromString ) + fromString.length,
+        to   = useLastIndexOf ? string.lastIndexOf( toString ) : string.indexOf( toString, from );
+
+    return string.substring( from, to );
+};
+
+/**
+ * 
+ * @param {string} html
+ * @param {boolean} allowInvalidTree
+ * @param {!function((string | !Error))=} opt_onError
+ * @return {!HTMLJson}
+ */
+function _createHTMLJsonFromHTML( html, attrPrefix, argOpeningBracket, argClosingBracket, allowInvalidTree, opt_onError ){
+    var handler = new HTML2JsonHandler( attrPrefix, argOpeningBracket, argClosingBracket, allowInvalidTree, opt_onError );
+
+    htmlparser.exec( html, handler );
+
+    return handler._rootNode;
+};
 
 /** 
  * @private
- * @extends {htmlparser.typedef.Handler}
  * @constructor
+ * @implements {htmlparser.typedef.Handler}
+ * 
+ * @param {string} attrPrefix :
+ * @param {string} argOpeningBracket (
+ * @param {string} argClosingBracket )
  * @param {boolean} allowInvalidTree
  * @param {!function((string | !Error))=} opt_onError
  */
-function Handler( allowInvalidTree, opt_onError ){
-    this._allowInvalidTree = allowInvalidTree;
+function HTML2JsonHandler( attrPrefix, argOpeningBracket, argClosingBracket, allowInvalidTree, opt_onError ){
+    this._attrPrefix        = attrPrefix;
+    this._argOpeningBracket = argOpeningBracket;
+    this._argClosingBracket = argClosingBracket;
+    this._allowInvalidTree  = allowInvalidTree;
+    this._onError           = opt_onError;
 
-    /** @const {!VNode} */
-    this._rootNode = new VNode( false, 0, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
-    /** @type {!VNode} */
+    /** @const {!HTMLJson} */
+    this._rootNode = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ];
+    /** @type {!HTMLJson} */
     this._currentNode = this._rootNode;
+    /** @type {!Array.<!HTMLJson>} */
+    this._tree = [ this._rootNode ];
 
-    this._onError = opt_onError;
+    this._isCcShowLowerStarted = false;
 };
 
-Handler.prototype.onParseError = function( msg ){
+HTML2JsonHandler.prototype.onParseError = function( msg ){
     if( this._onError ){
         this._onError( msg );
     } else if( htmljson.DEFINE.DEBUG ){
-        throw 'Handler.prototype.onParseError: error!' + msg;
+        throw 'HTML2JsonHandler#onParseError: error!' + msg;
     };
 };
 
-Handler.prototype.onParseDocType = function( doctype ){
-    this._rootNode.setNodeType( htmljson.NODE_TYPE.DOCUMENT_NODE );
-    this._rootNode.setNodeValue( doctype );
+HTML2JsonHandler.prototype.onParseDocType = function( doctype ){
+    this._rootNode.splice( 0, 1, htmljson.NODE_TYPE.DOCUMENT_NODE, doctype );
 };
 
-Handler.prototype.onParseStartTag = function( tag, attrs, empty, myIndex ){
-    if( empty ){
-        this._currentNode.insertElementLast( tag, attrs );
-    } else {
-        this._currentNode = /** @type {!VNode} */ (this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_START_TAG, tag, attrs ));
-    };
-};
+HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, myIndex ){
+    var attributes = {},
+        numAttrs   = 0,
+        attrValue, attrName, id, className, functionNameAndArgs, newHTMLJson;
 
-Handler.prototype.onParseEndTag = function( tag, missingEndTag, noStartTag ){
-    if( noStartTag ){
-        if( this._allowInvalidTree ){
-            this._currentNode.insertNodeLast( htmljson.NODE_TYPE.ELEMENT_END_TAG, tag );
+    if( attrs ){
+        for( attrName in attrs ){
+            attrValue = /** @type {string} */ (htmlparser.BOOLEAN_ATTRIBUTES[ attrName ] ? 1 : attrs[ attrName ]);
+
+            if( attrName === 'id' ){
+                id = attrValue;
+                continue;
+            } else if( attrName === 'class' ){
+                className = attrValue;
+                continue;
+            } else if( attrName.startsWith( this._attrPrefix ) ){
+                functionNameAndArgs = codeToObject( attrValue, this._argOpeningBracket, this._argClosingBracket );
+
+                if( functionNameAndArgs.args ){
+                    attrValue = [ functionNameAndArgs.funcName ];
+                    attrValue.push.apply( attrValue, functionNameAndArgs.args );
+                } else {
+                    attrValue = functionNameAndArgs.funcName;
+                };
+            };
+            attributes[ attrName ] = m_tryToFiniteNumber( attrValue );
+            ++numAttrs;
         };
-    } else if( !missingEndTag || !this._allowInvalidTree ){
-        if( tag === this._currentNode.getTagName() ){
-            this._currentNode.finalize();
-            this._currentNode = /** @type {!VNode} */ (this._currentNode.getParent());
+    };
+    newHTMLJson = [ m_createTagName( tagName, id, className ) ];
+
+    if( numAttrs ){
+        newHTMLJson[ 1 ] = attributes;
+    };
+
+    this._currentNode.push( newHTMLJson );
+
+    if( !empty ){
+        newHTMLJson.unshift( htmljson.NODE_TYPE.ELEMENT_START_TAG  )
+        this._currentNode = newHTMLJson;
+        this._tree.push( newHTMLJson );
+    };
+};
+
+HTML2JsonHandler.prototype.onParseEndTag = function( tagName, isImplicit, isMissingStartTag ){
+    if( isMissingStartTag ){
+        if( this._allowInvalidTree ){
+            this._currentNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, tagName ] );
+        };
+    } else if( !isImplicit || !this._allowInvalidTree ){
+        if( tagName === m_parseTagName( /** @type {string} */ (this._currentNode[ 1 ]) )[ 0 ] ){
+            this._currentNode.shift(); // htmljson.NODE_TYPE.ELEMENT_START_TAG を削除
+            this._tree.pop();
+            this._currentNode = this._tree[ this._tree.length - 1 ];
         } else {
             if( this._onError ){
-                this._onError( 'End tag error! ' + tag );
+                this._onError( 'End tag error! ' + tagName );
             } else if( htmljson.DEFINE.DEBUG ){
-                throw 'Handler.prototype.onParseEndTag: End tag error! ' + tag;
+                throw 'HTML2JsonHandler#onParseEndTag: End tag error! ' + tagName;
             };
         };
     };
 };
 
-Handler.prototype.onParseText = function( nodeValue ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.TEXT_NODE, nodeValue );
+HTML2JsonHandler.prototype.onParseText = function( nodeValue ){
+    if( nodeValue ){
+        this._currentNode.push( [ htmljson.NODE_TYPE.TEXT_NODE, nodeValue ] );
+    };
 };
 
-Handler.prototype.onParseComment = function( nodeValue ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.COMMENT_NODE, nodeValue );
+HTML2JsonHandler.prototype.onParseComment = function( nodeValue ){
+    var newHTMLJson;
+
+    if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
+        newHTMLJson = _createHTMLJsonFromHTML(
+            extractStringBetween( nodeValue, '>', '<![endif]', true ),
+            this._attrPrefix,
+            this._argOpeningBracket,
+            this._argClosingBracket,
+            true,
+            this._onError
+        );
+        newHTMLJson.splice( 0, 1, htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) );
+    } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
+        newHTMLJson = _createHTMLJsonFromHTML(
+            nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ),
+            this._attrPrefix,
+            this._argOpeningBracket,
+            this._argClosingBracket,
+            true,
+            this._onError
+        );
+        newHTMLJson.splice( 0, 1, htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER, extractStringBetween( nodeValue, '{', '};', false ) );
+    } else if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '><!' ) ){
+        // 8:"[if !(IE)]><!"
+        newHTMLJson = [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START, getIECondition( nodeValue ) ];
+        this._isCcShowLowerStarted = true;
+    } else if( nodeValue === '<![endif]' && this._isCcShowLowerStarted ){
+        newHTMLJson = [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END ];
+        this._isCcShowLowerStarted = false;
+    } else {
+        newHTMLJson = [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToFiniteNumber( nodeValue ) ];
+    };
+    this._currentNode.push( newHTMLJson );
 };
 
-Handler.prototype.onParseCDATASection = function( nodeValue ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.CDATA_SECTION, nodeValue );
+HTML2JsonHandler.prototype.onParseCDATASection = function( nodeValue ){
+    this._currentNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket ) ] );
 };
 
-Handler.prototype.onParseProcessingInstruction = function( nodeValue ){
-    this._currentNode.insertNodeLast( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, nodeValue );
+HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
+    var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket ),
+        newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.funcName ];
+
+    if( functionNameAndArgs.args ){
+        newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs.args );
+    };
+    this._currentNode.push( newHTMLJson );
 };
