@@ -56,12 +56,12 @@ test('pause & resume', async t => {
     let heavyAPI = true;
 
     function onInstruction( funcName, args ){
-        if( this.pause && funcName === 'date' && heavyAPI ){
-            console.log( 'pause ***' )
+        if( this.stop && funcName === 'date' && heavyAPI ){
+            console.log( 'stop ***' )
             heavyAPI = false;
-            this.pause();
+            this.stop();
 
-            setTimeout( () => this.resume(), 1000 );
+            setTimeout( () => this.restart(), 1000 );
         } else {
         // console.log( funcName, args );
             return funcName === 'date' ? date.toLocaleString() + args[0] + args[1].aa : undefined;

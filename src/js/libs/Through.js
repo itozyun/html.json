@@ -23,8 +23,9 @@ goog.scope(
        * @param {!function(this:Through, (Buffer | string | number | boolean | null))} write
        * @param {!function(this:Through, (Buffer | string | number | boolean | null)=)} end
        */
-      constructor(write, end) {
+      constructor(write, end, name) {
         super();
+        this._name = name;
 
         this._writeHandler = write;
         this._endHandler = end;
@@ -126,6 +127,7 @@ goog.scope(
       pause() {
         if(!this.paused){
           this.paused = true
+          console.log( '[Through: ' + this._name + '] pause()' )
           this.emit('pause')
         }
       }
@@ -133,6 +135,7 @@ goog.scope(
       resume() {
         if(this.paused) {
           this.paused = false
+          console.log( '[Through: ' + this._name + '] resume()' )
           this.emit('resume')
         }
         this._drain()

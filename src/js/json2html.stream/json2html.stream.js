@@ -48,11 +48,11 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                 };
 
                 var result = onEnterNode( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, through ),
-                    paused = through.paused,
+                    stopped = through.stopped,
                     isNewNodeGeneratedByInstruction = m_isArray( result ), // ProcessingInstruction の場合だけ HTMLJson(Array) が返る
                     i, l;
 
-                if( paused ){
+                if( stopped ){
                     if( htmljson.DEFINE.DEBUG ){
                         if( result != null ){
                             throw 'ProcessingInstruction のハンドラで htmlJson の返却と pause の両方を行うことは出来ません!';
@@ -109,18 +109,18 @@ function processSync( unprocessedHTMLJson, through, onEnterNode, onLeaveNode ){
         function( currentNode, parentNode, myIndex, depth ){
             if( currentNode !== unprocessedHTMLJson && !currentNode.entered ){
                 var result = onEnterNode( currentNode, parentNode, myIndex, depth, m_hasChildren( currentNode ), through ),
-                    paused = through.paused,
+                    stopped = through.stopped,
                     isNewNodeGeneratedByInstruction = m_isArray( result );
                 
                 if( isNewNodeGeneratedByInstruction ){
                     if( htmljson.DEFINE.DEBUG ){
-                        if( paused ){
+                        if( stopped ){
                             throw 'ProcessingInstruction のハンドラで htmlJson の返却と pause の両方を行うことは出来ません!';
                         };
                     };
                     m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentNode), myIndex, /** @type {!HTMLJson} */ (result) );
                 };
-                if( paused ){
+                if( stopped ){
                     aborted = true;
                     return VISITOR_OPTION.BREAK;
                 } else if( isNewNodeGeneratedByInstruction ){

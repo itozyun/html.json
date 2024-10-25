@@ -260,7 +260,7 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
                                 if( opt_onInstruction ){
                                     value = m_executeInstructionAttr( true, opt_onInstruction, name, /** @type {!InstructionArgs | string} */ (value), opt_onError, opt_instructionContext );
                                     if( isInStreaming ){
-                                        if( opt_instructionContext && opt_instructionContext.paused ){
+                                        if( opt_instructionContext && opt_instructionContext.stopped ){
                                             return;
                                         };
                                     };

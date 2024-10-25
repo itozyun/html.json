@@ -24,7 +24,7 @@ goog.requireType( 'htmljson.Traverser.LeaveHandler' );
  */
 HTMLJsonParser.create = function( opt_onError ){
     const jsonParser = new JsonParser();
-    const stream     = /** @type {!Through} */ (new Through( HTMLJsonParser.writeHandler, HTMLJsonParser.endHandler ));
+    const stream     = /** @type {!Through} */ (new Through( HTMLJsonParser.writeHandler, HTMLJsonParser.endHandler, 'json2html' ));
 
     /**
      * @suppress {checkTypes}
@@ -45,8 +45,28 @@ HTMLJsonParser.create = function( opt_onError ){
     /** @const */ jsonParser._onError       = opt_onError;
 
     stream.on( 'resume', HTMLJsonParser.resumeHandler );
+    stream.stop = HTMLJsonParser.stopStream;
+    stream.restart = HTMLJsonParser.restartStream;
 
     return stream;
+};
+/**
+ * @this {!Through}
+ */
+HTMLJsonParser.stopStream = function(){
+    if( !this.stopped ){
+        this.stopped = true;
+        this.pause();
+    };
+};
+/**
+ * @this {!Through}
+ */
+HTMLJsonParser.restartStream = function(){
+    if( this.stopped ){
+        this.stopped = false;
+        this.resume();
+    };
 };
 
 /**
@@ -96,7 +116,7 @@ HTMLJsonParser.resumeHandler = function(){
     var args = jsonParser._waitingTokens;
 
     if( args ){
-        while( args.length && !this.paused ){
+        while( args.length && !this.stopped ){
             jsonParser.onToken( args.shift(), args.shift() );
         };
     };
@@ -133,7 +153,7 @@ HTMLJsonParser.onToken = function( token, value ){
     };
     /**
      * @param {boolean} hasUnknownChildren
-     * @return {boolean} paused
+     * @return {boolean} stopped
      */
     function onNodeReady( hasUnknownChildren ){
         const nodeType  = self._nodeType;
@@ -167,7 +187,7 @@ HTMLJsonParser.onToken = function( token, value ){
     /**
      * @param {!HTMLJson} currentJsonNode 
      * @param {boolean} hasUnknownChildren 
-     * @return {boolean} paused
+     * @return {boolean} stopped
      */
     function dispatchEnterNodeHandler( currentJsonNode, hasUnknownChildren ){
         const tree = self._tree;
@@ -183,9 +203,9 @@ HTMLJsonParser.onToken = function( token, value ){
 
         const result = self.onEnterNode( currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ] + 1, lastIndex, hasUnknownChildren, through );
 // console.log( currentJsonNode )
-        const paused = through.paused;
+        const stopped = through.stopped;
 
-        if( paused ){
+        if( stopped ){
             if( result !== VISITOR_OPTION.REMOVED ){
                 // ProcessingInstruction が返した htmlJson ノード中に ProcessingInstruction or InstructionAttribute があって pause した場合、HTMLJsonParser で再処理しない
                 // InstructionAttribute で pause した場合、HTMLJsonParser で再処理しない
@@ -201,7 +221,7 @@ HTMLJsonParser.onToken = function( token, value ){
                 dispatchLeaveNodeHandler( currentJsonNode );
             };
         };
-        return paused;
+        return stopped;
     };
     /**
      * @param {!HTMLJson=} opt_currentJsonNode 
@@ -231,7 +251,7 @@ HTMLJsonParser.onToken = function( token, value ){
     let expect = this._expect;
     let phase;
 
-    if( this._through.paused ){
+    if( this._through.stopped ){
         this._waitingTokens.push( token, value );
         return;
     };

@@ -2512,7 +2512,7 @@ json2html.createJSON2HTMLTransformaer = function(a, b, c, d, e, f, g) {
             y = u[v];
             (E = m_isInstructionAttr(n, v)) && (v = v.substr(n.length));
             "className" === v && (v = "class");
-            if (E && d && (y = m_executeInstructionAttr(!0, d, v, y, f, q), a && q && q.paused)) {
+            if (E && d && (y = m_executeInstructionAttr(!0, d, v, y, f, q), a && q && q.stopped)) {
               return;
             }
             if (!(null == y || htmlparser.BOOLEAN_ATTRIBUTES[v] && !1 === y || (w[++r] = " " + v, htmlparser.BOOLEAN_ATTRIBUTES[v] || !0 === y))) {

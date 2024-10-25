@@ -343,7 +343,7 @@ function Aa(a, b, c, g, f, e) {
             t = n[C];
             (Q = 0 === C.indexOf(l)) && (C = C.substr(l.length));
             "className" === C && (C = "class");
-            if (Q && c && (t = ma(c, C, t, f, H), H && H.paused)) {
+            if (Q && c && (t = ma(c, C, t, f, H), H && H.stopped)) {
               return;
             }
             null == t || ba[C] && !1 === t || (q[++v] = " " + C, ba[C] || !0 === t) || "style" === C && D(t) && (t = pa(t), !t) || (q[++v] = "=" + M(t, d, z || h));
@@ -732,38 +732,39 @@ function Fa(a) {
   if (a.paused) {
     a.on("resume", () => Fa(a));
   } else {
-    a.writable && (a.writable = !1, a.ha.call(a), !a.readable && a.da && a.destroy());
+    a.writable && (a.writable = !1, a.ia.call(a), !a.readable && a.ea && a.destroy());
   }
 }
 var Ia = class extends Da.Stream {
   constructor() {
     var a = Ga, b = Ha;
     super();
-    this.ia = a;
-    this.ha = b;
-    this.ea = this.paused = this.ca = this.ended = !1;
-    this.da = this.readable = this.writable = !0;
+    this.da = "json2html";
+    this.ja = a;
+    this.ia = b;
+    this.fa = this.paused = this.ca = this.ended = !1;
+    this.ea = this.readable = this.writable = !0;
     this.$ = [];
     this.on("end", () => {
       this.readable = !1;
-      !this.writable && this.da && process.nextTick(() => this.destroy());
+      !this.writable && this.ea && process.nextTick(() => this.destroy());
     });
   }
   write(a) {
-    this.ia.call(this, a);
+    this.ja.call(this, a);
     return !this.paused;
   }
   end(a) {
     this.ended || (this.ended = !0, arguments.length && this.write(a), Fa(this));
   }
   destroy() {
-    this.ea || (this.ended = this.ea = !0, this.$.length = 0, this.writable = this.readable = !1, this.emit("close"));
+    this.fa || (this.ended = this.fa = !0, this.$.length = 0, this.writable = this.readable = !1, this.emit("close"));
   }
   pause() {
-    this.paused || (this.paused = !0);
+    this.paused || (this.paused = !0, console.log("[Through: " + this.da + "] pause()"), this.emit("pause"));
   }
   resume() {
-    this.paused && (this.paused = !1, this.emit("resume"));
+    this.paused && (this.paused = !1, console.log("[Through: " + this.da + "] resume()"), this.emit("resume"));
     Ea(this);
     this.paused || this.emit("drain");
   }
@@ -776,12 +777,20 @@ function Ja(a) {
   b.N = [];
   b.R = b.v;
   b.v = Ka;
-  b.ka = La;
+  b.la = La;
   b.Y = [];
   b.ba = [];
   b.X = a;
   c.on("resume", Ma);
+  c.stop = Na;
+  c.restart = Oa;
   return c;
+}
+function Na() {
+  this.stopped || (this.stopped = !0, this.pause());
+}
+function Oa() {
+  this.stopped && (this.stopped = !1, this.resume());
 }
 function Ga(a) {
   if (G(a) || a === !!a) {
@@ -799,7 +808,7 @@ function Ha(a) {
 function Ma() {
   var a = this.L, b = a.ba;
   if (b) {
-    for (; b.length && !this.paused;) {
+    for (; b.length && !this.stopped;) {
       a.v(b.shift(), b.shift());
     }
   }
@@ -843,24 +852,24 @@ function Ka(a, b) {
   function f(l, m) {
     const p = h.Y;
     var n = h.V, r = p.length - 1;
-    -1 === r && 9 !== l[0] && 11 !== l[0] && (p.push([[11], -1]), r = 0, h.ga = !0);
+    -1 === r && 9 !== l[0] && 11 !== l[0] && (p.push([[11], -1]), r = 0, h.ha = !0);
     const u = p[r] || [null, -1];
-    r = h.ja(l, u[0], u[1] + 1, r, m, n);
-    (n = n.paused) ? -1 !== r && h.ba.push(a, b) : (h.N.length = 0, h.O = null, ++u[1], m ? p.push([l, -1]) : e(l));
+    r = h.ka(l, u[0], u[1] + 1, r, m, n);
+    (n = n.stopped) ? -1 !== r && h.ba.push(a, b) : (h.N.length = 0, h.O = null, ++u[1], m ? p.push([l, -1]) : e(l));
     return n;
   }
   function e(l) {
     const m = h.Y;
     let p = m.length - 1, n = m[p];
     l || (l = n[0], m.pop(), --p, n = m[p] || [null, 0]);
-    h.fa && h.fa(l, n[0], n[1], p);
+    h.ga && h.ga(l, n[0], n[1], p);
   }
   function k() {
-    return h.Y.length - (h.ga ? 1 : 0) ? 36 : 37;
+    return h.Y.length - (h.ha ? 1 : 0) ? 36 : 37;
   }
   const h = this;
   var d = this.aa;
-  if (this.V.paused) {
+  if (this.V.stopped) {
     this.ba.push(a, b);
   } else if (5 === a || 6 === a) {
     this.J.length && this.R(a, b);
@@ -1119,37 +1128,39 @@ function Y(a, b, c, g) {
   const f = Ja(c);
   Aa(f, function(e, k) {
     var h;
-    f.L.ja = function(d, l, m, p, n, r) {
+    f.L.ka = function(d, l, m, p, n, r) {
       if (h) {
-        if (Na(h, r, e, k)) {
+        if (Pa(h, r, e, k)) {
           return;
         }
         h = null;
       }
       d = e(d, l, m, p, n, r);
       m = B(d);
-      if ((!r.paused || null != d) && m) {
-        if (11 === d[0]) {
-          for (m = 1, p = d.length; m < p; ++m) {
-            l.push(d[m]);
+      if (!r.stopped) {
+        if (m) {
+          if (11 === d[0]) {
+            for (m = 1, p = d.length; m < p; ++m) {
+              l.push(d[m]);
+            }
+          } else {
+            l.push(d);
           }
-        } else {
-          l.push(d);
+          Pa(l, r, e, k) && (h = l);
         }
-        Na(l, r, e, k) && (h = l);
         return -1;
       }
     };
-    f.L.fa = k;
+    f.L.ga = k;
   }, a, b, c, g);
   return f;
 }
-function Na(a, b, c, g) {
+function Pa(a, b, c, g) {
   var f;
   da(a, function(e, k, h, d) {
     if (e !== a && !e.h) {
       d = c(e, k, h, d, y(e) < e.length, b);
-      var l = b.paused, m = B(d);
+      var l = b.stopped, m = B(d);
       m && (11 === d[0] ? (d.shift(), d.unshift(h, 1), k.splice.apply(k, d)) : k.splice(h, 1, d));
       if (l) {
         return f = !0, Infinity;
