@@ -141,9 +141,8 @@ HTML2JsonHandler.prototype.onParseDocType = function( doctype ){
 };
 
 HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, myIndex ){
-    var attributes = {},
-        numAttrs   = 0,
-        attrValue, attrName, id, className, functionNameAndArgs, newHTMLJson;
+    var numAttrs = 0,
+        attrName, attrValue, id, className, functionNameAndArgs, newHTMLJson;
 
     if( attrs ){
         for( attrName in attrs ){
@@ -151,28 +150,30 @@ HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, my
 
             if( attrName === 'id' ){
                 id = attrValue;
-                continue;
+                delete attrs[ attrName ];
             } else if( attrName === 'class' ){
                 className = attrValue;
-                continue;
-            } else if( attrName.startsWith( this._attrPrefix ) ){
-                functionNameAndArgs = codeToObject( attrValue, this._argOpeningBracket, this._argClosingBracket );
-
-                if( functionNameAndArgs.args ){
-                    attrValue = [ functionNameAndArgs.funcName ];
-                    attrValue.push.apply( attrValue, functionNameAndArgs.args );
-                } else {
-                    attrValue = functionNameAndArgs.funcName;
+                delete attrs[ attrName ];
+            } else {
+                if( attrName.startsWith( this._attrPrefix ) ){
+                    functionNameAndArgs = codeToObject( attrValue, this._argOpeningBracket, this._argClosingBracket );
+    
+                    if( functionNameAndArgs.args ){
+                        attrValue = [ functionNameAndArgs.funcName ];
+                        attrValue.push.apply( attrValue, functionNameAndArgs.args );
+                    } else {
+                        attrValue = functionNameAndArgs.funcName;
+                    };
                 };
+                attrs[ attrName ] = m_tryToFiniteNumber( attrValue );
+                ++numAttrs;
             };
-            attributes[ attrName ] = m_tryToFiniteNumber( attrValue );
-            ++numAttrs;
         };
     };
     newHTMLJson = [ m_createTagName( tagName, id, className ) ];
 
     if( numAttrs ){
-        newHTMLJson[ 1 ] = attributes;
+        newHTMLJson[ 1 ] = attrs;
     };
 
     this._currentNode.push( newHTMLJson );
