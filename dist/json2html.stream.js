@@ -333,7 +333,7 @@ function Aa(a, b, c, g, f, e) {
         n = n[Q];
         "P" !== p || ha[t] ? p = "" : q[++v] = k();
         z = z || (z || aa[t] ? !0 : 0 < t.indexOf(":"));
-        u = !!fa[t];
+        u = u || !!fa[t];
         P = P || !!ia[t];
         q[++v] = "<" + (z ? t : t.toLowerCase());
         A && (q[++v] = " id=" + M(A, d, z || h));
@@ -373,7 +373,7 @@ function Aa(a, b, c, g, f, e) {
         p = "";
         break;
       case 1:
-        G(q) && (q = n[1]), q = N(q), q = q[0], !L && ca[q] ? p = "" : z && !L || ea[q] && (!H || "P" !== q) ? p = q : (r[++u] = "</" + (z ? q : q.toLowerCase()) + ">", p = "");
+        G(q) && (q = n[1]), q = N(q)[0], !L && ca[q] ? p = "" : z && !L || ea[q] && (!H || "P" !== q) ? p = q : (r[++u] = "</" + (z ? q : q.toLowerCase()) + ">", p = "");
     }
     -1 !== u && Ba(a, r.join(""));
     0 === w && (a = null);

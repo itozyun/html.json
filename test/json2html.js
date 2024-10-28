@@ -83,3 +83,20 @@ test('unescaped elements',
         );
     }
 );
+
+test('<p>',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'A', [ 'P', '*' ] ]
+            ),
+            '<a><p>*</p></a>'
+        );
+        t.deepEqual(
+            json2html(
+                [ 'A', [ 'DIV', [ 'P', '*' ] ] ]
+            ),
+            '<a><div><p>*</p></div></a>'
+        );
+    }
+);

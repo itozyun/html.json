@@ -238,7 +238,7 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
 
                     // xml;
                     isXmlInHTML           = isXmlInHTML || isXML( tagName );
-                    pEndTagRequired       = !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ]
+                    pEndTagRequired       = pEndTagRequired || !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ]
                     escapeForHTMLDisabled = escapeForHTMLDisabled || !!m_UNESCAPED_ELEMENTS[ tagName ];
 
                     chunk[ ++j ] = '<' + ( isXmlInHTML ? tagName : getHTMLTagName( tagName ) );
@@ -334,8 +334,7 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
                     if( m_isNumber( tagName ) ){
                         tagName = currentJSONNode[ 1 ];
                     };
-                    tagName = m_parseTagName( /** @type {string} */ (tagName) );
-                    tagName = tagName[ 0 ];
+                    tagName = m_parseTagName( /** @type {string} */ (tagName) )[ 0 ];
 
                     if( !hasChildren && htmlparser.VOID_ELEMENTS[ tagName ] ){
                         omittedEndTagBefore = '';
