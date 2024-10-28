@@ -115,5 +115,12 @@ test('<pre>', (t) => {
 
     t.deepEqual( html2json('<pre>\n<b>GOTO 100\n</b></pre>' ), [ 11, ['PRE', [ 'B', 'GOTO 100'] ] ]);
 
-    t.deepEqual( html2json('<pre><b>\nGOTO 100</b>\n</pre>' ), [ 11, ['PRE', [ 'B', 'GOTO 100'] ] ]);
+    t.deepEqual( html2json('<pre class="lang:basic"><b>\nGOTO 100</b>\n</pre>' ), [ 11, ['PRE.lang:basic', [ 'B', 'GOTO 100'] ] ]);
+
+    t.deepEqual( html2json('<pre class="lang:basic"><b>\r\nGOTO 100</b>\r\nGOTO 200\r</pre>' ), [ 11, ['PRE.lang:basic', [ 'B', 'GOTO 100'], '\nGOTO 200' ] ]);
+});
+
+test('CDATA section', (t) => {
+    t.deepEqual( html2json('<![CDATA[\r\ndata\r]]>', false, undefined, {keepCDATASections:true}), [11, [4, '\ndata\n'] ] );
+    t.deepEqual( html2json('<![CDATA[999]]>', false, undefined, {keepCDATASections:true}), [11, [4, 999] ] );
 });

@@ -33,7 +33,7 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
         isStaticWebPage = json2json.process( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
 
         if( opt_onDocumentReady ){
-            if( _dispatchDocumentReadyEvent( opt_onDocumentReady, rootHTMLJson ) ){
+            if( dispatchDocumentReadyEvent( opt_onDocumentReady, rootHTMLJson ) ){
                 isStaticWebPage = m_isStaticDocument( rootHTMLJson, opt_options && opt_options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX );
             };
         };
@@ -72,8 +72,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
 
     var isTreeUpdated,
         isStaticWebPage = true;
-    /** @const */
-    var statusStack = [ false, false ];
 
     isTreeUpdated = htmljson.Traverser.traverseAllDescendantNodes(
         rootHTMLJson,
@@ -86,12 +84,10 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
          * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
-            var isDescendantOfPre = statusStack[ depth * 2 + 0 ],
-                isTrimNewlines    = statusStack[ depth * 2 + 1 ],
-                tagName           = currentJSONNode[ 0 ],
+            var tagName           = currentJSONNode[ 0 ],
                 arg1              = currentJSONNode[ 1 ],
                 attrIndex         = 1,
-                prevJSONNode, attrs, result, isPreTag;
+                prevJSONNode, attrs, result;
 
             switch( m_getNodeType( currentJSONNode ) ){
                 case htmljson.NODE_TYPE.DOCUMENT_NODE :
@@ -106,12 +102,18 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     if( !m_isArray( currentJSONNode ) ){
                         arg1 = currentJSONNode;
                     };
-                    arg1 = m_trimWhiteSpaces( '' + arg1, isDescendantOfPre, isTrimNewlines, isTrimWhitespace, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
-                    if( arg1 !== '' ){
-                        parentJSONNode[ myIndex ] = arg1;
-                    } else {
-                        parentJSONNode.splice( myIndex, 1 );
-                        return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                    if( m_isString( arg1 ) ){
+                        arg1 = /** @type {string} */ (arg1);
+                        arg1 = m_normalizeNewlines( arg1 );
+                        if( isTrimWhitespace ){
+                            arg1 = trimWhiteSpaces( arg1, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
+                        };
+                        if( arg1 !== '' ){
+                            parentJSONNode[ myIndex ] = arg1;
+                        } else {
+                            parentJSONNode.splice( myIndex, 1 );
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                        };
                     };
                     return;
                 case htmljson.NODE_TYPE.CDATA_SECTION :
@@ -166,7 +168,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         tagName   = arg1;
                         attrIndex = 2;
                     };
-                    tagName = /** @type {string} */ (tagName);
+                    tagName = m_parseTagName( /** @type {string} */ (tagName) )[ 0 ];
                     attrs = currentJSONNode[ attrIndex ];
                     // attr
                     if( m_isAttributes( attrs ) ){
@@ -174,11 +176,30 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                             currentJSONNode.splice( attrIndex, 1 );
                         };
                     };
-                    isPreTag          = !!m_FAMILY_OF_PRE_ELEMENT[ tagName ];
-                    isDescendantOfPre = isDescendantOfPre || isPreTag;
-                    isTrimNewlines    = !!m_TRIM_NEWLINES_ELEMENTS[ tagName ];
-                    if( isPreTag && isTrimWhitespace ){
-                        m_trimWhitespaceInPre( /** @type {!HTMLJson} */ (currentJSONNode) );
+                    if( m_FAMILY_OF_PRE_ELEMENT[ tagName ] ){
+                        trimWhitespaceInPre( /** @type {!HTMLJson} */ (currentJSONNode) );
+                        return htmljson.Traverser.VISITOR_OPTION.SKIP;
+                    };
+                    if( m_TRIM_NEWLINES_ELEMENTS[ tagName ] ){
+                        myIndex = m_getChildNodeStartIndex( currentJSONNode );
+                        arg1    = currentJSONNode[ myIndex ];
+                        if( arg1 != null ){
+                            if( m_isArray( arg1 ) ){
+                                arg1 = arg1[ 1 ];
+                            };
+                            if( m_isString( arg1 ) ){
+                                arg1 = /** @type {string} */ (arg1);
+                                arg1 = m_normalizeNewlines( arg1 );
+                                // 先頭と最後の改行文字を削除
+                                arg1 = m_trimChar( /** @type {string} */ (arg1), '\n' );
+                                if( arg1 !== '' ){
+                                    currentJSONNode[ myIndex ] = m_tryToFiniteNumber( arg1 );
+                                } else {
+                                    currentJSONNode.splice( myIndex, 1 );
+                                };
+                            };
+                        };
+                        return htmljson.Traverser.VISITOR_OPTION.SKIP;
                     };
                     break;
                 default :
@@ -186,8 +207,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         opt_onError && opt_onError( 'Not html.json! [' + currentJSONNode + ']' );
                     };
             };
-
-            statusStack.push( isDescendantOfPre, isTrimNewlines );
         },
         /**
          * 
@@ -198,10 +217,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
          * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
-            if( depth * 2 + 2 < statusStack.length ){
-                statusStack.length = depth * 2 + 2;
-            };
-
             switch( m_getNodeType( currentJSONNode ) ){
                 case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                 case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
@@ -291,15 +306,146 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
         currentJSONNode[ tagNameIndex ] = m_createTagName( tagName, id, className );
         return numAttributes;
     };
+
+    /**
+     * 
+     * @param {string} nodeValue
+     * @param {boolean} isAggressiveTrim 
+     * @param {boolean} isRemoveNewlineBetweenFullWidthChars 
+     * @return {string | number}
+     */
+    function trimWhiteSpaces( nodeValue, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars ){
+        /**
+         * 
+         * @param {string} string 
+         * @return {string} 
+         */
+        function removeNewlineBetweenFullWidthChars( string ){
+            // この関数は、HTML文書を文字列として受け取り、全角文字に挟まれた改行コードを削除したHTML文書を文字列として返す
+            // 正規表現を使って、全角文字に挟まれた改行コードを空文字に置換する
+            // 全角文字の範囲は、Unicodeのコードポイントで指定する
+            // \uFF01-\uFF60は全角記号や英数字、\u3040-\u309Fはひらがな、\u30A0-\u30FFはカタカナ、\u4E00-\u9FFFは漢字などを表す
+            // \r\nや\nや\rなどの改行コードを表すために、\sというメタ文字を使う
+            // gというフラグを使って、文字列全体に対して置換を行う
+            return string.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2");
+        };
+
+        if( isRemoveNewlineBetweenFullWidthChars ){
+            nodeValue = removeNewlineBetweenFullWidthChars( nodeValue );
+        };
+
+        // タブは一つの半角スペースに
+        nodeValue = nodeValue.split( '\t' ).join( ' ' );
+
+        // 2つ以上の改行を1つの改行へ
+        while( 0 <= nodeValue.indexOf( '\n\n' ) ){
+            nodeValue = nodeValue.split( '\n\n' ).join( '\n' );
+        };
+
+        if( isAggressiveTrim ){
+            var isAggressiveTrimWhitespace =
+                // <b>1</b> / <b>3</b>
+                //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する
+                    // 先頭が改行、かつ
+                    nodeValue.charAt( 0 ) === '\n' &&
+                    // 最後が改行+0個以上の空白文字の場合  
+                    /\n[ ]*$/.test( nodeValue );
+        };
+
+        // 最後の改行を削除
+        nodeValue = m_trimLastChar( nodeValue, '\n' );
+
+        // 改行文字を一つの半角スペースに
+        nodeValue = nodeValue.split( '\n' ).join( ' ' );
+
+        // 2つ以上の半角スペースを1つの半角スペースへ
+        while( 0 <= nodeValue.indexOf( '  ' ) ){
+            nodeValue = nodeValue.split( '  ' ).join( ' ' );
+        };
+
+        if( isAggressiveTrimWhitespace ){
+            // 先頭と最後の半角スペースを削除
+            nodeValue = m_trimChar( nodeValue, ' ' );
+        };
+        // 半角スペースの保護には \u0020 または &#x20; または &#32; を使う
+        nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' ).split( '&#32;' ).join( ' ' );
+
+        return /** @type {number | string} */ (m_tryToFiniteNumber( nodeValue ));
+    };
+
+    /**
+     * pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除
+     * 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
+     * TODO 各行の改行の前の空白文字も削除
+     * TODO テキストノードが改行1文字だけの場合、直前のタグに含める
+     * 
+     * @param {!HTMLJson} htmlJsonPre
+     */
+    function trimWhitespaceInPre( htmlJsonPre ){
+        var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text;
+
+        htmljson.Traverser.traverseAllDescendantNodes(
+            htmlJsonPre,
+            function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                    var text = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
+
+                    if( !removeWhitespaces( text ) ){
+                        parentJSONNode.splice( myIndex, 1 );
+                        return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                    } else {
+                        parentJSONNode.splice( myIndex, 1, m_trimFirstChar( text, '\n' ) );
+                        return htmljson.Traverser.VISITOR_OPTION.BREAK;
+                    };
+                };
+            }
+        );
+
+        while( nodeAndPosition = getLastTextNode( htmlJsonPre ) ){
+            htmlJsonText   = nodeAndPosition[ 0 ];
+            htmlJsonParent = nodeAndPosition[ 1 ];
+            index          = nodeAndPosition[ 2 ];
+
+            text = '' + ( m_isStringOrNumber( htmlJsonText ) ? htmlJsonText : htmlJsonText[ 1 ] );
+
+            if( !removeWhitespaces( text ) ){
+                htmlJsonParent.splice( index, 1 );
+            } else {
+                htmlJsonParent.splice( index, 1, m_trimLastChar( text, '\n' ) );
+                break;
+            };
+        };
+
+        function getLastTextNode( htmlJsonTarget ){
+            var nodeAndPosition;
+
+            htmljson.Traverser.traverseAllDescendantNodes(
+                htmlJsonTarget,
+                function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                    if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                        nodeAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
+                    };
+                }
+            );
+            return nodeAndPosition;
+        };
+        /**
+         * 
+         * @param {string} string 
+         * @return {string} 
+         */
+        function removeWhitespaces( string ){
+            return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
+        };
+    };
 };
 
 /**
- * @private
  * @param {!function(!VNode)} onDocumentReady
  * @param {!HTMLJson} rootHTMLJson
  * @return {boolean} isUpdated
  */
-function _dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
+function dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
     var rootVNode = m_createVNodeFromHTMLJson( rootHTMLJson, false );
 
     VNode.treeIsUpdated = false;

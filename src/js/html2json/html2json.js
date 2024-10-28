@@ -141,22 +141,24 @@ HTML2JsonHandler.prototype.onParseDocType = function( doctype ){
 };
 
 HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, myIndex ){
+    attrs = /** @type {Attrs} */ (attrs);
+
     var numAttrs = 0,
         attrName, attrValue, id, className, functionNameAndArgs, newHTMLJson;
 
     if( attrs ){
         for( attrName in attrs ){
-            attrValue = /** @type {string} */ (htmlparser.BOOLEAN_ATTRIBUTES[ attrName ] ? 1 : attrs[ attrName ]);
+            attrValue = /** @type {string | number} */ (htmlparser.BOOLEAN_ATTRIBUTES[ attrName ] ? 1 : attrs[ attrName ]);
 
             if( attrName === 'id' ){
-                id = attrValue;
+                id = /** @type {string} */ (attrValue);
                 delete attrs[ attrName ];
             } else if( attrName === 'class' ){
-                className = attrValue;
+                className = /** @type {string} */ (attrValue);
                 delete attrs[ attrName ];
             } else {
                 if( attrName.startsWith( this._attrPrefix ) ){
-                    functionNameAndArgs = codeToObject( attrValue, this._argOpeningBracket, this._argClosingBracket );
+                    functionNameAndArgs = codeToObject( /** @type {string} */ (attrValue), this._argOpeningBracket, this._argClosingBracket );
     
                     if( functionNameAndArgs.args ){
                         attrValue = [ functionNameAndArgs.funcName ];
@@ -165,7 +167,7 @@ HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, my
                         attrValue = functionNameAndArgs.funcName;
                     };
                 };
-                attrs[ attrName ] = m_tryToFiniteNumber( attrValue );
+                attrs[ attrName ] = /** @type {string | number} */ (m_tryToFiniteNumber( attrValue ));
                 ++numAttrs;
             };
         };
@@ -207,7 +209,7 @@ HTML2JsonHandler.prototype.onParseEndTag = function( tagName, isImplicit, isMiss
 
 HTML2JsonHandler.prototype.onParseText = function( nodeValue ){
     if( nodeValue ){
-        this._currentNode.push( [ htmljson.NODE_TYPE.TEXT_NODE, nodeValue ] );
+        this._currentNode.push( [ htmljson.NODE_TYPE.TEXT_NODE, m_normalizeNewlines( nodeValue ) ] );
     };
 };
 
@@ -242,13 +244,13 @@ HTML2JsonHandler.prototype.onParseComment = function( nodeValue ){
         newHTMLJson = [ htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END ];
         this._isCcShowLowerStarted = false;
     } else {
-        newHTMLJson = [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToFiniteNumber( nodeValue ) ];
+        newHTMLJson = [ htmljson.NODE_TYPE.COMMENT_NODE, m_tryToFiniteNumber( m_normalizeNewlines( nodeValue ) ) ];
     };
     this._currentNode.push( newHTMLJson );
 };
 
 HTML2JsonHandler.prototype.onParseCDATASection = function( nodeValue ){
-    this._currentNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket ) ] );
+    this._currentNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToFiniteNumber( m_normalizeNewlines( nodeValue ) ) ] );
 };
 
 HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
