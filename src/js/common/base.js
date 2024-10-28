@@ -992,6 +992,7 @@ function m_trimWhitespaceInPre( htmlJsonPre ){
 
                 if( !removeWhitespaces( text ) ){
                     parentJSONNode.splice( myIndex, 1 );
+                    return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                 } else {
                     parentJSONNode.splice( myIndex, 1, m_trimFirstChar( text, '\n' ) );
                     return htmljson.Traverser.VISITOR_OPTION.BREAK;

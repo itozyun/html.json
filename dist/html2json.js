@@ -328,6 +328,7 @@ function ta(a) {
         return n.splice(q, 1, S(f, "\n")), Infinity;
       }
       n.splice(q, 1);
+      return -1;
     }
   }); d = b(a);) {
     var g = d[0];

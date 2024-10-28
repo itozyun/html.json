@@ -1524,6 +1524,7 @@ function m_trimWhitespaceInPre(a) {
         return h.splice(m, 1, m_trimFirstChar(g, "\n")), htmljson.Traverser.VISITOR_OPTION.BREAK;
       }
       h.splice(m, 1);
+      return htmljson.Traverser.VISITOR_OPTION.REMOVED;
     }
   }); d = b(a);) {
     var e = d[0];
