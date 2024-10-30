@@ -95,14 +95,14 @@ function na(a, b, c) {
     for (b = 0, g = c.length; b < g; b += 2) {
       var f = c[b], e = c[b + 1];
       if (G(f)) {
-        if (f === a.W && !0 === e(a)) {
+        if (f === a.X && !0 === e(a)) {
           break;
         }
       } else if ("*" === f) {
         if (!0 === e(a)) {
           break;
         }
-      } else if (E(f) && f === a.J && !0 === e(a)) {
+      } else if (E(f) && f === a.K && !0 === e(a)) {
         break;
       }
     }
@@ -137,7 +137,8 @@ function pa(a) {
     for (var e = ++c, k, h = [], d = g.split(""), l = d.length; l;) {
       k = d[--l], "A" <= k && "Z" >= k && (k = "-" + k.toLowerCase()), h[l] = k;
     }
-    b[e] = h.join("") + ":" + K("" + f);
+    k = h.join("");
+    b[e] = k + ":" + K("" + f);
   }
   return b.join(";").substr(1);
 }
@@ -148,7 +149,7 @@ function oa(a) {
       if (b) {
         k < c.length && (c.length = k);
         var u = c[c.length - 1];
-        O <= qa(u) ? (u.D = u.D || [], u.D.push([p, n, r]), p = null) : p = new R(u, u.h && u.h.length, p, n, r);
+        O <= qa(u) ? (u.G = u.G || [], u.G.push([p, n, r]), p = null) : p = new R(u, u.h && u.h.length, p, n, r);
         y(g) < g.length && (c[k] = p);
       } else {
         b = new R(!0, 0, p, n, r), c = [b];
@@ -206,17 +207,17 @@ function R(a, b, c, g, f) {
     e = a, this.m = e.m;
   }
   this.j = e;
-  this.W = c;
+  this.X = c;
   e && (e.h || (e.h = []), a = e.h, 0 <= b && b < a.length ? a.splice(b, 0, this) : a.push(this));
   switch(c) {
     case 1:
     case 17:
-      this.O = f || null, b = N(g), g = b[0];
+      this.T = f || null, b = N(g), g = b[0];
     case 18:
-      this.J = g;
+      this.K = g;
       break;
     case 7:
-      this.N = f || null;
+      this.R = f || null;
     case 3:
     case 4:
     case 8:
@@ -229,11 +230,11 @@ function R(a, b, c, g, f) {
 }
 var J = null;
 function qa(a) {
-  return a.m ? J === a ? a.G ? ra : a.K ? O : sa : J.j === a ? ta : ua : va;
+  return a.m ? J === a ? a.J ? ra : a.N ? O : sa : J.j === a ? ta : ua : va;
 }
 R.prototype.remove = function() {
   if (O <= qa(this)) {
-    return this.G = !0, null;
+    return this.J = !0, null;
   }
   var a = this.j ? this.j.h.indexOf(this) : -1;
   0 <= a && (this.j.h.splice(a, 1), this.j = null);
@@ -253,7 +254,7 @@ R.prototype.wrap = function(a, b, c) {
 function wa(a, b, c) {
   var g = a.h = a.h || [], f = g.length, e = c.length;
   for (b = b < f ? b : f; e;) {
-    f = c[--e], 11 === f.W ? f.h && f.h.length && wa(a, b, f.h) : (f.remove(), g.splice(b, 0, f), f.j = a);
+    f = c[--e], 11 === f.X ? f.h && f.h.length && wa(a, b, f.h) : (f.remove(), g.splice(b, 0, f), f.j = a);
   }
 }
 var va = 0, ua = 1, sa = 2, O = 3, ra = 4, ta = 5, xa = !1, ya = !1, za = !1;
@@ -386,23 +387,23 @@ function U() {
   this.J = [];
   this.h = 17;
   this.j = void 0;
-  this.T = T(65536);
+  this.V = T(65536);
   this.o = 0;
-  this.C = this.F = this.G = this.M = void 0;
-  this.D = 113;
+  this.D = this.F = this.G = this.unicode = void 0;
+  this.state = 113;
   this.m = this.K = 0;
-  this.Z = {2:T(2), 3:T(3), 4:T(4)};
+  this.$ = {2:T(2), 3:T(3), 4:T(4)};
 }
 function V(a, b) {
-  65536 <= a.o && (a.j += a.T.toString("utf8"), a.o = 0);
-  a.T[a.o++] = b;
+  65536 <= a.o && (a.j += a.V.toString("utf8"), a.o = 0);
+  a.V[a.o++] = b;
 }
 function W(a, b, c, g) {
   var f = b.length;
   "number" === typeof c && (f = "number" === typeof g ? 0 > g ? b.length - c + g : g - c : b.length - c);
   0 > f && (f = 0);
-  65536 < a.o + f && (a.j += a.T.toString("utf8", 0, a.o), a.o = 0);
-  b.copy(a.T, a.o, c, g);
+  65536 < a.o + f && (a.j += a.V.toString("utf8", 0, a.o), a.o = 0);
+  b.copy(a.V, a.o, c, g);
   a.o += f;
 }
 U.prototype.write = function(a) {
@@ -460,15 +461,15 @@ U.prototype.write = function(a) {
         b = a[c];
         if (0 < this.K) {
           for (b = 0; b < this.K; b++) {
-            this.Z[this.m][this.m - this.K + b] = a[b];
+            this.$[this.m][this.m - this.K + b] = a[b];
           }
-          W(this, this.Z[this.m]);
+          W(this, this.$[this.m]);
           this.m = this.K = 0;
           c = c + b - 1;
         } else if (0 === this.K && 128 <= b) {
           if (194 <= b && 223 >= b && (this.m = 2), 224 <= b && 239 >= b && (this.m = 3), 240 <= b && 244 >= b && (this.m = 4), this.m + c > a.length) {
             for (b = 0; b <= a.length - 1 - c; b++) {
-              this.Z[this.m][b] = a[c + b];
+              this.$[this.m][b] = a[c + b];
             }
             this.K = c + this.m - a.length;
             c = a.length - 1;
@@ -476,7 +477,7 @@ U.prototype.write = function(a) {
             W(this, a, c, c + this.m), c = c + this.m - 1;
           }
         } else if (34 === b) {
-          this.h = 17, this.j += this.T.toString("utf8", 0, this.o), this.o = 0, this.v(10, this.j), Buffer.byteLength(this.j, "utf8"), this.j = void 0;
+          this.h = 17, this.j += this.V.toString("utf8", 0, this.o), this.o = 0, this.v(10, this.j), Buffer.byteLength(this.j, "utf8"), this.j = void 0;
         } else if (92 === b) {
           this.h = 98;
         } else if (32 <= b) {
@@ -522,7 +523,7 @@ U.prototype.write = function(a) {
             this.h = 97;
             break;
           case 117:
-            this.M = "";
+            this.unicode = "";
             this.h = 99;
             break;
           default:
@@ -535,7 +536,7 @@ U.prototype.write = function(a) {
       case 102:
         b = a[c];
         if (48 <= b && 64 > b || 64 < b && 70 >= b || 96 < b && 102 >= b) {
-          this.M += String.fromCharCode(b), 102 === this.h++ && (b = parseInt(this.M, 16), this.M = void 0, void 0 !== this.G && 56320 <= b && 57344 > b ? (W(this, S(String.fromCharCode(this.G, b))), this.G = void 0) : void 0 === this.G && 55296 <= b && 56320 > b ? this.G = b : (void 0 !== this.G && (W(this, S(String.fromCharCode(this.G))), this.G = void 0), W(this, S(String.fromCharCode(b)))), this.h = 97);
+          this.unicode += String.fromCharCode(b), 102 === this.h++ && (b = parseInt(this.unicode, 16), this.unicode = void 0, void 0 !== this.G && 56320 <= b && 57344 > b ? (W(this, S(String.fromCharCode(this.G, b))), this.G = void 0) : void 0 === this.G && 55296 <= b && 56320 > b ? this.G = b : (void 0 !== this.G && (W(this, S(String.fromCharCode(this.G))), this.G = void 0), W(this, S(String.fromCharCode(b)))), this.h = 97);
         } else {
           this.h = 18;
           return;
@@ -657,21 +658,21 @@ U.prototype.write = function(a) {
   }
 };
 function Ca(a) {
-  a.J.push({l:a.l, F:a.F, C:a.C});
+  a.J.push({l:a.l, F:a.F, D:a.D});
 }
 function X(a) {
   var b = a.l, c = a.J.pop();
   a.l = c.l;
   a.F = c.F;
-  a.C = c.C;
+  a.D = c.D;
   a.emit(b);
-  a.C || (a.D = 113);
+  a.D || (a.state = 113);
 }
 U.prototype.emit = function() {
-  this.C && (this.D = 6);
+  this.D && (this.state = 6);
 };
 U.prototype.v = function(a, b) {
-  switch(this.D) {
+  switch(this.state) {
     case 113:
       switch(a) {
         case 10:
@@ -686,33 +687,33 @@ U.prototype.v = function(a, b) {
           Ca(this);
           this.l = this.l ? this.l[this.F] = {} : {};
           this.F = void 0;
-          this.D = 114;
-          this.C = 129;
+          this.state = 114;
+          this.D = 129;
           break;
         case 3:
           Ca(this);
           this.l = this.l ? this.l[this.F] = [] : [];
           this.F = 0;
-          this.C = 130;
-          this.D = 113;
+          this.D = 130;
+          this.state = 113;
           break;
         case 2:
-          129 === this.C ? X(this) : this.h = 18;
+          129 === this.D ? X(this) : this.h = 18;
           break;
         case 4:
-          130 === this.C ? X(this) : this.h = 18;
+          130 === this.D ? X(this) : this.h = 18;
           break;
         default:
           this.h = 18;
       }break;
     case 114:
-      10 === a ? (this.F = b, this.D = 5) : 2 === a ? X(this) : this.h = 18;
+      10 === a ? (this.F = b, this.state = 5) : 2 === a ? X(this) : this.h = 18;
       break;
     case 5:
-      5 === a ? this.D = 113 : this.h = 18;
+      5 === a ? this.state = 113 : this.h = 18;
       break;
     case 6:
-      6 === a ? 130 === this.C ? (this.F++, this.D = 113) : 129 === this.C && (this.D = 114) : 4 === a && 130 === this.C || 2 === a && 129 === this.C ? X(this) : this.h = 18;
+      6 === a ? 130 === this.D ? (this.F++, this.state = 113) : 129 === this.D && (this.state = 114) : 4 === a && 130 === this.D || 2 === a && 129 === this.D ? X(this) : this.h = 18;
       break;
     default:
       this.h = 18;
@@ -720,10 +721,10 @@ U.prototype.v = function(a, b) {
 };
 var Da = require("stream");
 function Ba(a, b) {
-  a.ca || (null === b && (a.ca = !0), a.$.push(b), Ea(a));
+  a.ea || (null === b && (a.ea = !0), a.aa.push(b), Ea(a));
 }
 function Ea(a) {
-  for (var b = a.$; b.length && !a.paused;) {
+  for (var b = a.aa; b.length && !a.paused;) {
     var c = b.shift();
     null === c ? a.emit("end") : a.emit("data", c);
   }
@@ -732,55 +733,55 @@ function Fa(a) {
   if (a.paused) {
     a.on("resume", () => Fa(a));
   } else {
-    a.writable && (a.writable = !1, a.ia.call(a), !a.readable && a.ea && a.destroy());
+    a.writable && (a.writable = !1, a.ja.call(a), !a.readable && a.ga && a.destroy());
   }
 }
 var Ia = class extends Da.Stream {
   constructor() {
     var a = Ga, b = Ha;
     super();
-    this.da = "json2html";
-    this.ja = a;
-    this.ia = b;
-    this.fa = this.paused = this.ca = this.ended = !1;
-    this.ea = this.readable = this.writable = !0;
-    this.$ = [];
+    this.fa = "json2html";
+    this.ka = a;
+    this.ja = b;
+    this.destroyed = this.paused = this.ea = this.ended = !1;
+    this.ga = this.readable = this.writable = !0;
+    this.aa = [];
     this.on("end", () => {
       this.readable = !1;
-      !this.writable && this.ea && process.nextTick(() => this.destroy());
+      !this.writable && this.ga && process.nextTick(() => this.destroy());
     });
   }
   write(a) {
-    this.ja.call(this, a);
+    this.ka.call(this, a);
     return !this.paused;
   }
   end(a) {
     this.ended || (this.ended = !0, arguments.length && this.write(a), Fa(this));
   }
   destroy() {
-    this.fa || (this.ended = this.fa = !0, this.$.length = 0, this.writable = this.readable = !1, this.emit("close"));
+    this.destroyed || (this.ended = this.destroyed = !0, this.aa.length = 0, this.writable = this.readable = !1, this.emit("close"));
   }
   pause() {
-    this.paused || (this.paused = !0, console.log("[Through: " + this.da + "] pause()"), this.emit("pause"));
+    this.paused || (this.paused = !0, console.log("[Through: " + this.fa + "] pause()"), this.emit("pause"));
   }
   resume() {
-    this.paused && (this.paused = !1, console.log("[Through: " + this.da + "] resume()"), this.emit("resume"));
+    this.paused && (this.paused = !1, console.log("[Through: " + this.fa + "] resume()"), this.emit("resume"));
     Ea(this);
     this.paused || this.emit("drain");
   }
 };
 function Ja(a) {
   const b = new U(), c = new Ia();
-  c.L = b;
-  b.V = c;
-  b.aa = 0;
-  b.N = [];
-  b.R = b.v;
+  c.M = b;
+  b.W = c;
+  b.ba = 0;
+  b.R = [];
+  b.N = b.v;
   b.v = Ka;
-  b.la = La;
-  b.Y = [];
-  b.ba = [];
-  b.X = a;
+  b.onError = La;
+  b.Z = [];
+  b.da = [];
+  b.Y = a;
   c.on("resume", Ma);
   c.stop = Na;
   c.restart = Oa;
@@ -797,16 +798,16 @@ function Ga(a) {
     a = "" + a;
   }
   E(a) && (a = S(a));
-  this.L.write(a);
+  this.M.write(a);
 }
 function Ha(a) {
   null != a && this.write(a);
-  37 !== this.L.aa && this.emit("error", "Invalid html.json");
+  37 !== this.M.ba && this.emit("error", "Invalid html.json");
   Ba(this, null);
-  this.L = this.L.V = null;
+  this.M = this.M.W = null;
 }
 function Ma() {
-  var a = this.L, b = a.ba;
+  var a = this.M, b = a.da;
   if (b) {
     for (; b.length && !this.stopped;) {
       a.v(b.shift(), b.shift());
@@ -815,22 +816,22 @@ function Ma() {
 }
 function La(a) {
   -1 < a.message.indexOf("at position") && (a.message = "Invalid JSON (" + a.message + ")");
-  this.X && this.X(a.message);
-  this.V.emit("error", a);
+  this.Y && this.Y(a.message);
+  this.W.emit("error", a);
 }
 function Ka(a, b) {
   function c(l) {
-    h.W = l;
+    h.X = l;
   }
   function g(l) {
-    const m = h.W, p = h.H;
+    const m = h.X, p = h.H;
     switch(m) {
       case 11:
         return f([m], l);
       case 17:
       case 1:
-        if (h.O) {
-          return f([m, p, h.O], l);
+        if (h.T) {
+          return f([m, p, h.T], l);
         }
       case 9:
       case 13:
@@ -845,34 +846,34 @@ function Ka(a, b) {
       case 15:
         return f([m], !1);
       case 7:
-        return f([m].concat(h.N), !1);
+        return f([m].concat(h.R), !1);
     }
     return !1;
   }
   function f(l, m) {
-    const p = h.Y;
-    var n = h.V, r = p.length - 1;
-    -1 === r && 9 !== l[0] && 11 !== l[0] && (p.push([[11], -1]), r = 0, h.ha = !0);
+    const p = h.Z;
+    var n = h.W, r = p.length - 1;
+    -1 === r && 9 !== l[0] && 11 !== l[0] && (p.push([[11], -1]), r = 0, h.ia = !0);
     const u = p[r] || [null, -1];
-    r = h.ka(l, u[0], u[1] + 1, r, m, n);
-    (n = n.stopped) ? -1 !== r && h.ba.push(a, b) : (h.N.length = 0, h.O = null, ++u[1], m ? p.push([l, -1]) : e(l));
+    r = h.la(l, u[0], u[1] + 1, r, m, n);
+    (n = n.stopped) ? -1 !== r && h.da.push(a, b) : (h.R.length = 0, h.T = null, ++u[1], m ? p.push([l, -1]) : e(l));
     return n;
   }
   function e(l) {
-    const m = h.Y;
+    const m = h.Z;
     let p = m.length - 1, n = m[p];
     l || (l = n[0], m.pop(), --p, n = m[p] || [null, 0]);
-    h.ga && h.ga(l, n[0], n[1], p);
+    h.ha && h.ha(l, n[0], n[1], p);
   }
   function k() {
-    return h.Y.length - (h.ha ? 1 : 0) ? 36 : 37;
+    return h.Z.length - (h.ia ? 1 : 0) ? 36 : 37;
   }
   const h = this;
-  var d = this.aa;
-  if (this.V.stopped) {
-    this.ba.push(a, b);
+  var d = this.ba;
+  if (this.W.stopped) {
+    this.da.push(a, b);
   } else if (5 === a || 6 === a) {
-    this.J.length && this.R(a, b);
+    this.J.length && this.N(a, b);
   } else {
     switch(d) {
       case 26:
@@ -886,20 +887,20 @@ function Ka(a, b) {
               break;
             }
           case 2:
-            1 === this.J.length && (this.N.push(this.l), this.l = null);
+            1 === this.J.length && (this.R.push(this.l), this.l = null);
           case 3:
           case 1:
-            this.R(a, b);
+            this.N(a, b);
             break;
           default:
-            this.J.length ? this.R(a, b) : this.N.push(b);
+            this.J.length ? this.N(a, b) : this.R.push(b);
         }break;
       case 34:
         switch(a) {
           case 2:
-            1 === this.J.length && (this.O = this.l, this.l = null, d = 35);
+            1 === this.J.length && (this.T = this.l, this.l = null, d = 35);
           default:
-            this.R(a, b);
+            this.N(a, b);
         }break;
       default:
         switch(a) {
@@ -1026,8 +1027,8 @@ function Ka(a, b) {
             break;
           case 30:
             d = 34;
-            this.O = {};
-            this.R(a, b);
+            this.T = {};
+            this.N(a, b);
             break;
           case 35:
             e();
@@ -1121,14 +1122,14 @@ function Ka(a, b) {
             d = -1;
         }
     }
-    -1 === d ? (this.X && this.X("Not html.json format!"), this.V.emit("error", "Not html.json format!")) : this.aa = d;
+    -1 === d ? (this.Y && this.Y("Not html.json format!"), this.W.emit("error", "Not html.json format!")) : this.ba = d;
   }
 }
 function Y(a, b, c, g) {
   const f = Ja(c);
   Aa(f, function(e, k) {
     var h;
-    f.L.ka = function(d, l, m, p, n, r) {
+    f.M.la = function(d, l, m, p, n, r) {
       if (h) {
         if (Pa(h, r, e, k)) {
           return;
@@ -1151,7 +1152,7 @@ function Y(a, b, c, g) {
         return -1;
       }
     };
-    f.L.ga = k;
+    f.M.ha = k;
   }, a, b, c, g);
   return f;
 }

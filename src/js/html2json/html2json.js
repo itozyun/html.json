@@ -1,6 +1,7 @@
 goog.provide( 'html2json.main' );
 
 goog.requireType( 'htmlparser.typedef.Handler' );
+goog.require( 'htmlparser.DEFINE' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.exec' );
 goog.require( 'htmljson.base' );
@@ -136,8 +137,10 @@ HTML2JsonHandler.prototype.onParseError = function( msg ){
     };
 };
 
-HTML2JsonHandler.prototype.onParseDocType = function( doctype ){
-    this._rootNode.splice( 0, 1, htmljson.NODE_TYPE.DOCUMENT_NODE, doctype );
+if( htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE ){
+    HTML2JsonHandler.prototype.onParseDocType = function( doctype ){
+        this._rootNode.splice( 0, 1, htmljson.NODE_TYPE.DOCUMENT_NODE, doctype );
+    };
 };
 
 HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, myIndex ){
@@ -249,16 +252,20 @@ HTML2JsonHandler.prototype.onParseComment = function( nodeValue ){
     this._currentNode.push( newHTMLJson );
 };
 
-HTML2JsonHandler.prototype.onParseCDATASection = function( nodeValue ){
-    this._currentNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToFiniteNumber( m_normalizeNewlines( nodeValue ) ) ] );
+if( htmlparser.DEFINE.USE_CDATA_SECTION ){
+    HTML2JsonHandler.prototype.onParseCDATASection = function( nodeValue ){
+        this._currentNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToFiniteNumber( m_normalizeNewlines( nodeValue ) ) ] );
+    };
 };
 
-HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
-    var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket ),
-        newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.funcName ];
-
-    if( functionNameAndArgs.args ){
-        newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs.args );
+if( htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION ){
+    HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
+        var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket ),
+            newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.funcName ];
+    
+        if( functionNameAndArgs.args ){
+            newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs.args );
+        };
+        this._currentNode.push( newHTMLJson );
     };
-    this._currentNode.push( newHTMLJson );
 };

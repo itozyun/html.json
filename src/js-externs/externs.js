@@ -1,9 +1,7 @@
-var require = function( name ){};
+/**
+ * @externs
+ */
 
-/** @const */
-var module = {};
-
-module.exports;
 module.exports.gulp;
 
 var __NAME_PROTECTION__ = [

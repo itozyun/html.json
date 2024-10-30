@@ -120,7 +120,7 @@ function la(a, c, e) {
         if (!0 === b(a)) {
           break;
         }
-      } else if (J(d) && d === a.D && !0 === b(a)) {
+      } else if (J(d) && d === a.F && !0 === b(a)) {
         break;
       }
     }
@@ -155,7 +155,8 @@ function na(a) {
     for (var b = ++e, g, h = [], n = f.split(""), l = n.length; l;) {
       g = n[--l], "A" <= g && "Z" >= g && (g = "-" + g.toLowerCase()), h[l] = g;
     }
-    c[b] = h.join("") + ":" + P("" + d);
+    g = h.join("");
+    c[b] = g + ":" + P("" + d);
   }
   return c.join(";").substr(1);
 }
@@ -231,16 +232,16 @@ function ma(a) {
     case 17:
       c = R(f), f = c[0];
     case 18:
-      this.D = f;
+      this.F = f;
   }
 }
 var O = null;
 function V(a) {
-  return a.l ? O === a ? a.C ? oa : a.F ? U : pa : O.j === a ? qa : ra : sa;
+  return a.l ? O === a ? a.D ? oa : a.G ? U : pa : O.j === a ? qa : ra : sa;
 }
 W.prototype.remove = function() {
   if (U <= V(this)) {
-    return this.C = !0, null;
+    return this.D = !0, null;
   }
   var a = this.j ? this.j.h.indexOf(this) : -1;
   0 <= a && (this.j.h.splice(a, 1), this.j = null);

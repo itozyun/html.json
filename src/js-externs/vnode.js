@@ -1,4 +1,3 @@
-
 /** @constructor */
 function _VNode(){};
 
