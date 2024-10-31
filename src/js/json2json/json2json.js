@@ -219,7 +219,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
     );
 
     if( isTreeUpdated ){
-        m_normalizeTextNodes( rootHTMLJson );
+        normalizeTextNodes( rootHTMLJson );
     };
 
     /**
@@ -427,6 +427,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
 };
 
 /**
+ * @private
  * @param {!function(!VNode)} onDocumentReady
  * @param {!HTMLJson} rootHTMLJson
  * @return {boolean} isUpdated
@@ -444,8 +445,57 @@ function dispatchDocumentReadyEvent( onDocumentReady, rootHTMLJson ){
         VNode.treeIsUpdated = false;
         rootHTMLJson.length = 0;
         rootHTMLJson.push.apply( rootHTMLJson, rootVNode.getHTMLJson() );
-        m_normalizeTextNodes( rootHTMLJson );
+        normalizeTextNodes( rootHTMLJson );
     };
 
     return isUpdated;
+};
+
+/**
+ * @private
+ * 連続する Text の結合
+ * @param {!HTMLJson} rootHTMLJson 
+ */
+function normalizeTextNodes( rootHTMLJson ){
+    function insertText(){
+        lastParentJSONNode.splice( textNodeIndex, 0, /** @type {string | number} */ (m_tryToFiniteNumber( text )) );
+        text = '';
+    };
+    var text = '', lastDepth, lastParentJSONNode, textNodeIndex;
+
+    htmljson.Traverser.traverseAllDescendantNodes(
+        rootHTMLJson,
+        /**
+         * 
+         * @param {!HTMLJson | string | number} currentJSONNode 
+         * @param {HTMLJson | null} parentJSONNode 
+         * @param {number} myIndex
+         * @param {number} depth
+         * @return {number | void} VISITOR_OPTION.*
+         */
+        function( currentJSONNode, parentJSONNode, myIndex, depth ){
+            if( text && lastDepth !== depth ){
+                insertText();
+                return htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
+            } else if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                if( m_isStringOrNumber( currentJSONNode ) ){
+                    text += currentJSONNode;
+                } else {
+                    text += currentJSONNode[ 1 ];
+                };
+                parentJSONNode.splice( myIndex, 1 );
+                lastDepth          = depth;
+                lastParentJSONNode = parentJSONNode;
+                textNodeIndex      = myIndex;
+                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+            } else if( text ){
+                insertText();
+                return htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
+            };
+        }
+    );
+
+    if( text ){
+        insertText();
+    };
 };

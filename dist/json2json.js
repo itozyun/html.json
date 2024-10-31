@@ -1045,16 +1045,6 @@ VNode.prototype.setNodeValue = function(a) {
 VNode.prototype.isElement = function() {
   return this._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE || this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
-VNode.prototype.finalize = function() {
-  if (htmljson.DEFINE.DEBUG && this._isRestrictedMode) {
-    throw "In Restricted Mode. VNode cannot execute finalize()!";
-  }
-  if (htmljson.DEFINE.DEBUG && this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG) {
-    throw "finalize() \u3092\u30b5\u30dd\u30fc\u30c8\u3057\u306a\u3044 nodeType \u3067\u3059!";
-  }
-  _compareValuesAndSetUpdatedFlag(this._nodeType, htmljson.NODE_TYPE.ELEMENT_NODE);
-  this._nodeType = htmljson.NODE_TYPE.ELEMENT_NODE;
-};
 VNode.prototype.isClosed = function() {
   return this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG;
 };
@@ -2035,23 +2025,6 @@ function m_executeEnterNodeHandler(a, b, c) {
   }
   return a;
 }
-function m_escapeForHTML(a) {
-  return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
-}
-function m_quoteAttributeValue(a, b, c) {
-  a = m_escapeForHTML("" + a);
-  var d = a.match('"'), e = a.match("'"), f = b ? "'" : '"';
-  d && e ? a = b ? f + a.split("'").join("\\'") + f : f + a.split('"').join('\\"') + f : d ? a = "'" + a + "'" : e ? a = b ? f + a.split("'").join("\\'") + f : f + a + f : c || a.match(/[^0-9a-z\.\-]/g) || 72 < a.length ? a = f + a + f : "" === a && (a = f + f);
-  return a;
-}
-function m_toSnakeCase(a) {
-  var b = [];
-  a = a.split("");
-  for (var c = a.length, d; c;) {
-    d = a[--c], "A" <= d && "Z" >= d && (d = "-" + d.toLowerCase()), b[c] = d;
-  }
-  return b.join("");
-}
 function m_getChildNodeStartIndex(a) {
   var b = a[0], c = m_getNodeType(a);
   return c === htmljson.NODE_TYPE.ELEMENT_NODE || c === htmljson.NODE_TYPE.ELEMENT_START_TAG ? (b = m_isNumber(b) ? 2 : 1, m_isAttributes(a[b]) ? b + 1 : b) : b === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? 1 : b === htmljson.NODE_TYPE.DOCUMENT_NODE || b === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER || b === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ? 2 : Infinity;
@@ -2061,25 +2034,6 @@ function m_hasChildren(a) {
 }
 function m_canHasChildren(a) {
   return -1 !== [htmljson.NODE_TYPE.DOCUMENT_NODE, htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, htmljson.NODE_TYPE.ELEMENT_NODE, htmljson.NODE_TYPE.ELEMENT_START_TAG, htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER].indexOf(m_getNodeType(a));
-}
-function m_normalizeTextNodes(a) {
-  function b() {
-    e.splice(f, 0, m_tryToFiniteNumber(c));
-    c = "";
-  }
-  var c = "", d, e, f;
-  htmljson.Traverser.traverseAllDescendantNodes(a, function(g, h, m, n) {
-    if (c && d !== n) {
-      return b(), htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
-    }
-    if (m_getNodeType(g) === htmljson.NODE_TYPE.TEXT_NODE) {
-      return c = m_isStringOrNumber(g) ? c + g : c + g[1], h.splice(m, 1), d = n, e = h, f = m, htmljson.Traverser.VISITOR_OPTION.REMOVED;
-    }
-    if (c) {
-      return b(), htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
-    }
-  });
-  c && b();
 }
 function m_normalizeNewlines(a) {
   return a.split("\r\n").join("\n").split("\r").join("\n");
@@ -2108,6 +2062,17 @@ function m_createTagName(a, b, c) {
   b && (a += "#" + b);
   c && (a += "." + c);
   return a;
+}
+function m_toSnakeCase(a) {
+  var b = [];
+  a = a.split("");
+  for (var c = a.length, d; c;) {
+    d = a[--c], "A" <= d && "Z" >= d && (d = "-" + d.toLowerCase()), b[c] = d;
+  }
+  return b.join("");
+}
+function m_escapeForHTML(a) {
+  return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
 }
 function m_toCSSTest(a) {
   var b = [], c = -1, d;
@@ -2374,16 +2339,35 @@ function m_createVNodeFromHTMLJson(a, b) {
           return x.splice(z, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
         }
     }
-  }) && m_normalizeTextNodes(a);
+  }) && normalizeTextNodes(a);
 }};
 function dispatchDocumentReadyEvent(a, b) {
   var c = m_createVNodeFromHTMLJson(b, !1);
   VNode.treeIsUpdated = !1;
   a(c);
   if (a = VNode.treeIsUpdated) {
-    VNode.treeIsUpdated = !1, b.length = 0, b.push.apply(b, c.getHTMLJson()), m_normalizeTextNodes(b);
+    VNode.treeIsUpdated = !1, b.length = 0, b.push.apply(b, c.getHTMLJson()), normalizeTextNodes(b);
   }
   return a;
+}
+function normalizeTextNodes(a) {
+  function b() {
+    e.splice(f, 0, m_tryToFiniteNumber(c));
+    c = "";
+  }
+  var c = "", d, e, f;
+  htmljson.Traverser.traverseAllDescendantNodes(a, function(g, h, m, n) {
+    if (c && d !== n) {
+      return b(), htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
+    }
+    if (m_getNodeType(g) === htmljson.NODE_TYPE.TEXT_NODE) {
+      return c = m_isStringOrNumber(g) ? c + g : c + g[1], h.splice(m, 1), d = n, e = h, f = m, htmljson.Traverser.VISITOR_OPTION.REMOVED;
+    }
+    if (c) {
+      return b(), htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
+    }
+  });
+  c && b();
 }
 ;json2json.module = {};
 module.exports = json2json.main;

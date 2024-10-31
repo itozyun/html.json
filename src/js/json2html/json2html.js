@@ -16,11 +16,6 @@ goog.requireType( 'ThroughLike' );
 goog.requireType( 'Through' );
 goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
 
-// json2html.stream から json2html を呼ぶときに使用
-var m_pEndTagRequired       = false;
-var m_escapeForHTMLDisabled = false;
-var m_isXMLDocument         = false;
-
 /**
  * @param {!HTMLJson} rootHTMLJson
  * @param {!InstructionHandler=} opt_onInstruction
@@ -88,6 +83,41 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
         };
         return htmlString;
     };
+    /**
+     * @param {string|number|boolean} value 
+     * @param {boolean} useSingleQuot 
+     * @param {boolean} quotAlways 
+     * @return {string}
+     */
+    function quoteAttributeValue( value, useSingleQuot, quotAlways ){
+        var strValue          = m_escapeForHTML( '' + value );
+        var containDoubleQuot = strValue.match( '"' );
+        var containSingleQuot = strValue.match( "'" );
+        var _                 = useSingleQuot ? "'" : '"';
+
+        if( containDoubleQuot && containSingleQuot ){
+            if( useSingleQuot ){
+                strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
+            } else {
+                strValue = _ + strValue.split( '"' ).join( '\\"' ) + _; // " のエスケープ
+            };
+        } else if( containDoubleQuot ){
+            strValue = "'" + strValue + "'";
+        } else if( containSingleQuot ){
+            if( useSingleQuot ){
+                strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
+            } else {
+                strValue = _ + strValue + _;
+            };
+        } else if( quotAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
+            // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
+            // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
+            strValue = _ + strValue + _;
+        } else if( strValue === '' ){
+            strValue = _ + _;
+        };
+        return strValue;
+    };
 
     /** @const */
     var options       = opt_options || {};
@@ -98,9 +128,7 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
     /** @const */
     var attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
     /** @const */
-    var statusStack   = [ m_isXMLDocument, null, m_pEndTagRequired || false, m_escapeForHTMLDisabled || false, false ];
-
-    m_isXMLDocument = m_pEndTagRequired = m_escapeForHTMLDisabled = false;
+    var statusStack   = [ false, null, false, false, false ];
 
     var omittedEndTagBefore;
 
@@ -243,10 +271,10 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
 
                     chunk[ ++j ] = '<' + ( isXmlInHTML ? tagName : getHTMLTagName( tagName ) );
                     if( id ){
-                        chunk[ ++j ] = ' id=' + m_quoteAttributeValue( id, useSingleQuot, isXmlInHTML || quotAlways );
+                        chunk[ ++j ] = ' id=' + quoteAttributeValue( id, useSingleQuot, isXmlInHTML || quotAlways );
                     };
                     if( className ){
-                        chunk[ ++j ] = ' class=' + m_quoteAttributeValue( className, useSingleQuot, isXmlInHTML || quotAlways );
+                        chunk[ ++j ] = ' class=' + quoteAttributeValue( className, useSingleQuot, isXmlInHTML || quotAlways );
                     };
                     // attr
                     if( m_isAttributes( attrs ) ){
@@ -275,7 +303,7 @@ json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, tr
                                         value = m_toCSSTest( /** @type {!Styles} */ (value) );
                                         if( !value ) continue;
                                     };
-                                    chunk[ ++j ] = '=' + m_quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
+                                    chunk[ ++j ] = '=' + quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
                                 };
                             };
                         };

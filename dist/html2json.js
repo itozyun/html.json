@@ -277,25 +277,6 @@ function L(a) {
   var b = a[0], c = R(a);
   return 1 === c || 17 === c ? (b = b === +b ? 2 : 1, a = a[b], !N(a) && a && "object" === typeof a ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
-function ra(a) {
-  function b() {
-    l.splice(g, 0, P(c));
-    c = "";
-  }
-  var c = "", e, l, g;
-  K(a, function(h, n, x, k) {
-    if (c && e !== k) {
-      return b(), 1;
-    }
-    if (3 === R(h)) {
-      return c = O(h) || h === +h ? c + h : c + h[1], n.splice(x, 1), e = k, l = n, g = x, -1;
-    }
-    if (c) {
-      return b(), 1;
-    }
-  });
-  c && b();
-}
 function S(a) {
   return a.split("\r\n").join("\n").split("\r").join("\n");
 }
@@ -316,12 +297,12 @@ function X(a) {
   b < c ? (e = a.split(".")[1], a = a.split(".")[0], 0 < b && (l = a.split("#")[1], a = a.split("#")[0])) : c < b && (l = a.split("#")[1], a = a.split("#")[0], 0 < c && (e = a.split(".")[1], a = a.split(".")[0]));
   return [a, l, e];
 }
-function sa(a, b, c) {
+function ra(a, b, c) {
   b && (a += "#" + b);
   c && (a += "." + c);
   return a;
 }
-;function ta(a, b) {
+;function sa(a, b) {
   function c(d) {
     function v(p) {
       var y;
@@ -427,7 +408,7 @@ function sa(a, b, c) {
             }
             ++u;
           }
-          d[v] = sa(p, f, r);
+          d[v] = ra(p, f, r);
           0 === u && d.splice(t, 1);
         }
         if (qa[m]) {
@@ -445,7 +426,26 @@ function sa(a, b, c) {
           return v.splice(u, 1), -1;
         }
     }
-  }) && ra(a);
+  }) && ta(a);
+}
+function ta(a) {
+  function b() {
+    l.splice(g, 0, P(c));
+    c = "";
+  }
+  var c = "", e, l, g;
+  K(a, function(h, n, x, k) {
+    if (c && e !== k) {
+      return b(), 1;
+    }
+    if (3 === R(h)) {
+      return c = O(h) || h === +h ? c + h : c + h[1], n.splice(x, 1), e = k, l = n, g = x, -1;
+    }
+    if (c) {
+      return b(), 1;
+    }
+  });
+  c && b();
 }
 ;function Y(a, b, c, e) {
   e = e || {};
@@ -455,7 +455,7 @@ function sa(a, b, c) {
   null == e.keepCDATASections && (e.keepCDATASections = !1);
   null == e.keepComments && (e.keepComments = !1);
   null == e.keepEmptyConditionalComment && (e.keepEmptyConditionalComment = !1);
-  ta(a, e);
+  sa(a, e);
   return a;
 }
 function ua(a, b, c, e) {
@@ -510,7 +510,7 @@ function ka(a, b, c, e) {
       }
     }
   }
-  b = [sa(b, n, x)];
+  b = [ra(b, n, x)];
   l && (b[1] = c);
   a.$.push(b);
   e || (b.unshift(17), a.$ = b, a.fa.push(b));

@@ -409,77 +409,6 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
 
 /**
  * 
- * @param {string} unsafeText 
- * @return {string}
- */
-function m_escapeForHTML( unsafeText ){
-    return unsafeText
-               .split( '&lt;' ).join( '&amp;lt;' )
-               .split( '&gt;' ).join( '&amp;gt;' )
-               .split( '<' ).join( '&lt;' )
-               .split( '>' ).join( '&gt;' );
-};
-
-/**
- * 
- * @param {string|number|boolean} value 
- * @param {boolean} useSingleQuot 
- * @param {boolean} quotAlways 
- * @return {string}
- */
-function m_quoteAttributeValue( value, useSingleQuot, quotAlways ){
-    var strValue          = m_escapeForHTML( '' + value );
-    var containDoubleQuot = strValue.match( '"' );
-    var containSingleQuot = strValue.match( "'" );
-    var _                 = useSingleQuot ? "'" : '"';
-
-    if( containDoubleQuot && containSingleQuot ){
-        if( useSingleQuot ){
-            strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
-        } else {
-            strValue = _ + strValue.split( '"' ).join( '\\"' ) + _; // " のエスケープ
-        };
-    } else if( containDoubleQuot ){
-        strValue = "'" + strValue + "'";
-    } else if( containSingleQuot ){
-        if( useSingleQuot ){
-            strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
-        } else {
-            strValue = _ + strValue + _;
-        };
-    } else if( quotAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
-        // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
-        // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
-        strValue = _ + strValue + _;
-    } else if( strValue === '' ){
-        strValue = _ + _;
-    };
-    return strValue;
-};
-
-/**
- * 
- * @param {string} cssProperty 
- * @return {string}
- */
-function m_toSnakeCase( cssProperty ){
-    var result = [],
-        chars  = cssProperty.split( '' ),
-        i      = chars.length,
-        chr;
-
-    while( i ){
-        chr = chars[ --i ];
-        if( 'A' <= chr && chr <= 'Z' ){
-            chr = '-' + chr.toLowerCase();
-        };
-        result[ i ] = chr;
-    };
-    return result.join( '' );
-};
-
-/**
- * 
  * @param {!HTMLJson | string | number} htmlJsonNode
  * @return {number}
  */
@@ -522,54 +451,6 @@ function m_canHasChildren( htmlJsonNode ){
              htmljson.NODE_TYPE.ELEMENT_NODE , htmljson.NODE_TYPE.ELEMENT_START_TAG,
              htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER,
              htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER ].indexOf( m_getNodeType( htmlJsonNode ) ) !== -1;
-};
-
-/**
- * 連続する Text の結合
- * @param {!HTMLJson} rootHTMLJson 
- */
-function m_normalizeTextNodes( rootHTMLJson ){
-    function insertText(){
-        lastParentJSONNode.splice( textNodeIndex, 0, /** @type {string | number} */ (m_tryToFiniteNumber( text )) );
-        text = '';
-    };
-    var text = '', lastDepth, lastParentJSONNode, textNodeIndex;
-
-    htmljson.Traverser.traverseAllDescendantNodes(
-        rootHTMLJson,
-        /**
-         * 
-         * @param {!HTMLJson | string | number} currentJSONNode 
-         * @param {HTMLJson | null} parentJSONNode 
-         * @param {number} myIndex
-         * @param {number} depth
-         * @return {number | void} VISITOR_OPTION.*
-         */
-        function( currentJSONNode, parentJSONNode, myIndex, depth ){
-            if( text && lastDepth !== depth ){
-                insertText();
-                return htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
-            } else if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
-                if( m_isStringOrNumber( currentJSONNode ) ){
-                    text += currentJSONNode;
-                } else {
-                    text += currentJSONNode[ 1 ];
-                };
-                parentJSONNode.splice( myIndex, 1 );
-                lastDepth          = depth;
-                lastParentJSONNode = parentJSONNode;
-                textNodeIndex      = myIndex;
-                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-            } else if( text ){
-                insertText();
-                return htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
-            };
-        }
-    );
-
-    if( text ){
-        insertText();
-    };
 };
 
 /**
@@ -656,6 +537,40 @@ function m_createTagName( tagName, id, className ){
         tagName += '.' + className;
     };
     return tagName;
+};
+
+/**
+ * 
+ * @param {string} cssProperty 
+ * @return {string}
+ */
+function m_toSnakeCase( cssProperty ){
+    var result = [],
+        chars  = cssProperty.split( '' ),
+        i      = chars.length,
+        chr;
+
+    while( i ){
+        chr = chars[ --i ];
+        if( 'A' <= chr && chr <= 'Z' ){
+            chr = '-' + chr.toLowerCase();
+        };
+        result[ i ] = chr;
+    };
+    return result.join( '' );
+};
+
+/**
+ * 
+ * @param {string} unsafeText 
+ * @return {string}
+ */
+function m_escapeForHTML( unsafeText ){
+    return unsafeText
+               .split( '&lt;' ).join( '&amp;lt;' )
+               .split( '&gt;' ).join( '&amp;gt;' )
+               .split( '<' ).join( '&lt;' )
+               .split( '>' ).join( '&gt;' );
 };
 
 /**
