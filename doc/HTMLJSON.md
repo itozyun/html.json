@@ -134,3 +134,40 @@
     ]
 ]
 ~~~
+
+### 1.1. ProcessingInstruction
+
+~~~html
+<div id="side">
+<? createSidebar("",6,{}) ?>
+</div>
+~~~
+
+~~~js
+[
+    "DIV#side",
+    [
+        7, // ProcessingInstruction
+        "createSidebar", // メソッド名
+        "", 6, {} // メソッドの引数
+    ]
+]
+~~~
+
+### 1.2. ProcessingAttr
+
+~~~html
+<ul :class="toggleList('productList',1)"></ul>
+~~~
+
+~~~js
+[
+    "UL",
+    {
+        ":class" : [ // 動的属性
+            "toggleList", // メソッド名
+            "productList", 1 // メソッドの引数
+        ]
+    }
+]
+~~~

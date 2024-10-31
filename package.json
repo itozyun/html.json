@@ -1,7 +1,7 @@
 {
   "name": "html.json",
   "version": "0.0.0",
-  "description": "A compact and portable format that can be converted back to HTML in a lightweight way, achieving Web 1.0 level SSR!",
+  "description": "A compact and portable format that can be converted back to HTML in a lightweight way. And Tiny Streaming SSR!",
   "author": "itozyun <itozyun@gmail.com> (https://outcloud.blogspot.com/)",
   "license": "MIT",
   "main": "index.js",
@@ -21,12 +21,13 @@
   "keywords": [
     "html",
     "html-json",
-    "json",
-    "stream-json",
+    "ssr",
+    "streaming-ssr",
     "gulpplugin",
     "ssg",
     "static-site",
     "static site generation",
+    "static site generator",
     "website"
   ],
   "dependencies": {

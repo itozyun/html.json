@@ -1,6 +1,8 @@
 # HTML.JSON
 
-A compact and portable format that can be converted back to HTML in a lightweight way, achieving Web 1.0 level SSR!
+A compact and portable format that can be converted back to HTML in a lightweight way.
+
+And Tiny Streaming SSR!
 
 [jsonml](http://www.jsonml.org/)([wiki](https://en.wikipedia.org/wiki/JsonML)) の拡張です.
 
@@ -8,15 +10,20 @@ A compact and portable format that can be converted back to HTML in a lightweigh
 
 1. html を json で表現する(変換する)
 2. json から html への変換時に処理を追加できる
-   * HTML を予め json 化しておけば、実行環境に HTML パーサーが不要になる
-     * Web サーバ側での動的生成のソース(AMP HTML, モバイル専用ページのソース)
-     * オフラインドキュメントのコンテンツデータ
-     * PJAX のコンテンツデータ
-     * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ
+3. HTML を予め json 化しておけば、実行環境に HTML パーサーが不要になる
+   * Web サーバ側での動的生成のソース(AMP HTML, メディアタイプ別専用ページ)
+   * オフラインドキュメントのコンテンツデータ
+   * PJAX のコンテンツデータ
+   * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ
 
 ## コンパイルとテスト
 
 ~~~sh
+git pull https://github.com/itozyun/html.json
+cd html.json
+npm i
+git submodule update
+
 npm run make
 npm run test
 
@@ -26,173 +33,66 @@ gulp externs
 
 ## 目次
 
+1. html.json の例
+2. API の概要
+3. HTML の minify
+4. 条件付きコメントに関する情報
+
+## 1. html.json の例
+
+html.json は HTML と等価な JSON のサブセットです．定義は [HTMLJSON.md](doc/HTMLJSON.md) にあります．
+
+閉じタグの省略できない HTML 要素が多い文書などでは、HTML 形式よりファイルサイズが小さくなります．
+
+~~~html
+<!DOCTYPE html>
+<p>Hello, world!
+~~~
+
+↓
+
+~~~json
+[
+  9, "<!DOCTYPE html>",
+  [ "P", "Hello, world!" ]
+]
+~~~
+
+## 2. API の概要
+
+次の3つの API が利用できます．詳しい文書は [API](doc/API.md) を確認します．
+
+json2html, json2json で利用できる Restricted Virtual DOM の説明は [RESTRICTED_VNODE.md](doc/RESTRICTED_VNODE.md) を確認します．
+
+json2json で使える Virtual DOM の説明は  [RESTRICTED_VNODE.md](doc/RESTRICTED_VNODE.md) を確認します．
+
 1. html2json
-   1. 動的コンテンツ
-   2. 動的属性
-2. json2json
-3. json2html
-4. HTML.JSON 定義
-5. HTML の最小化
+   * html を html.json 形式に変換します．
+   * html2json.gulp が利用できます．
+2. json2html
+   * html.json を html 形式に変換します．
+   * 変換時に処理を追加します．
+   * ストリーミング SSR の json2html.stream が利用できます
+   * json2html.gulp が利用できます．
+3. json2json
+   * html.json の編集が行えます．
+   * 動的ノードと動的属性の内で、決定済の値があれば、静的ノードと静的属性に置き換える．
+   * json2json.gulp が利用できます．
+4. filter.gulp
+   * 静的ページまたは、動的ページにだけ処理したい場合に便利な gulp プラグインです
 
-## 1. html2json
+## 3. HTML の minify
 
-[ES2 HTML Parser](https://github.com/ECMAScript2/htmlparser) で HTML をパースします．
+html2json, json2json ではテキストノードの最適化と[空白ノードの除去](doc/WHITE_SPACE.md)を行います．
 
-* `trimWhitespaces` と `removeNewlineBetweenFullWidthChars`
-* `keepCDATASections`
-* `keepComments`
-* `keepEmptyConditionalComment`
-* `argumentBrackets`
-* `instructionAttrPrefix`
+json2html では、閉じタグとクォートを省略して HTML を最小化します．
 
-### `trimWhitespaces` と `removeNewlineBetweenFullWidthChars`
+より詳しい情報は [MINIFY_HTML](doc/MINIFY_HTML.md) を確認します．
 
-1. `removeNewlineBetweenFullWidthChars` オプションが `true` の場合、全角文字の間の改行文字を削除する
-2. タブ文字を半角スペースに置換
-3. 連続する改行を1つの改行へ
-4. テキストノードの最後の連続する改行を削除
-5. `trimWhitespaces:"aggressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
-   * 但し次のいずれかを満たす場合、前後に一つの半角スペースを残す
-     1. テキストノードの先頭が改行ではない
-     2. 後ろが改行と改行に続く0個以上の空白文字ではない
-6. 改行を半角スペースに置換
-7. 連続する半角スペースを1つ半角スペースへ
-8. 半角スペースを保護したい場合 `\u0020`, `&#32;`, `&#x20;` を使う
+## 4. 条件付きコメントに関する情報
 
-#### `trimWhitespaces:"aggressive"` でテキストノードの前後の空白文字をすべて削除する
-
-~~~html
-    </div>
-    html.json
-    <div>
-~~~
-
-~~~json
-[ [ "DIV" ], "html.json", [ "DIV" ] ]
-~~~
-
-#### `trimWhitespaces:"aggressive"` でもテキストノードの前後の空白文字を1つづつ残す
-
-~~~html
-<b>1</b> / <b>10</b>
-~~~
-
-~~~json
-[ [ "B", 1 ], " / ", [ "B", 10 ] ]
-~~~
-
-### 1.1. ProcessingInstruction
-
-~~~html
-<div id="side">
-<? createSidebar("",6,{}) ?>
-</div>
-~~~
-
-~~~js
-[
-    "DIV#side",
-    [
-        7, // ProcessingInstruction
-        "createSidebar", // メソッド名
-        "", 6, {} // メソッドの引数
-    ]
-]
-~~~
-
-### 1.2. ProcessingAttr
-
-~~~html
-<ul :class="toggleList('productList',1)"></ul>
-~~~
-
-~~~js
-[
-    "UL",
-    {
-        ":class" : [ // 動的属性
-            "toggleList", // メソッド名
-            "productList", 1 // メソッドの引数
-        ]
-    }
-]
-~~~
-
-## 2. json2json
-
-動的コンテンツの内、決定した値を `onInstruction` で埋め込むことが出来る．
-
-~~~js
-json2json( json, onInstruction, opt_onEnterNode, opt_onError, opt_options );
-
-function onInstruction( methodName, args, currentHtmlJson ){
-    return undefined; // null or '' or string or number or html.json
-};
-~~~
-### json2json の `onInstruction` の戻り値
-
-json2html と微妙に異なる点に注意!
-
-#### `InstructionNode`
-
-* `undefiend` : 何もしない
-* `null` or `""` : `InstructionNode`を削除
-* `{string|number}` TEXT_NODE になる
-* strict な html.json `[json2json.DOCUMENT_FRAGMENT_NODE, ["P", "Hello, world!"]`, `[ 1, "P", ...node ]`, `[ "P", "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2json.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能．このノードは再度 `onInstruction` で処理される．
-
-#### `InstructionAttr`
-
-* `undefiend` : 何もしない
-* `null` : 属性を削除する
-* `htmlparser.BOOLEAN_ATTRIBUTES` なプロパティであり属性値が `false` の場合、属性を削除する
-* 戻り値が配列の場合、新しい関数名と引数の `InstructionAttr` に置き換わる 
-* これ以外は属性値になる
-
-### `opt_onEnterNode`
-
-* Element に到達したときにコールバックされる
-* 引数は DOM ライクに要素を操作できるオブジェクト
-* 但し、文書ツリーの操作が出来るのは次に限る
-  * 現在のノードの nodeValue の変更
-  * 現在の Element の属性の操作
-  * 現在の Element の直前への挿入
-  * 現在の Element の子リストの最初への挿入
-  * 現在の Element の子リストの最期への挿入
-  * 現在の Element の直後への挿入
-  * 現在の Element の削除
-  * 現在の Element の子を空にする
-  * ~~現在の Element を Element で wrap する~~
-
-## 3. json2html
-
-既に JSON パーサーがある環境では、json2html を用意するだけで、json データから html を生成できる．
-
-~~~js
-json2html( json, onInstruction, opt_strictQuot, opt_useConmma );
-
-function onInstruction( methodName, args, currentHtmlJson ){
-    return htmlString; // or [] html.json
-};
-~~~
-
-### json2html の `onInstruction` の戻り値
-
-json2json と微妙に異なる点に注意!
-
-#### `InstructionNode`
-
-* `undefiend` or `null` or `""` 何も書きださない
-* `{string|number}` -> 文字列をそのまま埋め込む, htmlString もそのまま埋め込む
-* strict な html.json `[json2html.DOCUMENT_FRAGMENT_NODE, [ "P", "Hello, world!" ]]`, `[2, "P", ...`, `[ "P", "Hi!" ]` や `[ 3, "Hello, world!" ]`
-* 戻り値が `[json2html.PROCESSING_INSTRUCTION, "funcName", ...args ]` も可能．このノードは再度 `onInstruction` で処理される．
-
-#### `InstructionAttr`
-
-* `undefiend` or `null` : 属性を削除する
-* `htmlparser.BOOLEAN_ATTRIBUTES` なプロパティであり属性値が `false` の場合、属性を削除する
-* 戻り値が配列の場合、このノードは再度 `onInstruction` で処理される(無限ループにならずいつかは属性値を返すこと)
-* これ以外は属性値になる
+html.json は条件付きコメントをサポートします．条件付きコメントに独自に割り振られた nodeType は で確認出来ます．
+条件付きコメントに関する情報は [CONDITIONAL_COMMENTS](doc/CONDITIONAL_COMMENTS.md) にあります．
 
 ## License
 
