@@ -48,14 +48,13 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                 };
 
                 var result = onEnterNode( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, through ),
-                    stopped = through.stopped,
                     isNewNodeGeneratedByInstruction = m_isArray( result ), // ProcessingInstruction の場合だけ HTMLJson(Array) が返る
                     i, l;
 
-                if( stopped ){
+                if( through.stopped ){
                     if( htmljson.DEFINE.DEBUG ){
                         if( result != null ){
-                            throw 'ProcessingInstruction のハンドラで htmlJson の返却と pause の両方を行うことは出来ません!';
+                            throw 'ProcessingInstruction のハンドラで htmlJson の返却と stop の両方を行うことは出来ません!';
                         };
                     };
                     // ProcessingInstruction で pause した( HTMLJson の return 無し )
@@ -78,7 +77,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                         unprocessedHTMLJson = parentJSONNode;
                     };
                 };
-                return VISITOR_OPTION.REMOVED; // pause したが、もともとの ProcessingInstruction(currentJSONNode) は既に処理済
+                return VISITOR_OPTION.REMOVED; // processSync で stop したが、もともとの ProcessingInstruction(currentJSONNode) は既に処理済
             };
 
             /** @type {HTMLJson | null} この node は currentJSONNode を子に持つ, 接続されている */
@@ -109,21 +108,18 @@ function processSync( unprocessedHTMLJson, through, onEnterNode, onLeaveNode ){
         function( currentNode, parentNode, myIndex, depth ){
             if( currentNode !== unprocessedHTMLJson && !currentNode.entered ){
                 var result = onEnterNode( currentNode, parentNode, myIndex, depth, m_hasChildren( currentNode ), through ),
-                    stopped = through.stopped,
                     isNewNodeGeneratedByInstruction = m_isArray( result );
                 
-                if( isNewNodeGeneratedByInstruction ){
+                if( through.stopped ){
                     if( htmljson.DEFINE.DEBUG ){
-                        if( stopped ){
-                            throw 'ProcessingInstruction のハンドラで htmlJson の返却と pause の両方を行うことは出来ません!';
+                        if( isNewNodeGeneratedByInstruction ){
+                            throw 'ProcessingInstruction のハンドラで htmlJson の返却と stop の両方を行うことは出来ません!';
                         };
                     };
-                    m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentNode), myIndex, /** @type {!HTMLJson} */ (result) );
-                };
-                if( stopped ){
                     aborted = true;
                     return VISITOR_OPTION.BREAK;
                 } else if( isNewNodeGeneratedByInstruction ){
+                    m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentNode), myIndex, /** @type {!HTMLJson} */ (result) );
                     return VISITOR_OPTION.REMOVED;
                 } else if( m_isStringOrNumber( currentNode ) ){
                     parentNode.splice( myIndex, 1 );

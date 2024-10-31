@@ -1160,13 +1160,12 @@ function Ma(a, b, c, g) {
   na(a, function(f, k, h, d) {
     if (f !== a && !f.h) {
       d = c(f, k, h, d, I(f) < f.length, b);
-      var m = b.stopped, p = J(d);
-      p && (11 === d[0] ? (d.shift(), d.unshift(h, 1), k.splice.apply(k, d)) : k.splice(h, 1, d));
-      if (m) {
+      var m = J(d);
+      if (b.stopped) {
         return e = !0, Infinity;
       }
-      if (p) {
-        return -1;
+      if (m) {
+        return 11 === d[0] ? (d.shift(), d.unshift(h, 1), k.splice.apply(k, d)) : k.splice(h, 1, d), -1;
       }
       if (L(f) || N(f)) {
         return k.splice(h, 1), -1;
