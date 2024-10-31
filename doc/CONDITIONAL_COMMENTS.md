@@ -1,6 +1,6 @@
 # 条件付きコメント
 
-html.json は条件付きコメントをサポートする．これには IE 用のものに加えて、NN4 用を含む．
+html.json は条件付きコメントをサポートする．これには IE 用のものに加えて、[Netscape 4](https://web.archive.org/web/20050308074844/http://www.dithered.com/css_filters/html_only/conditional_comments_ns4.html) 用を含む．
 
 ## ユースケース
 
@@ -24,7 +24,7 @@ html.json は条件付きコメントをサポートする．これには IE 用
 
 ### 2. 属性セレクタに非対応の IE6 以下だけ、代替タグを使用する
 
-`<table class="tblborder" cellspacing=0>` は条件付きコメント内で閉じていない
+`<table class="border-1">` は条件付きコメント内で閉じていない
 
 ~~~html
 <!--[if !(gt IE 6)]><!--><table border=1 cellspacing=0><!--<![endif]-->
@@ -36,9 +36,11 @@ html.json は条件付きコメントをサポートする．これには IE 用
 
 ## 閉じタグの省略と条件付きコメント
 
+次は検討したのみで実装していない．
 
+---
 
-`<p>` の後続の Element/Text は、`<x>1` か `<x>2`．つまり、この両方が省略を許容する場合に限って省略が可能
+`</p>` の後続の Element/Text は、`<x>1` か `<x>2`．つまり、この両方が省略を許容する場合に限って省略が可能
 
 ~~~html
 <p>
@@ -49,7 +51,7 @@ html.json は条件付きコメントをサポートする．これには IE 用
 <!--[if (vml)&!(IE 9)]><x>3</x><![endif]-->
 ~~~
 
-`<p>` の後続の Element/Text は、`<x>1` か `<x>2` か `<x>3`．つまり、この3者が省略を許容する場合に限って省略が可能
+`</p>` の後続の Element/Text は、`<x>1` か `<x>2` か `<x>3`．つまり、この3者が省略を許容する場合に限って省略が可能
 
 ~~~html
 <p>
@@ -60,9 +62,9 @@ html.json は条件付きコメントをサポートする．これには IE 用
 <x>3</x>
 ~~~
 
-`<p>` の後続の Element/Text は、`<x>0` か `<x>1` か `<x>2` か `<x>3`．つまり、この4者が省略を許容する場合に限って省略が可能
+`</p>` の後続の Element/Text は、`<x>0` か `<x>1` か `<x>2` か `<x>3`．つまり、この4者が省略を許容する場合に限って省略が可能
 
-`<p>` と同階層の要素に出会うまで、後続ノードの列挙が続く
+`</p>` と同階層の要素に出会うまで、後続ノードの列挙が続く
 
 ~~~html
 <p>
@@ -76,10 +78,10 @@ html.json は条件付きコメントをサポートする．これには IE 用
 <x>3</x>
 ~~~
 
-つまり stream では、全ての後続の Element/Text が判明するまで `</p>` の後続のノードを書き出すことが出来ない!
+つまり stream では、全ての後続の Element/Text が判明するまで `</p>` の省略を判断できない！
 
 
-## 参考リンク
+## 参考リンクとノート
 
 1. [About Conditional Comments / Version Vectors](https://web.archive.org/web/20070103163310/http://msdn.microsoft.com/workshop/author/dhtml/overview/ccomment_ovw.asp)
 2. [(X)HTML-only Filters Summary](https://web.archive.org/web/20050303001355/http://www.dithered.com/css_filters/html_only/index.php)
