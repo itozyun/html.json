@@ -77,3 +77,20 @@ html.json は条件付きコメントをサポートする．これには IE 用
 ~~~
 
 つまり stream では、全ての後続の Element/Text が判明するまで `</p>` の後続のノードを書き出すことが出来ない!
+
+
+## 参考リンク
+
+1. [About Conditional Comments / Version Vectors](https://web.archive.org/web/20070103163310/http://msdn.microsoft.com/workshop/author/dhtml/overview/ccomment_ovw.asp)
+2. [(X)HTML-only Filters Summary](https://web.archive.org/web/20050303001355/http://www.dithered.com/css_filters/html_only/index.php)
+3. [Conditional Comments for Netscape 4](https://web.archive.org/web/20050308074844/http://www.dithered.com/css_filters/html_only/conditional_comments_ns4.html)
+
+### IE5.5
+
+[About Conditional Comments / Version Vectors](https://web.archive.org/web/20070103163310/http://msdn.microsoft.com/workshop/author/dhtml/overview/ccomment_ovw.asp)
+
+> Microsoft Windows 2000に同梱されているInternet Explorer 5のバージョンベクトルは5.0002です。したがって、条件式[if IE lte 5.0000]は、Internet Explorer 5のリリースビルドで評価されると偽を返します。Internet Explorer 5.5のリリースビルドでは、バージョンベクトルは5.5000です。
+
+~~~html
+<!--[if (gte IE 5.5000)&(lt IE 6)]> IE5.5 <![endif]-->
+~~~

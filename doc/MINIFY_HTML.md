@@ -1,14 +1,16 @@
-## 5. HTML の最小化
+# html.json と HTML の最小化
 
-### json2html 処理時に合わせて実施します
+1. html.json の最小化
+2. HTML の最小化
+3. 参考リンク - 公開用 HTML の為の機械処理
 
-1. 閉じタグの省略
-   * リンク要素下の閉じタグは省略しない
-     * https://triple-underscore.github.io/HTML-writing-ja.html#optional-tags
-   * `<source>` は閉じる．`</source>` が無いと Opera 9 で DOM ツリーが崩れる為．
-2. 属性のダブルクォーテーションの省略
+## 1. html.json の最小化
 
-### html2json 処理時に合わせて実施します
+json2json 処理時に合わせて実施します
+
+1. 連続するテキストノードのマージ(normalize)
+
+html2json 処理時に合わせて実施します
 
 1. テキストノードの空白文字の削除
    * 改行とタブは一つの半角スペースに
@@ -31,11 +33,17 @@
    * 参考 [IEでコメントノードを事前に除去し速度を稼ぐ](https://uupaa.hatenadiary.org/entry/20091203/1259820356), [コメントがフロートの位置をずらす](https://web.archive.org/web/20110519022142/http://css-bug.jp/win/ie/ver6/0424/)
 5. 連続するテキストノードのマージ(noemalize)
 
-### json2json 処理時に合わせて実施します
+## 2. HTML の最小化
 
-1. 連続するテキストノードのマージ(normalize)
+json2html 処理時に合わせて実施します
 
-### 5.1. 公開用 HTML の為の機械処理
+1. 閉じタグの省略
+   * リンク要素下の閉じタグは省略しない
+     * https://triple-underscore.github.io/HTML-writing-ja.html#optional-tags
+   * `<source>` は閉じる．`</source>` が無いと Opera 9 で DOM ツリーが崩れる為．
+2. 属性のダブルクォーテーションの省略
+
+## 3. 参考リンク - 公開用 HTML の為の機械処理
 
 1. [ブラウザの問題：半角スペース、全角スペース、改行コード、整形処理](https://web.archive.org/web/20190330184130/http://www.geocities.co.jp/SiliconValley-SanJose/2485/browsertrouble.html)
 2. [HTMLソースの整形処理](https://web.archive.org/web/20190331001728/http://www.geocities.co.jp/SiliconValley-SanJose/2485/reform.html)
