@@ -1,21 +1,27 @@
-# 4. HTML.Json 定義
+# html.json 定義
 
-|                                               | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
-|:----------------------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
-| HTML_ELEMENT *4                               | `1`                         | `"INPUT"`              | `{attributes}` *3 | `...nodes` |
-| タグ名(.class#id) *1, *2                      | `"INPUT"`, `"P#main.main"`  |`{attributes}` *3       | `...nodes`        | -          |
-| TEXT_NODE *4                                  | `3`                         | `nodeValue` *6         | -                 | -          |
-| CDATA_SECTION                                 | `4`                         | `nodeValue` *6         | -                 | -          |
-| PROCESSING_INSTRUCTION                        | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
-| COMMENT_NODE                                  | `8`                         | `nodeValue` *6         | -                 | -          |
-| DOCUMENT_NODE                                 | `9`                         | `"<!DOCTYPE html>"` *5 | `...nodes` *7     | -          |
-| DOCUMENT_FRAGMENT_NODE                        | `11`                        | `...nodes`             | -                 | -          |
-| 下の階層が隠れる条件付きコメント *8           | `13`                        | `"(IE)&(vml)"`         | `...nodes`        | -          |
-| 下の階層が見える条件付きコメントの開始タグ    | `14`                        | `"!(IE 7)"`            | -                 | -          |
-| 下の階層が見える条件付きコメントの終了タグ    | `15`                        | -                      | -                 | -          |
-| Netscape4用 下の階層が隠れる条件付コメント *8 | `16`                        | `"true"`               | `...nodes`        | -          |
-| HTML_ELEMENT(開始タグのみ) *9                 | `17`                        | `"DIV"`                | `{attributes}` *3 | `...nodes` |
-| HTML_ELEMENT(閉じタグのみ) *9                 | `18`                        | `"DIV"`                | -                 | -          |
+html.json は HTML を表現できる JSON のサブセットです．
+
+先行するプロヘクトには [jsonml](http://www.jsonml.org/)([wiki](https://en.wikipedia.org/wiki/JsonML)) があります．この拡張です.
+
+## 表
+
+|                                                   | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
+|:--------------------------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
+| HTML_ELEMENT *4                                   | `1`                         | `"INPUT"`              | `{attributes}` *3 | `...nodes` |
+| タグ名(.class#id) *1, *2                          | `"INPUT"`, `"P#main.main"`  |`{attributes}` *3       | `...nodes`        | -          |
+| TEXT_NODE *4                                      | `3`                         | `nodeValue` *6         | -                 | -          |
+| CDATA_SECTION                                     | `4`                         | `nodeValue` *6         | -                 | -          |
+| PROCESSING_INSTRUCTION                            | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
+| COMMENT_NODE                                      | `8`                         | `nodeValue` *6         | -                 | -          |
+| DOCUMENT_NODE                                     | `9`                         | `"<!DOCTYPE html>"` *5 | `...nodes` *7     | -          |
+| DOCUMENT_FRAGMENT_NODE                            | `11`                        | `...nodes`             | -                 | -          |
+| 下の階層が隠れる条件付きコメント *8               | `13`                        | `"(IE)&(vml)"`         | `...nodes`        | -          |
+| 下の階層が見える条件付きコメントの開始タグ        | `14`                        | `"!(IE 7)"`            | -                 | -          |
+| 下の階層が見える条件付きコメントの終了タグ        | `15`                        | -                      | -                 | -          |
+| Netscape4用 下の階層が隠れる条件付コメント *8 *10 | `16`                        | `"true"`               | `...nodes`        | -          |
+| HTML_ELEMENT(開始タグのみ) *9                     | `17`                        | `"DIV"`                | `{attributes}` *3 | `...nodes` |
+| HTML_ELEMENT(閉じタグのみ) *9                     | `18`                        | `"DIV"`                | -                 | -          |
 
 1. タグ名は小文字
 2. クラス名, id どちらか、または両方を第2引数ではなくここで記述できる
@@ -43,7 +49,7 @@
 -->
 ~~~
 
-### 4.1. ドキュメント
+## ドキュメント
 
 ~~~js
 [ 
@@ -77,7 +83,7 @@
 ]
 ~~~
 
-### 4.2. HTML の一部
+## HTML の一部
 
 ~~~json
 [
@@ -92,7 +98,7 @@
 
 子要素が、`Text`, `<br>`, `Text` の場合は `... "Hello,", [ "BR" ], "World!"`
 
-### 4.3. TextNode
+## Text Node
 
 テキストノードは基本的に子として出現する．
 
@@ -109,8 +115,7 @@
 [ 11, 2023 ] // Document Fragment Node + Text Node
 ~~~
 
-
-### 4.4. 下の階層が隠れる条件付きコメント
+## 下の階層が隠れる条件付きコメント
 
 ~~~js
 [ 
@@ -120,7 +125,7 @@
 ]
 ~~~
 
-### 4.5. 下の階層が見える条件付きコメント
+## 下の階層が見える条件付きコメント
 
 ~~~js
 [
@@ -135,7 +140,7 @@
 ]
 ~~~
 
-### 1.1. ProcessingInstruction
+## ProcessingInstruction
 
 ~~~html
 <div id="side">
@@ -154,10 +159,10 @@
 ]
 ~~~
 
-### 1.2. ProcessingAttr
+## Instruction Attribute
 
 ~~~html
-<ul :class="toggleList('productList',1)"></ul>
+<ul :class='toggleList("productList",1)'></ul>
 ~~~
 
 ~~~js
