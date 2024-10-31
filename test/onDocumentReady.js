@@ -6,22 +6,19 @@ test('vnode',
     (t) => {
         var json = html2json('<code>A<? empty ?>B</code>');
 
-        t.deepEqual(
-            json2json(
-                json,
-                function( funcName ){
-                    if( funcName === 'empty' ){
-                        return null;
-                    };
-                },
-                null,
-                function( vnode ){
-                    vnode.getFirstChild().insertNodeLast( 3, 'CD' ).insertNodeAfter( 3, 'EF' );
+        json2json(
+            json,
+            function( funcName ){
+                if( funcName === 'empty' ){
+                    return null;
+                };
+            },
+            null,
+            function( vnode ){
+                vnode.getFirstChild().insertNodeLast( 3, 'CD' ).insertNodeAfter( 3, 'EF' );
 
-                    console.log( vnode.getElementListByTag( 'CODE' )[ 0 ].getHTMLJson() );
-                }
-            ),
-            true
+                console.log( vnode.getElementListByTag( 'CODE' )[ 0 ].getHTMLJson() );
+            }
         );
 
         t.deepEqual(json, [11, ['CODE', 'ABCDEF']]);

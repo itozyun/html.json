@@ -2,7 +2,6 @@ goog.provide( 'json2json.gulp' );
 
 goog.require( 'json2json.module' );
 goog.require( 'json2json.main' );
-goog.require( 'json2html.main' );
 
 /**
  * @param {!InstructionHandler=} opt_onInstruction
@@ -15,11 +14,7 @@ json2json.main.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocume
     const PluginError = require( 'plugin-error' ),
           through     = require( 'through2'     ),
           pluginName  = 'json2json',
-          options     = opt_options || {},
-          outputStaticPagesAsHTML = options[ 'outputStaticPagesAsHTML' ],
-          staticPages             = options[ 'staticPages' ] && typeof options[ 'staticPages' ] === 'object' ? options[ 'staticPages' ] : {};
-
-    options[ 'staticPages' ] = staticPages;
+          prettify    = opt_options && opt_options[ 'prettify' ];
 
     return through.obj(
         /**
@@ -39,26 +34,10 @@ json2json.main.gulp = function( opt_onInstruction, opt_onEnterNode, opt_onDocume
             if( file.extname === '.json' ){
                 try {
                     const json = /** @type {!Array} */ (JSON.parse( file.contents.toString( encoding ) ) );
-                    const isStaticWebPage = json2json.main( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, options );
-                    let content;
+                    
+                    json2json.main( json, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options );
 
-                    if( outputStaticPagesAsHTML ){
-                        const filePathElements = file.path.split( '\\' ).join( '/' ).split( '.' );
-
-                        filePathElements.pop();
-                        staticPages[ filePathElements.join( '.' ) ] = isStaticWebPage;
-                    };
-
-                    if( isStaticWebPage && outputStaticPagesAsHTML ){
-                        content = json2html.main( json, undefined, opt_onEnterNode, opt_onError, options );
-                        // .html <= .html.json
-                        const extname = '.' + file.stem.split( '.' ).pop();
-
-                        file.stem    = file.stem.substr( 0, file.stem.length - file.extname.length );
-                        file.extname = extname;
-                    } else {
-                        content = JSON.stringify( json, null, options[ 'prettify' ] ? '    ' : '' );
-                    };
+                    const content = JSON.stringify( json, null, prettify ? '    ' : '' );
 
                     file.contents = Buffer.from( /** @type {string} */ (content) );
                 } catch( O_o ) {

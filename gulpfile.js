@@ -141,6 +141,35 @@ gulp.task(
                 ).pipe(
                     gulp.dest( 'dist' )
                 );
+        },
+        function(){
+            console.log( '** 5. filter' );
+            return gulp.src(
+                    [
+                        './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/htmlparser/src/**/*.js', 
+                        './src/**/*.js'
+                    ]
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:filter.gulp',
+                            define            : [
+                                'htmljson.DEFINE.DEBUG=' + isDebug
+                            ],
+                            // env               : 'CUSTOM',
+                            compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', /* 'WHITESPACE_ONLY' */
+                            formatting        : isPrettify ? 'PRETTY_PRINT'         : 'SINGLE_QUOTES',
+                            warning_level     : 'VERBOSE',
+                            // language_in       : 'ECMASCRIPT3',
+                            // language_out      : 'ECMASCRIPT3',
+                            js_output_file    : 'filter.js'
+                        }
+                    )
+                ).pipe(
+                    gulp.dest( 'dist' )
+                );
         }
     )
 );

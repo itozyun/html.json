@@ -55,6 +55,11 @@ var NODE_TYPE = {
     ELEMENT_END_TAG               : 18
 };
 
+var _FILTER_OPTIONS_ = {
+    STATIC  : 1,
+    DYNAMIC : 2
+};
+
 /**
  * @constructor
  */

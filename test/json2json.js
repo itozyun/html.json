@@ -4,32 +4,17 @@ const json2json = require('../dist/json2json.js');
 
 test('simple',
     (t) => {
-        t.deepEqual(
-            json2json(
-                html2json('<? random ?>'),
-                function( funcName ){
-                    if( funcName === 'random' ){
-                        return Math.random();
-                    };
-                }
-            ),
-            true
-        );
-
         var json = html2json('<code><? now ?></code>'), now;
 
         t.deepEqual(json, [11, ['CODE', [ 7, 'now' ]]]);
 
-        t.deepEqual(
-            json2json(
-                json,
-                function( funcName ){
-                    if( funcName === 'now' ){
-                        return now = Date.now();
-                    };
-                }
-            ),
-            true
+        json2json(
+            json,
+            function( funcName ){
+                if( funcName === 'now' ){
+                    return now = Date.now();
+                };
+            }
         );
 
         t.deepEqual(json, [11, ['CODE', now]]);
@@ -40,12 +25,7 @@ test('normalizeText',
     (t) => {
         const json = [ 11, [ 'A', '', '', 9, '', 9 ] ];
 
-        t.deepEqual(
-            json2json(
-                json
-            ),
-            true
-        );
+        json2json( json );
 
         t.deepEqual(json, [11, [ 'A', 99 ]]);
     }
@@ -55,16 +35,13 @@ test('optimaize',
     (t) => {
         var json = html2json('<code>A<? empty ?>B</code>');
 
-        t.deepEqual(
-            json2json(
-                json,
-                function( funcName ){
-                    if( funcName === 'empty' ){
-                        return null;
-                    };
-                }
-            ),
-            true
+        json2json(
+            json,
+            function( funcName ){
+                if( funcName === 'empty' ){
+                    return null;
+                };
+            }
         );
 
         t.deepEqual(json, [11, ['CODE', 'AB']]);
@@ -90,24 +67,18 @@ test('onDocumentReady',
 
 test('cc',
     (t) => {
-        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ] ];
+        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ]];
 
-        t.deepEqual(
-            json2json(
-                json, 0, 0, 0, 0, {keepComments:false, trimWhitespaces:true}
-            ),
-            true
+        json2json(
+            json, 0, 0, 0, 0, {keepComments:false, trimWhitespaces:true}
         );
 
         t.deepEqual(json, [11, [ 'P', '  ' ]]);
 
-        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ] ];
+        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ]];
 
-        t.deepEqual(
-            json2json(
-                json, 0, 0, 0, 0, {keepComments:false}
-            ),
-            true
+        json2json(
+            json, 0, 0, 0, 0, {keepComments:false}
         );
 
         t.deepEqual(json, [11, [ 'P', '  ' ]]);

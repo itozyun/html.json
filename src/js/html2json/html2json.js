@@ -11,21 +11,21 @@ goog.require( 'json2json.process' );
 
 /**
  * @param {string} htmlString
- * @param {boolean} allowInvalidTree
+ * @param {boolean=} opt_allowInvalidTree
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  * @return {!HTMLJson}
  */
-html2json.main = function( htmlString, allowInvalidTree, opt_onError, opt_options ){
+html2json.main = function( htmlString, opt_allowInvalidTree, opt_onError, opt_options ){
     const options          = opt_options || {},
           argumentBrackets = options[ 'argumentBrackets' ] || '()',
           attrPrefix       = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX,
-          rootHTMLJson     = _createHTMLJsonFromHTML(
+          rootHTMLJson     = createHTMLJsonFromHTML(
                   htmlString,
                   attrPrefix,
                   argumentBrackets.substr( 0, argumentBrackets.length / 2 ),
                   argumentBrackets.substr( argumentBrackets.length / 2 ),
-                  allowInvalidTree,
+                  !!opt_allowInvalidTree,
                   opt_onError
               );
 
@@ -49,51 +49,42 @@ html2json.main = function( htmlString, allowInvalidTree, opt_onError, opt_option
 /*-----------------------------------------------------------------------------
  *   private
  */
-/**
- * @param {string} nodeValue 
- * @return {string} */
-function getIECondition( nodeValue ){
-    return extractStringBetween( nodeValue, '[', ']', false );
-};
 
 /**
+ * @private
  * @param {string} string
  * @param {string} argOpeningBracket (
  * @param {string} argClosingBracket )
- * @return {{ funcName : string, args : (!Array | void) }} */
-function codeToObject( string, argOpeningBracket, argClosingBracket ){
+ * @param {!function((string | !Error))=} opt_onError
+ * @return {!Array} */
+function codeToObject( string, argOpeningBracket, argClosingBracket, opt_onError ){
     var from = string.indexOf( argOpeningBracket );
     var to   = string.lastIndexOf( argClosingBracket );
     var name = m_trimChar( from === -1 ? string : string.substr( 0, from ), ' ' ); // 先頭と最後の半角スペースを削除
-    var args = from === -1 ? [] : /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, to ) + ']' ));
+    var args;
 
-    if( args.length ){
-        return { funcName : name, args : args };
+    if( from !== -1 ){
+        try {
+            args = /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, to ) + ']' ));
+        } catch( O_o ) {
+            opt_onError && opt_onError( O_o );
+        };
     };
-    return { funcName : name };
+
+    if( args && args.length ){
+        return [ name, args ];
+    };
+    return [ name ];
 };
 
 /**
- * @param {string} string 
- * @param {string} fromString 
- * @param {string} toString 
- * @param {boolean} useLastIndexOf
- * @return {string} */
-function extractStringBetween( string, fromString, toString, useLastIndexOf ){
-    var from = string.indexOf( fromString ) + fromString.length,
-        to   = useLastIndexOf ? string.lastIndexOf( toString ) : string.indexOf( toString, from );
-
-    return string.substring( from, to );
-};
-
-/**
- * 
+ * @private
  * @param {string} html
  * @param {boolean} allowInvalidTree
  * @param {!function((string | !Error))=} opt_onError
  * @return {!HTMLJson}
  */
-function _createHTMLJsonFromHTML( html, attrPrefix, argOpeningBracket, argClosingBracket, allowInvalidTree, opt_onError ){
+function createHTMLJsonFromHTML( html, attrPrefix, argOpeningBracket, argClosingBracket, allowInvalidTree, opt_onError ){
     var handler = new HTML2JsonHandler( attrPrefix, argOpeningBracket, argClosingBracket, allowInvalidTree, opt_onError );
 
     htmlparser.exec( html, handler );
@@ -161,13 +152,13 @@ HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, my
                 delete attrs[ attrName ];
             } else {
                 if( attrName.startsWith( this._attrPrefix ) ){
-                    functionNameAndArgs = codeToObject( /** @type {string} */ (attrValue), this._argOpeningBracket, this._argClosingBracket );
+                    functionNameAndArgs = codeToObject( /** @type {string} */ (attrValue), this._argOpeningBracket, this._argClosingBracket, this._onError );
     
-                    if( functionNameAndArgs.args ){
-                        attrValue = [ functionNameAndArgs.funcName ];
-                        attrValue.push.apply( attrValue, functionNameAndArgs.args );
+                    if( functionNameAndArgs[ 1 ] ){
+                        attrValue = [ functionNameAndArgs[ 0 ] ];
+                        attrValue.push.apply( attrValue, functionNameAndArgs[ 1 ] );
                     } else {
-                        attrValue = functionNameAndArgs.funcName;
+                        attrValue = functionNameAndArgs[ 0 ];
                     };
                 };
                 attrs[ attrName ] = /** @type {string | number} */ (m_tryToFiniteNumber( attrValue ));
@@ -217,10 +208,28 @@ HTML2JsonHandler.prototype.onParseText = function( nodeValue ){
 };
 
 HTML2JsonHandler.prototype.onParseComment = function( nodeValue ){
+    /**
+     * @param {string} nodeValue 
+     * @return {string} */
+    function getIECondition( nodeValue ){
+        return extractStringBetween( nodeValue, '[', ']', false );
+    };
+    /**
+     * @param {string} string 
+     * @param {string} fromString 
+     * @param {string} toString 
+     * @param {boolean} useLastIndexOf
+     * @return {string} */
+    function extractStringBetween( string, fromString, toString, useLastIndexOf ){
+        var from = string.indexOf( fromString ) + fromString.length,
+            to   = useLastIndexOf ? string.lastIndexOf( toString ) : string.indexOf( toString, from );
+
+        return string.substring( from, to );
+    };
     var newHTMLJson;
 
     if( nodeValue.startsWith( '[if' ) && 0 < nodeValue.indexOf( '<![endif]' ) ){
-        newHTMLJson = _createHTMLJsonFromHTML(
+        newHTMLJson = createHTMLJsonFromHTML(
             extractStringBetween( nodeValue, '>', '<![endif]', true ),
             this._attrPrefix,
             this._argOpeningBracket,
@@ -230,7 +239,7 @@ HTML2JsonHandler.prototype.onParseComment = function( nodeValue ){
         );
         newHTMLJson.splice( 0, 1, htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER, getIECondition( nodeValue ) );
     } else if( nodeValue.startsWith( '{' ) && 2 < nodeValue.indexOf( '};' ) ){
-        newHTMLJson = _createHTMLJsonFromHTML(
+        newHTMLJson = createHTMLJsonFromHTML(
             nodeValue.substring( nodeValue.indexOf( '};' ) + 2 ),
             this._attrPrefix,
             this._argOpeningBracket,
@@ -260,11 +269,11 @@ if( htmlparser.DEFINE.USE_CDATA_SECTION ){
 
 if( htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION ){
     HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
-        var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket ),
-            newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs.funcName ];
+        var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket, this._onError ),
+            newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs[ 0 ] ];
     
-        if( functionNameAndArgs.args ){
-            newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs.args );
+        if( functionNameAndArgs[ 1 ] ){
+            newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs[ 1 ] );
         };
         this._currentNode.push( newHTMLJson );
     };

@@ -2,7 +2,7 @@ goog.provide( 'htmljson.base' );
 goog.provide( 'InstructionHandler' );
 goog.provide( 'EnterNodeHandler' );
 
-goog.requireType( 'VNode' );
+goog.require( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.USE_XML_NS' );
@@ -302,7 +302,6 @@ function m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, index, html
 
 /**
  * 
- * @param {boolean} recursion
  * @param {!InstructionHandler} onInstruction
  * @param {string} attrName 
  * @param {!InstructionArgs | string} value 
@@ -310,8 +309,8 @@ function m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, index, html
  * @param {*=} opt_context
  * @return {!InstructionArgs | string | number | boolean | null | void}
  */
-function m_executeInstructionAttr( recursion, onInstruction, attrName, value, opt_onError, opt_context ){
-    var result, functionName, args;
+function m_executeInstructionAttr( onInstruction, attrName, value, opt_onError, opt_context ){
+    var result, functionName, args, recursion;
 
     if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
         value        = /** @type {!Array} */ (value);
@@ -342,10 +341,12 @@ function m_executeInstructionAttr( recursion, onInstruction, attrName, value, op
         opt_onError && opt_onError( 'Invalid InstructionAttr value! [' + attrName + '=' + value + ']' );
     };
 
-    if( recursion && m_isArray( result ) ){
-        result = /** @type {!InstructionArgs} */ (result);
+    if( m_isArray( result ) ){
+        recursion = m_executeInstructionAttr( onInstruction, attrName, /** @type {!InstructionArgs} */ (result), opt_onError, opt_context );
 
-        return m_executeInstructionAttr( true, onInstruction, attrName, result, opt_onError, opt_context );
+        if( recursion !== undefined ){
+            result = recursion;
+        };
     };
     return result;
 };
@@ -742,67 +743,6 @@ function m_parseCSSText( cssText ){
         };
     };
     return numProps ? styles : null;
-};
-
-/**
- * 
- * @param {!HTMLJson} rootHTMLJson
- * @param {string} attrPrefix
- * @return {boolean} isStatic
- */
-function m_isStaticDocument( rootHTMLJson, attrPrefix ){
-    var isDynamic = false;
-
-    htmljson.Traverser.traverseAllDescendantNodes(
-        rootHTMLJson,
-        /**
-         * 
-         * @param {!HTMLJson | string | number} currentJSONNode 
-         * @param {HTMLJson | null} parentJSONNode 
-         * @param {number} myIndex
-         * @param {number} depth
-         * @return {number | void} VISITOR_OPTION.*
-         */
-        function( currentJSONNode, parentJSONNode, myIndex, depth ){
-            /**
-             * @param {!Attrs} attrs
-             * @return {boolean} isDynamic */
-            function hasDynamicAttribute( attrs ){
-                for( var name in attrs ){
-                    if( m_isInstructionAttr( attrPrefix, name ) ){
-                        return true;
-                    };
-                };
-                return false;
-            };
-
-            if( m_isArray( currentJSONNode ) ){
-                var arg0 = currentJSONNode[ 0 ],
-                    arg1 = currentJSONNode[ 1 ],
-                    tagName = arg0, attrsIndex = 1;
-
-                switch( arg0 ){
-                    case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                        isDynamic = true;
-                        return htmljson.Traverser.VISITOR_OPTION.BREAK;
-                    case htmljson.NODE_TYPE.ELEMENT_NODE :
-                    case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                        tagName = arg1;
-                        attrsIndex = 2;
-                    default :
-                        if( m_isString( tagName ) ){
-                            if( m_isAttributes( currentJSONNode[ attrsIndex ] ) ){
-                                if( hasDynamicAttribute( /** @type {!Attrs} */ (currentJSONNode[ attrsIndex ] )) ){
-                                    isDynamic = true;
-                                    return htmljson.Traverser.VISITOR_OPTION.BREAK;
-                                };
-                            };
-                        };
-                };
-            };
-        }
-    );
-    return !isDynamic;
 };
 
 /**

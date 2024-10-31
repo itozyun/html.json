@@ -20,24 +20,18 @@ goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
  * @param {!function(!VNode)=} opt_onDocumentReady
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
- * @return {boolean | void} isStaticWebPage
  */
 json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    var isStaticWebPage;
-
     if( m_isArray( rootHTMLJson ) ){
         if( rootHTMLJson[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_NODE && rootHTMLJson[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
             rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, rootHTMLJson ];
         };
 
-        isStaticWebPage = json2json.process( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
+        json2json.process( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options );
 
         if( opt_onDocumentReady ){
-            if( dispatchDocumentReadyEvent( opt_onDocumentReady, rootHTMLJson ) ){
-                isStaticWebPage = m_isStaticDocument( rootHTMLJson, opt_options && opt_options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX );
-            };
+            dispatchDocumentReadyEvent( opt_onDocumentReady, rootHTMLJson );
         };
-        return isStaticWebPage;
     } else if( htmljson.DEFINE.DEBUG ){
         opt_onError && opt_onError( 'Invalid html.json document!' );
     };
@@ -49,7 +43,6 @@ json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
  * @param {!EnterNodeHandler=} opt_onEnterNode
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
- * @return {boolean | void} isStaticWebPage
  */
 json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     /** @const */
@@ -70,8 +63,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
     /** @const */
     var attrPrefix        = options[ 'instructionAttrPrefix'       ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
-    var isTreeUpdated,
-        isStaticWebPage = true;
+    var isTreeUpdated;
 
     isTreeUpdated = htmljson.Traverser.traverseAllDescendantNodes(
         rootHTMLJson,
@@ -157,8 +149,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                                 m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, myIndex, /** @type {!HTMLJson | string} */ (result) );
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                             };
-                        } else {
-                            isStaticWebPage = false;
                         };
                     };
                     break;
@@ -231,7 +221,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
     if( isTreeUpdated ){
         m_normalizeTextNodes( rootHTMLJson );
     };
-    return isStaticWebPage;
 
     /**
      * @param {!HTMLJson} currentJSONNode
@@ -257,9 +246,8 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                 name = name.substr( attrPrefix.length );
                 name === 'className' && ( name = 'class' );
                 if( opt_onInstruction ){
-                    value = m_executeInstructionAttr( false, opt_onInstruction, name, /** @type {!InstructionArgs | string} */ (value), opt_onError );
+                    value = m_executeInstructionAttr( opt_onInstruction, name, /** @type {!InstructionArgs | string} */ (value), opt_onError );
                 } else {
-                    isStaticWebPage = false;
                     ++numAttributes;
                     continue;
                 };
@@ -268,7 +256,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     if( m_isArray( value ) ){
                         if( m_isString( value[ 0 ] ) ){
                             attrs[ originalName ] = value;
-                            isStaticWebPage = false;
                             ++numAttributes;
                         } else if( htmljson.DEFINE.DEBUG ){
                             opt_onError && opt_onError( 'Invalid dynamic attribute callback value! [' + originalName + '=' + value + ']' );
@@ -295,7 +282,6 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         ++numAttributes;
                     };
                 } else {
-                    isStaticWebPage = false;
                     ++numAttributes;
                 };
             } else {
