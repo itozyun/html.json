@@ -16,7 +16,16 @@ And Tiny Streaming SSR!
    * PJAX のコンテンツデータ
    * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のデータ
 
-## コンパイルとテスト
+## 目次
+
+1. コンパイルとテスト
+2. html.json の例
+3. API の概要
+4. HTML の minify
+5. 条件付きコメントに関する情報
+6. License
+
+## 1. コンパイルとテスト
 
 ~~~sh
 git pull https://github.com/itozyun/html.json
@@ -31,14 +40,7 @@ npm run test
 gulp externs
 ~~~
 
-## 目次
-
-1. html.json の例
-2. API の概要
-3. HTML の minify
-4. 条件付きコメントに関する情報
-
-## 1. html.json の例
+## 2. html.json の例
 
 html.json は HTML と等価な JSON のサブセットです．定義は [HTMLJSON.md](doc/HTMLJSON.md) にあります．
 
@@ -58,7 +60,7 @@ html.json は HTML と等価な JSON のサブセットです．定義は [HTMLJ
 ]
 ~~~
 
-## 2. API の概要
+## 3. API の概要
 
 次の3つの API が利用できます．詳しい文書は [API](doc/API.md) を確認します．
 
@@ -81,7 +83,7 @@ json2json で使える Virtual DOM の説明は  [RESTRICTED_VNODE.md](doc/RESTR
 4. filter.gulp
    * 静的ページまたは、動的ページにだけ処理したい場合に便利な gulp プラグインです
 
-## 3. HTML の minify
+## 4. HTML の minify
 
 html2json, json2json ではテキストノードの最適化と[空白ノードの除去](doc/WHITE_SPACE.md)を行います．
 
@@ -89,12 +91,12 @@ json2html では、閉じタグとクォートを省略して HTML を最小化�
 
 より詳しい情報は [MINIFY_HTML](doc/MINIFY_HTML.md) を確認します．
 
-## 4. 条件付きコメントに関する情報
+## 5. 条件付きコメントに関する情報
 
 html.json は条件付きコメントをサポートします．条件付きコメントに独自に割り振られた nodeType は で確認出来ます．
 条件付きコメントに関する情報は [CONDITIONAL_COMMENTS](doc/CONDITIONAL_COMMENTS.md) にあります．
 
-## License
+## 6. License
 
 [HTML.JSON](https://github.com/itozyun/html.json) is licensed under MIT license.
 
