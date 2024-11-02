@@ -4,6 +4,7 @@ goog.requireType( 'htmljson.Traverser.EnterHandler' );
 goog.requireType( 'htmljson.Traverser.LeaveHandler' );
 goog.requireType( 'ThroughLike' );
 goog.requireType( 'Through' );
+goog.require( 'htmljson.base' );
 goog.require( 'json2html.createJSON2HTMLTransformaer' );
 goog.require( 'HTMLJsonParser.create' );
 
@@ -38,9 +39,9 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
              * @param {!Through=} through
              * @return {number | void} VISITOR_OPTION.*
              */
-            function asyncProcessResolver( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, through ){
+            function asyncProcessAbsorber( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, through ){
                 if( unprocessedHTMLJson ){
-                    if( processSync( unprocessedHTMLJson, through, onEnterNode, onLeaveNode ) ){
+                    if( processSync( unprocessedHTMLJson, indexOffset, through, onEnterNode, onLeaveNode ) ){
                         return;
                     } else {
                         unprocessedHTMLJson = null;
@@ -63,6 +64,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                 } else if( isNewNodeGeneratedByInstruction ){
                     parentJSONNode = /** @type {!HTMLJson} */ (parentJSONNode);
                     result = /** @type {!HTMLJson} */ (result);
+                    indexOffset = myIndex - parentJSONNode.length;
 
                     // parentJSONNode に新しい htmlJson ノードを接続する
                     if( result[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
@@ -73,7 +75,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                         parentJSONNode.push( result );
                     };
 
-                    if( processSync( parentJSONNode, through, onEnterNode, onLeaveNode ) ){
+                    if( processSync( parentJSONNode, indexOffset, through, onEnterNode, onLeaveNode ) ){
                         unprocessedHTMLJson = parentJSONNode;
                     };
                 };
@@ -82,10 +84,12 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
 
             /** @type {HTMLJson | null} この node は currentJSONNode を子に持つ, 接続されている */
             var unprocessedHTMLJson;
+            /** @type {number} */
+            var indexOffset;
 
             var onLeaveNode = opt_onLeaveNode;
 
-            /** @const */ through._jsonParser.onEnterNode = asyncProcessResolver;
+            /** @const */ through._jsonParser.onEnterNode = asyncProcessAbsorber;
             /** @const */ through._jsonParser.onLeaveNode = onLeaveNode;
         },
         opt_onInstruction, opt_onEnterNode, opt_onError, opt_options
@@ -94,20 +98,22 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
 };
 
 /**
+ * 同期で html 文字列化する
+ * 
  * @param {!HTMLJson} unprocessedHTMLJson
+ * @param {number} indexOffset
  * @param {!Through} through
  * @param {!htmljson.Traverser.EnterHandler} onEnterNode
  * @param {!htmljson.Traverser.LeaveHandler=} onLeaveNode
- * @return {boolean} aborted */
-function processSync( unprocessedHTMLJson, through, onEnterNode, onLeaveNode ){
+ * @return {boolean | void} aborted */
+function processSync( unprocessedHTMLJson, indexOffset, through, onEnterNode, onLeaveNode ){
     var aborted;
 
-    // 同期で html 文字列化する
     htmljson.Traverser.traverseAllDescendantNodes(
         unprocessedHTMLJson,
         function( currentNode, parentNode, myIndex, depth ){
             if( currentNode !== unprocessedHTMLJson && !currentNode.entered ){
-                var result = onEnterNode( currentNode, parentNode, myIndex, depth, m_hasChildren( currentNode ), through ),
+                var result = onEnterNode( currentNode, parentNode, ( depth === 1 ? indexOffset : 0 ) + myIndex, depth, m_hasChildren( currentNode ), through ),
                     isNewNodeGeneratedByInstruction = m_isArray( result );
                 
                 if( through.stopped ){
@@ -122,16 +128,15 @@ function processSync( unprocessedHTMLJson, through, onEnterNode, onLeaveNode ){
                     m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentNode), myIndex, /** @type {!HTMLJson} */ (result) );
                     return VISITOR_OPTION.REMOVED;
                 } else if( m_isStringOrNumber( currentNode ) ){
-                    parentNode.splice( myIndex, 1 );
-                    return VISITOR_OPTION.REMOVED;
-                } else {
-                    currentNode.entered = true;
+                    currentNode = [ htmljson.NODE_TYPE.TEXT_NODE, currentNode ];
+                    parentNode.splice( myIndex, 1, currentNode );
                 };
+                currentNode.entered = true;
             };
         },
         function( currentNode, parentNode, myIndex, depth ){
             if( currentNode !== unprocessedHTMLJson && !currentNode.left && m_canHasChildren( currentNode ) ){
-                onLeaveNode( currentNode, parentNode, myIndex, depth );
+                onLeaveNode( currentNode, parentNode, ( depth === 1 ? indexOffset : 0 ) + myIndex, depth );
                 currentNode.left = true;
             };
         }

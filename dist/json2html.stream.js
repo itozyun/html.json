@@ -1,17 +1,4 @@
-var aa = {xml:!0, svg:!0, math:!0}, ba = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, ca = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, 
-WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, z = {CAPTION:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, 
-CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DD:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, 
-H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, 
-LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DT:{ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, 
-INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, P:{A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, 
-RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, HTML:{HEAD:!0, BODY:!0}, HEAD:{TITLE:!0, BASE:!0, BGSOUND:!0, LINK:!0, META:!0, STYLE:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0}, COLGROUP:{COL:!0}, OPTGROUP:{OPTION:!0}, 
-OPTION:{}, TBODY:{TR:!0}, TR:{TH:!0, TD:!0}, RBC:{RB:!0, RP:!0, RT:!0}};
-z.LI = z.TD = z.DD;
-z.TH = z.DT;
-z.RB = z.RP = z.RT = z.P;
-z.TFOOT = z.THEAD = z.TBODY;
-z.RTC = z.RBC;
-function A(a, b, c, g, e) {
+function z(a, b, c, g, e) {
   if (a === !!a) {
     var f = null;
     this.m = a;
@@ -24,7 +11,7 @@ function A(a, b, c, g, e) {
   switch(c) {
     case 1:
     case 17:
-      this.T = e || null, b = C(g), g = b[0];
+      this.T = e || null, b = A(g), g = b[0];
     case 18:
       this.K = g;
       break;
@@ -40,36 +27,48 @@ function A(a, b, c, g, e) {
       this.H = g;
   }
 }
-var F = null;
-function da(a) {
-  return a.m ? F === a ? a.J ? ea : a.N ? G : fa : F.j === a ? ja : ka : la;
+var C = null;
+function aa(a) {
+  return a.m ? C === a ? a.J ? ba : a.N ? F : ca : C.j === a ? da : ea : fa;
 }
-A.prototype.remove = function() {
-  if (G <= da(this)) {
+z.prototype.remove = function() {
+  if (F <= aa(this)) {
     return this.J = !0, null;
   }
   var a = this.j ? this.j.h.indexOf(this) : -1;
   0 <= a && (this.j.h.splice(a, 1), this.j = null);
 };
-A.prototype.wrap = function(a, b, c) {
+z.prototype.wrap = function(a, b, c) {
   if (this.m) {
     this.o = this.o || [], this.o.push([a, b, c]), a = null;
   } else if (this.j) {
     var g = this.j, e = this.j ? this.j.h.indexOf(this) : -1;
-    a = new A(g, e, a, b, c);
+    a = new z(g, e, a, b, c);
   } else {
     a = null;
   }
-  ma(a, 0, [this]);
+  ja(a, 0, [this]);
   return a;
 };
-function ma(a, b, c) {
+function ja(a, b, c) {
   var g = a.h = a.h || [], e = g.length, f = c.length;
   for (b = b < e ? b : e; f;) {
-    e = c[--f], 11 === e.X ? e.h && e.h.length && ma(a, b, e.h) : (e.remove(), g.splice(b, 0, e), e.j = a);
+    e = c[--f], 11 === e.X ? e.h && e.h.length && ja(a, b, e.h) : (e.remove(), g.splice(b, 0, e), e.j = a);
   }
 }
-var la = 0, ka = 1, fa = 2, G = 3, ea = 4, ja = 5;
+var fa = 0, ea = 1, ca = 2, F = 3, ba = 4, da = 5, ka = {xml:!0, svg:!0, math:!0}, la = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, ma = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, 
+PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, G = {CAPTION:{ARTICLE:!0, SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, 
+Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DD:{ARTICLE:!0, 
+SECTION:!0, NAV:!0, ASIDE:!0, H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, HEADER:!0, FOOTER:!0, ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, 
+math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, DT:{ADDRESS:!0, P:!0, HR:!0, PRE:!0, BLOCKQUOTE:!0, OL:!0, UL:!0, DL:!0, FIGURE:!0, DIV:!0, A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, 
+BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, TABLE:!0, FORM:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, FIELDSET:!0, DETAILS:!0, DIALOG:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, P:{A:!0, EM:!0, STRONG:!0, SMALL:!0, S:!0, CITE:!0, Q:!0, DFN:!0, ABBR:!0, DATA:!0, TIME:!0, CODE:!0, VAR:!0, SAMP:!0, KBD:!0, 
+SUB:!0, SUP:!0, I:!0, B:!0, U:!0, MARK:!0, RUBY:!0, BDI:!0, BDO:!0, SPAN:!0, BR:!0, WBR:!0, INS:!0, DEL:!0, PICTURE:!0, IMG:!0, IFRAME:!0, EMBED:!0, OBJECT:!0, VIDEO:!0, AUDIO:!0, MAP:!0, AREA:!0, math:!0, svg:!0, LABEL:!0, INPUT:!0, BUTTON:!0, SELECT:!0, DATALIST:!0, TEXTAREA:!0, KEYGEN:!0, OUTPUT:!0, PROGRESS:!0, METER:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0, CANVAS:!0}, HTML:{HEAD:!0, BODY:!0}, HEAD:{TITLE:!0, BASE:!0, BGSOUND:!0, LINK:!0, META:!0, STYLE:!0, SCRIPT:!0, NOSCRIPT:!0, TEMPLATE:!0}, 
+COLGROUP:{COL:!0}, OPTGROUP:{OPTION:!0}, OPTION:{}, TBODY:{TR:!0}, TR:{TH:!0, TD:!0}, RBC:{RB:!0, RP:!0, RT:!0}};
+G.LI = G.TD = G.DD;
+G.TH = G.DT;
+G.RB = G.RP = G.RT = G.P;
+G.TFOOT = G.THEAD = G.TBODY;
+G.RTC = G.RBC;
 function na(a, b, c) {
   var g = a, e = I(g), f = 0, k = b(a, null, -1, f / 3), h = [-1, a, e];
   if (Infinity !== k && -Infinity !== k) {
@@ -149,7 +148,7 @@ function ta(a, b, c, g, e) {
 function ua(a, b, c) {
   a = va(a);
   var g;
-  F = a;
+  C = a;
   b && (b.h ? b.h.push(a) : b.h = [a]);
   if (J(c)) {
     for (b = 0, g = c.length; b < g; b += 2) {
@@ -175,7 +174,7 @@ function I(a) {
   var b = a[0], c = O(a);
   return 1 === c || 17 === c ? (b = N(b) ? 2 : 1, a = a[b], !J(a) && K(a) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
-function C(a) {
+function A(a) {
   var b = a.indexOf("#"), c = a.indexOf("."), g = "", e = "";
   b < c ? (g = a.split(".")[1], a = a.split(".")[0], 0 < b && (e = a.split("#")[1], a = a.split("#")[0])) : c < b && (e = a.split("#")[1], a = a.split("#")[0], 0 < c && (g = a.split(".")[1], a = a.split(".")[0]));
   return [a, e, g];
@@ -203,10 +202,10 @@ function va(a) {
       if (b) {
         k < c.length && (c.length = k);
         var r = c[c.length - 1];
-        G <= da(r) ? (r.G = r.G || [], r.G.push([n, u, l]), n = null) : n = new A(r, r.h && r.h.length, n, u, l);
+        F <= aa(r) ? (r.G = r.G || [], r.G.push([n, u, l]), n = null) : n = new z(r, r.h && r.h.length, n, u, l);
         I(g) < g.length && (c[k] = n);
       } else {
-        b = new A(!0, 0, n, u, l), c = [b];
+        b = new z(!0, 0, n, u, l), c = [b];
       }
     }
     if (L(g) || N(g)) {
@@ -326,13 +325,13 @@ function xa(a, b, c, g, e, f) {
         H = !0;
       case 1:
         N(t) && (t = B, R = 2);
-        t = C(t);
+        t = A(t);
         B = t[1];
         var ia = t[2];
         t = t[0];
         l = l[R];
         "P" !== u || qa[t] ? u = "" : q[++x] = k();
-        y = y || (y || aa[t] ? !0 : 0 < t.indexOf(":"));
+        y = y || (y || ka[t] ? !0 : 0 < t.indexOf(":"));
         D = D || !!pa[t];
         Q = Q || !!ra[t];
         q[++x] = "<" + (y ? t : t.toLowerCase());
@@ -346,7 +345,7 @@ function xa(a, b, c, g, e, f) {
             if (R && c && (t = ta(c, E, t, e, v), v && v.stopped)) {
               return;
             }
-            null == t || ba[E] && !1 === t || (q[++x] = " " + E, ba[E] || !0 === t) || "style" === E && K(t) && (t = wa(t), !t) || (q[++x] = "=" + h(t, m, y || d));
+            null == t || la[E] && !1 === t || (q[++x] = " " + E, la[E] || !0 === t) || "style" === E && K(t) && (t = wa(t), !t) || (q[++x] = "=" + h(t, m, y || d));
           }
         }
         !y || r || H ? q[++x] = ">" : q[++x] = " />";
@@ -373,7 +372,7 @@ function xa(a, b, c, g, e, f) {
         u = "";
         break;
       case 1:
-        N(q) && (q = l[1]), q = C(q)[0], !M && ca[q] ? u = "" : y && !M || oa[q] && (!v || "P" !== q) ? u = q : (r[++D] = "</" + (y ? q : q.toLowerCase()) + ">", u = "");
+        N(q) && (q = l[1]), q = A(q)[0], !M && ma[q] ? u = "" : y && !M || oa[q] && (!v || "P" !== q) ? u = q : (r[++D] = "</" + (y ? q : q.toLowerCase()) + ">", u = "");
     }
     -1 !== D && ya(a, r.join(""));
     0 === w && (a = null);
@@ -1168,7 +1167,7 @@ function Ma(a, b, c, g) {
         return 11 === d[0] ? (d.shift(), d.unshift(h, 1), k.splice.apply(k, d)) : k.splice(h, 1, d), -1;
       }
       if (L(f) || N(f)) {
-        return k.splice(h, 1), -1;
+        f = [3, 0], k.splice(h, 1, f);
       }
       f.h = !0;
     }
