@@ -1,5 +1,5 @@
 goog.provide( 'json2html.main' );
-goog.provide( 'json2html.createJSON2HTMLTransformaer' );
+goog.provide( 'json2html.createJSON2HTMLTransformer' );
 
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.isXMLRootElement' );
@@ -37,7 +37,7 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
     var html = [];
     var j = -1;
 
-    json2html.createJSON2HTMLTransformaer(
+    json2html.createJSON2HTMLTransformer(
         false,
         /** @type {!ThroughLike} */ ({
             queue : function( chunk ){
@@ -70,7 +70,7 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
  * @param {!function((string | !Error))=} opt_onError
  * @param {!Object=} opt_options
  */
-json2html.createJSON2HTMLTransformaer = function( isInStreaming, transformer, traverserOrHTMLJsonParser, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
+json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, traverserOrHTMLJsonParser, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     function getHTMLTagName( tagName ){
         return tagName.toLowerCase(); // TODO upperCase
     };

@@ -5,7 +5,7 @@ goog.requireType( 'htmljson.Traverser.LeaveHandler' );
 goog.requireType( 'ThroughLike' );
 goog.requireType( 'Through' );
 goog.require( 'htmljson.base' );
-goog.require( 'json2html.createJSON2HTMLTransformaer' );
+goog.require( 'json2html.createJSON2HTMLTransformer' );
 goog.require( 'HTMLJsonParser.create' );
 
 /**
@@ -18,7 +18,7 @@ goog.require( 'HTMLJsonParser.create' );
 json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
     const through = HTMLJsonParser.create( opt_onError );
 
-    json2html.createJSON2HTMLTransformaer(
+    json2html.createJSON2HTMLTransformer(
         true,
         through,
         /**

@@ -201,7 +201,7 @@ HTMLJsonParser.onToken = function( token, value ){
         };
         const parentAndPosition = tree[ lastIndex ] || [ null, -1 ];
 
-        const result = self.onEnterNode( currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ] + 1, lastIndex, hasUnknownChildren, through );
+        const result = self.onEnterNode( currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ] + 1, lastIndex + 1, hasUnknownChildren, through );
 // console.log( currentJsonNode )
         const stopped = through.stopped;
 
@@ -238,7 +238,7 @@ HTMLJsonParser.onToken = function( token, value ){
             parentAndPosition = tree[ lastIndex ] || [ null, 0 ];
         };
         if( self.onLeaveNode ){
-            self.onLeaveNode( opt_currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ], lastIndex );
+            self.onLeaveNode( opt_currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ], lastIndex + 1 );
         };
     };
 
