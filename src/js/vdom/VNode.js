@@ -3,7 +3,6 @@ goog.provide( 'VNode.currentRestrictedVNode' );
 goog.provide( 'VNode.treeIsUpdated' );
 
 goog.require( 'htmljson.NODE_TYPE' );
-goog.require( 'htmljson.base' );
 
 /**
  * @constructor
@@ -290,25 +289,6 @@ VNode.prototype.setNodeValue = function( nodeValue ){
 VNode.prototype.isElement = function(){
     return this._nodeType === htmljson.NODE_TYPE.ELEMENT_NODE ||
            this._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG;
-};
-
-/**
- * 
- */
-VNode.prototype.finalize = function(){
-    if( htmljson.DEFINE.DEBUG ){
-        if( this._isRestrictedMode ){
-            throw 'In Restricted Mode. VNode cannot execute finalize()!';
-        };
-    };
-
-    if( htmljson.DEFINE.DEBUG ){
-        if( this._nodeType !== htmljson.NODE_TYPE.ELEMENT_START_TAG ){
-            throw 'finalize() をサポートしない nodeType です!';
-        };
-    };
-    _compareValuesAndSetUpdatedFlag( this._nodeType, htmljson.NODE_TYPE.ELEMENT_NODE );
-    this._nodeType = htmljson.NODE_TYPE.ELEMENT_NODE;
 };
 
 /**
