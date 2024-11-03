@@ -7,7 +7,8 @@
   "main": "index.js",
   "scripts": {
     "make": "gulp dist",
-    "test": "ava"
+    "test": "ava",
+    "demo": "node sample/js/webserver.js"
   },
   "ava": {
     "files": [
@@ -32,6 +33,7 @@
   ],
   "dependencies": {
     "plugin-error": "^2.0.1",
+    "rss-parser": "^3.13.0",
     "through2": "^4.0.2"
   },
   "devDependencies": {

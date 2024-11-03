@@ -126,7 +126,7 @@ gulp.task(
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
-                            output_wrapper    : isDebug ? '(function(require,String,Buffer,JSON,undefined){\n%output%\n})(require,String,Buffer,JSON,void 0);' : '%output%'
+                            output_wrapper    : isDebug ? '%output%' : '(function(require,String,Buffer,JSON,undefined){\n%output%\n})(require,String,Buffer,JSON,void 0);'
                         }
                     )
                 ).pipe(
@@ -169,6 +169,63 @@ gulp.task(
                     )
                 ).pipe(
                     gulp.dest( 'dist' )
+                );
+        }
+    )
+);
+gulp.task(
+    'sample',
+    gulp.series(
+        function(){
+            console.log( '** 1. html' );
+            return gulp.src(
+                    [
+                        './sample/src/**/*.html'
+                    ]
+                ).pipe(
+                    require( './dist/html2json.js' ).gulp( null, {trimWhitespaces:'aggressive', removeNewlineBetweenFullWidthChars:true} )
+                ).pipe(
+                    gulp.dest( './sample/html.json' )
+                );
+        },
+        function(){
+            console.log( '** 2. news' );
+            ClosureCompiler = ClosureCompiler || require( 'google-closure-compiler' ).gulp();
+
+            return gulp.src(
+                    [
+                        './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/htmlparser/src/**/*.js',
+                        './src/**/*.js',
+                        './sample/src/**/*.js'
+                    ]
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            dependency_mode   : 'PRUNE',
+                            entry_point       : 'goog:sample.news',
+                            define            : [
+                                'htmljson.DEFINE.DEBUG=' + true
+                            ],
+                            // env               : 'CUSTOM',
+                            compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'
+                            warning_level     : 'VERBOSE',
+                            // language_in       : 'ECMASCRIPT3',
+                            // language_out      : 'ECMASCRIPT3',
+                            output_wrapper    : isDebug ?  '%output%' : '(function(require,String,Buffer,JSON,Date,undefined){\n%output%\n})(require,String,Buffer,JSON,Date,void 0);'
+                        }
+                    )
+                ).pipe(
+                    ClosureCompiler(
+                        {
+                            compilation_level : isDebug ? 'WHITESPACE_ONLY' : 'SIMPLE_OPTIMIZATIONS',
+                            formatting        : true ? 'PRETTY_PRINT' : 'SINGLE_QUOTES',
+                            warning_level     : 'QUIET',
+                            js_output_file    : 'news.generated.js'
+                        }
+                    )
+                ).pipe(
+                    gulp.dest( './sample/js' )
                 );
         }
     )

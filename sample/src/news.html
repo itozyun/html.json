@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja" class="nojs" xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<meta charset="utf-8">
+<title>Streaming SSR Sample | html.json</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta http-equiv="imagetoolbar" content="no">
+<meta http-equiv="cleartype" content="on">
+<meta name="HandheldFriendly" content="true">
+<meta name="mobileoptimized" content="0">
+<!-- for smartphone -->
+<meta name="format-detection" content="telephone=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<!-- for Watch OS 5+ -->
+<meta name="disabled-adaptations" content="watch">
+
+<meta name="viewport" content="width=device-width,target-densitydpi=medium-dpi,initial-scale=1">
+<style>html,body{margin:0;padding:0;border:0;background:#eef}h1{text-align:center}img{image-rendering:pixelated}h2,h3{font-size:100%;margin-top:0}h3 a{display:block;height:1.5em;line-height:1.6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;word-wrap:break-word}.main{background:#fcfcfc;padding:1em 0}.main div{max-width:40em;margin:0 auto}.main div div{margin:1em 0}[multi]{column-count:2}hr{display:none}.footer{text-align:center;padding:1em 0}</style>
+</head>
+<body size="1">
+<div class=main>
+    <div>
+        <header>
+            <h1><img src="logo.png" width=248 height=94 alt="html.json!"></h1>
+        </header>
+        <main>
+            <marquee>This page is a sample of Streaming SSR of html.json.</marquee>
+            <h2>国内のニュース(新聞赤旗提供)</h2>
+            <p align=right><? time ?>
+            <div multi>
+                <? news ?>
+            </div>
+        </main>
+    </div>
+</div>
+<div class=footer>
+    <footer>
+        <hr>
+        <address>&copy; 2024 <a href="https://github.com/itozyun/html.json">html.json</a>, Using the RSS of <a href="https://www.jcp.or.jp/akahata/">Shinbun Akahata</a>.</address>
+    </footer>
+</div>
+</body>
+</html>

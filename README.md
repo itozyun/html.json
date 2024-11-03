@@ -17,6 +17,7 @@ And Tiny Streaming SSR!
 ## 目次
 
 1. コンパイルとテスト
+   1. Streaming SSR のデモ
 2. html.json の例
 3. API の概要
 4. HTML の minify
@@ -36,6 +37,17 @@ npm run test
 
 # Do when the node module is updated
 gulp externs
+~~~
+
+## 1.1. Streaming SSR のデモ
+
+次を実行した後にブラウザで http://localhost:8080/ を開く．
+
+~~~sh
+npm run demo
+
+# Build demo files
+gulp sample
 ~~~
 
 ## 2. html.json の例
