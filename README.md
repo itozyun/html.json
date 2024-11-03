@@ -27,10 +27,10 @@ And Tiny Streaming SSR!
 ## 1. コンパイルとテスト
 
 ~~~sh
-git pull https://github.com/itozyun/html.json
+git clone https://github.com/itozyun/html.json.git
 cd html.json
 npm i
-git submodule update
+git submodule update --init
 
 npm run make
 npm run test
@@ -46,7 +46,7 @@ gulp externs
 ~~~sh
 npm run demo
 
-# Build demo files
+# Do when the "sample/*" files are updated
 gulp sample
 ~~~
 
