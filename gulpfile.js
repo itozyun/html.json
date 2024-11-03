@@ -226,7 +226,7 @@ gulp.task(
                         }
                     )
                 ).pipe(
-                    gulp.dest( './sample/js' )
+                    gulp.dest( 'sample' )
                 );
         }
     )

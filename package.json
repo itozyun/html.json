@@ -8,7 +8,7 @@
   "scripts": {
     "make": "gulp dist",
     "test": "ava",
-    "demo": "node sample/js/webserver.js"
+    "demo": "node sample/webserver.js"
   },
   "ava": {
     "files": [

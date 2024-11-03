@@ -11,7 +11,10 @@ require('http').createServer(
               .pipe(res);
         } else {
             fs.createReadStream('./sample' + req.url)
-              .on('error', ()=>res.end('<!DOCTYPE html><p>Error!'))
+              .on('error', (err)=>{
+                res.statusCode = err = err.code === 'ENOENT' ? 404 : 500;
+                res.end('<!DOCTYPE html><p>' + (err === 404 ? '404 Not Found' : 'Internal Server Error'))
+              })
               .pipe(res)
         };
     }
