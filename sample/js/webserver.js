@@ -10,12 +10,9 @@ require('http').createServer(
               .pipe(news.news())
               .pipe(res);
         } else {
-            try {
-                fs.createReadStream('./sample' + req.url)
-                .pipe(res);
-            } catch(O_o) {
-                res.end('Error!');
-            };
+            fs.createReadStream('./sample' + req.url)
+              .on('error', ()=>res.end('<!DOCTYPE html><p>Error!'))
+              .pipe(res)
         };
     }
 ).listen(8080);
