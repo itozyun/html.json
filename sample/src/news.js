@@ -26,14 +26,14 @@ module.exports = {
                         stoppingStream = this;
                         stoppingStream.stop();
                     } else {
-                        return '🖊 ' + news.length + ' Articles, ⌛' + ( Date.now() - startTime ) / 1000 + 's' + ( stoppedTime ? '(' + stoppedTime / 1000 + 's)' : '' );
+                        return news.length + ' Articles, ⌛' + ( Date.now() - startTime ) / 1000 + 's' + ( stoppedTime ? '(' + stoppedTime / 1000 + 's)' : '' );
                     };
                 },
                 'news' : function(){
                     for( var html = [ 11 ], l = news.length, i = 0, article; i < l; ++i ){
                         article = news[ i ];
                         html.push(
-                            [ 'H3', [ 'A', { href : article[ 'link' ] }, '🖊 ' + article[ 'title' ].substr( 0, 50 ) ] ] // , [ 'P', article[ 'content' ].substr( 0, 140 ) ]
+                            [ 'H3', [ 'A', { href : article[ 'link' ] }, article[ 'title' ].substr( 0, 50 ) ] ] // , [ 'P', article[ 'content' ].substr( 0, 140 ) ]
                         );
                     };
                     return html;

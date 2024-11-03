@@ -1087,13 +1087,13 @@
     });
     return Ea({time:function() {
       if (b) {
-        return "\ud83d\udd8a " + b.length + " Articles, \u231b" + (U.now() - a) / 1E3 + "s" + (h ? "(" + h / 1E3 + "s)" : "");
+        return b.length + " Articles, \u231b" + (U.now() - a) / 1E3 + "s" + (h ? "(" + h / 1E3 + "s)" : "");
       }
       c = this;
       c.stop();
     }, news:function() {
       for (var g = [11], m = b.length, e = 0, f; e < m; ++e) {
-        f = b[e], g.push(["H3", ["A", {href:f.link}, "\ud83d\udd8a " + f.title.substr(0, 50)]]);
+        f = b[e], g.push(["H3", ["A", {href:f.link}, f.title.substr(0, 50)]]);
       }
       return g;
     }});
