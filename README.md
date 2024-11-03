@@ -91,7 +91,7 @@ json2json で使える Virtual DOM の説明は  [RESTRICTED_VNODE.md](doc/RESTR
    * 動的ノードと動的属性の内で、決定済の値があれば、静的ノードと静的属性に置き換える．
    * json2json.gulp が利用できます．
 4. filter.gulp
-   * 静的ページまたは、動的ページにだけ処理したい場合に便利な gulp プラグインです
+   * 静的ページまたは、動的ページだけ処理したい場合に便利な gulp プラグインです
 
 ## 4. HTML の minify
 
@@ -103,7 +103,7 @@ json2html では、閉じタグとクォートを省略して HTML を最小化�
 
 ## 5. 条件付きコメントに関する情報
 
-html.json は条件付きコメントをサポートします．条件付きコメントに独自に割り振られた nodeType は で確認出来ます．
+html.json は条件付きコメントをサポートします．条件付きコメントに独自に割り振られた nodeType は [HTMLJSON.md](doc/HTMLJSON.md) で確認出来ます．
 条件付きコメントに関する情報は [CONDITIONAL_COMMENTS](doc/CONDITIONAL_COMMENTS.md) にあります．
 
 ## 6. License
