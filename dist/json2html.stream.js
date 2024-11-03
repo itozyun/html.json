@@ -29,7 +29,7 @@
     }
   }
   function da(a) {
-    return a.m ? Y === a ? a.J ? pa : a.N ? Z : qa : Y.j === a ? ra : sa : ta;
+    return a.m ? Y === a ? a.J ? oa : a.N ? Z : pa : Y.j === a ? qa : ra : sa;
   }
   function ea(a, b, c) {
     var g = a.h = a.h || [], e = g.length, k = c.length;
@@ -91,7 +91,7 @@
   function Q(a) {
     return E(a) || F(a) ? 3 : B(a) ? E(a[0]) ? 1 : F(a[0]) ? a[0] : -1 : -1;
   }
-  function ua(a, b, c) {
+  function ta(a, b, c) {
     var g = b[1];
     b = b.slice(2);
     var e;
@@ -111,8 +111,8 @@
     B(k) && (a = ha(a, b, k, g, e), void 0 !== a && (k = a));
     return k;
   }
-  function va(a, b, c) {
-    a = wa(a);
+  function ua(a, b, c) {
+    a = va(a);
     var g;
     Y = a;
     b && (b.h ? b.h.push(a) : b.h = [a]);
@@ -148,7 +148,7 @@
   function M(a) {
     return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
   }
-  function xa(a) {
+  function wa(a) {
     var b = [], c = -1, g;
     for (g in a) {
       var e = a[g];
@@ -161,7 +161,7 @@
     }
     return b.join(";").substr(1);
   }
-  function wa(a) {
+  function va(a) {
     var b, c;
     fa(a, function(g, e, k, f) {
       function h(n, r, m) {
@@ -218,7 +218,7 @@
     });
     return b;
   }
-  function ya(a, b, c, g, e, k) {
+  function xa(a, b, c, g, e, k) {
     function f() {
       var m = "";
       r && (m = "</" + r.toLowerCase() + ">", r = "");
@@ -243,7 +243,7 @@
       var ba = n[5 * w + 1];
       C = n[5 * w + 2];
       var R = n[5 * w + 3];
-      ba = g ? va(m, ba, g) : null;
+      ba = g ? ua(m, ba, g) : null;
       var u = m[0], A = m[1], S = 1, D;
       switch(Q(m)) {
         case 9:
@@ -273,7 +273,7 @@
           break;
         case 7:
           if (c) {
-            var G = ua(c, m, v);
+            var G = ta(c, m, v);
             v = B(G);
             if (null != G && "" !== G) {
               if (E(G) || F(G)) {
@@ -296,10 +296,10 @@
           var ja = u[2];
           u = u[0];
           m = m[S];
-          "P" !== r || za[u] ? r = "" : t[++x] = f();
-          y = y || (y || Aa[u] ? !0 : 0 < u.indexOf(":"));
-          C = C || !!Ba[u];
-          R = R || !!Ca[u];
+          "P" !== r || ya[u] ? r = "" : t[++x] = f();
+          y = y || (y || za[u] ? !0 : 0 < u.indexOf(":"));
+          C = C || !!Aa[u];
+          R = R || !!Ba[u];
           t[++x] = "<" + (y ? u : u.toLowerCase());
           A && (t[++x] = " id=" + h(A, l, y || d));
           ja && (t[++x] = " class=" + h(ja, l, y || d));
@@ -311,7 +311,7 @@
               if (S && c && (u = ha(c, D, u, e, v), v && v.stopped)) {
                 return;
               }
-              null == u || ka[D] && !1 === u || (t[++x] = " " + D, ka[D] || !0 === u) || "style" === D && aa(u) && (u = xa(u), !u) || (t[++x] = "=" + h(u, l, y || d));
+              null == u || ka[D] && !1 === u || (t[++x] = " " + D, ka[D] || !0 === u) || "style" === D && aa(u) && (u = wa(u), !u) || (t[++x] = "=" + h(u, l, y || d));
             }
           }
           !y || p || G ? t[++x] = ">" : t[++x] = " />";
@@ -338,7 +338,7 @@
           r = "";
           break;
         case 1:
-          F(t) && (t = m[1]), t = X(t)[0], !N && Da[t] ? r = "" : y && !N || Ea[t] && (!v || "P" !== t) ? r = t : (p[++C] = "</" + (y ? t : t.toLowerCase()) + ">", r = "");
+          F(t) && (t = m[1]), t = X(t)[0], !N && Ca[t] ? r = "" : y && !N || Da[t] && (!v || "P" !== t) ? r = t : (p[++C] = "</" + (y ? t : t.toLowerCase()) + ">", r = "");
       }
       -1 !== C && ca(a, p.join(""));
       0 === w && (a = null);
@@ -380,20 +380,17 @@
     a.emit(b);
     a.D || (a.state = 113);
   }
+  function Ea() {
+    this.readable = !1;
+    this.writable || process.nextTick(() => this.destroy());
+  }
   function ca(a, b) {
-    a.ea || (null === b && (a.ea = !0), a.aa.push(b), ma(a));
+    a.fa || (null === b && (a.fa = !0), a.aa.push(b), ma(a));
   }
   function ma(a) {
     for (var b = a.aa; b.length && !a.paused;) {
       var c = b.shift();
       null === c ? a.emit("end") : a.emit("data", c);
-    }
-  }
-  function na(a) {
-    if (a.paused) {
-      a.on("resume", () => na(a));
-    } else {
-      a.writable && (a.writable = !1, a.ja.call(a), !a.readable && a.ga && a.destroy());
     }
   }
   function Fa(a) {
@@ -479,9 +476,9 @@
     function e(l, q) {
       const n = h.Z;
       var r = h.W, m = n.length - 1;
-      -1 === m && 9 !== l[0] && 11 !== l[0] && (n.push([[11], -1]), m = 0, h.ia = !0);
+      -1 === m && 9 !== l[0] && 11 !== l[0] && (n.push([[11], -1]), m = 0, h.ha = !0);
       const p = n[m] || [null, -1];
-      m = h.la(l, p[0], p[1] + 1, m + 1, q, r);
+      m = h.ka(l, p[0], p[1] + 1, m + 1, q, r);
       (r = r.stopped) ? -1 !== m && h.da.push(a, b) : (h.R.length = 0, h.T = null, ++p[1], q ? n.push([l, -1]) : k(l));
       return r;
     }
@@ -489,10 +486,10 @@
       const q = h.Z;
       let n = q.length - 1, r = q[n];
       l || (l = r[0], q.pop(), --n, r = q[n] || [null, 0]);
-      h.ha && h.ha(l, r[0], r[1], n + 1);
+      h.ga && h.ga(l, r[0], r[1], n + 1);
     }
     function f() {
-      return h.Z.length - (h.ia ? 1 : 0) ? 36 : 37;
+      return h.Z.length - (h.ha ? 1 : 0) ? 36 : 37;
     }
     const h = this;
     var d = this.ba;
@@ -753,11 +750,11 @@
   }
   function z(a, b, c, g) {
     const e = Fa(c);
-    ya(e, function(k, f) {
+    xa(e, function(k, f) {
       var h, d;
-      e.M.la = function(l, q, n, r, m, p) {
+      e.M.ka = function(l, q, n, r, m, p) {
         if (h) {
-          if (oa(h, d, p, k, f)) {
+          if (na(h, d, p, k, f)) {
             return;
           }
           h = null;
@@ -774,16 +771,16 @@
             } else {
               q.push(l);
             }
-            oa(q, d, p, k, f) && (h = q);
+            na(q, d, p, k, f) && (h = q);
           }
           return -1;
         }
       };
-      e.M.ha = f;
+      e.M.ga = f;
     }, a, b, c, g);
     return e;
   }
-  function oa(a, b, c, g, e) {
+  function na(a, b, c, g, e) {
     var k;
     fa(a, function(f, h, d, l) {
       if (f !== a && !f.h) {
@@ -825,9 +822,9 @@
     ea(a, 0, [this]);
     return a;
   };
-  var ta = 0, sa = 1, qa = 2, Z = 3, pa = 4, ra = 5, Aa = {xml:!0, svg:!0, math:!0}, ka = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, Da = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, 
-  PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, Ea = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, Ba = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, 
-  VIDEO:!0}, za = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, Ca = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0};
+  var sa = 0, ra = 1, pa = 2, Z = 3, oa = 4, qa = 5, za = {xml:!0, svg:!0, math:!0}, ka = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, Ca = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, 
+  PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, Da = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, Aa = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, 
+  VIDEO:!0}, ya = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, Ba = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0};
   const P = I.from ? I.from : (...a) => new I(...a), U = I.alloc ? I.alloc : (...a) => new I(...a);
   T.prototype.write = function(a) {
     "string" === typeof a && (a = P(a));
@@ -1135,32 +1132,35 @@
   var Ga = class extends W.Stream {
     constructor() {
       super();
-      this.fa = "json2html";
-      this.ka = Ma;
-      this.ja = Na;
-      this.destroyed = this.paused = this.ea = this.ended = !1;
-      this.ga = this.readable = this.writable = !0;
+      this.ja = Ma;
+      this.ia = Na;
+      this.destroyed = this.paused = this.fa = this.ended = !1;
+      this.readable = this.writable = !0;
       this.aa = [];
-      this.on("end", () => {
-        this.readable = !1;
-        !this.writable && this.ga && process.nextTick(() => this.destroy());
-      });
+      this.on("end", Ea);
     }
     write(a) {
-      this.ka.call(this, a);
+      this.ja.call(this, a);
       return !this.paused;
     }
+    ea() {
+      if (this.paused) {
+        this.on("resume", this.ea);
+      } else {
+        this.writable && (this.writable = !1, this.ia.call(this), this.readable || this.destroy());
+      }
+    }
     end(a) {
-      this.ended || (this.ended = !0, arguments.length && this.write(a), na(this));
+      this.ended || (this.ended = !0, arguments.length && this.write(a), this.ea());
     }
     destroy() {
       this.destroyed || (this.ended = this.destroyed = !0, this.aa.length = 0, this.writable = this.readable = !1, this.emit("close"));
     }
     pause() {
-      this.paused || (this.paused = !0, console.log("[Through: " + this.fa + "] pause()"), this.emit("pause"));
+      this.paused || (this.paused = !0, this.emit("pause"));
     }
     resume() {
-      this.paused && (this.paused = !1, console.log("[Through: " + this.fa + "] resume()"), this.emit("resume"));
+      this.paused && (this.paused = !1, this.emit("resume"));
       ma(this);
       this.paused || this.emit("drain");
     }

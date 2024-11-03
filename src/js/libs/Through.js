@@ -7,6 +7,7 @@
 goog.provide( 'Through' )
 
 goog.requireType( 'ThroughLike' );
+goog.require( 'htmljson.DEFINE.DEBUG' );
 
 goog.scope(
   function(){
@@ -47,11 +48,7 @@ goog.scope(
         //this is only a problem if end is not emitted synchronously.
         //a nicer way to do this is to make sure this is the last listener for 'end'
 
-        this.on('end', () => {
-          this.readable = false
-          if(!this.writable && this.autoDestroy)
-            process.nextTick(() => this.destroy())
-        })
+        this.on('end', endHandler)
       }
 
       /** @param {Buffer | string | number | boolean | null} data */
@@ -78,11 +75,11 @@ goog.scope(
         // @see https://github.com/dominictarr/through/pull/49
         //   end called while paused for Readable Streams #49
         if (this.paused){
-          this.on('resume', () => this._end() )
+          this.on('resume', this._end)
         } else if (this.writable) {
           this.writable = false
           this._endHandler.call(this)
-          if(!this.readable && this.autoDestroy)
+          if(!this.readable /** && this.autoDestroy */)
             this.destroy()
         };
       }
@@ -127,7 +124,9 @@ goog.scope(
       pause() {
         if(!this.paused){
           this.paused = true
-          console.log( '[Through: ' + this._name + '] pause()' )
+          if(htmljson.DEFINE.DEBUG){
+            console.log('[Through: ' + this._name + '] pause()')
+          }
           this.emit('pause')
         }
       }
@@ -135,7 +134,9 @@ goog.scope(
       resume() {
         if(this.paused) {
           this.paused = false
-          console.log( '[Through: ' + this._name + '] resume()' )
+          if(htmljson.DEFINE.DEBUG){
+            console.log('[Through: ' + this._name + '] resume()')
+          }
           this.emit('resume')
         }
         this._drain()
@@ -144,6 +145,14 @@ goog.scope(
         if(!this.paused)
           this.emit('drain')
       }
+    };
+    /**
+     * @this {!Through}
+     */
+    function endHandler(){
+      this.readable = false
+      if(!this.writable /** && this.autoDestroy */)
+        process.nextTick(() => this.destroy())
     };
   }
 );
