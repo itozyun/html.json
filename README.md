@@ -110,4 +110,4 @@ html.json は条件付きコメントをサポートします．条件付きコ�
 
 [HTML.JSON](https://github.com/itozyun/html.json) is licensed under MIT license.
 
-(C) 2024 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))
+(C) 2024-2025 [itozyun](https://github.com/itozyun)([blog](//outcloud.blogspot.com/))

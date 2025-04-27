@@ -28,7 +28,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
         function( onEnterNode, opt_onLeaveNode ){
             /**
              * HTMLJsonParser の onEnterNode から呼ばれる
-             * インストラクションが返した htmlJson を処理中の pause をこのレイヤーで吸収する
+             * インストラクションが返した htmlJson 処理中の pause をこのレイヤーで吸収する
              * この parentJSONNode は currentJSONNode を子に持たない, 接続されていない
              * 
              * @param {!HTMLJson | string | number} currentJSONNode 

@@ -111,4 +111,3 @@ htmljson.EXPECT = {
     IN_CHILD_NODES                  : htmljson.PHASE.END_OF_NODE + 5,
     END_OF_DOCUMENT                 : htmljson.PHASE.END_OF_NODE + 6
 };
-

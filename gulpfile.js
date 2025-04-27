@@ -173,6 +173,7 @@ gulp.task(
         }
     )
 );
+
 gulp.task(
     'sample',
     gulp.series(
@@ -205,7 +206,7 @@ gulp.task(
                             dependency_mode   : 'PRUNE',
                             entry_point       : 'goog:sample.news',
                             define            : [
-                                'htmljson.DEFINE.DEBUG=' + true
+                                'htmljson.DEFINE.DEBUG=' + isDebug
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'

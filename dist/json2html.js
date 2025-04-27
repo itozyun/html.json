@@ -293,7 +293,7 @@ function sa(a, c, d, f, b, e) {
     var m = [], u = -1;
     C = !1;
     Q(h) && (C = P(h) < h.length);
-    var F = q[5 * r], S = q[5 * r + 1], T = q[5 * r + 2], M = q[5 * r + 3];
+    var E = q[5 * r], S = q[5 * r + 1], T = q[5 * r + 2], M = q[5 * r + 3];
     S = f ? pa(h, S, f) : null;
     var w = h[0], D = h[1], aa = 1, A;
     switch(V(h)) {
@@ -324,22 +324,18 @@ function sa(a, c, d, f, b, e) {
         break;
       case 7:
         if (d) {
-          var E = na(d, h, t);
-          t = Q(E);
-          if (null != E && "" !== E) {
-            if (U(E) || E === +E) {
-              L(E);
-            } else if (t) {
-              return oa(l, y, E), -1;
-            }
+          var F = na(d, h, t);
+          if (t = Q(F)) {
+            return oa(l, y, F), -1;
           }
+          (U(F) || F === +F) && "" !== F && L(F);
         }
         break;
       case 18:
         m[++u] = "</" + D + ">";
         break;
       case 17:
-        E = !0;
+        F = !0;
       case 1:
         w === +w && (w = D, aa = 2);
         w = G(w);
@@ -348,25 +344,25 @@ function sa(a, c, d, f, b, e) {
         w = w[0];
         h = h[aa];
         "P" !== z || la[w] ? z = "" : m[++u] = g();
-        F = F || (F || ba[w] ? !0 : 0 < w.indexOf(":"));
+        E = E || (E || ba[w] ? !0 : 0 < w.indexOf(":"));
         T = T || !!ka[w];
         M = M || !!ma[w];
-        m[++u] = "<" + (F ? w : w.toLowerCase());
-        l && (m[++u] = " id=" + k(l, n, F || p));
-        y && (m[++u] = " class=" + k(y, n, F || p));
+        m[++u] = "<" + (E ? w : w.toLowerCase());
+        l && (m[++u] = " id=" + k(l, n, E || p));
+        y && (m[++u] = " class=" + k(y, n, E || p));
         if (!Q(h) && R(h)) {
           for (A in h) {
             if (l = h[A], (y = 0 === A.indexOf(H)) && (A = A.substr(H.length)), "className" === A && (A = "class"), y && d && (l = W(d, A, l, b, t)), !(null == l || v[A] && !1 === l || (m[++u] = " " + A, v[A] || !0 === l))) {
               if ("style" === A && R(l) && (l = ra(l), !l)) {
                 continue;
               }
-              m[++u] = "=" + k(l, n, F || p);
+              m[++u] = "=" + k(l, n, E || p);
             }
           }
         }
-        !F || C || E ? m[++u] = ">" : m[++u] = " />";
+        !E || C || F ? m[++u] = ">" : m[++u] = " />";
     }
-    q[5 * r + 5] = F;
+    q[5 * r + 5] = E;
     q[5 * r + 6] = S;
     q[5 * r + 7] = T;
     q[5 * r + 8] = M;

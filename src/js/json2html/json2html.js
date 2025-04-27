@@ -227,17 +227,15 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                         result = m_executeProcessingInstruction( opt_onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), opt_onError, opt_instructionContext );
                         isNewNodeGeneratedByInstruction = m_isArray( result );
 
-                        if( result != null && result !== '' ){
-                            if( m_isStringOrNumber( result ) ){
-                                processTextNode( result );
-                            } else if( isNewNodeGeneratedByInstruction ){
-                                if( isInStreaming ){
-                                    return /** @type {!HTMLJson} */ (result);
-                                } else {
-                                    m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentJSONNode), myIndex, /** @type {!HTMLJson} */ (result) );
-                                    return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                                };
+                        if( isNewNodeGeneratedByInstruction ){
+                            if( isInStreaming ){
+                                return /** @type {!HTMLJson} */ (result);
+                            } else {
+                                m_replaceProcessingInstructionWithHTMLJson( /** @type {!HTMLJson} */ (parentJSONNode), myIndex, /** @type {!HTMLJson} */ (result) );
+                                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                             };
+                        } else if( m_isStringOrNumber( result ) && result !== '' ){
+                            processTextNode( result );
                         };
                     };
                     break;

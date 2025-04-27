@@ -273,22 +273,18 @@
           break;
         case 7:
           if (c) {
-            var G = ta(c, m, v);
-            v = B(G);
-            if (null != G && "" !== G) {
-              if (E(G) || F(G)) {
-                N(G);
-              } else if (v) {
-                return G;
-              }
+            var H = ta(c, m, v);
+            if (v = B(H)) {
+              return H;
             }
+            (E(H) || F(H)) && "" !== H && N(H);
           }
           break;
         case 18:
           t[++x] = "</" + A + ">";
           break;
         case 17:
-          G = !0;
+          H = !0;
         case 1:
           F(u) && (u = A, S = 2);
           u = X(u);
@@ -314,7 +310,7 @@
               null == u || ka[D] && !1 === u || (t[++x] = " " + D, ka[D] || !0 === u) || "style" === D && aa(u) && (u = wa(u), !u) || (t[++x] = "=" + h(u, l, y || d));
             }
           }
-          !y || p || G ? t[++x] = ">" : t[++x] = " />";
+          !y || p || H ? t[++x] = ">" : t[++x] = " />";
       }
       n[5 * w + 5] = y;
       n[5 * w + 6] = ba;
@@ -357,7 +353,7 @@
     this.m = this.K = 0;
     this.$ = {2:U(2), 3:U(3), 4:U(4)};
   }
-  function H(a, b) {
+  function G(a, b) {
     65536 <= a.o && (a.j += a.V.toString("utf8"), a.o = 0);
     a.V[a.o++] = b;
   }
@@ -901,7 +897,7 @@
           } else if (92 === b) {
             this.h = 98;
           } else if (32 <= b) {
-            H(this, b);
+            G(this, b);
           } else {
             this.h = 18;
             return;
@@ -911,35 +907,35 @@
           b = a[c];
           switch(b) {
             case 34:
-              H(this, b);
+              G(this, b);
               this.h = 97;
               break;
             case 92:
-              H(this, 92);
+              G(this, 92);
               this.h = 97;
               break;
             case 47:
-              H(this, 47);
+              G(this, 47);
               this.h = 97;
               break;
             case 98:
-              H(this, 8);
+              G(this, 8);
               this.h = 97;
               break;
             case 102:
-              H(this, 12);
+              G(this, 12);
               this.h = 97;
               break;
             case 110:
-              H(this, 10);
+              G(this, 10);
               this.h = 97;
               break;
             case 114:
-              H(this, 13);
+              G(this, 13);
               this.h = 97;
               break;
             case 116:
-              H(this, 9);
+              G(this, 9);
               this.h = 97;
               break;
             case 117:
