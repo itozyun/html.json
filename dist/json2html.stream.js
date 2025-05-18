@@ -1,6 +1,18 @@
 (function(W, J, I, Oa, Pa) {
+  function E(a) {
+    return a === "" + a;
+  }
+  function F(a) {
+    return a === +a;
+  }
+  function X(a) {
+    return !!a && "object" === typeof a;
+  }
+  function B(a) {
+    return !!a && a.constructor === Array;
+  }
   function K(a, b, c, g, e) {
-    if (a === !!a) {
+    if (!!a === a) {
       var k = null;
       this.m = a;
     } else {
@@ -12,7 +24,7 @@
     switch(c) {
       case 1:
       case 17:
-        this.T = e || null, b = X(g), g = b[0];
+        this.T = e || null, b = Y(g), g = b[0];
       case 18:
         this.K = g;
         break;
@@ -29,7 +41,7 @@
     }
   }
   function da(a) {
-    return a.m ? Y === a ? a.J ? oa : a.N ? Z : pa : Y.j === a ? qa : ra : sa;
+    return a.m ? Z === a ? a.J ? oa : a.N ? aa : pa : Z.j === a ? qa : ra : sa;
   }
   function ea(a, b, c) {
     var g = a.h = a.h || [], e = g.length, k = c.length;
@@ -76,18 +88,6 @@
       c && c(a, null, -1, 0);
     }
   }
-  function B(a) {
-    return !(!a || a.pop !== [].pop);
-  }
-  function aa(a) {
-    return !(!a || "object" !== typeof a);
-  }
-  function E(a) {
-    return "" + a === a;
-  }
-  function F(a) {
-    return a === +a;
-  }
   function Q(a) {
     return E(a) || F(a) ? 3 : B(a) ? E(a[0]) ? 1 : F(a[0]) ? a[0] : -1 : -1;
   }
@@ -95,7 +95,7 @@
     var g = b[1];
     b = b.slice(2);
     var e;
-    "function" === typeof a ? e = b.length ? a.call(c, g, b) : a.call(c, g) : a[g] && (e = b.length ? a[g].apply(c || a, b) : a[g].call(c || a));
+    a && a.constructor === Function ? e = b.length ? a.call(c, g, b) : a.call(c, g) : a[g] && (e = b.length ? a[g].apply(c || a, b) : a[g].call(c || a));
     e && B(e[0]) && e.unshift(11);
     return e;
   }
@@ -104,9 +104,9 @@
     if (B(c) && E(c[0])) {
       var f = c[0];
       c = c.slice(1);
-      "function" === typeof a ? k = c.length ? a.call(e, f, c) : a.call(e, f) : a[f] && (k = c.length ? a[f].apply(e || a, c) : a[f].call(e || a));
+      a && a.constructor === Function ? k = c.length ? a.call(e, f, c) : a.call(e, f) : a[f] && (k = c.length ? a[f].apply(e || a, c) : a[f].call(e || a));
     } else {
-      E(c) && ("function" === typeof a ? k = a.call(e, c) : a[c] && (k = a[c].call(e || a)));
+      E(c) && (a && a.constructor === Function ? k = a.call(e, c) : a[c] && (k = a[c].call(e || a)));
     }
     B(k) && (a = ha(a, b, k, g, e), void 0 !== a && (k = a));
     return k;
@@ -114,7 +114,7 @@
   function ua(a, b, c) {
     a = va(a);
     var g;
-    Y = a;
+    Z = a;
     b && (b.h ? b.h.push(a) : b.h = [a]);
     if (B(c)) {
       for (b = 0, g = c.length; b < g; b += 2) {
@@ -138,9 +138,9 @@
   }
   function L(a) {
     var b = a[0], c = Q(a);
-    return 1 === c || 17 === c ? (b = F(b) ? 2 : 1, a = a[b], !B(a) && aa(a) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
+    return 1 === c || 17 === c ? (b = F(b) ? 2 : 1, a = a[b], !B(a) && X(a) ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
   }
-  function X(a) {
+  function Y(a) {
     var b = a.indexOf("#"), c = a.indexOf("."), g = "", e = "";
     b < c ? (g = a.split(".")[1], a = a.split(".")[0], 0 < b && (e = a.split("#")[1], a = a.split("#")[0])) : c < b && (e = a.split("#")[1], a = a.split("#")[0], 0 < c && (g = a.split(".")[1], a = a.split(".")[0]));
     return [a, e, g];
@@ -168,7 +168,7 @@
         if (b) {
           f < c.length && (c.length = f);
           var p = c[c.length - 1];
-          Z <= da(p) ? (p.G = p.G || [], p.G.push([n, r, m]), n = null) : n = new K(p, p.h && p.h.length, n, r, m);
+          aa <= da(p) ? (p.G = p.G || [], p.G.push([n, r, m]), n = null) : n = new K(p, p.h && p.h.length, n, r, m);
           L(g) < g.length && (c[f] = n);
         } else {
           b = new K(!0, 0, n, r, m), c = [b];
@@ -287,7 +287,7 @@
           H = !0;
         case 1:
           F(u) && (u = A, S = 2);
-          u = X(u);
+          u = Y(u);
           A = u[1];
           var ja = u[2];
           u = u[0];
@@ -299,7 +299,7 @@
           t[++x] = "<" + (y ? u : u.toLowerCase());
           A && (t[++x] = " id=" + h(A, l, y || d));
           ja && (t[++x] = " class=" + h(ja, l, y || d));
-          if (!B(m) && aa(m)) {
+          if (!B(m) && X(m)) {
             for (D in m) {
               u = m[D];
               (S = 0 === D.indexOf(q)) && (D = D.substr(q.length));
@@ -307,7 +307,7 @@
               if (S && c && (u = ha(c, D, u, e, v), v && v.stopped)) {
                 return;
               }
-              null == u || ka[D] && !1 === u || (t[++x] = " " + D, ka[D] || !0 === u) || "style" === D && aa(u) && (u = wa(u), !u) || (t[++x] = "=" + h(u, l, y || d));
+              null == u || ka[D] && !1 === u || (t[++x] = " " + D, ka[D] || !0 === u) || "style" === D && X(u) && (u = wa(u), !u) || (t[++x] = "=" + h(u, l, y || d));
             }
           }
           !y || p || H ? t[++x] = ">" : t[++x] = " />";
@@ -334,7 +334,7 @@
           r = "";
           break;
         case 1:
-          F(t) && (t = m[1]), t = X(t)[0], !N && Ca[t] ? r = "" : y && !N || Da[t] && (!v || "P" !== t) ? r = t : (p[++C] = "</" + (y ? t : t.toLowerCase()) + ">", r = "");
+          F(t) && (t = m[1]), t = Y(t)[0], !N && Ca[t] ? r = "" : y && !N || Da[t] && (!v || "P" !== t) ? r = t : (p[++C] = "</" + (y ? t : t.toLowerCase()) + ">", r = "");
       }
       -1 !== C && ca(a, p.join(""));
       0 === w && (a = null);
@@ -413,7 +413,7 @@
     this.stopped && (this.stopped = !1, this.resume());
   }
   function Ma(a) {
-    if (F(a) || a === !!a) {
+    if (F(a) || !!a === a) {
       a = "" + a;
     }
     E(a) && (a = P(a));
@@ -798,9 +798,9 @@
     });
     return k;
   }
-  var Y = null;
+  var Z = null;
   K.prototype.remove = function() {
-    if (Z <= da(this)) {
+    if (aa <= da(this)) {
       return this.J = !0, null;
     }
     var a = this.j ? this.j.h.indexOf(this) : -1;
@@ -818,8 +818,8 @@
     ea(a, 0, [this]);
     return a;
   };
-  var sa = 0, ra = 1, pa = 2, Z = 3, oa = 4, qa = 5, za = {xml:!0, svg:!0, math:!0}, ka = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, Ca = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, META:!0, 
-  PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, Da = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, Aa = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, 
+  var sa = 0, ra = 1, pa = 2, aa = 3, oa = 4, qa = 5, za = {xml:!0, svg:!0, math:!0}, ka = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, Ca = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, 
+  META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, Da = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, Aa = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, 
   VIDEO:!0}, ya = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, Ba = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0};
   const P = I.from ? I.from : (...a) => new I(...a), U = I.alloc ? I.alloc : (...a) => new I(...a);
   T.prototype.write = function(a) {

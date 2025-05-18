@@ -15,6 +15,7 @@ gulp.task(
             return gulp.src(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/es2-core/src/**/*.js', 
                         './.submodules/htmlparser/src/**/*.js', 
                         './src/**/*.js'
                     ]
@@ -52,6 +53,7 @@ gulp.task(
             return gulp.src(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/es2-core/src/**/*.js', 
                         './.submodules/htmlparser/src/**/*.js', 
                         './src/**/*.js'
                     ]
@@ -81,6 +83,7 @@ gulp.task(
             return gulp.src(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/es2-core/src/**/*.js', 
                         './.submodules/htmlparser/src/**/*.js', 
                         './src/**/*.js'
                     ]
@@ -110,6 +113,7 @@ gulp.task(
             return gulp.src(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/es2-core/src/**/*.js', 
                         './.submodules/htmlparser/src/**/*.js', 
                         './src/**/*.js'
                     ]
@@ -147,6 +151,7 @@ gulp.task(
             return gulp.src(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/es2-core/src/**/*.js', 
                         './.submodules/htmlparser/src/**/*.js', 
                         './src/**/*.js'
                     ]
@@ -196,6 +201,7 @@ gulp.task(
             return gulp.src(
                     [
                         './node_modules/@externs/nodejs/**/*.js',
+                        './.submodules/es2-core/src/**/*.js', 
                         './.submodules/htmlparser/src/**/*.js',
                         './src/**/*.js',
                         './sample/src/**/*.js'

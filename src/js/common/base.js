@@ -2,6 +2,7 @@ goog.provide( 'htmljson.base' );
 goog.provide( 'InstructionHandler' );
 goog.provide( 'EnterNodeHandler' );
 
+goog.require( 'core.all' );
 goog.require( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
@@ -112,56 +113,11 @@ var m_FAMILY_OF_PRE_ELEMENT = {
 
 /**
  * 
- * @param {*} value 
- * @return {boolean}
- */
-function m_isArray( value ){
-    return !!( value && value.pop === [].pop );
-};
-
-/**
- * 
- * @param {*} value 
- * @return {boolean}
- */
-function m_isObject( value ){
-    return !!( value && typeof value === 'object' );
-};
-
-/**
- * 
- * @param {*} value 
- * @return {boolean}
- */
-function m_isBoolean( value ){
-    return value === !!value;
-};
-
-/**
- * 
- * @param {*} str 
- * @return {boolean}
- */
-function m_isString( str ){
-    return '' + str === str;
-};
-
-/**
- * 
- * @param {*} n 
- * @return {boolean}
- */
-function m_isNumber( n ){
-    return n === + n;
-};
-
-/**
- * 
  * @param {*} v 
  * @return {boolean}
  */
 function m_isStringOrNumber( v ){
-    return m_isString( v ) || m_isNumber( v );
+    return core.isString( v ) || core.isNumber( v );
 };
 
 /**
@@ -171,9 +127,7 @@ function m_isStringOrNumber( v ){
  */
 function m_isFiniteNumberString( v ){
     return v === '' + ( + v ) && // is number string
-           v === v            && // not NaN
-           v !== '' +  1/0    && // not  Infinity
-           v !== '' + -1/0;      // not -Infinity
+           core.isFiniteNumber( + v );
 };
 
 /**
@@ -191,7 +145,7 @@ function m_tryToFiniteNumber( v ){
  * @return {boolean}
  */
 function m_isNodeList( value ){
-    return m_isArray( value ) && m_isArray( value[ 0 ] );
+    return core.isArray( value ) && core.isArray( value[ 0 ] );
 };
 
 /**
@@ -200,7 +154,7 @@ function m_isNodeList( value ){
  * @return {boolean}
  */
 function m_isStrictNode( value ){
-    return m_isArray( value ) && ( m_isNumber( value[ 0 ] ) || m_isString( value[ 0 ] ) );
+    return core.isArray( value ) && ( core.isNumber( value[ 0 ] ) || core.isString( value[ 0 ] ) );
 };
 
 function m_isXML( xmlDeclarationAndDocumentType ){
@@ -216,10 +170,10 @@ function m_getNodeType( value ){
     return m_isStringOrNumber( value )
         ? htmljson.NODE_TYPE.TEXT_NODE
         : (
-            m_isArray( value )
-                ? m_isString( value[ 0 ] )
+            core.isArray( value )
+                ? core.isString( value[ 0 ] )
                      ? htmljson.NODE_TYPE.ELEMENT_NODE
-                : m_isNumber( value[ 0 ] )
+                : core.isNumber( value[ 0 ] )
                      ? value[ 0 ]
                      : -1
                 : -1
@@ -232,7 +186,7 @@ function m_getNodeType( value ){
  * @return {boolean}
  */
 function m_isAttributes( value ){
-    return !m_isArray( value ) && m_isObject( value );
+    return !core.isArray( value ) && core.isObject( value );
 };
 
 /**
@@ -258,7 +212,7 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, opt_onE
     var args         = currentJSONNode.slice( 2 );
     var result;
 
-    if( typeof onInstruction === 'function' ){
+    if( core.isFunction( onInstruction ) ){
         if( args.length ){
             result = onInstruction.call( opt_context, functionName, args );
         } else {
@@ -273,11 +227,11 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, opt_onE
     };
 
     if( htmljson.DEFINE.DEBUG ){
-        if( result != null && !m_isStringOrNumber( result ) && !m_isArray( result ) ){
+        if( result != null && !m_isStringOrNumber( result ) && !core.isArray( result ) ){
             opt_onError && opt_onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
         };
     };
-    if( result && m_isArray( result[ 0 ] ) ){ // nodeType を省略した DOCUMENT_FRAGMENT_NODE
+    if( result && core.isArray( result[ 0 ] ) ){ // nodeType を省略した DOCUMENT_FRAGMENT_NODE
         result.unshift( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
     };
     return result;
@@ -312,12 +266,12 @@ function m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, index, html
 function m_executeInstructionAttr( onInstruction, attrName, value, opt_onError, opt_context ){
     var result, functionName, args, recursion;
 
-    if( m_isArray( value ) && m_isString( value[ 0 ] ) ){
+    if( core.isArray( value ) && core.isString( value[ 0 ] ) ){
         value        = /** @type {!Array} */ (value);
         functionName = /** @type {string} */ (value[ 0 ]);
         args         = value.slice( 1 );
 
-        if( typeof onInstruction === 'function' ){
+        if( core.isFunction( onInstruction ) ){
             if( args.length ){
                 result = onInstruction.call( opt_context, functionName, args );
             } else {
@@ -330,9 +284,9 @@ function m_executeInstructionAttr( onInstruction, attrName, value, opt_onError, 
                 result = onInstruction[ functionName ].call( opt_context || onInstruction );
             };
         };
-    } else if( m_isString( value ) ){
+    } else if( core.isString( value ) ){
         value = /** @type {string} */ (value);
-        if( typeof onInstruction === 'function' ){
+        if( core.isFunction( onInstruction ) ){
             result = onInstruction.call( opt_context, value  );
         } else if( onInstruction[ value ] ){
             result = onInstruction[ value ].call( opt_context || onInstruction );
@@ -341,7 +295,7 @@ function m_executeInstructionAttr( onInstruction, attrName, value, opt_onError, 
         opt_onError && opt_onError( 'Invalid InstructionAttr value! [' + attrName + '=' + value + ']' );
     };
 
-    if( m_isArray( result ) ){
+    if( core.isArray( result ) ){
         recursion = m_executeInstructionAttr( onInstruction, attrName, /** @type {!InstructionArgs} */ (result), opt_onError, opt_context );
 
         if( recursion !== undefined ){
@@ -352,7 +306,7 @@ function m_executeInstructionAttr( onInstruction, attrName, value, opt_onError, 
 };
 
 function m_isEnterNodeHandler( v ){
-    return m_isArray( v ) || typeof v === 'function';
+    return core.isArray( v ) || core.isFunction( v );
 };
 
 /**
@@ -376,14 +330,14 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
         };
     };
 
-    if( !m_isArray( enterNodeHandler ) ){
+    if( !core.isArray( enterNodeHandler ) ){
         /** @type {!function(!VNode)} */ (enterNodeHandler)( currentVNode );
     } else {
         enterNodeHandler = /** @type {!Array.<string | number | !function(!VNode):(boolean | void)>} */ (enterNodeHandler);
         for( i = 0, l = enterNodeHandler.length; i < l; i += 2 ){
             selector = /** @type {string | number}                    */ (enterNodeHandler[ i + 0 ]);
             handler  = /** @type {!function(!VNode):(boolean | void)} */ (enterNodeHandler[ i + 1 ]);
-            if( m_isNumber( selector ) ){
+            if( core.isNumber( selector ) ){
                 if( selector === currentVNode._nodeType ){
                     if( handler( currentVNode ) === true ){
                         break;
@@ -393,7 +347,7 @@ function m_executeEnterNodeHandler( currentJsonNode, parentVNode, enterNodeHandl
                 if( handler( currentVNode ) === true ){
                     break;
                 };
-            } else if( m_isString( selector ) ){
+            } else if( core.isString( selector ) ){
                 if( selector === currentVNode._tagName ){
                     if( handler( currentVNode ) === true ){
                         break;
@@ -419,7 +373,7 @@ function m_getChildNodeStartIndex( htmlJsonNode ){
     var indexAttrs;
 
     if( isElement ){
-        indexAttrs = m_isNumber( nodeTypeOrTagName ) ? 2 : 1;
+        indexAttrs = core.isNumber( nodeTypeOrTagName ) ? 2 : 1;
         return m_isAttributes( htmlJsonNode[ indexAttrs ] ) ? indexAttrs + 1 : indexAttrs;
     };
 
@@ -743,7 +697,7 @@ function m_createVNodeFromHTMLJson( rootHTMLJson, isRestrictedMode ){
                         tagName   = arg1;
                         attrIndex = 2;
                     default :
-                        if( m_isString( tagName ) ){
+                        if( core.isString( tagName ) ){
                             insertNode( /** @type {number} */ (attrIndex === 1 ? htmljson.NODE_TYPE.ELEMENT_NODE : arg0), /** @type {string} */ (tagName), /** @type {Attr | void} */ (currentJSONNode[ attrIndex ] ) );
                         };
                 };

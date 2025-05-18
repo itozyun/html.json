@@ -25,7 +25,7 @@ goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
  * @return {string | void} html string
  */
 json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
-    if( htmljson.DEFINE.DEBUG && !m_isArray( rootHTMLJson ) ){
+    if( htmljson.DEFINE.DEBUG && !core.isArray( rootHTMLJson ) ){
         opt_onError && opt_onError( 'Invalid html.json document!' );
     };
 
@@ -142,7 +142,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
          * @param {!Through=} opt_instructionContext
          * @return {number | !HTMLJson | void} number:VISITOR_OPTION.*, HTMLJson は json2html.stream のみ
          */
-        function enterNodeHandler( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, opt_instructionContext ){
+        function( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, opt_instructionContext ){
             /**
              * @param {string} tagName 
              * @return {boolean} */
@@ -161,7 +161,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
             var chunk = [], j = -1;
             var hasChildren = false;
 
-            if( m_isArray( currentJSONNode ) ){
+            if( core.isArray( currentJSONNode ) ){
                 if( !isInStreaming ){
                     hasChildren = m_hasChildren( /** @type {!HTMLJson} */ (currentJSONNode) );
                 } else {
@@ -196,7 +196,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                     break;
                 case htmljson.NODE_TYPE.TEXT_NODE :
-                    if( !m_isArray( currentJSONNode ) ){
+                    if( !core.isArray( currentJSONNode ) ){
                         arg1 = currentJSONNode;
                     };
                     processTextNode( arg1 );
@@ -225,7 +225,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
                     if( opt_onInstruction ){
                         result = m_executeProcessingInstruction( opt_onInstruction, /** @type {!HTMLJson} */ (currentJSONNode), opt_onError, opt_instructionContext );
-                        isNewNodeGeneratedByInstruction = m_isArray( result );
+                        isNewNodeGeneratedByInstruction = core.isArray( result );
 
                         if( isNewNodeGeneratedByInstruction ){
                             if( isInStreaming ){
@@ -245,7 +245,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                     isElementWithoutEndTag = true;
                 case htmljson.NODE_TYPE.ELEMENT_NODE :
-                    if( m_isNumber( tagName ) ){
+                    if( core.isNumber( tagName ) ){
                         tagName   = arg1;
                         attrIndex = 2;
                     };
@@ -297,7 +297,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                                 chunk[ ++j ] = ' ' + name;
 
                                 if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value !== true ){
-                                    if( name === 'style' && m_isObject( value ) ){
+                                    if( name === 'style' && core.isObject( value ) ){
                                         value = m_toCSSTest( /** @type {!Styles} */ (value) );
                                         if( !value ) continue;
                                     };
@@ -357,7 +357,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     omittedEndTagBefore = '';
                     break;
                 case htmljson.NODE_TYPE.ELEMENT_NODE :
-                    if( m_isNumber( tagName ) ){
+                    if( core.isNumber( tagName ) ){
                         tagName = currentJSONNode[ 1 ];
                     };
                     tagName = m_parseTagName( /** @type {string} */ (tagName) )[ 0 ];

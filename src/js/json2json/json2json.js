@@ -22,7 +22,7 @@ goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
  * @param {!Object=} opt_options
  */
 json2json.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt_onDocumentReady, opt_onError, opt_options ){
-    if( m_isArray( rootHTMLJson ) ){
+    if( core.isArray( rootHTMLJson ) ){
         if( rootHTMLJson[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_NODE && rootHTMLJson[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
             rootHTMLJson = [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, rootHTMLJson ];
         };
@@ -91,10 +91,10 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                 case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                     break;
                 case htmljson.NODE_TYPE.TEXT_NODE :
-                    if( !m_isArray( currentJSONNode ) ){
+                    if( !core.isArray( currentJSONNode ) ){
                         arg1 = currentJSONNode;
                     };
-                    if( m_isString( arg1 ) ){
+                    if( core.isString( arg1 ) ){
                         arg1 = /** @type {string} */ (arg1);
                         arg1 = m_normalizeNewlines( arg1 );
                         if( isTrimWhitespace ){
@@ -143,9 +143,9 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                             if( result === null || result === '' ){
                                 parentJSONNode.splice( myIndex, 1 );
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                            } else if( m_isNumber( result ) ){
+                            } else if( core.isNumber( result ) ){
                                 parentJSONNode.splice( myIndex, 1, /** @type {number} */ (result) );
-                            } else if( m_isArray( result ) || m_isString( result ) ){
+                            } else if( core.isArray( result ) || core.isString( result ) ){
                                 m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, myIndex, /** @type {!HTMLJson | string} */ (result) );
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                             };
@@ -154,7 +154,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     break;
                 case htmljson.NODE_TYPE.ELEMENT_NODE :
                 case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                    if( m_isNumber( tagName ) ){
+                    if( core.isNumber( tagName ) ){
                         tagName   = arg1;
                         attrIndex = 2;
                     };
@@ -174,10 +174,10 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         myIndex = m_getChildNodeStartIndex( currentJSONNode );
                         arg1    = currentJSONNode[ myIndex ];
                         if( arg1 != null ){
-                            if( m_isArray( arg1 ) ){
+                            if( core.isArray( arg1 ) ){
                                 arg1 = arg1[ 1 ];
                             };
-                            if( m_isString( arg1 ) ){
+                            if( core.isString( arg1 ) ){
                                 arg1 = /** @type {string} */ (arg1);
                                 arg1 = m_normalizeNewlines( arg1 );
                                 // 先頭と最後の改行文字を削除
@@ -253,8 +253,8 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                 };
                 if( value !== undefined ){
                     delete attrs[ originalName ];
-                    if( m_isArray( value ) ){
-                        if( m_isString( value[ 0 ] ) ){
+                    if( core.isArray( value ) ){
+                        if( core.isString( value[ 0 ] ) ){
                             attrs[ originalName ] = value;
                             ++numAttributes;
                         } else if( htmljson.DEFINE.DEBUG ){
@@ -263,7 +263,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     } else if( htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value === false ){
 
                     } else if( value !== null ){
-                        if( m_isString( value ) ){
+                        if( core.isString( value ) ){
                             value = /** @type {string} */ (value);
                             if( name === 'id' ){
                                 id = value;

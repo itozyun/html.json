@@ -202,8 +202,14 @@ function ia(a, b, c) {
   e();
   n(v, b, "", !0);
 }
-;function K(a, b, c) {
-  var e = a, l = L(e), g = 0, h = b(a, null, -1, g / 3), n = [-1, a, l], x = !1;
+;function K(a) {
+  return a === "" + a;
+}
+function L(a) {
+  return !!a && a.constructor === Array;
+}
+;function N(a, b, c) {
+  var e = a, l = O(e), g = 0, h = b(a, null, -1, g / 3), n = [-1, a, l], x = !1;
   if (Infinity === h || -Infinity === h) {
     return !1;
   }
@@ -229,8 +235,8 @@ function ia(a, b, c) {
           if (-1 >= h) {
             n[g] += h, x = !0;
           } else {
-            if (1 <= h && (n[g] += h, x = !0), L(d) < d.length) {
-              g += 3, n[g] = -1, n[g + 1] = e = d, n[g + 2] = l = L(d);
+            if (1 <= h && (n[g] += h, x = !0), O(d) < d.length) {
+              g += 3, n[g] = -1, n[g + 1] = e = d, n[g + 2] = l = O(d);
             } else if (c && e) {
               h = c(d, e, k + l, g / 3 + 1);
               if (Infinity === h) {
@@ -247,21 +253,19 @@ function ia(a, b, c) {
   return x;
 }
 ;var pa = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, script:!0, style:!0, textarea:!0}, qa = {PRE:!0, LISTING:!0, pre:!0, listing:!0};
-function N(a) {
-  return !(!a || a.pop !== [].pop);
-}
-function O(a) {
-  return "" + a === a;
-}
 function P(a) {
-  return a === "" + +a && a === a && a !== "" + 1 / 0 && a !== "" + -1 / 0 ? +a : a;
+  var b;
+  if (b = a === "" + +a) {
+    b = +a, b = b !== 1 / 0 && b !== -1 / 0 && b === +b;
+  }
+  return b ? +a : a;
 }
 function R(a) {
-  if (O(a) || a === +a) {
+  if (K(a) || a === +a) {
     a = 3;
   } else {
-    if (N(a)) {
-      if (O(a[0])) {
+    if (L(a)) {
+      if (K(a[0])) {
         a = 1;
       } else {
         var b = a[0];
@@ -273,9 +277,9 @@ function R(a) {
   }
   return a;
 }
-function L(a) {
+function O(a) {
   var b = a[0], c = R(a);
-  return 1 === c || 17 === c ? (b = b === +b ? 2 : 1, a = a[b], !N(a) && a && "object" === typeof a ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
+  return 1 === c || 17 === c ? (b = b === +b ? 2 : 1, a = a[b], !L(a) && a && "object" === typeof a ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
 function S(a) {
   return a.split("\r\n").join("\n").split("\r").join("\n");
@@ -306,7 +310,7 @@ function ra(a, b, c) {
   function c(d) {
     function v(p) {
       var y;
-      K(p, function(r, w, z) {
+      N(p, function(r, w, z) {
         3 === R(r) && (y = [r, w, z]);
       });
       return y;
@@ -315,9 +319,9 @@ function ra(a, b, c) {
       return p.split("\n").join("").split(" ").join("").split("\t").join("");
     }
     var m;
-    for (K(d, function(p, y, r) {
+    for (N(d, function(p, y, r) {
       if (3 === R(p)) {
-        p = "" + (O(p) || p === +p ? p : p[1]);
+        p = "" + (K(p) || p === +p ? p : p[1]);
         if (u(p)) {
           return y.splice(r, 1, T(p, "\n")), Infinity;
         }
@@ -328,7 +332,7 @@ function ra(a, b, c) {
       var f = m[0];
       var t = m[1];
       m = m[2];
-      f = "" + (O(f) || f === +f ? f : f[1]);
+      f = "" + (K(f) || f === +f ? f : f[1]);
       if (u(f)) {
         t.splice(m, 1, U(f, "\n"));
         break;
@@ -339,15 +343,15 @@ function ra(a, b, c) {
   }
   b = b || {};
   var e = -1 !== ["normal", !0, "aggressive"].indexOf(b.trimWhitespaces), l = "aggressive" === b.trimWhitespaces, g = !!b.removeNewlineBetweenFullWidthChars, h = !1 !== b.keepCDATASections, n = !1 !== b.keepComments, x = !0 === b.keepEmptyConditionalComment, k = b.instructionAttrPrefix || ":";
-  K(a, function(d, v, u) {
+  N(a, function(d, v, u) {
     var m = d[0], f = d[1], t = 1;
     switch(R(d)) {
       case 9:
         e && (d[1] = f.split("\n").join(" ").split("  ").join(" "));
         break;
       case 3:
-        N(d) || (f = d);
-        if (O(f)) {
+        L(d) || (f = d);
+        if (K(f)) {
           f = S(f);
           if (e) {
             d = f;
@@ -394,7 +398,7 @@ function ra(a, b, c) {
         m === +m && (m = f, t = 2);
         m = X(m)[0];
         var y = d[t];
-        if (!N(y) && y && "object" === typeof y) {
+        if (!L(y) && y && "object" === typeof y) {
           v = t - 1;
           u = 0;
           p = X(d[v]);
@@ -415,7 +419,7 @@ function ra(a, b, c) {
           return c(d), -Infinity;
         }
         if (pa[m]) {
-          return u = L(d), f = d[u], null != f && (N(f) && (f = f[1]), O(f) && (f = S(f), f = U(T(f, "\n"), "\n"), "" !== f ? d[u] = P(f) : d.splice(u, 1))), -Infinity;
+          return u = O(d), f = d[u], null != f && (L(f) && (f = f[1]), K(f) && (f = S(f), f = U(T(f, "\n"), "\n"), "" !== f ? d[u] = P(f) : d.splice(u, 1))), -Infinity;
         }
     }
   }, function(d, v, u) {
@@ -434,12 +438,12 @@ function ta(a) {
     c = "";
   }
   var c = "", e, l, g;
-  K(a, function(h, n, x, k) {
+  N(a, function(h, n, x, k) {
     if (c && e !== k) {
       return b(), 1;
     }
     if (3 === R(h)) {
-      return c = O(h) || h === +h ? c + h : c + h[1], n.splice(x, 1), e = k, l = n, g = x, -1;
+      return c = K(h) || h === +h ? c + h : c + h[1], n.splice(x, 1), e = k, l = n, g = x, -1;
     }
     if (c) {
       return b(), 1;

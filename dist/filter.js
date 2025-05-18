@@ -29,12 +29,12 @@ function l(a, b) {
   }
 }
 ;function q(a) {
-  if ("" + a === a || a === +a) {
+  if (a === "" + a || a === +a) {
     a = 3;
   } else {
-    if (a && a.pop === [].pop) {
+    if (a && a.constructor === Array) {
       var b = a[0];
-      "" + b === b ? a = 1 : (b = a[0], a = b === +b ? a[0] : -1);
+      b === "" + b ? a = 1 : (b = a[0], a = b === +b ? a[0] : -1);
     } else {
       a = -1;
     }
@@ -43,7 +43,7 @@ function l(a, b) {
 }
 function n(a) {
   var b = a[0], f = q(a);
-  return 1 === f || 17 === f ? (b = b === +b ? 2 : 1, (a = a[b]) && a.pop === [].pop || !a || "object" !== typeof a ? b : b + 1) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
+  return 1 === f || 17 === f ? (b = b === +b ? 2 : 1, (a = a[b]) && a.constructor === Array || !a || "object" !== typeof a ? b : b + 1) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
 ;function r(a, b) {
   var f = !0;
@@ -54,7 +54,7 @@ function n(a) {
         return f = !1, Infinity;
       case 1:
       case 17:
-        if (c === +c && (d = 2), e = e[d], (!e || e.pop !== [].pop) && e && "object" === typeof e) {
+        if (c === +c && (d = 2), e = e[d], (!e || e.constructor !== Array) && e && "object" === typeof e) {
           for (h in e) {
             if (0 === h.indexOf(b)) {
               return f = !1, Infinity;

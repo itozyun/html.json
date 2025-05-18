@@ -16,7 +16,7 @@ goog.require( 'htmljson.NODE_TYPE' );
 VNode = function( parentOrMode, insertPosition, nodeType, opt_nodeValueOrTag, opt_attrsOrArgs ){
     var childNodes, parent, tagIdClassName;
 
-    if( m_isBoolean( parentOrMode ) ){
+    if( core.isBoolean( parentOrMode ) ){
         parent = null;
         this._isRestrictedMode = /** @type {boolean} */ (parentOrMode);
     } else {
@@ -156,7 +156,7 @@ VNode.prototype.getHTMLJson = function(){
             attrs = this._attrs;
             if( m_isAttributes( attrs ) ){
                 json.push( attrs );
-                if( attrs.style && m_isObject( attrs.style ) ){
+                if( attrs.style && core.isObject( attrs.style ) ){
                     attrs.style = m_toCSSTest( /** @type {!Styles} */ (attrs.style) );
                 };
             };
@@ -743,7 +743,7 @@ VNode.prototype.getStyle = function( name ){
 
     var style = this.getAttr( 'style' );
 
-    if( style && m_isString( style ) ){
+    if( style && core.isString( style ) ){
         style = m_parseCSSText( /** @type {string} */ (style) );
         this.setAttr( 'style', style );
     };
@@ -769,7 +769,7 @@ VNode.prototype.setStyle = function( name, value ){
 
     var style = this.getAttr( 'style' );
 
-    if( style && m_isString( style ) ){
+    if( style && core.isString( style ) ){
         style = m_parseCSSText( /** @type {string} */ (style) );
         this.setAttr( 'style', style );
     } else if( !style ){
@@ -798,7 +798,7 @@ VNode.prototype.removeStyle = function( name ){
 
     var style = this.getAttr( 'style' );
 
-    if( style && m_isString( style ) ){
+    if( style && core.isString( style ) ){
         style = m_parseCSSText( /** @type {string} */ (style) );
         this.setAttr( 'style', style );
     };

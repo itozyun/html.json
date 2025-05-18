@@ -34,7 +34,7 @@ var isStaticDocument = function( rootHTMLJson, attrPrefix ){
                     return htmljson.Traverser.VISITOR_OPTION.BREAK;
                 case htmljson.NODE_TYPE.ELEMENT_NODE :
                 case htmljson.NODE_TYPE.ELEMENT_START_TAG :
-                    if( m_isNumber( tagName ) ){
+                    if( core.isNumber( tagName ) ){
                         attrIndex = 2;
                     };
                     attrs = currentJSONNode[ attrIndex ];

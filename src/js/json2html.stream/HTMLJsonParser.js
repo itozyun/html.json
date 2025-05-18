@@ -74,10 +74,10 @@ HTMLJsonParser.restartStream = function(){
  * @param {Buffer | string | number | boolean | null} chunk 
  */
 HTMLJsonParser.writeHandler = function( chunk ){
-    if( m_isNumber( chunk ) || m_isBoolean( chunk ) ){
+    if( core.isNumber( chunk ) || core.isBoolean( chunk ) ){
         chunk = '' + chunk;
     };
-    if( m_isString( chunk ) ){
+    if( core.isString( chunk ) ){
         chunk = bufferFrom( chunk );
     };
     /** @suppress {missingProperties} */
@@ -298,7 +298,7 @@ HTMLJsonParser.onToken = function( token, value ){
                         this._createValue( token, value );
                     } else {
                         if( htmljson.DEFINE.DEBUG ){
-                            if( this._args.length === 0 && !m_isString( value ) ){
+                            if( this._args.length === 0 && !core.isString( value ) ){
                                 expect = htmljson.EXPECT.ERROR;
                             };
                         };

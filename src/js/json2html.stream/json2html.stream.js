@@ -49,7 +49,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                 };
 
                 var result = onEnterNode( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, through ),
-                    isNewNodeGeneratedByInstruction = m_isArray( result ), // ProcessingInstruction の場合だけ HTMLJson(Array) が返る
+                    isNewNodeGeneratedByInstruction = core.isArray( result ), // ProcessingInstruction の場合だけ HTMLJson(Array) が返る
                     i, l;
 
                 if( through.stopped ){
@@ -114,7 +114,7 @@ function processSync( unprocessedHTMLJson, indexOffset, through, onEnterNode, on
         function( currentNode, parentNode, myIndex, depth ){
             if( currentNode !== unprocessedHTMLJson && !currentNode.entered ){
                 var result = onEnterNode( currentNode, parentNode, ( depth === 1 ? indexOffset : 0 ) + myIndex, depth, m_hasChildren( currentNode ), through ),
-                    isNewNodeGeneratedByInstruction = m_isArray( result );
+                    isNewNodeGeneratedByInstruction = core.isArray( result );
                 
                 if( through.stopped ){
                     if( htmljson.DEFINE.DEBUG ){
