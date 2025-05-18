@@ -67,7 +67,7 @@
     var l = b[1];
     b = b.slice(2);
     var g;
-    "function" === typeof a ? g = b.length ? a.call(c, l, b) : a.call(c, l) : a[l] && (g = b.length ? a[l].apply(c || a, b) : a[l].call(c || a));
+    a && a.constructor === Function ? g = b.length ? a.call(c, l, b) : a.call(c, l) : a[l] && (g = b.length ? a[l].apply(c || a, b) : a[l].call(c || a));
     g && A(g[0]) && g.unshift(11);
     return g;
   }
@@ -76,9 +76,9 @@
     if (A(c) && E(c[0])) {
       var e = c[0];
       c = c.slice(1);
-      "function" === typeof a ? m = c.length ? a.call(g, e, c) : a.call(g, e) : a[e] && (m = c.length ? a[e].apply(g || a, c) : a[e].call(g || a));
+      a && a.constructor === Function ? m = c.length ? a.call(g, e, c) : a.call(g, e) : a[e] && (m = c.length ? a[e].apply(g || a, c) : a[e].call(g || a));
     } else {
-      E(c) && ("function" === typeof a ? m = a.call(g, c) : a[c] && (m = a[c].call(g || a)));
+      E(c) && (a && a.constructor === Function ? m = a.call(g, c) : a[c] && (m = a[c].call(g || a)));
     }
     A(m) && (a = W(a, b, m, l, g), void 0 !== a && (m = a));
     return m;

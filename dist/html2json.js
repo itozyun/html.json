@@ -256,7 +256,7 @@ function L(a) {
 function P(a) {
   var b;
   if (b = a === "" + +a) {
-    b = +a, b = b !== 1 / 0 && b !== -1 / 0 && b === +b;
+    b = +a, b = b === +b && b !== b + 1;
   }
   return b ? +a : a;
 }

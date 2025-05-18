@@ -41,7 +41,7 @@ var core = {isNullOrUndefined:function(a) {
 }, isNumber:function(a) {
   return a === +a;
 }, isFiniteNumber:function(a) {
-  return a !== 1 / 0 && a !== -1 / 0 && core.isNumber(a);
+  return core.isNumber(a) && a !== a + 1;
 }, isNaN:function(a) {
   return a !== a;
 }, isBoolean:function(a) {
@@ -1217,11 +1217,11 @@ m_P_END_TAG_LESS_TAGS = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, B
 function m_isStringOrNumber(a) {
   return core.isString(a) || core.isNumber(a);
 }
-function m_isFiniteNumberString(a) {
+function m_isFiniteNumericString(a) {
   return a === "" + +a && core.isFiniteNumber(+a);
 }
 function m_tryToFiniteNumber(a) {
-  return m_isFiniteNumberString(a) ? +a : a;
+  return m_isFiniteNumericString(a) ? +a : a;
 }
 function m_isNodeList(a) {
   return core.isArray(a) && core.isArray(a[0]);

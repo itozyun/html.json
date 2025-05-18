@@ -125,18 +125,20 @@ function m_isStringOrNumber( v ){
  * @param {*} v 
  * @return {boolean}
  */
-function m_isFiniteNumberString( v ){
-    return v === '' + ( + v ) && // is number string
+function m_isFiniteNumericString( v ){
+    return v === '' + ( + v ) && // is number string, ".1" == 0.1 を除外
            core.isFiniteNumber( + v );
 };
 
 /**
+ * 数値文字列を数値に変換する
+ * ただし、".1" 等, "NaN", "Infinity", "-Infinity" は変換しない
  * 
  * @param {*} v
  * @return {*}
  */
 function m_tryToFiniteNumber( v ){
-    return m_isFiniteNumberString( v ) ? + v : v;
+    return m_isFiniteNumericString( v ) ? + v : v;
 };
 
 /**
