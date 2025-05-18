@@ -2,6 +2,7 @@ goog.provide( 'VNode' );
 goog.provide( 'VNode.currentRestrictedVNode' );
 goog.provide( 'VNode.treeIsUpdated' );
 
+goog.require( 'core.all' );
 goog.require( 'htmljson.NODE_TYPE' );
 
 /**
