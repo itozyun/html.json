@@ -65,6 +65,7 @@ function codeToObject( string, argOpeningBracket, argClosingBracket, opt_onError
 
     if( from !== -1 ){
         try {
+            // TODO arguments のパーサを書く… loose な json と等価のもの
             args = /** @type {!Array} */ (JSON.parse( '[' + string.substring( from + argOpeningBracket.length, to ) + ']' ));
         } catch( O_o ) {
             opt_onError && opt_onError( O_o );
