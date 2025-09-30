@@ -351,7 +351,7 @@
       var r = f.T, v = k.length - 1;
       -1 === v && 9 !== h[0] && 11 !== h[0] && (k.push([[11], -1]), v = 0, f.ga = !0);
       const t = k[v] || [null, -1];
-      v = f.la(h, t[0], t[1] + 1, v + 1, n, r);
+      v = f.ka(h, t[0], t[1] + 1, v + 1, n, r);
       (r = r.stopped) ? -1 !== v && f.ba.push(a, b) : (f.V.length = 0, f.W = null, ++t[1], n ? k.push([h, -1]) : m(h));
       return r;
     }
@@ -625,7 +625,7 @@
     const b = ta();
     la(b, function(c, l) {
       var g, m;
-      b.K.la = function(e, f, d, h, n, k) {
+      b.K.ka = function(e, f, d, h, n, k) {
         if (g) {
           if (ha(g, m, k, c, l)) {
             return;
@@ -656,7 +656,7 @@
   function ha(a, b, c, l, g) {
     var m;
     ia(a, function(e, f, d, h) {
-      if (e !== a && !e.ka) {
+      if (e !== a && !e.h) {
         h = l(e, f, (1 === h ? b : 0) + d, h, M(e) < e.length, c);
         var n = A(h);
         if (c.stopped) {
@@ -668,7 +668,7 @@
         if (E(e) || C(e)) {
           e = [3, e], f.splice(d, 1, e);
         }
-        e.ka = !0;
+        e.h = !0;
       }
     }, function(e, f, d, h) {
       e === a || e.left || -1 === [9, 11, 1, 17, 13, 16].indexOf(N(e)) || (g(e, f, (1 === h ? b : 0) + d, h), e.left = !0);

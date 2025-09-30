@@ -474,7 +474,7 @@
       var r = h.W, m = n.length - 1;
       -1 === m && 9 !== l[0] && 11 !== l[0] && (n.push([[11], -1]), m = 0, h.ha = !0);
       const p = n[m] || [null, -1];
-      m = h.la(l, p[0], p[1] + 1, m + 1, q, r);
+      m = h.ka(l, p[0], p[1] + 1, m + 1, q, r);
       (r = r.stopped) ? -1 !== m && h.da.push(a, b) : (h.R.length = 0, h.T = null, ++p[1], q ? n.push([l, -1]) : k(l));
       return r;
     }
@@ -748,7 +748,7 @@
     const e = Ia(c);
     Aa(e, function(k, f) {
       var h, d;
-      e.M.la = function(l, q, n, r, m, p) {
+      e.M.ka = function(l, q, n, r, m, p) {
         if (h) {
           if (pa(h, d, p, k, f)) {
             return;
@@ -779,7 +779,7 @@
   function pa(a, b, c, g, e) {
     var k;
     ia(a, function(f, h, d, l) {
-      if (f !== a && !f.ka) {
+      if (f !== a && !f.h) {
         l = g(f, h, (1 === l ? b : 0) + d, l, M(f) < f.length, c);
         var q = C(l);
         if (c.stopped) {
@@ -791,7 +791,7 @@
         if (G(f) || B(f)) {
           f = [3, f], h.splice(d, 1, f);
         }
-        f.ka = !0;
+        f.h = !0;
       }
     }, function(f, h, d, l) {
       f === a || f.left || -1 === [9, 11, 1, 17, 13, 16].indexOf(R(f)) || (e(f, h, (1 === l ? b : 0) + d, l), f.left = !0);

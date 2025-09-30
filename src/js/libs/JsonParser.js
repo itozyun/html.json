@@ -13,7 +13,8 @@ goog.require( 'core.isNumber' );
 
 const bufferFrom = Buffer.from ? Buffer.from : (...args) => new Buffer(...args);
 const bufferAlloc = Buffer.alloc ? Buffer.alloc : (...args) => new Buffer(...args);
-/** @type {!function(...Array.<number>):string} */
+
+/** @type {!function(...number):string} */
 const stringFromCharCode = String.fromCharCode;
 
 goog.scope(
