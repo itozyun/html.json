@@ -130,7 +130,7 @@ gulp.task(
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
-                            output_wrapper    : isDebug ? '%output%' : '(function(require,String,Buffer,JSON,undefined){\n%output%\n})(require,String,Buffer,JSON,void 0);'
+                            output_wrapper    : isDebug ? '%output%' : '(function(require,String,Function,Infinity,Buffer,JSON,undefined){\n%output%\n})(require,String,Function,Infinity,Buffer,JSON,void 0);'
                         }
                     )
                 ).pipe(
@@ -219,7 +219,7 @@ gulp.task(
                             warning_level     : 'VERBOSE',
                             // language_in       : 'ECMASCRIPT3',
                             // language_out      : 'ECMASCRIPT3',
-                            output_wrapper    : isDebug ?  '%output%' : '(function(require,String,Buffer,JSON,Date,undefined){\n%output%\n})(require,String,Buffer,JSON,Date,void 0);'
+                            output_wrapper    : isDebug ?  '%output%' : '(function(require,String,Function,Infinity,Buffer,JSON,Date,undefined){\n%output%\n})(require,String,Function,Infinity,Buffer,JSON,Date,void 0);'
                         }
                     )
                 ).pipe(

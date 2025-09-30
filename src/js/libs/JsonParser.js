@@ -8,9 +8,13 @@ goog.provide( 'bufferFrom' );
 goog.provide( 'bufferAlloc' );
 
 goog.require( 'htmljson.DEFINE.DEBUG' );
+goog.require( 'core.isString' );
+goog.require( 'core.isNumber' );
 
 const bufferFrom = Buffer.from ? Buffer.from : (...args) => new Buffer(...args);
 const bufferAlloc = Buffer.alloc ? Buffer.alloc : (...args) => new Buffer(...args);
+/** @type {!function(...Array.<number>):string} */
+const stringFromCharCode = String.fromCharCode;
 
 goog.scope(
   function(){
@@ -118,7 +122,7 @@ goog.scope(
     JsonParser.prototype.charError = function (buffer, i) {
       this.tState = C.STOP;
       if (htmljson.DEFINE.DEBUG) {
-        this.onError(new Error("Unexpected " + JSON.stringify(String.fromCharCode(buffer[i])) + " at position " + i + " in state " + JsonParser.toknam(this.tState)));
+        this.onError(new Error("Unexpected " + JSON.stringify(stringFromCharCode(buffer[i])) + " at position " + i + " in state " + JsonParser.toknam(this.tState)));
       };
     };
     JsonParser.prototype.appendStringChar = function (char) {
@@ -137,8 +141,8 @@ goog.scope(
      */
     JsonParser.prototype.appendStringBuf = function (buf, start, end) {
       var size = buf.length;
-      if (typeof start === 'number') {
-        if (typeof end === 'number') {
+      if (core.isNumber(start)) {
+        if (core.isNumber(end)) {
           if (end < 0) {
             // adding a negative end decreeses the size
             size = buf.length - start + end;
@@ -168,7 +172,7 @@ goog.scope(
      * @returns 
      */
     JsonParser.prototype.write = function (buffer) {
-      if (typeof buffer === "string") buffer = bufferFrom(buffer);
+      if (core.isString(buffer)) buffer = bufferFrom(buffer);
       var n;
       for (var i = 0, l = buffer.length; i < l; i++) {
         switch (this.tState) {
@@ -203,7 +207,7 @@ goog.scope(
                 break;
               default:
                 if (n >= 0x30 && n < 0x40) { // 1-9
-                  this._string = String.fromCharCode(n); this.tState = C.NUMBER3;
+                  this._string = stringFromCharCode(n); this.tState = C.NUMBER3;
                 } else if (n === 0x20 || n === 0x09 || n === 0x0a || n === 0x0d) {
                   // whitespace
                 } else {
@@ -282,21 +286,21 @@ goog.scope(
             n = buffer[i];
             // 0-9 A-F a-f
             if ((n >= 0x30 && n < 0x40) || (n > 0x40 && n <= 0x46) || (n > 0x60 && n <= 0x66)) {
-              this.unicode += String.fromCharCode(n);
+              this.unicode += stringFromCharCode(n);
               if (this.tState++ === C.STRING6) {
                 var intVal = parseInt(this.unicode, 16);
                 this.unicode = undefined;
                 if (this.highSurrogate !== undefined && intVal >= 0xDC00 && intVal < (0xDFFF + 1)) { //<56320,57343> - lowSurrogate
-                  this.appendStringBuf(bufferFrom(String.fromCharCode(this.highSurrogate, intVal)));
+                  this.appendStringBuf(bufferFrom(stringFromCharCode(this.highSurrogate, intVal)));
                   this.highSurrogate = undefined;
                 } else if (this.highSurrogate === undefined && intVal >= 0xD800 && intVal < (0xDBFF + 1)) { //<55296,56319> - highSurrogate
                   this.highSurrogate = intVal;
                 } else {
                   if (this.highSurrogate !== undefined) {
-                    this.appendStringBuf(bufferFrom(String.fromCharCode(this.highSurrogate)));
+                    this.appendStringBuf(bufferFrom(stringFromCharCode(this.highSurrogate)));
                     this.highSurrogate = undefined;
                   }
-                  this.appendStringBuf(bufferFrom(String.fromCharCode(intVal)));
+                  this.appendStringBuf(bufferFrom(stringFromCharCode(intVal)));
                 }
                 this.tState = C.STRING1;
               }
@@ -324,7 +328,7 @@ goog.scope(
               case 0x45: // E
               case 0x2b: // +
               case 0x2d: // -
-                this._string += String.fromCharCode(n);
+                this._string += stringFromCharCode(n);
                 this.tState = C.NUMBER3;
                 break;
               default:
