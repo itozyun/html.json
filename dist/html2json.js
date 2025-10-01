@@ -161,30 +161,30 @@ function fa(a, b, c) {
       }
     } else if (y) {
       d();
-    } else if (a.indexOf("<!DOCTYPE ") === p) {
-      if (g(), r = a.indexOf(">"), -1 !== r) {
-        b.ba.splice(0, 1, 9, a.substring(p, r + 1)), a = a.substring(r + 1);
-      } else {
-        e(a);
-        return;
-      }
-    } else if (a.indexOf("<![CDATA[") === p) {
-      if (g(), r = a.indexOf("]]\x3e"), -1 !== r) {
-        oa(b, f(a.substring(9, r))), a = a.substring(r + 3);
+    } else if ("<" === a.charAt(p) && G[a.charAt(p + 1)] & 3) {
+      if (g(), r = u(A, x, b, a)) {
+        a = a.substring(r);
       } else {
         e(a);
         return;
       }
     } else if (a.indexOf("\x3c!--") === p) {
       if (g(), r = a.indexOf("--\x3e"), -1 !== r) {
-        pa(b, f(a.substring(4, r))), a = a.substring(r + 3);
+        oa(b, f(a.substring(4, r))), a = a.substring(r + 3);
       } else {
         e(a);
         return;
       }
-    } else if ("<" === a.charAt(p) && G[a.charAt(p + 1)] & 3) {
-      if (g(), r = u(A, x, b, a)) {
-        a = a.substring(r);
+    } else if (a.indexOf("<![CDATA[") === p) {
+      if (g(), r = a.indexOf("]]\x3e"), -1 !== r) {
+        pa(b, f(a.substring(9, r))), a = a.substring(r + 3);
+      } else {
+        e(a);
+        return;
+      }
+    } else if (a.indexOf("<!DOCTYPE ") === p) {
+      if (g(), r = a.indexOf(">"), -1 !== r) {
+        b.ba.splice(0, 1, 9, a.substring(p, r + 1)), a = a.substring(r + 1);
       } else {
         e(a);
         return;
@@ -344,7 +344,7 @@ function ua(a, b, c) {
     }
     A && M(m, function(l, B, q) {
       if (3 === S(l)) {
-        for (var h = "" + (Q(l) ? l : l[1]), w = h.split("\n"), k = 0, J = w.length, C; k < J; ++k) {
+        for (var h = "" + (Q(l) ? l : l[1]), w = h.split("\n"), k = 0, J = w.length, C; k < J - 1; ++k) {
           for (h = w[k];;) {
             if (C = h.charAt(h.length - 1), "\t" === C || " " === C) {
               h = h.substr(0, h.length - 1);
@@ -551,7 +551,7 @@ function ma(a, b, c, d) {
 function la(a, b, c, d) {
   d ? a.ia && a.$.push([18, b]) : c && a.ia || (b === ta(a.$[1])[0] ? (a.$.shift(), a.fa.pop(), a.$ = a.fa[a.fa.length - 1]) : a.aa && a.aa("End tag error! " + b));
 }
-function pa(a, b) {
+function oa(a, b) {
   function c(g, e, f, v) {
     e = g.indexOf(e) + e.length;
     f = v ? g.lastIndexOf(f) : g.indexOf(f, e);
@@ -565,7 +565,7 @@ function pa(a, b) {
   }
   a.$.push(d);
 }
-function oa(a, b) {
+function pa(a, b) {
   a.$.push([4, R(H(b))]);
 }
 function na(a, b) {

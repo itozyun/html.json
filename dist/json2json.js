@@ -1095,16 +1095,14 @@ var $jscomp$scope$m1534190617$1$exec = function(a, b, c, e, f, d, g, h) {
       }
     } else if (x) {
       n();
-    } else if (htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE && a.indexOf("<!DOCTYPE ") === b) {
-      if (w(), p = a.indexOf(">"), -1 !== p) {
-        c.onParseDocType(a.substring(b, p + 1)), a = a.substring(p + 1);
-      } else {
-        y(a);
+    } else if ("<" === a.charAt(b) && htmlparser.isAlphabet(a.charAt(b + 1))) {
+      w();
+      p = J(h, D, c, a);
+      if (htmlparser.DEFINE.STOP_PARSING && p === $jscomp$scope$m1534190617$0$PARSING_STOP) {
         return;
       }
-    } else if (htmlparser.DEFINE.USE_CDATA_SECTION && a.indexOf("<![CDATA[") === b) {
-      if (w(), p = a.indexOf("]]\x3e"), -1 !== p) {
-        c.onParseCDATASection(G(a.substring(9, p))), a = a.substring(p + 3);
+      if (p) {
+        a = a.substring(p);
       } else {
         y(a);
         return;
@@ -1116,14 +1114,16 @@ var $jscomp$scope$m1534190617$1$exec = function(a, b, c, e, f, d, g, h) {
         y(a);
         return;
       }
-    } else if ("<" === a.charAt(b) && htmlparser.isAlphabet(a.charAt(b + 1))) {
-      w();
-      p = J(h, D, c, a);
-      if (htmlparser.DEFINE.STOP_PARSING && p === $jscomp$scope$m1534190617$0$PARSING_STOP) {
+    } else if (htmlparser.DEFINE.USE_CDATA_SECTION && a.indexOf("<![CDATA[") === b) {
+      if (w(), p = a.indexOf("]]\x3e"), -1 !== p) {
+        c.onParseCDATASection(G(a.substring(9, p))), a = a.substring(p + 3);
+      } else {
+        y(a);
         return;
       }
-      if (p) {
-        a = a.substring(p);
+    } else if (htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE && a.indexOf("<!DOCTYPE ") === b) {
+      if (w(), p = a.indexOf(">"), -1 !== p) {
+        c.onParseDocType(a.substring(b, p + 1)), a = a.substring(p + 1);
       } else {
         y(a);
         return;
@@ -1461,7 +1461,7 @@ function m_createVNodeFromHTMLJson(a, b) {
     C && htmljson.Traverser.traverseAllDescendantNodes(v, function(q, B, t, r) {
       if (m_getNodeType(q) === htmljson.NODE_TYPE.TEXT_NODE) {
         r = "" + (m_isStringOrNumber(q) ? q : q[1]);
-        for (var m = r.split("\n"), k = 0, z = m.length, A; k < z; ++k) {
+        for (var m = r.split("\n"), k = 0, z = m.length, A; k < z - 1; ++k) {
           for (r = m[k];;) {
             if (A = r.charAt(r.length - 1), "\t" === A || " " === A) {
               r = r.substr(0, r.length - 1);

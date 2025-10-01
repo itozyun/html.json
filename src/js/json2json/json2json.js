@@ -438,7 +438,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         var i = 0, l = texts.length, charLast;
                         var prevText, prevTextParent, prevTextIndex;
 
-                        for( ; i < l; ++i ){
+                        for( ; i < l - 1; ++i ){
                             text = texts[ i ];
                             // 5. 各行の改行の前の空白文字("\t", " ")も削除
                             while( true ){
