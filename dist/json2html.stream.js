@@ -1,4 +1,4 @@
-(function(X, qa, Y, F, J, Ra, Sa) {
+(function(X, qa, Y, F, J, Sa, Ta) {
   function G(a) {
     return a === "" + a;
   }
@@ -295,7 +295,7 @@
           "P" !== r || Ba[u] ? r = "" : t[++x] = f();
           y = y || (y || Ca[u] ? !0 : 0 < u.indexOf(":"));
           D = D || !!Da[u];
-          S = S || !!Ea[u];
+          S = S || Ea[u] && !Fa[u];
           t[++x] = "<" + (y ? u : u.toLowerCase());
           A && (t[++x] = " id=" + h(A, l, y || d));
           la && (t[++x] = " class=" + h(la, l, y || d));
@@ -334,7 +334,7 @@
           r = "";
           break;
         case 1:
-          B(t) && (t = m[1]), t = aa(t)[0], !O && Fa[t] ? r = "" : y && !O || Ga[t] && (!v || "P" !== t) ? r = t : (p[++D] = "</" + (y ? t : t.toLowerCase()) + ">", r = "");
+          B(t) && (t = m[1]), t = aa(t)[0], !O && Ga[t] ? r = "" : y && !O || Ha[t] && (!v || "P" !== t) ? r = t : (p[++D] = "</" + (y ? t : t.toLowerCase()) + ">", r = "");
       }
       -1 !== D && ea(a, p.join(""));
       0 === w && (a = null);
@@ -376,7 +376,7 @@
     a.emit(b);
     a.D || (a.state = 113);
   }
-  function Ha() {
+  function Ia() {
     this.readable = !1;
     this.writable || process.nextTick(() => this.destroy());
   }
@@ -389,43 +389,43 @@
       null === c ? a.emit("end") : a.emit("data", c);
     }
   }
-  function Ia(a) {
-    const b = new U(), c = new Ja();
+  function Ja(a) {
+    const b = new U(), c = new Ka();
     c.M = b;
     b.W = c;
     b.ba = 0;
     b.R = [];
     b.N = b.v;
-    b.v = Ka;
-    b.onError = La;
+    b.v = La;
+    b.onError = Ma;
     b.Z = [];
     b.da = [];
     b.Y = a;
-    c.on("resume", Ma);
-    c.stop = Na;
-    c.restart = Oa;
+    c.on("resume", Na);
+    c.stop = Oa;
+    c.restart = Pa;
     return c;
   }
-  function Na() {
+  function Oa() {
     this.stopped || (this.stopped = !0, this.pause());
   }
-  function Oa() {
+  function Pa() {
     this.stopped && (this.stopped = !1, this.resume());
   }
-  function Pa(a) {
+  function Qa(a) {
     if (B(a) || !!a === a) {
       a = "" + a;
     }
     G(a) && (a = Q(a));
     this.M.write(a);
   }
-  function Qa(a) {
+  function Ra(a) {
     null != a && this.write(a);
     37 !== this.M.ba && this.emit("error", "Invalid html.json");
     ea(this, null);
     this.M = this.M.W = null;
   }
-  function Ma() {
+  function Na() {
     var a = this.M, b = a.da;
     if (b) {
       for (; b.length && !this.stopped;) {
@@ -433,12 +433,12 @@
       }
     }
   }
-  function La(a) {
+  function Ma(a) {
     -1 < a.message.indexOf("at position") && (a.message = "Invalid JSON (" + a.message + ")");
     this.Y && this.Y(a.message);
     this.W.emit("error", a);
   }
-  function Ka(a, b) {
+  function La(a, b) {
     function c(l) {
       h.X = l;
     }
@@ -745,7 +745,7 @@
     }
   }
   function z(a, b, c, g) {
-    const e = Ia(c);
+    const e = Ja(c);
     Aa(e, function(k, f) {
       var h, d;
       e.M.ka = function(l, q, n, r, m, p) {
@@ -818,9 +818,9 @@
     ha(a, 0, [this]);
     return a;
   };
-  var va = 0, ua = 1, sa = 2, ca = 3, ra = 4, ta = 5, Ca = {xml:!0, svg:!0, math:!0}, ma = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, Fa = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, 
-  META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, Ga = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, Da = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, 
-  VIDEO:!0}, Ba = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0}, Ea = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0};
+  var va = 0, ua = 1, sa = 2, ca = 3, ra = 4, ta = 5, Ca = {xml:!0, svg:!0, math:!0}, ma = {async:!0, autofocus:!0, checked:!0, compact:!0, declare:!0, defer:!0, disabled:!0, draggable:!0, hidden:!0, ismap:!0, loop:!0, multiple:!0, nohref:!0, noresize:!0, noshade:!0, novalidate:!0, nowrap:!0, readonly:!0, required:!0, reversed:!0, scoped:!0, selected:!0}, Ga = {AREA:!0, BASE:!0, BASEFONT:!0, BR:!0, BGSOUND:!0, COL:!0, COMMAND:!0, FRAME:!0, HR:!0, IMG:!0, INPUT:!0, ISINDEX:!0, KEYGEN:!0, LINK:!0, 
+  META:!0, PARAM:!0, SOURCE:!0, TRACK:!0, EMBED:!0, WBR:!0, area:!0, base:!0, basefont:!0, br:!0, bgsound:!0, col:!0, command:!0, frame:!0, hr:!0, img:!0, input:!0, isindex:!0, keygen:!0, link:!0, meta:!0, param:!0, source:!0, track:!0, embed:!0, wbr:!0}, Ea = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, TITLE:!0, PLAINTEXT:!0, XMP:!0, script:!0, style:!0, textarea:!0, title:!0, plaintext:!0, xmp:!0}, Fa = {TEXTAREA:!0, TITLE:!0, textarea:!0, title:!0}, Ha = {HTML:!0, HEAD:!0, BODY:!0, P:!0, DT:!0, DD:!0, 
+  LI:!0, OPTION:!0, TBODY:!0, THEAD:!0, TFOOT:!0, TD:!0, TH:!0, TR:!0, RB:!0, RBC:!0, RP:!0, RT:!0, RTC:!0, OPTGROUP:!0, CAPTION:!0, COLGROUP:!0}, Da = {A:!0, AUDIO:!0, DEL:!0, INS:!0, MAP:!0, NOSCRIPT:!0, VIDEO:!0}, Ba = {H1:!0, H2:!0, H3:!0, H4:!0, H5:!0, H6:!0, ADDRESS:!0, BLOCKQUOTE:!0, DIV:!0, DL:!0, FIELDSET:!0, FORM:!0, HR:!0, LEGEND:!0, MENU:!0, NOSCRIPT:!0, OL:!0, P:!0, PRE:!0, UL:!0, CENTER:!0, DIR:!0, NOFRAMES:!0, MARQUEE:!0};
   const Q = J.from ? J.from : (...a) => new J(...a), V = J.alloc ? J.alloc : (...a) => new J(...a), K = qa.fromCharCode;
   U.prototype.write = function(a) {
     G(a) && (a = Q(a));
@@ -1125,15 +1125,15 @@
     }
   };
   X = X("stream");
-  var Ja = class extends X.Stream {
+  var Ka = class extends X.Stream {
     constructor() {
       super();
-      this.ja = Pa;
-      this.ia = Qa;
+      this.ja = Qa;
+      this.ia = Ra;
       this.destroyed = this.paused = this.fa = this.ended = !1;
       this.readable = this.writable = !0;
       this.aa = [];
-      this.on("end", Ha);
+      this.on("end", Ia);
     }
     write(a) {
       this.ja.call(this, a);

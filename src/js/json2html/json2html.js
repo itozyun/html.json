@@ -4,6 +4,8 @@ goog.provide( 'json2html.createJSON2HTMLTransformer' );
 goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmlparser.isXMLRootElement' );
 goog.require( 'htmlparser.isNamespacedTag' );
+goog.require( 'htmlparser.RAW_TEXT_ELEMENTS' );
+goog.require( 'htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -265,7 +267,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     // xml;
                     isXmlInHTML           = isXmlInHTML || isXML( tagName );
                     pEndTagRequired       = pEndTagRequired || !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ]
-                    escapeForHTMLDisabled = escapeForHTMLDisabled || !!m_UNESCAPED_ELEMENTS[ tagName ];
+                    escapeForHTMLDisabled = escapeForHTMLDisabled || ( htmlparser.RAW_TEXT_ELEMENTS[ tagName ] && !htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS[ tagName ] );
 
                     chunk[ ++j ] = '<' + ( isXmlInHTML ? tagName : getHTMLTagName( tagName ) );
                     if( id ){

@@ -2,7 +2,7 @@
 
 html.json は HTML を表現できる JSON のサブセットです．
 
-先行するプロヘクトには [jsonml](http://www.jsonml.org/)([wiki](https://en.wikipedia.org/wiki/JsonML)) があります．この拡張です.
+先行するプロジェクトには [jsonml](http://www.jsonml.org/)([wiki](https://en.wikipedia.org/wiki/JsonML)) があります．この拡張です.
 
 ## 表
 

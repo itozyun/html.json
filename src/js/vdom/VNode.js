@@ -147,7 +147,7 @@ VNode.prototype.getHTMLJson = function(){
         };
     };
 
-    var json = [ this._nodeType ], childNodes = this._childNodes, attrs, args, i, l;
+    var json = [ this._nodeType ], childNodes = this._childNodes, attrs, style, args, i, l;
 
     switch( this._nodeType ){
         case htmljson.NODE_TYPE.ELEMENT_NODE      :
@@ -157,8 +157,9 @@ VNode.prototype.getHTMLJson = function(){
             attrs = this._attrs;
             if( m_isAttributes( attrs ) ){
                 json.push( attrs );
-                if( attrs.style && core.isObject( attrs.style ) ){
-                    attrs.style = m_toCSSTest( /** @type {!Styles} */ (attrs.style) );
+                style = attrs.style;
+                if( style && core.isObject( style ) ){
+                    attrs.style = m_toCSSTest( /** @type {!Styles} */ (style) );
                 };
             };
             break;

@@ -63,9 +63,10 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
     /** @const */
     var attrPrefix        = options[ 'instructionAttrPrefix'       ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
 
-    var isTreeUpdated;
+    var isTreeModified, isTreeModifiedByInstruction;
+    var skippingTextHTMLJson;
 
-    isTreeUpdated = htmljson.Traverser.traverseAllDescendantNodes(
+    isTreeModified = htmljson.Traverser.traverseAllDescendantNodes(
         rootHTMLJson,
         /**
          * 
@@ -96,9 +97,11 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     };
                     if( core.isString( arg1 ) ){
                         arg1 = /** @type {string} */ (arg1);
-                        arg1 = m_normalizeNewlines( arg1 );
-                        if( isTrimWhitespace ){
-                            arg1 = trimWhiteSpaces( arg1, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
+                        if( !skippingTextHTMLJson ){
+                            arg1 = m_normalizeNewlines( arg1 );
+                            if( isTrimWhitespace ){
+                                arg1 = trimWhiteSpaces( arg1, isAggressiveTrim, isRemoveNewlineBetweenFullWidthChars );
+                            };
                         };
                         if( arg1 !== '' ){
                             parentJSONNode[ myIndex ] = arg1;
@@ -145,6 +148,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                             } else if( core.isNumber( result ) ){
                                 parentJSONNode.splice( myIndex, 1, /** @type {number} */ (result) );
+                                isTreeModifiedByInstruction = true;
                             } else if( core.isArray( result ) || core.isString( result ) ){
                                 m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, myIndex, /** @type {!HTMLJson | string} */ (result) );
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
@@ -167,29 +171,10 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         };
                     };
                     if( m_FAMILY_OF_PRE_ELEMENT[ tagName ] ){
-                        trimWhitespaceInPre( /** @type {!HTMLJson} */ (currentJSONNode) );
-                        return htmljson.Traverser.VISITOR_OPTION.SKIP;
-                    };
-                    if( m_TRIM_NEWLINES_ELEMENTS[ tagName ] ){
-                        myIndex = m_getChildNodeStartIndex( currentJSONNode );
-                        arg1    = currentJSONNode[ myIndex ];
-                        if( arg1 != null ){
-                            if( core.isArray( arg1 ) ){
-                                arg1 = arg1[ 1 ];
-                            };
-                            if( core.isString( arg1 ) ){
-                                arg1 = /** @type {string} */ (arg1);
-                                arg1 = m_normalizeNewlines( arg1 );
-                                // 先頭と最後の改行文字を削除
-                                arg1 = m_trimChar( /** @type {string} */ (arg1), '\n' );
-                                if( arg1 !== '' ){
-                                    currentJSONNode[ myIndex ] = m_tryToFiniteNumber( arg1 );
-                                } else {
-                                    currentJSONNode.splice( myIndex, 1 );
-                                };
-                            };
-                        };
-                        return htmljson.Traverser.VISITOR_OPTION.SKIP;
+                        trimWhitespaceInPre( /** @type {!HTMLJson} */ (currentJSONNode), isAggressiveTrim );
+                        skippingTextHTMLJson = currentJSONNode;
+                    } else if( m_TRIM_NEWLINES_ELEMENTS[ tagName ] ){
+                        trimNewLines( skippingTextHTMLJson = currentJSONNode );
                     };
                     break;
                 default :
@@ -207,18 +192,23 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
          * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
-            switch( m_getNodeType( currentJSONNode ) ){
-                case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
-                case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                    if( !keepEmptyCondCmt && currentJSONNode.length === 2 ){
-                        /** @type {!HTMLJson} */ (parentJSONNode).splice( myIndex, 1 );
-                        return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                    };
+            if( !keepEmptyCondCmt ){
+                switch( m_getNodeType( currentJSONNode ) ){
+                    case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
+                    case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
+                        if( currentJSONNode.length === 2 ){
+                            /** @type {!HTMLJson} */ (parentJSONNode).splice( myIndex, 1 );
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                        };
+                };
+            };
+            if( skippingTextHTMLJson === currentJSONNode ){
+                skippingTextHTMLJson = null;
             };
         }
     );
 
-    if( isTreeUpdated ){
+    if( isTreeModified || isTreeModifiedByInstruction ){
         normalizeTextNodes( rootHTMLJson );
     };
 
@@ -360,15 +350,47 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
     };
 
     /**
-     * pre タグの場合、最初と最後のテキストノードが空白文字のみなら削除
-     * 最初のテキストノードの頭の改行文字を削除、最後のテキストノードの後ろの改行文字を削除
-     * TODO 各行の改行の前の空白文字も削除
-     * TODO テキストノードが改行1文字だけの場合、直前のタグに含める
+     * pre タグ内のテキスト最小化
+     * 
+     * 1. 最初のテキストノードが空白文字のみなら削除
+     * 2. 最初のテキストノードの頭の改行文字を削除
+     * 3. 最後のテキストノードが空白文字のみなら削除
+     * 4. 最後のテキストノードの後ろの改行文字を削除
+     * 5. 各行の改行の前の空白文字("\t", " ")も削除(trimWhitespaces:aggressive のみ)
+     *    obj.prop = 1;   \n
+     *                 ^^^
+     * 6. テキストノードが改行1文字だけの場合、直前のテキストノードに含める(trimWhitespaces:aggressive のみ)
+     *    <u>obj.prop = 1;</u>\n
+     *    ↓
+     *    <u>obj.prop = 1;\n</u>
      * 
      * @param {!HTMLJson} htmlJsonPre
+     * @param {boolean} isAggressiveTrim
      */
-    function trimWhitespaceInPre( htmlJsonPre ){
-        var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text;
+    function trimWhitespaceInPre( htmlJsonPre, isAggressiveTrim ){
+        /**
+         * 
+         * @param {string} string 
+         * @return {string} 
+         */
+        function removeWhitespaces( string ){
+            return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
+        };
+        function getLastTextNode( htmlJsonTarget ){
+            var nodeAndPosition;
+
+            htmljson.Traverser.traverseAllDescendantNodes(
+                htmlJsonTarget,
+                function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                    if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                        nodeAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
+                    };
+                }
+            );
+            return nodeAndPosition;
+        };
+
+        var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text, prevTextAndPosition;
 
         htmljson.Traverser.traverseAllDescendantNodes(
             htmlJsonPre,
@@ -377,9 +399,11 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                     var text = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
 
                     if( !removeWhitespaces( text ) ){
+                        // 1. 最初のテキストノードが空白文字のみなら削除
                         parentJSONNode.splice( myIndex, 1 );
                         return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                     } else {
+                        // 2. 最初のテキストノードの頭の改行文字を削除
                         parentJSONNode.splice( myIndex, 1, m_trimFirstChar( text, '\n' ) );
                         return htmljson.Traverser.VISITOR_OPTION.BREAK;
                     };
@@ -395,33 +419,115 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
             text = '' + ( m_isStringOrNumber( htmlJsonText ) ? htmlJsonText : htmlJsonText[ 1 ] );
 
             if( !removeWhitespaces( text ) ){
+                // 3. 最後のテキストノードが空白文字のみなら削除
                 htmlJsonParent.splice( index, 1 );
             } else {
+                // 4. 最後のテキストノードの後ろの改行文字を削除
                 htmlJsonParent.splice( index, 1, m_trimLastChar( text, '\n' ) );
                 break;
             };
         };
 
-        function getLastTextNode( htmlJsonTarget ){
-            var nodeAndPosition;
-
+        if( isAggressiveTrim ){
             htmljson.Traverser.traverseAllDescendantNodes(
-                htmlJsonTarget,
+                htmlJsonPre,
                 function( currentJSONNode, parentJSONNode, myIndex, depth ){
                     if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
-                        nodeAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
+                        var text = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
+                        var texts = text.split( '\n' );
+                        var i = 0, l = texts.length, charLast;
+                        var prevText, prevTextParent, prevTextIndex;
+
+                        for( ; i < l; ++i ){
+                            text = texts[ i ];
+                            // 5. 各行の改行の前の空白文字("\t", " ")も削除
+                            while( true ){
+                                charLast = text.charAt( text.length - 1 );
+                                if( charLast === '\t' || charLast === ' ' ){
+                                    text = text.substr( 0, text.length - 1 );
+                                } else {
+                                    break;
+                                };
+                            };
+                            texts[ i ] = text;
+                        };
+                        text = texts.join( '\n' );
+
+                        // 6. テキストノードが改行1文字だけの場合、直前のテキストノードに含める
+                        if( text === '\n' && prevTextAndPosition ){
+                            prevText       = prevTextAndPosition[ 0 ];
+                            prevTextParent = prevTextAndPosition[ 1 ];
+                            prevTextIndex  = prevTextAndPosition[ 2 ];
+
+                            if( m_isStringOrNumber( prevText ) ){
+                                prevTextParent[ prevTextIndex ] += text;
+                            } else {
+                                prevText[ 1 ] += text;
+                            };
+                            parentJSONNode.splice( myIndex, 1 ); // remove
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                        };
+
+                        if( m_isStringOrNumber( currentJSONNode ) ){
+                            parentJSONNode.splice( myIndex, 1, currentJSONNode = text );
+                        } else {
+                            currentJSONNode[ 1 ] = text;
+                        };
+                        prevTextAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
                     };
                 }
             );
-            return nodeAndPosition;
         };
-        /**
-         * 
-         * @param {string} string 
-         * @return {string} 
-         */
-        function removeWhitespaces( string ){
-            return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
+    };
+
+    function trimNewLines( htmlJson ){
+        var i = m_getChildNodeStartIndex( htmlJson ),
+            l = htmlJson.length,
+            child, firstTextIndex, firstText, lastTextIndex, lastText;
+
+        for( ; i < l; ++i ){
+            child = htmlJson[ i ];
+            if( m_getNodeType( child ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                firstTextIndex = firstTextIndex || i;
+                firstText      = firstText || child;
+                lastTextIndex  = i;
+                lastText       = child;
+            };
+        };
+
+        if( firstTextIndex ){
+            if( core.isArray( firstText ) ){
+                firstText = firstText[ 1 ];
+            };
+            if( core.isArray( lastText ) ){
+                lastText = lastText[ 1 ];
+            };
+
+            if( firstTextIndex === lastTextIndex ){
+                if( core.isString( firstText ) ){
+                    firstText = /** @type {string} */ (firstText);
+                    firstText = m_normalizeNewlines( firstText );
+                    // 先頭と最後の改行文字を削除
+                    firstText = m_trimChar( /** @type {string} */ (firstText), '\n' );
+                    htmlJson[ firstTextIndex ] = m_tryToFiniteNumber( firstText );
+                };
+            } else {
+                if( core.isString( firstText ) ){
+                    firstText = /** @type {string} */ (firstText);
+                    firstText = m_normalizeNewlines( firstText );
+                    // 先頭の改行文字を削除
+                    firstText = m_trimFirstChar( /** @type {string} */ (firstText), '\n' );
+                    htmlJson[ firstTextIndex ] = m_tryToFiniteNumber( firstText );
+                };
+
+                if( core.isString( lastText ) ){
+                    lastText = /** @type {string} */ (lastText);
+                    lastText = m_normalizeNewlines( lastText );
+                    // 最後の改行文字を削除
+                    lastText = m_trimLastChar( /** @type {string} */ (lastText), '\n' );
+                    htmlJson[ lastTextIndex ] = m_tryToFiniteNumber( lastText );
+                };
+            };
         };
     };
 };

@@ -90,14 +90,6 @@ var m_P_END_TAG_LESS_TAGS = {
 /**
  * @const {!Object.<string, boolean>}
  */
-var m_UNESCAPED_ELEMENTS = {
-    SCRIPT : true, STYLE : true, TEXTAREA : true, TITLE : true, PLAINTEXT : true, XMP : true,
-    script : true, style : true, textarea : true, title : true, plaintext : true, xmp : true
-};
-
-/**
- * @const {!Object.<string, boolean>}
- */
 var m_TRIM_NEWLINES_ELEMENTS = {
     SCRIPT : true, STYLE : true, TEXTAREA : true,
     script : true, style : true, textarea : true

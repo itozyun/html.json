@@ -48,6 +48,40 @@ test('optimaize',
     }
 );
 
+test('pre + instruction',
+    (t) => {
+        var json = html2json('<pre>A<? empty ?>B</pre>');
+
+        json2json(
+            json,
+            function( funcName ){
+                if( funcName === 'empty' ){
+                    return null;
+                };
+            }
+        );
+
+        t.deepEqual(json, [11, ['PRE', 'AB']]);
+    }
+);
+
+test('script + instruction',
+    (t) => {
+        var json = html2json('<script>\r\nvar a=<? random ?>;\r\n</script>');
+
+        json2json(
+            json,
+            function( funcName ){
+                if( funcName === 'random' ){
+                    return 123456;
+                };
+            }
+        );
+
+        t.deepEqual(json, [11, ['SCRIPT', 'var a=123456;']]);
+    }
+);
+
 test('onDocumentReady',
     (t) => {
         var json = html2json('<p><b>Hello</b> <i>World!</i>'), text;

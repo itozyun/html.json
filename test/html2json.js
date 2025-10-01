@@ -81,6 +81,8 @@ test('processing-instruction', (t) => {
     t.deepEqual( html2json('<p><? random ?>'), [11, ['P', [ 7, "random" ]] ] );
 
     t.deepEqual( html2json('<p><? person(777, "ADMIN") ?>'), [11, ['P', [ 7, "person", 777, "ADMIN" ]] ] );
+
+    t.deepEqual( html2json('<script>var r=<? random ?>;</script>'), [11, ['SCRIPT', "var r=", [ 7, "random" ], ";"] ] );
 });
 
 test('instruction attributes', (t) => {
@@ -118,6 +120,20 @@ test('<pre>', (t) => {
     t.deepEqual( html2json('<pre class="lang:basic"><b>\nGOTO 100</b>\n</pre>' ), [ 11, ['PRE.lang:basic', [ 'B', 'GOTO 100'] ] ]);
 
     t.deepEqual( html2json('<pre class="lang:basic"><b>\r\nGOTO 100</b>\r\nGOTO 200\r</pre>' ), [ 11, ['PRE.lang:basic', [ 'B', 'GOTO 100'], '\nGOTO 200' ] ]);
+
+    t.deepEqual( html2json(`
+<pre>       
+<b>PRINT "Hello, HTML.json!"</b>                      
+<i>END</i>                                          
+     </pre>
+`, false, null, { trimWhitespaces : 'aggressive' }), [ 11, ['PRE', ['B', 'PRINT "Hello, HTML.json!"\n'], ['I', 'END']] ]);
+
+    t.deepEqual( html2json(`
+<pre><code>       
+<b>PRINT "Hello, HTML.json!"</b>                      
+<i>END</i>                                          </code>
+     </pre>
+`, false, null, { trimWhitespaces : 'aggressive' }), [ 11, ['PRE', [ 'CODE', ['B', 'PRINT "Hello, HTML.json!"\n'], ['I', 'END']]] ]);
 });
 
 test('CDATA section', (t) => {

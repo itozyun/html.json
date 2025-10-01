@@ -76,7 +76,7 @@ Page: <b>1</b> / <b>8</b>
 ~~~
 
 ~~~json
-["pre", "10 PRINT \"HELLO, WORLD!\"    ⏎20 END"]
+["PRE", "10 PRINT \"HELLO, WORLD!\"    ⏎20 END"]
 ~~~
 インライン要素がある場合、要素の中のスペース、タブも削除する
 
@@ -88,9 +88,9 @@ Page: <b>1</b> / <b>8</b>
 ~~~
 
 ~~~json
-["pre",
-    ["i", "10 PRINT \"HELLO, WORLD!\"  "], "  ⏎",
-    ["b", "20 END"]
+["PRE",
+    ["I", "10 PRINT \"HELLO, WORLD!\"  "], "  ⏎",
+    ["B", "20 END"]
 ]
 ~~~
 
@@ -104,7 +104,7 @@ Page: <b>1</b> / <b>8</b>
 ~~~
 
 ~~~json
-["pre",
-    ["i", "10 PRINT \"HELLO, WORLD!\"⏎"],
-    ["b", "20 END"]
+["PRE",
+    ["I", "10 PRINT \"HELLO, WORLD!\"⏎"],
+    ["B", "20 END"]
 ]
