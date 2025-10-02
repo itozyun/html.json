@@ -100,3 +100,21 @@ test('<p>',
         );
     }
 );
+
+test('conditional-comment <p>',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [11, [13, 'if lte IE 9', [17, 'DIV']] ]
+            ),
+            '<!--[if lte IE 9]><div><![endif]-->'
+        );
+
+        t.deepEqual(
+            json2html(
+                [11, [13, 'if lte IE 9', [18, 'DIV']] ]
+            ),
+            '<!--[if lte IE 9]></div><![endif]-->'
+        );
+    }
+);

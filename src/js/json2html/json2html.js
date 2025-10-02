@@ -242,7 +242,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     };
                     break;
                 case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                    chunk[ ++j ] = '</' + arg1 + '>';
+                    chunk[ ++j ] = '</' + ( isXmlInHTML ? arg1 : getHTMLTagName( arg1 ) ) + '>';
                     break;
                 case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                     isElementWithoutEndTag = true;
