@@ -6,6 +6,7 @@ goog.require( 'htmlparser.isXMLRootElement' );
 goog.require( 'htmlparser.isNamespacedTag' );
 goog.require( 'htmlparser.RAW_TEXT_ELEMENTS' );
 goog.require( 'htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS' );
+goog.require( 'htmlparser.escapeHTML' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
@@ -86,19 +87,19 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
         return htmlString;
     };
     /**
-     * @param {string|number|boolean} value 
-     * @param {boolean} useSingleQuot 
-     * @param {boolean} quotAlways 
+     * @param {string} value 
+     * @param {boolean} useSingleQuote 
+     * @param {boolean} useQuoteAlways 
      * @return {string}
      */
-    function quoteAttributeValue( value, useSingleQuot, quotAlways ){
-        var strValue          = m_escapeForHTML( '' + value );
+    function quoteAttributeValue( value, useSingleQuote, useQuoteAlways ){
+        var strValue          = value;
         var containDoubleQuot = strValue.match( '"' );
         var containSingleQuot = strValue.match( "'" );
-        var _                 = useSingleQuot ? "'" : '"';
+        var _                 = useSingleQuote ? "'" : '"';
 
         if( containDoubleQuot && containSingleQuot ){
-            if( useSingleQuot ){
+            if( useSingleQuote ){
                 strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
             } else {
                 strValue = _ + strValue.split( '"' ).join( '\\"' ) + _; // " のエスケープ
@@ -106,12 +107,12 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
         } else if( containDoubleQuot ){
             strValue = "'" + strValue + "'";
         } else if( containSingleQuot ){
-            if( useSingleQuot ){
+            if( useSingleQuote ){
                 strValue = _ + strValue.split( "'" ).join( "\\'" ) + _; // " のエスケープ
             } else {
                 strValue = _ + strValue + _;
             };
-        } else if( quotAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
+        } else if( useQuoteAlways || strValue.match( /[^0-9a-z\.\-]/g ) || 72 < strValue.length ){
             // http://openlab.ring.gr.jp/k16/htmllint/explain.html#quote-attribute-value
             // 英数字、ピリオド "."、ハイフン "-" から成り(いずれも半角の)、72文字以内の文字列のときは引用符で囲む必要はありません
             strValue = _ + strValue + _;
@@ -122,15 +123,15 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
     };
 
     /** @const */
-    var options       = opt_options || {};
+    var options        = opt_options || {};
     /** @const */
-    var quotAlways    = options[ 'quotAlways'            ] === true;
+    var useQuoteAlways = options[ 'useQuoteAlways'        ] === true;
     /** @const */
-    var useSingleQuot = options[ 'useSingleQuot'         ] === true;
+    var useSingleQuote = options[ 'useSingleQuote'        ] === true;
     /** @const */
-    var attrPrefix    = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
+    var attrPrefix     = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
     /** @const */
-    var statusStack   = [ false, null, false, false, false ];
+    var statusStack    = [ false, null, false, false, false ];
 
     var omittedEndTagBefore;
 
@@ -157,7 +158,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 return htmlparser.isNamespacedTag( tagName ); // <v:vml>
             };
             function processTextNode( nodeValue ){
-                chunk[ ++j ] = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? nodeValue : m_escapeForHTML( '' + nodeValue ) );
+                chunk[ ++j ] = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? nodeValue : htmlparser.escapeHTML( '' + nodeValue ) );
             };
 
             var chunk = [], j = -1;
@@ -182,7 +183,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 attrIndex    = 1,
                 isNewNodeGeneratedByInstruction, result,
                 isElementWithoutEndTag,
-                id, className, attrs, name, value, isInstruction;
+                id, className, attrs, name, value, isInstruction, isBoolAttr;
 
             // if( currentVNode && currentVNode._removed ){
                 // return m_getHTMLStringAfter( currentVNode );
@@ -204,10 +205,10 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     processTextNode( arg1 );
                     break;
                 case htmljson.NODE_TYPE.CDATA_SECTION :
-                    chunk[ ++j ] = '<![CDATA[' + m_escapeForHTML( '' + arg1 ) + ']]>';
+                    chunk[ ++j ] = '<![CDATA[' + htmlparser.escapeHTML( '' + arg1 ) + ']]>';
                     break;
                 case htmljson.NODE_TYPE.COMMENT_NODE :
-                    chunk[ ++j ] = '<!--' + m_escapeForHTML( '' + arg1 ) + '-->';
+                    chunk[ ++j ] = '<!--' + htmlparser.escapeHTML( '' + arg1 ) + '-->';
                     break;
                 case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
                     // 下の階層が隠れる条件付きコメント
@@ -271,10 +272,10 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
 
                     chunk[ ++j ] = '<' + ( isXmlInHTML ? tagName : getHTMLTagName( tagName ) );
                     if( id ){
-                        chunk[ ++j ] = ' id=' + quoteAttributeValue( id, useSingleQuot, isXmlInHTML || quotAlways );
+                        chunk[ ++j ] = ' id=' + quoteAttributeValue( /** @type {string} */ (id), useSingleQuote, isXmlInHTML || useQuoteAlways );
                     };
                     if( className ){
-                        chunk[ ++j ] = ' class=' + quoteAttributeValue( className, useSingleQuot, isXmlInHTML || quotAlways );
+                        chunk[ ++j ] = ' class=' + quoteAttributeValue( /** @type {string} */ (className), useSingleQuote, isXmlInHTML || useQuoteAlways );
                     };
                     // attr
                     if( m_isAttributes( attrs ) ){
@@ -295,15 +296,21 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                                 };
                             };
 
-                            if( value != null && ( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] || value !== false ) ){
-                                chunk[ ++j ] = ' ' + name;
+                            if( value != null ){
+                                isBoolAttr = htmlparser.BOOLEAN_ATTRIBUTES[ name ];
 
-                                if( !htmlparser.BOOLEAN_ATTRIBUTES[ name ] && value !== true ){
-                                    if( name === 'style' && core.isObject( value ) ){
-                                        value = m_toCSSTest( /** @type {!Styles} */ (value) );
-                                        if( !value ) continue;
+                                if( !isBoolAttr || value !== false ){
+                                    chunk[ ++j ] = ' ' + name;
+
+                                    if( !isBoolAttr && value !== true ){
+                                        if( name === 'style' && core.isObject( value ) ){
+                                            value = htmlparser.escapeHTML( m_toCSSTest( /** @type {!Styles} */ (value) ) );
+                                            if( !value ) continue;
+                                        } else {
+                                            value = htmlparser.escapeHTML( '' + value );
+                                        };
+                                        chunk[ ++j ] = '=' + quoteAttributeValue( value, useSingleQuote, isXmlInHTML || useQuoteAlways );
                                     };
-                                    chunk[ ++j ] = '=' + quoteAttributeValue( /** @type {!string | number | boolean} */ (value), useSingleQuot, isXmlInHTML || quotAlways );
                                 };
                             };
                         };

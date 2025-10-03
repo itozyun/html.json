@@ -23,8 +23,8 @@
    5. keepEmptyConditionalComment
    6. instructionAttrPrefix
    7. argumentBrackets
-   8. quotAlways
-   9. useSingleQuot
+   8. useQuoteAlways
+   9. useSingleQuote
    10. prettify
 
 ## 1. API の一覧
@@ -195,8 +195,8 @@ gulp.src('json/**/*.json')
 | `keepEmptyConditionalComment`        | `false`            | `false`           | -                           |
 | `instructionAttrPrefix`              | `@define`          | `@define`         | `@define`                   |
 | `argumentBrackets`                   | `()`               | -                 | -                           |
-| `quotAlways`                         | -                  | -                 | `false`                     |
-| `useSingleQuot`                      | -                  | -                 | `false`                     |
+| `useQuoteAlways`                     | -                  | -                 | `false`                     |
+| `useSingleQuote`                      | -                  | -                 | `false`                     |
 | `prettify`                           | `false`(gulp)      | `false`(gulp)     | -                           |
 
 ## 3. ハンドラー
@@ -343,11 +343,11 @@ Instruction Attribute の属性名の prefix．
 
 Processing Instruction の引数を囲む記号を指定する．
 
-### `quotAlways`
+### `useQuoteAlways`
 
 HTML ファイルの出力時に、属性値のクォートの省略をしない．
 
-### `useSingleQuot`
+### `useSingleQuote`
 
 HTML ファイルの出力時に、属性値を `''` で囲む．
 

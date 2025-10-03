@@ -509,19 +509,6 @@ function m_toSnakeCase( cssProperty ){
 };
 
 /**
- * 
- * @param {string} unsafeText 
- * @return {string}
- */
-function m_escapeForHTML( unsafeText ){
-    return unsafeText
-               .split( '&lt;' ).join( '&amp;lt;' )
-               .split( '&gt;' ).join( '&amp;gt;' )
-               .split( '<' ).join( '&lt;' )
-               .split( '>' ).join( '&gt;' );
-};
-
-/**
  * @param {!Styles} styles 
  * @return {string}
  */
@@ -532,7 +519,7 @@ function m_toCSSTest( styles ){
     for( name in styles ){
         value = styles[ name ];
         value === '0px' && ( value = 0 );
-        cssText[ ++i ] = m_toSnakeCase( name ) + ':' + m_escapeForHTML( '' + value );
+        cssText[ ++i ] = m_toSnakeCase( name ) + ':' + value;
     };
     return cssText.join( ';' );
 };
@@ -545,8 +532,8 @@ function m_toCSSTest( styles ){
  *                ^
  *
  * 次のように処理しない
- *   propAndValues = cssText.split( ';' );
- *   cssProperty = propAndValues[ 0 ].split( ':' )[ 0 ];
+ *   propAndValue = cssText.split( ';' );
+ *   cssProperty = propAndValue[ 0 ].split( ':' )[ 0 ];
  * 
  * @param {string} cssText
  * @return {Styles | null}
