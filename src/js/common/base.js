@@ -534,7 +534,7 @@ function m_toCSSTest( styles ){
         value === '0px' && ( value = 0 );
         cssText[ ++i ] = m_toSnakeCase( name ) + ':' + m_escapeForHTML( '' + value );
     };
-    return cssText.join( ';' ).substr( 1 );
+    return cssText.join( ';' );
 };
 
 /**
@@ -553,7 +553,8 @@ function m_toCSSTest( styles ){
  */
 function m_parseCSSText( cssText ){
     function saveCSSProperty( property, value ){
-        styles[ property ] = value === '0px' ? 0 : m_tryToFiniteNumber( value );
+        styles[ m_trimLastChar( property, ' ' ) ] =
+            value === '0px' ? 0 : m_tryToFiniteNumber( m_trimLastChar( value, ' ' ) );
         ++numProps;
     };
 
@@ -562,46 +563,48 @@ function m_parseCSSText( cssText ){
         i        = 0,
         styles   = {},
         numProps = 0,
-        chr, start, quot, property;
+        chr, start, quot = '', property;
 
-    while( i < l ){
+    for( ; i < l; ++i ){
         chr = cssText.charAt( i );
         switch( phase ){
             case 0 :
-                if( !htmlparser.isWhitespace( chr ) ){
-                    start = i;
-                    phase = 1;
+                if( htmlparser.isWhitespace( chr ) ){
+                    break;
                 };
-                break;
+                start = i;
+                phase = 1;
             case 1 : // property:value;
                      // ^^^^^^^^
                 if( chr === ':' ){
                     property = cssText.substring( /** @type {number} */ (start), i );
-                    start = i;
                     phase = 2;
                 };
                 break;
             case 2 :
-                if( !htmlparser.isWhitespace( chr ) ){
-                    start = i;
+                if( htmlparser.isWhitespace( chr ) ){
+                    break;
+                };
+                start = i;
+                phase = 3;
+            case 3 : // property:value;
+                     //          ^^^^^
+                if( chr === '"' || chr === "'" ){
+                    quot = chr;
+                    phase = 4;
+                } else if( chr === ';' ){
+                    saveCSSProperty( property, cssText.substring( /** @type {number} */ (start), i ) );
+                    phase = 0;
+                };
+                break;
+            case 4 :
+                if( quot === chr ){
+                    quot = '';
                     phase = 3;
                 };
                 break;
-            case 3 : // property:value;
-                     //          ^^^^^
-                if( quot === chr ){
-                    quot = '';
-                } else if( !quot ){
-                    if( chr === '"' || chr === "'" ){
-                        quot = chr;
-                    } else if( chr === ';' ){
-                        saveCSSProperty( property, cssText.substring( /** @type {number} */ (start), i ) );
-                        phase = 0;
-                    };
-                };
-                break;
         };
-        if( phase === 3 ){
+        if( 3 <= phase ){
             saveCSSProperty( property, cssText.substring( /** @type {number} */ (start) ) );
         };
     };

@@ -140,3 +140,15 @@ test('CDATA section', (t) => {
     t.deepEqual( html2json('<![CDATA[\r\ndata\r]]>', false, undefined, {keepCDATASections:true}), [11, [4, '\ndata\n'] ] );
     t.deepEqual( html2json('<![CDATA[999]]>', false, undefined, {keepCDATASections:true}), [11, [4, 999] ] );
 });
+
+test('style=""', (t) => {
+    t.deepEqual( html2json('<a style="color : red"></a>'), [11, ['A', {style:'color:red'}] ]);
+
+    t.deepEqual( html2json('<a style=": x ;"></a>'), [11, ['A', {style:':x'}] ]);
+
+    t.deepEqual( html2json('<a style=" content : \';\'"></a>'), [11, ['A', {style:'content:\';\''}] ]);
+
+    t.deepEqual( html2json('<a style=" content : \';\' ; color : red"></a>'), [11, ['A', {style:'content:\';\';color:red'}] ]);
+
+    t.deepEqual( html2json('<a style=" content : \\";\\" ; color : red"></a>'), [11, ['A', {style:'content:";";color:red'}] ]);
+});
