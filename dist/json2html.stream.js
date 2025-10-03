@@ -159,7 +159,7 @@
       f = h.join("");
       b[k] = f + ":" + N("" + e);
     }
-    return b.join(";").substr(1);
+    return b.join(";");
   }
   function ya(a) {
     var b, c;

@@ -202,7 +202,7 @@ function sa(a) {
     g = k.join("");
     c[e] = g + ":" + X("" + b);
   }
-  return c.join(";").substr(1);
+  return c.join(";");
 }
 function ra(a) {
   var c, d;
