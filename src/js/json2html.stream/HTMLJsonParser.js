@@ -263,7 +263,7 @@ HTMLJsonParser.onToken = function( token, value ){
     };
 
     switch( expect ){
-        case htmljson.EXPECT.INSTRUCTION_FUNC_NAME_SND_ARGS :
+        case htmljson.EXPECT.INSTRUCTION_FUNC_NAME_AND_ARGS :
             switch( token ){
                 case JsonParser.C.RIGHT_BRACKET : // ]
                     if( this.jsonStack.length === 0 ){ // end of arguments
@@ -584,7 +584,7 @@ HTMLJsonParser.onToken = function( token, value ){
                     break;
             /** <? func(...) ?> */
                 case htmljson.PHASE.ENTER_PROCESSING_INSTRUCTION :
-                    expect = htmljson.EXPECT.INSTRUCTION_FUNC_NAME_SND_ARGS;
+                    expect = htmljson.EXPECT.INSTRUCTION_FUNC_NAME_AND_ARGS;
                     setNodeType( htmljson.NODE_TYPE.PROCESSING_INSTRUCTION );
                     break;
 
