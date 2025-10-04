@@ -146,11 +146,11 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                             if( result === null || result === '' ){
                                 parentJSONNode.splice( myIndex, 1 );
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                            } else if( core.isNumber( result ) ){
-                                parentJSONNode.splice( myIndex, 1, /** @type {number} */ (result) );
+                            } else if( m_isStringOrNumber( result ) ){
+                                parentJSONNode.splice( myIndex, 1, /** @type {string | number} */ (result) );
                                 isTreeModifiedByInstruction = true;
-                            } else if( core.isArray( result ) || core.isString( result ) ){
-                                m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, myIndex, /** @type {!HTMLJson | string} */ (result) );
+                            } else if( core.isArray( result ) ){
+                                m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, myIndex, /** @type {!HTMLJson} */ (result) );
                                 return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                             };
                         };

@@ -225,6 +225,9 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, opt_onE
             opt_onError && opt_onError( 'PROCESSING_INSTRUCTION Error! [' + JSON.stringify( currentJSONNode ) + ']' );
         };
     };
+
+    result = core.deepCopy( result ); // json2html.stream で entered, leave フラグを立てるなど、Array を変更するのでコピーを使用する
+
     if( result && core.isArray( result[ 0 ] ) ){ // nodeType を省略した DOCUMENT_FRAGMENT_NODE
         result.unshift( htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE );
     };
@@ -235,14 +238,14 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, opt_onE
  * 
  * @param {!HTMLJson} parentJSONNode
  * @param {number} index
- * @param {!HTMLJson | string} htmlJson
+ * @param {!HTMLJson} htmlJson
  */
 function m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, index, htmlJson ){
     if( htmlJson[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
         htmlJson = /** @type {!HTMLJson} */ (htmlJson);
         htmlJson.shift();
         htmlJson.unshift( index, 1 );
-        parentJSONNode.splice.apply( parentJSONNode, htmlJson ); // <= parentJSONNode.splice( myIndex, 1, ...result );
+        parentJSONNode.splice.apply( parentJSONNode, htmlJson ); // <= parentJSONNode.splice( index, 1, ...result );
     } else {
         parentJSONNode.splice( index, 1, htmlJson );
     };

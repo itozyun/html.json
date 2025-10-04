@@ -153,7 +153,12 @@ HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, my
                 delete attrs[ attrName ];
             } else {
                 if( attrName === 'style' ){
-                    attrValue = m_toCSSTest( m_parseCSSText( attrValue ) );
+                    attrValue = m_parseCSSText( /** @type {string} */ (attrValue) );
+                    if( !attrValue ){
+                        delete attrs[ attrName ];
+                        continue;
+                    };
+                    attrValue = m_toCSSTest( attrValue );
                 } else if( attrName.startsWith( this._attrPrefix ) ){
                     functionNameAndArgs = codeToObject( /** @type {string} */ (attrValue), this._argOpeningBracket, this._argClosingBracket, this._onError );
     
