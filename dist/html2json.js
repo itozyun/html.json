@@ -216,16 +216,7 @@ function L(a) {
     do {
       var d = ++n[f];
       var w = h[d + k];
-      if (void 0 === w) {
-        if (n.length = f, f -= 3, h = n[f + 1], k = n[f + 2], c && h) {
-          d = n[f] + k;
-          g = c(h[d], h, d, f / 3 + 1);
-          if (Infinity === g) {
-            return x;
-          }
-          -Infinity !== g && (-1 >= g || 1 <= g) && (n[f] += g, x = !0);
-        }
-      } else {
+      if (null != w) {
         g = b(w, h, d + k, f / 3 + 1);
         if (Infinity === g) {
           return x;
@@ -244,6 +235,15 @@ function L(a) {
               -Infinity !== g && (-1 >= g || 1 <= g) && (n[f] += g, x = !0);
             }
           }
+        }
+      } else {
+        if (n.length = f, f -= 3, h = n[f + 1], k = n[f + 2], c && h) {
+          d = n[f] + k;
+          g = c(h[d], h, d, f / 3 + 1);
+          if (Infinity === g) {
+            return x;
+          }
+          -Infinity !== g && (-1 >= g || 1 <= g) && (n[f] += g, x = !0);
         }
       }
     } while (0 <= f);

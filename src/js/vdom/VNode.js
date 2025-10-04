@@ -4,6 +4,7 @@ goog.provide( 'VNode.treeIsUpdated' );
 
 goog.require( 'core.all' );
 goog.require( 'htmljson.NODE_TYPE' );
+goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 
 /**
  * @constructor
@@ -307,19 +308,19 @@ VNode.prototype.isClosed = function(){
 VNode.prototype.isValid = function(){
     var result = true;
 
-    _walkAllDescendantNodes(
+    _walkAllDescendantVNodes(
         this,
         function( vnode ){
             if( vnode._nodeType === htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER
                 || vnode._nodeType === htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER
             ){
-                return _WALK.SKIP;
+                return htmljson.Traverser.VISITOR_OPTION.SKIP;
             } else if( vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG
                        ||
                        vnode._nodeType === htmljson.NODE_TYPE.ELEMENT_END_TAG
             ){
                 result = false;
-                return _WALK.BREAK;
+                return htmljson.Traverser.VISITOR_OPTION.BREAK;
             };
         }
     );
@@ -328,62 +329,79 @@ VNode.prototype.isValid = function(){
 
 /*=============================================================================
  *
- *  walkNodes, walkElements, walkText, getElementByID, getElementListByTag
+ *  walkNodes, walkElements, walkTextNodes, getElementByID, getElementListByTag
  *
  */
 
 /**
  * 
  * @param {!function(!VNode):(number | void)} onEnterNode
+ * @param {!function(!VNode):(number | void)=} opt_onLeaveNode
+ * @return {boolean}
  */
-VNode.prototype.walkNodes = function( onEnterNode ){
+VNode.prototype.walkNodes = function( onEnterNode, opt_onLeaveNode ){
     if( htmljson.DEFINE.DEBUG ){
         if( _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ){
             throw 'In Restricted Mode. VNode cannot execute walkNodes()!';
         };
     };
-    _walkAllDescendantNodes( this, onEnterNode );
+
+    return _walkAllDescendantVNodes( this, onEnterNode, opt_onLeaveNode );
 };
 
 /**
  * 
  * @param {!function(!VNode):(number | void)} onEnterNode
+ * @param {!function(!VNode):(number | void)=} opt_onLeaveNode
+ * @return {boolean}
  */
-VNode.prototype.walkElements = function( onEnterNode ){
+VNode.prototype.walkElements = function( onEnterNode, opt_onLeaveNode ){
     if( htmljson.DEFINE.DEBUG ){
         if( _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ){
             throw 'In Restricted Mode. VNode cannot execute walkElements()!';
         };
     };
 
-    _walkAllDescendantNodes(
+    return _walkAllDescendantVNodes(
         this,
         function( vnode ){
             if( vnode.isElement() ){
                 return onEnterNode( vnode );
             };
-        }
+        },
+        opt_onLeaveNode ? function( vnode ){
+            if( vnode.isElement() ){
+                return opt_onLeaveNode( vnode );
+            };
+        } : void 0
     );
 };
 
 /**
  * 
  * @param {!function(!VNode):(number | void)} onEnterNode
+ * @param {!function(!VNode):(number | void)=} opt_onLeaveNode
+ * @return {boolean}
  */
-VNode.prototype.walkText = function( onEnterNode ){
+VNode.prototype.walkTextNodes = function( onEnterNode, opt_onLeaveNode ){
     if( htmljson.DEFINE.DEBUG ){
         if( _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ){
-            throw 'In Restricted Mode. VNode cannot execute walkText()!';
+            throw 'In Restricted Mode. VNode cannot execute walkTextNodes()!';
         };
     };
 
-    _walkAllDescendantNodes(
+    return _walkAllDescendantVNodes(
         this,
         function( vnode ){
             if( vnode._nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
                 return onEnterNode( vnode );
             };
-        }
+        },
+        opt_onLeaveNode ? function( vnode ){
+            if( vnode._nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
+                return opt_onLeaveNode( vnode );
+            };
+        } : void 0
     );
 };
 
@@ -401,12 +419,12 @@ VNode.prototype.contains = function( targetNode ){
 
     var result = false;
 
-    _walkAllDescendantNodes(
+    _walkAllDescendantVNodes(
         this,
         function( vnode ){
             if( vnode === targetNode ){
                 result = true;
-                return _WALK.BREAK;
+                return htmljson.Traverser.VISITOR_OPTION.BREAK;
             };
         }
     );
@@ -431,7 +449,7 @@ VNode.prototype.getElementByID = function( id ){
         function( vnode ){
             if( vnode.getAttr( 'id' ) === id ){
                 result = vnode;
-                return _WALK.BREAK;
+                return htmljson.Traverser.VISITOR_OPTION.BREAK;
             };
         }
     );
@@ -825,7 +843,7 @@ VNode.prototype.getTextContent = function(){
     };
     var textContent = '';
 
-    this.walkText(
+    this.walkTextNodes(
         function( vnode ){
             textContent += vnode.getNodeValue();
         }
@@ -853,6 +871,38 @@ VNode.prototype.setTextContent = function( text ){
 
     this.empty();
     this.insertNodeFirst( htmljson.NODE_TYPE.TEXT_NODE, text );
+};
+
+/**
+ * 
+ * @return {string}
+ */
+VNode.prototype.getInnerText = function(){
+    if( htmljson.DEFINE.DEBUG ){
+        if( !this.isElement() && !_isDocOrDocFragment( this ) ){
+            throw 'getInnerText() をサポートしない nodeType です!';
+        };
+        if( _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ){
+            throw 'In Restricted Mode. VNode cannot execute getInnerText()!';
+        };
+    };
+    var innerText = '';
+
+    this.walkNodes(
+        function( vnode ){
+            if( vnode.isElement() ){
+                
+            } else if( vnode._nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
+                
+            };
+        },
+        function( vnode ){
+            if( vnode.isElement() ){
+                
+            };
+        }
+    );
+    return innerText;
 };
 
 /*=============================================================================
@@ -1492,17 +1542,6 @@ var _RESTRICTED_MODE = {
     READ_ONLY                         : 5
 };
 
-
-/**
- * @private
- * @enum {number}
- */
-var _WALK = {
-    NONE  : 0,
-    BREAK : 1,
-    SKIP  : 2
-};
-
 /**
  * @private
  * @param {!VNode} vnode 
@@ -1560,41 +1599,59 @@ function _compareValuesAndSetUpdatedFlag( oldValue, newValue ){
  * 
  * @param {!VNode} vnode
  * @param {!function(!VNode):(number | void)} onEnterNode コールバック内で要素の削除と追加はできません、index が狂います
+ * @param {!function(!VNode):(number | void)=} opt_onLeaveNode コールバック内で要素の削除と追加はできません、index が狂います
+ * @return {boolean} treeIsUpdated
  */
-function _walkAllDescendantNodes( vnode, onEnterNode ){
-    var currentChildNodes = vnode._childNodes,
-        depthX2           = 0,
-        combiList, currentIndex, childNode, childsChildNodes, length, operation;
+function _walkAllDescendantVNodes( vnode, onEnterNode, opt_onLeaveNode ){
+    var parentNode    = vnode,
+        depthX2       = 0,
+        treeIsUpdated = false,
+        combiList, currentIndex, childNode, operation;
 
-    if( currentChildNodes ){
-        length = currentChildNodes.length;
-        if( length ){
-            combiList = [ -1, currentChildNodes ];
-            do {
-                currentIndex = ++combiList[ depthX2 ];
-                childNode = currentChildNodes[ currentIndex ];
-                if( !childNode ){
-                    combiList.length = depthX2;
-                    depthX2 -= 2;
-                    currentChildNodes = combiList[ depthX2 + 1 ];
-                } else {
-                    operation = onEnterNode( childNode );
-                    if( operation === _WALK.BREAK ){
-                        break;
-                    };
-                    if( operation !== _WALK.SKIP ){
-                        childsChildNodes = childNode._childNodes;
-                        if( childsChildNodes ){
-                            length = childsChildNodes.length;
-                            if( length ){
-                                depthX2 += 2;
-                                combiList[ depthX2 + 0 ] = -1;
-                                combiList[ depthX2 + 1 ] = currentChildNodes = childsChildNodes;
+    if( parentNode.getChildNodeCount() ){
+        combiList = [ -1, parentNode ];
+        do {
+            currentIndex = ++combiList[ depthX2 ];
+            childNode    = parentNode.getChildNodeAt( currentIndex );
+            if( childNode ){
+                operation = onEnterNode( childNode );
+                if( operation === htmljson.Traverser.VISITOR_OPTION.BREAK ){
+                    return treeIsUpdated;
+                };
+                if( operation !== htmljson.Traverser.VISITOR_OPTION.SKIP ){
+                    if( childNode.getChildNodeCount() ){
+                        depthX2 += 2;
+                        combiList[ depthX2 + 0 ] = -1;
+                        combiList[ depthX2 + 1 ] = parentNode = childNode;
+                    } else if( opt_onLeaveNode ){
+                        operation = opt_onLeaveNode( childNode );
+                        if( operation === htmljson.Traverser.VISITOR_OPTION.BREAK ){
+                            return treeIsUpdated;
+                        } else if( operation !== htmljson.Traverser.VISITOR_OPTION.SKIP ){
+                            if( operation <= htmljson.Traverser.VISITOR_OPTION.REMOVED || htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER <= operation ){
+                                combiList[ depthX2 ] += operation;
+                                treeIsUpdated = true;
                             };
                         };
                     };
                 };
-            } while( 0 <= depthX2 );
-        };
+            } else {
+                if( opt_onLeaveNode ){
+                    operation = opt_onLeaveNode( parentNode );
+                    if( operation === htmljson.Traverser.VISITOR_OPTION.BREAK ){
+                        return treeIsUpdated;
+                    } else if( operation !== htmljson.Traverser.VISITOR_OPTION.SKIP ){
+                        if( operation <= htmljson.Traverser.VISITOR_OPTION.REMOVED || htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER <= operation ){
+                            combiList[ depthX2 ] += operation;
+                            treeIsUpdated = true;
+                        };
+                    };
+                };
+                combiList.length = depthX2;
+                depthX2 -= 2;
+                parentNode = combiList[ depthX2 + 1 ];
+            };
+        } while( 0 <= depthX2 );
     };
+    return treeIsUpdated;
 };
