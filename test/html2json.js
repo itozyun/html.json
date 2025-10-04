@@ -134,6 +134,13 @@ test('<pre>', (t) => {
 <i>END</i>                                          </code>
      </pre>
 `, false, null, { trimWhitespaces : 'aggressive' }), [ 11, ['PRE', [ 'CODE', ['B', 'PRINT "Hello, HTML.json!"\n'], ['I', 'END']]] ]);
+
+    t.deepEqual( html2json(`
+<pre><code>       
+<b>PRINT "Hello, HTML.json!"     </b>                      
+<i>END    </i>                                </code>
+     </pre>
+`, false, null, { trimWhitespaces : 'aggressive' }), [ 11, ['PRE', [ 'CODE', ['B', 'PRINT "Hello, HTML.json!"\n'], ['I', 'END']]] ]);
 });
 
 test('CDATA section', (t) => {

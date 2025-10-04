@@ -389,6 +389,11 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
             );
             return nodeAndPosition;
         };
+        function isLastTextNode( htmlJsonTarget, parentJSONNode, myIndex ){
+            var nodeAndPosition = getLastTextNode( htmlJsonTarget );
+
+            return nodeAndPosition ? parentJSONNode === nodeAndPosition[ 1 ] && myIndex === nodeAndPosition[ 2 ] : false;
+        };
 
         var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text, prevTextAndPosition;
 
@@ -429,54 +434,58 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
         };
 
         if( isAggressiveTrim ){
-            htmljson.Traverser.traverseAllDescendantNodes(
-                htmlJsonPre,
-                function( currentJSONNode, parentJSONNode, myIndex, depth ){
-                    if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
-                        var text = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
-                        var texts = text.split( '\n' );
-                        var i = 0, l = texts.length, charLast;
-                        var prevText, prevTextParent, prevTextIndex;
+            while(
+                htmljson.Traverser.traverseAllDescendantNodes(
+                    htmlJsonPre,
+                    function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                        if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                            var isLast = isLastTextNode( htmlJsonPre, parentJSONNode, myIndex );
+                            var text   = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
+                            var texts  = text.split( '\n' );
+                            var i = 0, l = texts.length, charLast;
+                            var prevText, prevTextParent, prevTextIndex;
 
-                        for( ; i < l - 1; ++i ){
-                            text = texts[ i ];
-                            // 5. 各行の改行の前の空白文字("\t", " ")も削除
-                            while( true ){
-                                charLast = text.charAt( text.length - 1 );
-                                if( charLast === '\t' || charLast === ' ' ){
-                                    text = text.substr( 0, text.length - 1 );
-                                } else {
-                                    break;
+                            for( ; i < l - ( isLast ? 0 : 1 ); ++i ){
+                                text = texts[ i ];
+                                // 5. 各行の改行の前の空白文字("\t", " ")も削除
+                                //    </pre> の直前の行の後ろの空白文字("\t", " ")も削除
+                                while( true ){
+                                    charLast = text.charAt( text.length - 1 );
+                                    if( charLast === '\t' || charLast === ' ' ){
+                                        text = text.substr( 0, text.length - 1 );
+                                    } else {
+                                        break;
+                                    };
                                 };
+                                texts[ i ] = text;
                             };
-                            texts[ i ] = text;
-                        };
-                        text = texts.join( '\n' );
+                            text = texts.join( '\n' );
 
-                        // 6. テキストノードが改行1文字だけの場合、直前のテキストノードに含める
-                        if( text === '\n' && prevTextAndPosition ){
-                            prevText       = prevTextAndPosition[ 0 ];
-                            prevTextParent = prevTextAndPosition[ 1 ];
-                            prevTextIndex  = prevTextAndPosition[ 2 ];
+                            // 6. テキストノードが改行1文字だけの場合、直前のテキストノードに含める
+                            if( text === '\n' && prevTextAndPosition ){
+                                prevText       = prevTextAndPosition[ 0 ];
+                                prevTextParent = prevTextAndPosition[ 1 ];
+                                prevTextIndex  = prevTextAndPosition[ 2 ];
 
-                            if( m_isStringOrNumber( prevText ) ){
-                                prevTextParent[ prevTextIndex ] += text;
+                                if( m_isStringOrNumber( prevText ) ){
+                                    prevTextParent[ prevTextIndex ] += text;
+                                } else {
+                                    prevText[ 1 ] += text;
+                                };
+                                parentJSONNode.splice( myIndex, 1 ); // remove
+                                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                            };
+
+                            if( m_isStringOrNumber( currentJSONNode ) ){
+                                parentJSONNode[ myIndex ] = text;
                             } else {
-                                prevText[ 1 ] += text;
+                                currentJSONNode[ 1 ] = text;
                             };
-                            parentJSONNode.splice( myIndex, 1 ); // remove
-                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                            prevTextAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
                         };
-
-                        if( m_isStringOrNumber( currentJSONNode ) ){
-                            parentJSONNode.splice( myIndex, 1, currentJSONNode = text );
-                        } else {
-                            currentJSONNode[ 1 ] = text;
-                        };
-                        prevTextAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
-                    };
-                }
-            );
+                    }
+                )
+            ){};
         };
     };
 
