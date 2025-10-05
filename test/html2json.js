@@ -48,7 +48,14 @@ test('whitespace', (t) => {
     t.deepEqual( html2json('<p>\n\n \t\t \\u0020 \n\n \t\t', false, null, { trimWhitespaces : 'aggressive' }), [11, ['P', ' ']]);
 
     t.deepEqual( html2json('<p>\\u0020\\u0020', false, null, { trimWhitespaces : 'normal' }), [11, ['P', '  ']]);
-    // t.deepEqual( html2json('<p>\\u0020'), ['P', '    ']);
+
+    t.deepEqual( html2json(`
+<ul>
+    <li>pen
+    <li>apple
+    <li>pineapple
+</ul>
+        `, false, null, { trimWhitespaces : 'aggressive' }), [11, ['UL', ['LI', 'pen'], ['LI', 'apple'], ['LI', 'pineapple']]]);
 });
 
 test('number-string', (t) => {

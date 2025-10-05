@@ -305,6 +305,15 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
             // gというフラグを使って、文字列全体に対して置換を行う
             return string.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2");
         };
+        function continuousToSingle( continuous, single ){
+            while( 0 <= nodeValue.indexOf( continuous ) ){
+                nodeValue = nodeValue.split( continuous ).join( single );
+            };
+        };
+        function toSingleHalfWidthSpace(){
+            // 2つ以上の半角スペースを1つの半角スペースへ
+            continuousToSingle( '  ', ' ' );
+        };
 
         if( isRemoveNewlineBetweenFullWidthChars ){
             nodeValue = removeNewlineBetweenFullWidthChars( nodeValue );
@@ -314,18 +323,22 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
         nodeValue = nodeValue.split( '\t' ).join( ' ' );
 
         // 2つ以上の改行を1つの改行へ
-        while( 0 <= nodeValue.indexOf( '\n\n' ) ){
-            nodeValue = nodeValue.split( '\n\n' ).join( '\n' );
-        };
+        continuousToSingle( '\n\n', '\n' );
+
+        toSingleHalfWidthSpace();
 
         if( isAggressiveTrim ){
-            var isAggressiveTrimWhitespace =
-                // <b>1</b> / <b>3</b>
-                //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する
-                    // 先頭が改行、かつ
-                    nodeValue.charAt( 0 ) === '\n' &&
-                    // 最後が改行+0個以上の空白文字の場合  
-                    /\n[ ]*$/.test( nodeValue );
+            if( nodeValue.substr( nodeValue.length - 2 ) === '\n ' ){
+                nodeValue = m_trimLastChar( nodeValue, ' ' );
+            };
+            if( nodeValue.charAt( nodeValue.length - 1 ) === '\n' ){
+                var isAggressiveTrimWhitespace =
+                    // <b>1</b> / <b>3</b>
+                    //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する
+                        // 先頭が改行、かつ
+                        nodeValue.charAt( 0 ) === '\n';
+                        // 最後が改行と0~1つの半角スペース
+            };
         };
 
         // 最後の改行を削除
@@ -334,10 +347,7 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
         // 改行文字を一つの半角スペースに
         nodeValue = nodeValue.split( '\n' ).join( ' ' );
 
-        // 2つ以上の半角スペースを1つの半角スペースへ
-        while( 0 <= nodeValue.indexOf( '  ' ) ){
-            nodeValue = nodeValue.split( '  ' ).join( ' ' );
-        };
+        toSingleHalfWidthSpace();
 
         if( isAggressiveTrimWhitespace ){
             // 先頭と最後の半角スペースを削除
