@@ -14,6 +14,7 @@ And Tiny Streaming SSR!
    * オフラインドキュメントのコンテンツデータ
    * PJAX のコンテンツデータ
    * 非力な DHTML ブラウザで、文書をページャーで表示する(要素のサイズを測りながら描画する)際のコンテンツデータ
+5. Templete 等を利用した Web サイトを開発したい場合、[gulp-nice-page-builder](https://github.com/itozyun/gulp-nice-page-builder/tree/htmljson) を使用します
 
 ## 目次
 
@@ -73,7 +74,7 @@ html.json は HTML と等価な JSON のサブセットです．定義は [HTMLJ
 
 ## 3. API の概要
 
-次の4系統の API が利用できます．詳しい文書は [API](doc/API.md) を確認します．
+次の4系統の API を利用できます．詳しい文書は [API](doc/API.md) を確認します．
 
 json2json で使える Virtual DOM の説明は  [RESTRICTED_VNODE.md](doc/RESTRICTED_VNODE.md) を確認します．
 

@@ -7,7 +7,7 @@
    4. json2json.gulp()
    5. json2html()
    6. json2html.gulp()
-   7. json3html.stream()
+   7. json2html.stream()
    8. filter.gulp()
 2. 使用可能なハンドラーとオプションのデフォルト値
 3. ハンドラー
@@ -39,12 +39,12 @@ json; // [9, '<!DOCTYPE html>', ['P', 'Hello, World!']]
 
 #### Arguments
 
-|                  | required | type          | description                                  |
-|:-----------------|:---------|:--------------|:---------------------------------------------|
-| htmlString       | ✓       | `string`      | HTML string                                  |
-| allowInvalidTree | -        | `boolean=`    | Allow invalid trees, Default value is false. |
-| onError          | -        | `function()=` | It is called if an error occurs.             |
-| options          | -        | `Object=`     | See below for details.                       |
+|                  | required | type             | description                                  |
+|:-----------------|:---------|:-----------------|:---------------------------------------------|
+| htmlString       | ✓       | `string`         | HTML string                                  |
+| allowInvalidTree | -        | `boolean=`       | Allow invalid trees, Default value is false. |
+| onError          | -        | `function(str)=` | It is called if an error occurs.             |
+| options          | -        | `Object=`        | See below for details.                       |
 
 #### Return
 
@@ -60,10 +60,10 @@ gulp.src('src/**/*.html')
 
 #### Arguments
 
-|                  | required | type          | description                                  |
-|:-----------------|:---------|:--------------|:---------------------------------------------|
-| onError          | -        | `function()=` | It is called if an error occurs.             |
-| options          | -        | `Object=`     | See below for details.                       |
+|                  | required | type             | description                                  |
+|:-----------------|:---------|:-----------------|:---------------------------------------------|
+| onError          | -        | `function(str)=` | It is called if an error occurs.             |
+| options          | -        | `Object=`        | See below for details.                       |
 
 ### 1.3. json2json()
 
@@ -80,14 +80,14 @@ json; // [11, '2024/10/31 6:59:19']
 
 #### Arguments
 
-|                  | required | type          | description                      |
-|:-----------------|:---------|:--------------|:---------------------------------|
-| rootHTMLJson     | ✓       | `!HTMLJson`   | html.json                        |
-| onInstruction    | -        | `function()=` | Instruction Handler              |
-| onEnterNode      | -        | `function()=` | Enter Node Handler               |
-| onDocumentReady  | -        | `function()=` | Document Ready Handler           |
-| onError          | -        | `function()=` | It is called if an error occurs. |
-| options          | -        | `Object=`     | See below for details.           |
+|                  | required | type                                                                 | description                      |
+|:-----------------|:---------|:---------------------------------------------------------------------|:---------------------------------|
+| rootHTMLJson     | ✓       | `!HTMLJson`                                                          | html.json                        |
+| onInstruction    | -        | `function(funcName, ...args)\|Object.<funcName, function(...args)>=` | Instruction Handler              |
+| onEnterNode      | -        | `function(vnode)\|[(number\|string), function(vnode)]`               | Enter Node Handler               |
+| onDocumentReady  | -        | `function(vnode)=`                                                   | Document Ready Handler           |
+| onError          | -        | `function(str)=`                                                     | It is called if an error occurs. |
+| options          | -        | `Object=`                                                            | See below for details.           |
 
 ### 1.4. json2json.gulp()
 
@@ -99,13 +99,13 @@ gulp.src('json/**/*.json')
 
 #### Arguments
 
-|                  | required | type          | description                      |
-|:-----------------|:---------|:--------------|:---------------------------------|
-| onInstruction    | -        | `function()=` | Instruction Handler              |
-| onEnterNode      | -        | `function()=` | Enter Node Handler               |
-| onDocumentReady  | -        | `function()=` | Document Ready Handler           |
-| onError          | -        | `function()=` | It is called if an error occurs. |
-| options          | -        | `Object=`     | See below for details.           |
+|                  | required | type                                                                 | description                      |
+|:-----------------|:---------|:---------------------------------------------------------------------|:---------------------------------|
+| onInstruction    | -        | `function(funcName, ...args)\|Object.<funcName, function(...args)>=` | Instruction Handler              |
+| onEnterNode      | -        | `function(vnode)\|[(number\|string), function(vnode)]`               | Enter Node Handler               |
+| onDocumentReady  | -        | `function(vnode)=`                                                   | Document Ready Handler           |
+| onError          | -        | `function(str)=`                                                     | It is called if an error occurs. |
+| options          | -        | `Object=`                                                            | See below for details.           |
 
 ### 1.5. json2html()
 
@@ -117,13 +117,14 @@ html; // [11, '2024/10/31 6:59:19']
 
 #### Arguments
 
-|                  | required | type          | description                      |
-|:-----------------|:---------|:--------------|:---------------------------------|
-| rootHTMLJson     | ✓       | `!HTMLJson`   | html.json                        |
-| onInstruction    | -        | `function()=` | Instruction Handler              |
-| onEnterNode      | -        | `function()=` | Enter Node Handler               |
-| onError          | -        | `function()=` | It is called if an error occurs. |
-| options          | -        | `Object=`     | See below for details.           |
+|                  | required | type                                                                 | description                      |
+|:-----------------|:---------|:---------------------------------------------------------------------|:---------------------------------|
+| rootHTMLJson     | ✓       | `!HTMLJson`                                                          | html.json                        |
+| onInstruction    | -        | `function(funcName, ...args)\|Object.<funcName, function(...args)>=` | Instruction Handler              |
+| onEnterNode      | -        | `function(vnode)\|[(number\|string), function(vnode)]`               | Enter Node Handler               |
+| onDocumentReady  | -        | `function(vnode)=`                                                   | Document Ready Handler           |
+| onError          | -        | `function(str)=`                                                     | It is called if an error occurs. |
+| options          | -        | `Object=`                                                            | See below for details.           |
 
 #### Return
 
@@ -139,12 +140,12 @@ gulp.src('json/**/*.json')
 
 #### Arguments
 
-|                  | required | type          | description                      |
-|:-----------------|:---------|:--------------|:---------------------------------|
-| onInstruction    | -        | `function()=` | Instruction Handler              |
-| onEnterNode      | -        | `function()=` | Enter Node Handler               |
-| onError          | -        | `function()=` | It is called if an error occurs. |
-| options          | -        | `Object=`     | See below for details.           |
+|                  | required | type                                                                 | description                      |
+|:-----------------|:---------|:---------------------------------------------------------------------|:---------------------------------|
+| onInstruction    | -        | `function(funcName, ...args)\|Object.<funcName, function(...args)>=` | Instruction Handler              |
+| onEnterNode      | -        | `function(vnode)\|[(number\|string), function(vnode)]`               | Enter Node Handler               |
+| onError          | -        | `function(str)=`                                                     | It is called if an error occurs. |
+| options          | -        | `Object=`                                                            | See below for details.           |
 
 ### 1.7. json2html.stream()
 
@@ -159,12 +160,12 @@ fs.createReadStream(__dirname + '/index.html.json')
 
 #### Arguments
 
-|                  | required | type          | description                      |
-|:-----------------|:---------|:--------------|:---------------------------------|
-| onInstruction    | -        | `function()=` | Instruction Handler              |
-| onEnterNode      | -        | `function()=` | Enter Node Handler               |
-| onError          | -        | `function()=` | It is called if an error occurs. |
-| options          | -        | `Object=`     | See below for details.           |
+|                  | required | type                                                                 | description                      |
+|:-----------------|:---------|:---------------------------------------------------------------------|:---------------------------------|
+| onInstruction    | -        | `function(funcName, ...args)\|Object.<funcName, function(...args)>=` | Instruction Handler              |
+| onEnterNode      | -        | `function(vnode)\|[(number\|string), function(vnode)]`               | Enter Node Handler               |
+| onError          | -        | `function(str)=`                                                     | It is called if an error occurs. |
+| options          | -        | `Object=`                                                            | See below for details.           |
 
 ### 1.8. filter.gulp()
 
@@ -180,23 +181,31 @@ gulp.src('json/**/*.json')
 |:-------|:---------|:---------|:-------------------------------|
 | filter | ✓       | `number` | filter.STATIC \| filter.DYNAMIC |
 
-## 2. 使用可能なハンドラーとオプションのデフォルト値
+## 2. 使用可能な引数とオプションとそのデフォルト値
+
+### 2.1. 使用可能な引数
 
 |                                      | html2json          | json2json         | json2html, json2html.stream |
 |:-------------------------------------|:-------------------|:------------------|:----------------------------|
+| allowInvalidTree                     | ✓                 | -                 | -                           |
 | onInstruction                        | -                  | ✓                | ✓                          |
 | onEnterNode                          | -                  | ✓                | ✓                          |
 | onDocumentReady                      | -                  | ✓                | -                           |
 | onError                              | ✓                 | ✓                | ✓                          |
+
+### 2.2. 使用可能なオプションとそのデフォルト値
+
+|                                      | html2json          | json2json         | json2html, json2html.stream |
+|:-------------------------------------|:-------------------|:------------------|:----------------------------|
 | `trimWhitespaces`                    | `"normal"`, `true` | `"none"`, `false` | -                           |
 | `removeNewlineBetweenFullWidthChars` | `false`            | `false`           | -                           |
 | `keepCDATASections`                  | `false`            | `true`            | -                           |
 | `keepComments`                       | `false`            | `true`            | -                           |
 | `keepEmptyConditionalComment`        | `false`            | `false`           | -                           |
-| `instructionAttrPrefix`              | `@define`          | `@define`         | `@define`                   |
-| `argumentBrackets`                   | `()`               | -                 | -                           |
+| `instructionAttrPrefix`              | `@define (":")`    | `@define (":")`   | `@define (":")`             |
+| `argumentBrackets`                   | `@define ("()")`   | -                 | -                           |
 | `useQuoteAlways`                     | -                  | -                 | `false`                     |
-| `useSingleQuote`                      | -                  | -                 | `false`                     |
+| `useSingleQuote`                     | -                  | -                 | `false`                     |
 | `prettify`                           | `false`(gulp)      | `false`(gulp)     | -                           |
 
 ## 3. ハンドラー
@@ -207,15 +216,15 @@ gulp.src('json/**/*.json')
 function onInstruction(funcName, ..args){
     switch(funcName){
         case 'date':
-            break;
+            return (new Date).toLocalString();
     }
 };
 
 // or
 
 var onInstruction = {
-    date : function(..args){
-
+    'date' : function(..args){
+        return (new Date).toLocalString();
     },
     // ...
 };
@@ -226,11 +235,13 @@ json2json(json, onInstruction);
 
 #### Processing Instruction
 
+onInstruction ハンドラーの戻り値とその影響
+
 |                            | json2json                     | json2html                     |
 |:---------------------------|:------------------------------|:------------------------------|
 | `undefiend`                | そのまま                      | Processing Instruction の削除 |
 | `null` or `""`             | Processing Instruction の削除 | Processing Instruction の削除 |
-| `{string|number}`          | テキストノードとして置換する  | テキストノードとして書き出す  |
+| `{string\|number}`         | テキストノードとして置換する  | テキストノードとして書き出す  |
 | html.json                  | 置換する                      | 書き出す                      |
 | `[7, "funcName", ...args]` | `onInstruction` で再処理      | `onInstruction` で再処理      |
 
@@ -337,11 +348,11 @@ json2json(json, null, null, null, onError);
 
 ### `instructionAttrPrefix`
 
-Instruction Attribute の属性名の prefix．
+Instruction Attribute の属性名の prefix．デフォルト値は `":"`．
 
 ### `argumentBrackets`
 
-Processing Instruction の引数を囲む記号を指定する．
+Processing Instruction の引数を囲む記号を指定する．デフォルト値は `"()"`．
 
 ### `useQuoteAlways`
 
