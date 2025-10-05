@@ -43,14 +43,18 @@ gulp externs
 
 ## 1.1. Streaming SSR のデモ
 
+![デモページ](https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhSbtPKlVHHzXsB_oI9ix_bYuq5XWa97H93yR22UncVo9PDea-gpiO7hBfV4lHKZGAEKDbFxqbhcbKHXb98zDvA2EzM7eL8Yl3NebPOOAORf_9DABWn-rKsFG5H-FVyMW97OZ5GkTjoGYWvw3qhPtigvAnJO2AtF2Cdp0CYqcQPjTWaTF6pyIoH-rbWwPg/s400/sample-page-of-html.json.png)
+
 次を実行した後にブラウザで http://localhost:8080/ を開く．
 
 ~~~sh
 npm run demo
 
-# Do when the "sample/*" files are updated
+# Do when the "sample/src/*" files are updated
 gulp sample
 ~~~
+
+このデモのソースコードは [sample/src](sample/src/) にあります。
 
 ## 2. html.json の例
 
