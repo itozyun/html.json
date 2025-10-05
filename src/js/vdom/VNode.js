@@ -879,26 +879,98 @@ VNode.prototype.setTextContent = function( text ){
  */
 VNode.prototype.getInnerText = function(){
     if( htmljson.DEFINE.DEBUG ){
-        if( !this.isElement() && !_isDocOrDocFragment( this ) ){
-            throw 'getInnerText() をサポートしない nodeType です!';
-        };
         if( _RESTRICTED_MODE.CURRENT_NODE_HAS_UNKNOWN_CHILDREN <= this.getRestrictedMode() ){
             throw 'In Restricted Mode. VNode cannot execute getInnerText()!';
         };
     };
+    var BLOCK_ELEMENTS = {
+        'DIV'     : true, 'CENTER' : true, 'FIELDSET' : true, 'BLOCKQUOTE' : true, 'FORM'     : true,
+        'H1'      : true, 'H2'     : true, 'H3'       : true, 'H4'         : true, 'H5'       : true, 'H6'      : true,
+        'ADDRESS' : true, 'P'      : true, 'PRE'      : true, 'UL'         : true, 'OL'       : true, 'DL'      : true,
+        'DIR'     : true, 'MENU'   : true, 'TABLE'    : true, 'HR'         : true, 'TEXTAREA' : true, 'MARQUEE' : true
+    };
+
     var innerText = '';
 
     this.walkNodes(
         function( vnode ){
+            var tagName, alt, title;
+
             if( vnode.isElement() ){
-                
+                tagName = vnode._tagName;
+                switch( tagName ){
+                    case 'SCRIPT'   :
+                    case 'STYLE'    :
+                    case 'NOSCRIPT' :
+                        return htmljson.Traverser.VISITOR_OPTION.SKIP;
+                    case 'IMG' :
+                        alt = vnode.getAttr( 'alt' );
+                        if( alt ){
+                            innerText += '[Image: ' + alt + ']';
+                        };
+                        return htmljson.Traverser.VISITOR_OPTION.SKIP;
+                    case 'LI' :
+                        if( vnode.getParent()._tagName === 'OL' ){
+                            innerText += ( vnode.getMyIndex() + 1 ) + '.\t';
+                        };
+                        break;
+                    case 'DD' :
+                        innerText += '\t';
+                        break;
+                    case 'BR' :
+                        innerText += '\n';
+                        break;
+                    case 'HR' :
+                        innerText += '\n---';
+                        break;
+                    case 'BUTTON' :
+                        innerText += '[';
+                        break;
+                    case 'BLOCKQUOTE' :
+                        title = vnode.getAttr( 'title' );
+                        if( title ){
+                            innerText += '\n' + title;
+                        };
+                    default :
+                        if( BLOCK_ELEMENTS[ tagName ] ){
+                            innerText += '\n';
+                        };
+                };
             } else if( vnode._nodeType === htmljson.NODE_TYPE.TEXT_NODE ){
-                
+                innerText += vnode.getNodeValue();
             };
         },
         function( vnode ){
             if( vnode.isElement() ){
-                
+                var tagName = vnode._tagName;
+
+                switch( tagName ){
+                    case 'UL' :
+                    case 'OL' :
+                    case 'DL' :
+                    case 'TABLE' :
+                        break;
+                    case 'TH' :
+                    case 'TD' :
+                        if( vnode.getParent().getLastChild() !== vnode ){
+                            innerText += '\t';
+                        };
+                        break;
+                    case 'BUTTON' :
+                        innerText += ']';
+                        break;
+                    case 'LI' :
+                    case 'DT' :
+                    case 'DD' :
+                    case 'TR' :
+                    case 'CAPTION' :
+                        innerText += '\n';
+                        break;
+                    default :
+                        if( BLOCK_ELEMENTS[ tagName ] ){
+                            innerText += '\n';
+                        };
+                };
             };
         }
     );
