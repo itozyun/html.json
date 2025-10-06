@@ -1160,14 +1160,14 @@
       this.on("end", Ja);
     }
     write(a) {
-      this.ja.call(this, a);
+      this.ja(a);
       return !this.paused;
     }
     ea() {
       if (this.paused) {
         this.on("resume", this.ea);
       } else {
-        this.writable && (this.writable = !1, this.ia.call(this), this.readable || this.destroy());
+        this.writable && (this.writable = !1, this.ia(), this.readable || this.destroy());
       }
     }
     end(a) {

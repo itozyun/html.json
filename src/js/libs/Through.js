@@ -53,7 +53,7 @@ goog.scope(
 
       /** @param {Buffer | string | number | boolean | null} data */
       write(data) {
-        this._writeHandler.call(this, data)
+        this._writeHandler(data)
         return !this.paused
       }
 
@@ -78,7 +78,7 @@ goog.scope(
           this.on('resume', this._end)
         } else if (this.writable) {
           this.writable = false
-          this._endHandler.call(this)
+          this._endHandler()
           if(!this.readable /** && this.autoDestroy */)
             this.destroy()
         };
