@@ -9,7 +9,9 @@
    6. json2html.gulp()
    7. json2html.stream()
    8. filter.gulp()
-2. 使用可能なハンドラーとオプションのデフォルト値
+2. 使用可能な引数とオプションとそのデフォルト値
+   1. 使用可能な引数
+   2. 使用可能なオプションとそのデフォルト値
 3. ハンドラー
    1. onInstruction
    2. onEnterNode
