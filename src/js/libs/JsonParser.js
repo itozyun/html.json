@@ -340,7 +340,7 @@ goog.scope(
                   return this.charError(buffer, i);
                 }
 
-                if ((this._string.match(/[0-9]+/) == this._string) && (result.toString() != this._string)) {
+                if ((this._string.match(/[0-9]+/) == this._string) && (result + '' != this._string)) {
                   // Long string of digits which is an ID string and not valid and/or safe JavaScript integer Number
                   this.onToken(C.STRING, this._string);
                 } else {

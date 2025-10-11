@@ -5,6 +5,7 @@ goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
+goog.require( 'htmljson.DEFINE.DEBUG' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'htmljson.DEFINE.USE_XHTML' );
 goog.require( 'json2html.main' );
@@ -96,7 +97,7 @@ HTMLJsonParser.endHandler = function( data ){
     /** @suppress {checkTypes} */
     var expect = this._jsonParser._expect;
 
-    if( expect !== htmljson.EXPECT.END_OF_DOCUMENT ){
+    if( expect !== htmljson.EXPECT.END_OF_DOCUMENT && htmljson.DEFINE.DEBUG  ){
         this.emit( 'error', 'Invalid html.json' );
     };
 
@@ -128,13 +129,15 @@ HTMLJsonParser.resumeHandler = function(){
  * @param {!Error} err 
  */
 HTMLJsonParser.onError = function( err ){
-    if( -1 < err.message.indexOf( 'at position' ) ){
-        err.message = 'Invalid JSON (' + err.message + ')';
+    if( htmljson.DEFINE.DEBUG ){
+        if( -1 < err.message.indexOf( 'at position' ) ){
+            err.message = 'Invalid JSON (' + err.message + ')';
+        };
+        if( this._onError ){
+            this._onError( err.message );
+        };
+        this._through.emit( 'error', err );
     };
-    if( this._onError ){
-        this._onError( err.message );
-    };
-    this._through.emit( 'error', err );
 };
 
 
@@ -597,10 +600,12 @@ HTMLJsonParser.onToken = function( token, value ){
     // console.log( '- ' + queue, expect, this._tree );
 
     if( expect === htmljson.EXPECT.ERROR ){
-        if( this._onError ){
-            this._onError( 'Not html.json format!' );
+        if( htmljson.DEFINE.DEBUG ){
+            if( this._onError ){
+                this._onError( 'Not html.json format!' );
+            };
+            this._through.emit( 'error', 'Not html.json format!' );
         };
-        this._through.emit( 'error', 'Not html.json format!' );
     } else {
         this._expect = expect;
     };
