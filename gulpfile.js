@@ -27,13 +27,13 @@ gulp.task(
                             define            : [
                                 'htmljson.DEFINE.DEBUG=' + isDebug,
 
-                                'htmlparser.DEFINE.USE_XML=' + true,
-                                'htmlparser.DEFINE.USE_VML=' + true,
-                                'htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE=' + true,
-                                'htmlparser.DEFINE.USE_CDATA_SECTION=' + true,
+                                'htmlparser.DEFINE.USE_XHTML='                  + true,
+                                'htmlparser.DEFINE.USE_XML_IN_HTML='            + true,
+                                'htmlparser.DEFINE.USE_VML='                    + true,
+                                'htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE='     + true,
+                                'htmlparser.DEFINE.USE_CDATA_SECTION='          + true,
                                 'htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION=' + true,
-                                'htmlparser.DEFINE.TIME_SLICE_EXECUTION=' + false,
-                                'htmlparser.DEFINE.STOP_PARSING=' + false
+                                'htmlparser.DEFINE.USE_PAUSE='                  + false
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug    ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'

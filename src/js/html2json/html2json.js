@@ -189,12 +189,12 @@ HTML2JsonHandler.prototype.onParseStartTag = function( tagName, attrs, empty, my
     };
 };
 
-HTML2JsonHandler.prototype.onParseEndTag = function( tagName, isImplicit, isMissingStartTag ){
+HTML2JsonHandler.prototype.onParseEndTag = function( tagName, isInvalidEndTagOmission, isMissingStartTag ){
     if( isMissingStartTag ){
         if( this._allowInvalidTree ){
             this._currentNode.push( [ htmljson.NODE_TYPE.ELEMENT_END_TAG, tagName ] );
         };
-    } else if( !isImplicit || !this._allowInvalidTree ){
+    } else if( !isInvalidEndTagOmission || !this._allowInvalidTree ){
         if( tagName === m_parseTagName( /** @type {string} */ (this._currentNode[ 1 ]) )[ 0 ] ){
             this._currentNode.shift(); // htmljson.NODE_TYPE.ELEMENT_START_TAG を削除
             this._tree.pop();

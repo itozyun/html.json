@@ -7,6 +7,7 @@ goog.require( 'htmlparser.isNamespacedTag' );
 goog.require( 'htmlparser.RAW_TEXT_ELEMENTS' );
 goog.require( 'htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS' );
 goog.require( 'htmlparser.escapeHTML' );
+goog.require( 'htmlparser.VOID_ELEMENTS' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
