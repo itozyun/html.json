@@ -166,3 +166,19 @@ test('style=""', (t) => {
 
     t.deepEqual( html2json('<a style=" content : \\";\\" ; color : red"></a>'), [11, ['A', {style:'content:";";color:red'}] ]);
 });
+
+test('xhtml', (t) => {
+    t.deepEqual( html2json(`
+<?xml version="1.0" encoding="Shift_JIS"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<p>xhtml
+        `, false, null, { trimWhitespaces : 'aggressive' }),
+        [9, '<?xml version="1.0" encoding="Shift_JIS"?>\n<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
+          ['html', {xmlns:'http://www.w3.org/1999/xhtml'},
+            ['body', ['p', 'xhtml']]
+          ]
+        ]
+    );
+});

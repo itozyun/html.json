@@ -6,7 +6,6 @@ goog.require( 'core.all' );
 goog.require( 'VNode' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
-goog.require( 'htmljson.DEFINE.USE_XML_NS' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 goog.requireType( 'htmljson.Traverser.EnterHandler' );
 goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
@@ -151,8 +150,8 @@ function m_isStrictNode( value ){
     return core.isArray( value ) && ( core.isNumber( value[ 0 ] ) || core.isString( value[ 0 ] ) );
 };
 
-function m_isXML( xmlDeclarationAndDocumentType ){
-    return xmlDeclarationAndDocumentType.indexOf( '<?xml ' ) === 0 || 0 <= xmlDeclarationAndDocumentType.toUpperCase().indexOf( '<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML ' );
+function m_isXHTMLDocument( xmlDeclarationAndDocumentType ){
+    return xmlDeclarationAndDocumentType.indexOf( '<?xml ' ) === 0 || 0 <= xmlDeclarationAndDocumentType.indexOf( ' PUBLIC "-//W3C//DTD XHTML ' );
 };
 
 /**

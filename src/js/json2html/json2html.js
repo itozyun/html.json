@@ -8,10 +8,10 @@ goog.require( 'htmlparser.RAW_TEXT_ELEMENTS' );
 goog.require( 'htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS' );
 goog.require( 'htmlparser.escapeHTML' );
 goog.require( 'htmlparser.VOID_ELEMENTS' );
+goog.require( 'htmlparser.DEFINE' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
-goog.require( 'htmljson.DEFINE.USE_XHTML' );
 goog.require( 'VNode' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 goog.requireType( 'htmljson.Traverser.EnterHandler' );
@@ -75,14 +75,14 @@ json2html.main = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, opt
  * @param {!Object=} opt_options
  */
 json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, traverserOrHTMLJsonParser, opt_onInstruction, opt_onEnterNode, opt_onError, opt_options ){
-    function getHTMLTagName( tagName ){
-        return tagName.toLowerCase(); // TODO upperCase
+    function getHTMLTagName( tagName, isXHTMLOrXMLOrVML ){
+        return isXHTMLOrXMLOrVML ? tagName : tagName.toLowerCase();
     };
     function appendOmittedEndTagBasedOnFollowingNode(){
         var htmlString = '';
 
         if( omittedEndTagBefore ){
-            htmlString = '</' + getHTMLTagName( omittedEndTagBefore ) + '>';
+            htmlString = '</' + getHTMLTagName( omittedEndTagBefore, false ) + '>';
             omittedEndTagBefore = '';
         };
         return htmlString;
@@ -134,6 +134,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
     /** @const */
     var statusStack    = [ false, null, false, false, false ];
 
+    var isXHTMLDocument;
     var omittedEndTagBefore;
 
     traverserOrHTMLJsonParser(
@@ -147,17 +148,6 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
          * @return {number | !HTMLJson | void} number:VISITOR_OPTION.*, HTMLJson は json2html.stream のみ
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, opt_instructionContext ){
-            /**
-             * @param {string} tagName 
-             * @return {boolean} */
-            function isXML( tagName ){
-                if( isXmlInHTML ){
-                    return true;
-                } else if( htmlparser.isXMLRootElement( tagName ) ){
-                    return true;
-                };
-                return htmlparser.isNamespacedTag( tagName ); // <v:vml>
-            };
             function processTextNode( nodeValue ){
                 chunk[ ++j ] = appendOmittedEndTagBasedOnFollowingNode() + ( escapeForHTMLDisabled ? nodeValue : htmlparser.escapeHTML( '' + nodeValue ) );
             };
@@ -173,7 +163,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 };
             };
 
-            var isXmlInHTML           = statusStack[ depth * 5 + 0 ],
+            var isXHTMLOrXMLOrVML     = statusStack[ depth * 5 + 0 ],
                 parentVNode           = statusStack[ depth * 5 + 1 ],
                 pEndTagRequired       = statusStack[ depth * 5 + 2 ],
                 escapeForHTMLDisabled = statusStack[ depth * 5 + 3 ];
@@ -184,7 +174,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 attrIndex    = 1,
                 isNewNodeGeneratedByInstruction, result,
                 isElementWithoutEndTag,
-                id, className, attrs, name, value, isInstruction, isBoolAttr;
+                id, className, attrs, tagUpper, name, value, isInstruction, isBoolAttr;
 
             // if( currentVNode && currentVNode._removed ){
                 // return m_getHTMLStringAfter( currentVNode );
@@ -192,8 +182,8 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
 
             switch( m_getNodeType( currentJSONNode ) ){
                 case htmljson.NODE_TYPE.DOCUMENT_NODE :
-                    if( htmljson.DEFINE.USE_XHTML && m_isXML( arg1 ) ){
-                        isXmlInHTML = true;
+                    if( htmlparser.DEFINE.USE_XHTML && m_isXHTMLDocument( arg1 ) ){
+                        isXHTMLDocument = isXHTMLOrXMLOrVML = pEndTagRequired = true;
                     };
                     chunk[ ++j ] = arg1;
                     break;
@@ -244,7 +234,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     };
                     break;
                 case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                    chunk[ ++j ] = '</' + ( isXmlInHTML ? arg1 : getHTMLTagName( arg1 ) ) + '>';
+                    chunk[ ++j ] = '</' + getHTMLTagName( arg1, isXHTMLOrXMLOrVML ) + '>';
                     break;
                 case htmljson.NODE_TYPE.ELEMENT_START_TAG :
                     isElementWithoutEndTag = true;
@@ -267,16 +257,17 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     };
 
                     // xml;
-                    isXmlInHTML           = isXmlInHTML || isXML( tagName );
-                    pEndTagRequired       = pEndTagRequired || !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ]
-                    escapeForHTMLDisabled = escapeForHTMLDisabled || ( htmlparser.RAW_TEXT_ELEMENTS[ tagName ] && !htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS[ tagName ] );
+                    isXHTMLOrXMLOrVML     = isXHTMLOrXMLOrVML || htmlparser.DEFINE.USE_XML_IN_HTML && htmlparser.isXMLRootElement( tagName ) || htmlparser.DEFINE.USE_VML && htmlparser.isNamespacedTag( tagName );
+                    pEndTagRequired       = pEndTagRequired || !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ];
+                    tagUpper              = isXHTMLDocument ? tagName.toUpperCase() : tagName;
+                    escapeForHTMLDisabled = escapeForHTMLDisabled || ( htmlparser.RAW_TEXT_ELEMENTS[ tagUpper ] && !htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS[ tagUpper ] );
 
-                    chunk[ ++j ] = '<' + ( isXmlInHTML ? tagName : getHTMLTagName( tagName ) );
+                    chunk[ ++j ] = '<' + getHTMLTagName( tagName, isXHTMLOrXMLOrVML );
                     if( id ){
-                        chunk[ ++j ] = ' id=' + quoteAttributeValue( /** @type {string} */ (id), useSingleQuote, isXmlInHTML || useQuoteAlways );
+                        chunk[ ++j ] = ' id=' + quoteAttributeValue( /** @type {string} */ (id), useSingleQuote, isXHTMLOrXMLOrVML || useQuoteAlways );
                     };
                     if( className ){
-                        chunk[ ++j ] = ' class=' + quoteAttributeValue( /** @type {string} */ (className), useSingleQuote, isXmlInHTML || useQuoteAlways );
+                        chunk[ ++j ] = ' class=' + quoteAttributeValue( /** @type {string} */ (className), useSingleQuote, isXHTMLOrXMLOrVML || useQuoteAlways );
                     };
                     // attr
                     if( m_isAttributes( attrs ) ){
@@ -310,14 +301,14 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                                         } else {
                                             value = htmlparser.escapeHTML( '' + value );
                                         };
-                                        chunk[ ++j ] = '=' + quoteAttributeValue( value, useSingleQuote, isXmlInHTML || useQuoteAlways );
+                                        chunk[ ++j ] = '=' + quoteAttributeValue( value, useSingleQuote, isXHTMLOrXMLOrVML || useQuoteAlways );
                                     };
                                 };
                             };
                         };
                     };
                     // hasUnknownChildren
-                    if( !isXmlInHTML || hasChildren || isElementWithoutEndTag ){
+                    if( !isXHTMLOrXMLOrVML || hasChildren || isElementWithoutEndTag ){
                         chunk[ ++j ] = '>';
                     } else {
                         chunk[ ++j ] = ' />';
@@ -325,7 +316,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     break;
             };
 
-            statusStack[ depth * 5 + 5 ] = isXmlInHTML;
+            statusStack[ depth * 5 + 5 ] = isXHTMLOrXMLOrVML;
             statusStack[ depth * 5 + 6 ] = currentVNode;
             statusStack[ depth * 5 + 7 ] = pEndTagRequired;
             statusStack[ depth * 5 + 8 ] = escapeForHTMLDisabled;
@@ -343,7 +334,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
             var chunk = [], j = -1;
 
-            var isXmlInHTML           = statusStack[ depth * 5 + 5 ],
+            var isXHTMLOrXMLOrVML     = statusStack[ depth * 5 + 5 ],
              // parentVNode           = statusStack[ depth * 5 + 6 ],
                 pEndTagRequired       = statusStack[ depth * 5 + 7 ],
              // escapeForHTMLDisabled = statusStack[ depth * 5 + 8 ],
@@ -372,10 +363,10 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     };
                     tagName = m_parseTagName( /** @type {string} */ (tagName) )[ 0 ];
 
-                    if( !hasChildren && htmlparser.VOID_ELEMENTS[ tagName ] ){
+                    if( !hasChildren && htmlparser.VOID_ELEMENTS[ isXHTMLDocument ? tagName.toUpperCase() : tagName ] ){
                         omittedEndTagBefore = '';
-                    } else if( ( !isXmlInHTML || hasChildren ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || ( pEndTagRequired && tagName === 'P' ) ) ){
-                        chunk[ ++j ] = '</' + ( isXmlInHTML ? tagName : getHTMLTagName( tagName ) ) + '>';
+                    } else if( ( !isXHTMLOrXMLOrVML || hasChildren ) && ( !m_OMITTABLE_END_TAGS[ tagName ] || ( pEndTagRequired && tagName === 'P' ) ) ){
+                        chunk[ ++j ] = '</' + getHTMLTagName( tagName, isXHTMLOrXMLOrVML ) + '>';
                         omittedEndTagBefore = '';
                     } else {
                         omittedEndTagBefore = tagName;

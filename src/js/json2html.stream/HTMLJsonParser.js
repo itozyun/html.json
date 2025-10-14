@@ -7,7 +7,6 @@ goog.require( 'htmljson.PHASE' );
 goog.require( 'htmljson.EXPECT' );
 goog.require( 'htmljson.DEFINE.DEBUG' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
-goog.require( 'htmljson.DEFINE.USE_XHTML' );
 goog.require( 'json2html.main' );
 
 // https://raw.githubusercontent.com/dominictarr/JSONStream/master/index.js

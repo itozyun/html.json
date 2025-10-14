@@ -5,8 +5,6 @@ goog.require( 'htmlparser.BOOLEAN_ATTRIBUTES' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
-goog.require( 'htmlparser.isXMLRootElement' );
-goog.require( 'htmlparser.isNamespacedTag' );
 goog.require( 'VNode' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 goog.requireType( 'htmljson.Traverser.EnterHandler' );
@@ -85,9 +83,16 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
             switch( m_getNodeType( currentJSONNode ) ){
                 case htmljson.NODE_TYPE.DOCUMENT_NODE :
                     if( isTrimWhitespace ){
-                        currentJSONNode[ 1 ] = arg1.split( '\n' ).join( ' ' )  // 宣言中の改行を半角スペースに
-                                                   .split( '  ' ).join( ' ' ); // 2つ以上の半角スペースをスペースに
-                    }
+
+                        if( htmlparser.DEFINE.USE_XHTML ){
+                            currentJSONNode[ 1 ] = arg1.split( '\n' ).join( ' ' )  // 宣言中の改行を半角スペースに
+                                                       .split( '  ' ).join( ' ' )  // 2つ以上の半角スペースをスペースに
+                                                       .split( '?> <!' ).join( '?>\n<!' ) // <?xml ..?> の後に改行
+                        } else {
+                            currentJSONNode[ 1 ] = arg1.split( '\n' ).join( ' ' )  // 宣言中の改行を半角スペースに
+                                                       .split( '  ' ).join( ' ' ); // 2つ以上の半角スペースをスペースに
+                        };
+                    };
                     break;
                 case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
                     break;

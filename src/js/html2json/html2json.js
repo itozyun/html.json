@@ -131,7 +131,32 @@ HTML2JsonHandler.prototype.onParseError = function( msg ){
 
 if( htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE ){
     HTML2JsonHandler.prototype.onParseDocType = function( doctype ){
+        if( htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION && htmlparser.DEFINE.USE_XHTML ){
+            if( this._xmlDeclaration ){
+                doctype = '<?' + this._xmlDeclaration + '?>\n' + doctype;
+                this._xmlDeclaration = '';
+            };
+        };
         this._rootNode.splice( 0, 1, htmljson.NODE_TYPE.DOCUMENT_NODE, doctype );
+    };
+};
+
+if( htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION ){
+    HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
+        if( htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE && htmlparser.DEFINE.USE_XHTML
+            && this._rootNode.length === 1  // === [11]
+            && !nodeValue.indexOf( 'xml ' ) // === 0
+        ){
+            this._xmlDeclaration = nodeValue;
+        } else {
+            var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket, this._onError ),
+                newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs[ 0 ] ];
+        
+            if( functionNameAndArgs[ 1 ] ){
+                newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs[ 1 ] );
+            };
+            this._currentNode.push( newHTMLJson );
+        };
     };
 };
 
@@ -272,17 +297,5 @@ HTML2JsonHandler.prototype.onParseComment = function( nodeValue ){
 if( htmlparser.DEFINE.USE_CDATA_SECTION ){
     HTML2JsonHandler.prototype.onParseCDATASection = function( nodeValue ){
         this._currentNode.push( [ htmljson.NODE_TYPE.CDATA_SECTION, m_tryToFiniteNumber( m_normalizeNewlines( nodeValue ) ) ] );
-    };
-};
-
-if( htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION ){
-    HTML2JsonHandler.prototype.onParseProcessingInstruction = function( nodeValue ){
-        var functionNameAndArgs = codeToObject( nodeValue, this._argOpeningBracket, this._argClosingBracket, this._onError ),
-            newHTMLJson         = [ htmljson.NODE_TYPE.PROCESSING_INSTRUCTION, functionNameAndArgs[ 0 ] ];
-    
-        if( functionNameAndArgs[ 1 ] ){
-            newHTMLJson.push.apply( newHTMLJson, functionNameAndArgs[ 1 ] );
-        };
-        this._currentNode.push( newHTMLJson );
     };
 };
