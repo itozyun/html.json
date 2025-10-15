@@ -1183,23 +1183,13 @@ var $jscomp$scope$m1534190617$0$exec = function(a, b, c, d, f, e, g, h) {
     for (var m = 1, q = a.length, n = 2, y = {}, u = 0, H = !1, r, K, J, N, S, R, O; n < q && 9 > m; ++n) {
       switch(r = a.charAt(n), m) {
         case 1:
-          if (htmlparser.isWhitespace(r)) {
-            m = 2, K = a.substring(1, n);
-          } else if (">" === r || E()) {
-            m = 9, K = a.substring(1, n);
-          }
+          htmlparser.isWhitespace(r) ? (m = 2, K = a.substring(1, n)) : ">" === r ? (m = 9, K = a.substring(1, n)) : E() && (m = 9, K = a.substring(1, n - 1));
           break;
         case 2:
           ">" === r || E() ? m = 9 : htmlparser.isWhitespace(r) || (m = 3, J = n);
           break;
         case 3:
-          if ("=" === r) {
-            m = 5, N = a.substring(J, n);
-          } else if (htmlparser.isWhitespace(r)) {
-            m = 4, N = a.substring(J, n);
-          } else if (">" === r || E()) {
-            m = 9, l(a.substring(J, n), !0);
-          }
+          "=" === r ? (m = 5, N = a.substring(J, n)) : htmlparser.isWhitespace(r) ? (m = 4, N = a.substring(J, n)) : ">" === r ? (m = 9, l(a.substring(J, n), !0)) : E() && (m = 9, l(a.substring(J, n - 1), !0));
           break;
         case 4:
           "=" === r ? m = 5 : ">" === r || E() ? (m = 9, l(N, !0)) : htmlparser.isWhitespace(r) || (m = 3, l(N, !0), J = n);

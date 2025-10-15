@@ -32,7 +32,7 @@ function la(a, b, c) {
       var r = a.substr(0, m);
       a = a.substr(m);
       m = 0;
-      (d || z && !ha[t]) && (r = I && !ja[t] ? r : J(r)) && b.$.push([3, L(r)]);
+      (d || z && !ha[t]) && (r = I && !ja[t] ? r : J(r)) && b.$.push([3, M(r)]);
     }
   }
   function e(r) {
@@ -95,26 +95,16 @@ function la(a, b, c) {
       (Q = "/>" === a.substr(v, 2)) && ++v;
       return Q;
     }
-    for (var l = 1, D = a.length, v = 2, S = {}, ma = 0, Q = !1, F, N, K, T, na, ca, X; v < D && 9 > l; ++v) {
+    for (var l = 1, D = a.length, v = 2, S = {}, ma = 0, Q = !1, F, L, K, T, na, ca, X; v < D && 9 > l; ++v) {
       switch(F = a.charAt(v), l) {
         case 1:
-          if (H[F] & 4) {
-            l = 2, N = a.substring(1, v);
-          } else if (">" === F || E()) {
-            l = 9, N = a.substring(1, v);
-          }
+          H[F] & 4 ? (l = 2, L = a.substring(1, v)) : ">" === F ? (l = 9, L = a.substring(1, v)) : E() && (l = 9, L = a.substring(1, v - 1));
           break;
         case 2:
           ">" === F || E() ? l = 9 : H[F] & 4 || (l = 3, K = v);
           break;
         case 3:
-          if ("=" === F) {
-            l = 5, T = a.substring(K, v);
-          } else if (H[F] & 4) {
-            l = 4, T = a.substring(K, v);
-          } else if (">" === F || E()) {
-            l = 9, h(a.substring(K, v), !0);
-          }
+          "=" === F ? (l = 5, T = a.substring(K, v)) : H[F] & 4 ? (l = 4, T = a.substring(K, v)) : ">" === F ? (l = 9, h(a.substring(K, v), !0)) : E() && (l = 9, h(a.substring(K, v - 1), !0));
           break;
         case 4:
           "=" === F ? l = 5 : ">" === F || E() ? (l = 9, h(T, !0)) : H[F] & 4 || (l = 3, h(T, !0), K = v);
@@ -132,12 +122,12 @@ function la(a, b, c) {
       }
     }
     if (9 === l) {
-      x ||= !!da[N];
-      u ||= 0 < N.indexOf(":");
+      x ||= !!da[L];
+      u ||= 0 < L.indexOf(":");
       if (l = x || u) {
-        Q || (z = A[A.length] = N, g());
+        Q || (z = A[A.length] = L, g());
       } else {
-        for (X = N.toUpperCase(); z;) {
+        for (X = L.toUpperCase(); z;) {
           if (G[t] && !G[t][X]) {
             w(r, z, !1);
           } else {
@@ -145,10 +135,10 @@ function la(a, b, c) {
           }
         }
         Q = Q || !!fa[X];
-        Q || (z = A[A.length] = y ? N : X, g());
+        Q || (z = A[A.length] = y ? L : X, g());
       }
       a = a.substr(v);
-      pa(b, y || l ? N : X, ma ? S : null, Q);
+      pa(b, y || l ? L : X, ma ? S : null, Q);
     } else {
       return e(a), !0;
     }
@@ -211,7 +201,7 @@ function la(a, b, c) {
   }
   w(A, "", !0);
 }
-;function M(a) {
+;function N(a) {
   return a === "" + a;
 }
 function O(a) {
@@ -263,7 +253,7 @@ function O(a) {
 }
 ;var va = {SCRIPT:!0, STYLE:!0, TEXTAREA:!0, script:!0, style:!0, textarea:!0}, wa = {PRE:!0, LISTING:!0, pre:!0, listing:!0};
 function R(a) {
-  return M(a) || a === +a;
+  return N(a) || a === +a;
 }
 function U(a) {
   var b;
@@ -277,7 +267,7 @@ function V(a) {
     a = 3;
   } else {
     if (O(a)) {
-      if (M(a[0])) {
+      if (N(a[0])) {
         a = 1;
       } else {
         var b = a[0];
@@ -293,7 +283,7 @@ function ua(a) {
   var b = a[0], c = V(a);
   return 1 === c || 17 === c ? (b = b === +b ? 2 : 1, a = a[b], !O(a) && a && "object" === typeof a ? b + 1 : b) : 11 === b ? 1 : 9 === b || 13 === b || 16 === b ? 2 : Infinity;
 }
-function L(a) {
+function M(a) {
   return a.split("\r\n").join("\n").split("\r").join("\n");
 }
 function W(a, b) {
@@ -442,8 +432,8 @@ function za(a) {
         break;
       case 3:
         O(d) || (t = d);
-        if (M(t)) {
-          if (A || (t = L(t), k && (t = c(t, f, e))), "" !== t) {
+        if (N(t)) {
+          if (A || (t = M(t), k && (t = c(t, f, e))), "" !== t) {
             x[u] = t;
           } else {
             return x.splice(u, 1), -1;
@@ -496,7 +486,7 @@ function za(a) {
           for (var h, E, l; m < B; ++m) {
             r = d[m], 3 === V(r) && (z = z || m, h = h || r, E = m, l = r);
           }
-          z && (O(h) && (h = h[1]), O(l) && (l = l[1]), z === E ? M(h) && (h = L(h), h = Y(W(h, "\n"), "\n"), d[z] = U(h)) : (M(h) && (h = L(h), h = W(h, "\n"), d[z] = U(h)), M(l) && (l = L(l), l = Y(l, "\n"), d[E] = U(l))));
+          z && (O(h) && (h = h[1]), O(l) && (l = l[1]), z === E ? N(h) && (h = M(h), h = Y(W(h, "\n"), "\n"), d[z] = U(h)) : (N(h) && (h = M(h), h = W(h, "\n"), d[z] = U(h)), N(l) && (l = M(l), l = Y(l, "\n"), d[E] = U(l))));
         }
     }
   }, function(d, x, u) {
@@ -643,12 +633,12 @@ function ra(a, b) {
     var g = Ca(c(b, ">", "<![endif]", !0), a.ga, a.ea, a.da, !0, a.aa);
     g.splice(0, 1, 13, c(b, "[", "]", !1));
   } else {
-    b.startsWith("{") && 2 < b.indexOf("};") ? (g = Ca(b.substring(b.indexOf("};") + 2), a.ga, a.ea, a.da, !0, a.aa), g.splice(0, 1, 16, c(b, "{", "};", !1))) : b.startsWith("[if") && 0 < b.indexOf("><!") ? (g = [14, c(b, "[", "]", !1)], a.ha = !0) : "<![endif]" === b && a.ha ? (g = [15], a.ha = !1) : g = [8, U(L(b))];
+    b.startsWith("{") && 2 < b.indexOf("};") ? (g = Ca(b.substring(b.indexOf("};") + 2), a.ga, a.ea, a.da, !0, a.aa), g.splice(0, 1, 16, c(b, "{", "};", !1))) : b.startsWith("[if") && 0 < b.indexOf("><!") ? (g = [14, c(b, "[", "]", !1)], a.ha = !0) : "<![endif]" === b && a.ha ? (g = [15], a.ha = !1) : g = [8, U(M(b))];
   }
   a.$.push(g);
 }
 function sa(a, b) {
-  a.$.push([4, U(L(b))]);
+  a.$.push([4, U(M(b))]);
 }
 ;module.exports = Z;
 Z.DOCUMENT_NODE = 9;
