@@ -33,6 +33,7 @@ gulp.task(
                                 'htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE='     + true,
                                 'htmlparser.DEFINE.USE_CDATA_SECTION='          + true,
                                 'htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION=' + true,
+                                'htmlparser.DEFINE.USE_TRADITIONAL_TAGS='       + true,
                                 'htmlparser.DEFINE.USE_PAUSE='                  + false
                             ],
                             // env               : 'CUSTOM',
@@ -212,7 +213,15 @@ gulp.task(
                             dependency_mode   : 'PRUNE',
                             entry_point       : 'goog:sample.news',
                             define            : [
-                                'htmljson.DEFINE.DEBUG=' + isDebug
+                                'htmljson.DEFINE.DEBUG=' + isDebug,
+                                'htmlparser.DEFINE.USE_XHTML='                  + false,
+                                'htmlparser.DEFINE.USE_XML_IN_HTML='            + false,
+                                'htmlparser.DEFINE.USE_VML='                    + false,
+                                'htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE='     + true,
+                                'htmlparser.DEFINE.USE_CDATA_SECTION='          + false,
+                                'htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION=' + true,
+                                'htmlparser.DEFINE.USE_TRADITIONAL_TAGS='       + false,
+                                'htmlparser.DEFINE.USE_PAUSE='                  + false
                             ],
                             // env               : 'CUSTOM',
                             compilation_level : isDebug ? 'SIMPLE_OPTIMIZATIONS' : 'ADVANCED', // 'WHITESPACE_ONLY'

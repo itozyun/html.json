@@ -4,6 +4,7 @@ goog.provide( 'EnterNodeHandler' );
 
 goog.require( 'core.all' );
 goog.require( 'VNode' );
+goog.require( 'htmlparser.DEFINE' );
 goog.require( 'htmlparser.isWhitespace' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
@@ -46,12 +47,22 @@ var EnterNodeHandler;
  *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * 
  * @const {!Object.<string, boolean>} */
-var m_OMITTABLE_END_TAGS = {
-        HTML : true, HEAD     : true, BODY    :true, P        :true, DT    : true, DD : true,
-        LI   : true, OPTION   : true, TBODY   :true, THEAD    :true, TFOOT : true, TD : true,
-        TH   : true, TR       : true, RB      :true, RBC      :true, RP    : true, RT : true,
-        RTC  : true, OPTGROUP : true, CAPTION :true, COLGROUP :true
-    };
+var m_OMITTABLE_END_TAGS =
+        htmlparser.DEFINE.USE_TRADITIONAL_TAGS
+            ? {
+                HTML     : true, HEAD    : true, BODY     : true, P     : true, DT    : true, DD : true,
+                LI       : true, OPTION  : true, TBODY    : true, THEAD : true, TFOOT : true, TD : true,
+                TH       : true, TR      : true, RP       : true, RT    : true,
+                OPTGROUP : true, CAPTION : true, COLGROUP : true,
+                // legacy
+                RB       : true, RBC     : true, RTC      : true
+              }
+            : {
+                HTML     : true, HEAD    : true, BODY     : true, P     : true, DT    : true, DD : true,
+                LI       : true, OPTION  : true, TBODY    : true, THEAD : true, TFOOT : true, TD : true,
+                TH       : true, TR      : true, RP       : true, RT    : true,
+                OPTGROUP : true, CAPTION : true, COLGROUP : true
+              };
 
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
@@ -74,17 +85,25 @@ var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http
  * 
  * @const {!Object.<string, boolean>}
  */
-var m_P_END_TAG_LESS_TAGS = {
-        H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
-        ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
-        HR      : true, LEGEND     : true, MENU     : true, NOSCRIPT : true, OL        : true, P        : true,
-        PRE     : true, /* TABLE   : true, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-        UL      : true,
-        CENTER  : true, DIR        : true, NOFRAMES : true, MARQUEE  : true //, legacy
-    // HTML5 要素は IE~8 で無視されるので除外
-    //  ARTICLE : true, ASIDE      : true, CANVAS   : true, DETAILS  : true, FIGCAPTION : true, FIGURE  : true,
-    //  FOOTER  : true, HEADER     : true, HGROUP   : true, MAIN     : true, NAV        : true, SECTION : true
-    };
+var m_P_END_TAG_LESS_TAGS =
+        htmlparser.DEFINE.USE_TRADITIONAL_TAGS
+            ? {
+                H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
+                ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
+                HR      : true, LEGEND     : true, UL       : true, NOSCRIPT : true, OL        : true, P        : true,
+                PRE     : true, /* TABLE   : true, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                // legacy
+                CENTER  : true, DIR        : true, NOFRAMES : true, MARQUEE  : true, MENU     : true
+              }
+            : {
+                H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
+                ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
+                HR      : true, LEGEND     : true, UL       : true, NOSCRIPT : true, OL        : true, P        : true,
+                PRE     : true /* TABLE   : true, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+            // HTML5 要素は IE~8 で無視されるので除外
+            //  ARTICLE : true, ASIDE      : true, CANVAS   : true, DETAILS  : true, FIGCAPTION : true, FIGURE  : true,
+            //  FOOTER  : true, HEADER     : true, HGROUP   : true, MAIN     : true, NAV        : true, SECTION : true
+              };
 
 /**
  * @const {!Object.<string, boolean>}
@@ -97,10 +116,16 @@ var m_TRIM_NEWLINES_ELEMENTS = {
 /**
  * @const {!Object.<string, boolean>}
  */
-var m_FAMILY_OF_PRE_ELEMENT = {
-    PRE : true, LISTING : true,
-    pre : true, listing : true
-};
+var m_FAMILY_OF_PRE_ELEMENT =
+        htmlparser.DEFINE.USE_TRADITIONAL_TAGS
+            ? {
+                PRE : true, LISTING : true,
+                pre : true, listing : true
+              }
+            : {
+                PRE : true,
+                pre : true
+              };
 
 /**
  * 
