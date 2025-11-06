@@ -6,7 +6,7 @@ test('simple',
     (t) => {
         var json = html2json('<code><? now ?></code>'), now;
 
-        t.deepEqual(json, [11, ['CODE', [ 7, 'now' ]]]);
+        t.deepEqual(json, [11, ['code', [ 7, 'now' ]]]);
 
         json2json(
             json,
@@ -17,17 +17,17 @@ test('simple',
             }
         );
 
-        t.deepEqual(json, [11, ['CODE', now]]);
+        t.deepEqual(json, [11, ['code', now]]);
     }
 );
 
 test('normalizeText',
     (t) => {
-        const json = [ 11, [ 'A', '', '', 9, '', 9 ] ];
+        const json = [ 11, [ 'a', '', '', 9, '', 9 ] ];
 
         json2json( json );
 
-        t.deepEqual(json, [11, [ 'A', 99 ]]);
+        t.deepEqual(json, [11, [ 'a', 99 ]]);
     }
 );
 
@@ -44,7 +44,7 @@ test('optimaize',
             }
         );
 
-        t.deepEqual(json, [11, ['CODE', 'AB']]);
+        t.deepEqual(json, [11, ['code', 'AB']]);
     }
 );
 
@@ -61,7 +61,7 @@ test('pre + instruction',
             }
         );
 
-        t.deepEqual(json, [11, ['PRE', 'AB']]);
+        t.deepEqual(json, [11, ['pre', 'AB']]);
     }
 );
 
@@ -78,7 +78,7 @@ test('script + instruction',
             }
         );
 
-        t.deepEqual(json, [11, ['SCRIPT', 'var a=123456;']]);
+        t.deepEqual(json, [11, ['script', 'var a=123456;']]);
     }
 );
 
@@ -101,20 +101,20 @@ test('onDocumentReady',
 
 test('cc',
     (t) => {
-        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ]];
+        var json = [11, [ 'p', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ]];
 
         json2json(
             json, 0, 0, 0, 0, {keepComments:false, trimWhitespaces:true}
         );
 
-        t.deepEqual(json, [11, [ 'P', '  ' ]]);
+        t.deepEqual(json, [11, [ 'p', '  ' ]]);
 
-        var json = [11, [ 'P', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ]];
+        var json = [11, [ 'p', ' ', [14, 'if !IE'], [8, '<>' ], [15], ' ' ]];
 
         json2json(
             json, 0, 0, 0, 0, {keepComments:false}
         );
 
-        t.deepEqual(json, [11, [ 'P', '  ' ]]);
+        t.deepEqual(json, [11, [ 'p', '  ' ]]);
     }
 );

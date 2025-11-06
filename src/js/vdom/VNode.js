@@ -884,10 +884,10 @@ VNode.prototype.getInnerText = function(){
         };
     };
     var BLOCK_ELEMENTS = {
-        'DIV'     : true, 'CENTER' : true, 'FIELDSET' : true, 'BLOCKQUOTE' : true, 'FORM'     : true,
-        'H1'      : true, 'H2'     : true, 'H3'       : true, 'H4'         : true, 'H5'       : true, 'H6'      : true,
-        'ADDRESS' : true, 'P'      : true, 'PRE'      : true, 'UL'         : true, 'OL'       : true, 'DL'      : true,
-        'DIR'     : true, 'MENU'   : true, 'TABLE'    : true, 'HR'         : true, 'TEXTAREA' : true, 'MARQUEE' : true
+        'div'     : true, 'center' : true, 'fieldset' : true, 'blockquote' : true, 'form'     : true,
+        'h1'      : true, 'h2'     : true, 'h3'       : true, 'h4'         : true, 'h5'       : true, 'h6'      : true,
+        'address' : true, 'p'      : true, 'pre'      : true, 'ul'         : true, 'ol'       : true, 'dl'      : true,
+        'dir'     : true, 'menu'   : true, 'table'    : true, 'hr'         : true, 'textarea' : true, 'marquee' : true
     };
 
     var innerText = '';
@@ -899,34 +899,34 @@ VNode.prototype.getInnerText = function(){
             if( vnode.isElement() ){
                 tagName = vnode._tagName;
                 switch( tagName ){
-                    case 'SCRIPT'   :
-                    case 'STYLE'    :
-                    case 'NOSCRIPT' :
+                    case 'script'   :
+                    case 'style'    :
+                    case 'noscript' :
                         return htmljson.Traverser.VISITOR_OPTION.SKIP;
-                    case 'IMG' :
+                    case 'img' :
                         alt = vnode.getAttr( 'alt' );
                         if( alt ){
                             innerText += '[Image: ' + alt + ']';
                         };
                         return htmljson.Traverser.VISITOR_OPTION.SKIP;
-                    case 'LI' :
-                        if( vnode.getParent()._tagName === 'OL' ){
+                    case 'li' :
+                        if( vnode.getParent()._tagName === 'ol' ){
                             innerText += ( vnode.getMyIndex() + 1 ) + '.\t';
                         };
                         break;
-                    case 'DD' :
+                    case 'dd' :
                         innerText += '\t';
                         break;
-                    case 'BR' :
+                    case 'br' :
                         innerText += '\n';
                         break;
-                    case 'HR' :
+                    case 'hr' :
                         innerText += '\n---';
                         break;
-                    case 'BUTTON' :
+                    case 'button' :
                         innerText += '[';
                         break;
-                    case 'BLOCKQUOTE' :
+                    case 'blockquote' :
                         title = vnode.getAttr( 'title' );
                         if( title ){
                             innerText += '\n' + title;
@@ -945,25 +945,25 @@ VNode.prototype.getInnerText = function(){
                 var tagName = vnode._tagName;
 
                 switch( tagName ){
-                    case 'UL' :
-                    case 'OL' :
-                    case 'DL' :
-                    case 'TABLE' :
+                    case 'ul' :
+                    case 'ol' :
+                    case 'dl' :
+                    case 'table' :
                         break;
-                    case 'TH' :
-                    case 'TD' :
+                    case 'th' :
+                    case 'td' :
                         if( vnode.getParent().getLastChild() !== vnode ){
                             innerText += '\t';
                         };
                         break;
-                    case 'BUTTON' :
+                    case 'button' :
                         innerText += ']';
                         break;
-                    case 'LI' :
-                    case 'DT' :
-                    case 'DD' :
-                    case 'TR' :
-                    case 'CAPTION' :
+                    case 'li' :
+                    case 'dt' :
+                    case 'dd' :
+                    case 'tr' :
+                    case 'caption' :
                         innerText += '\n';
                         break;
                     default :

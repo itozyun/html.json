@@ -17,11 +17,11 @@ test('vnode',
             function( rootVNode ){
                 rootVNode.getFirstChild().insertNodeLast( 3, 'CD' ).insertNodeAfter( 3, 'EF' );
 
-                // console.log( rootVNode.getElementListByTag( 'CODE' )[ 0 ].getHTMLJson() );
+                // console.log( rootVNode.getElementListByTag( 'code' )[ 0 ].getHTMLJson() );
             }
         );
 
-        t.deepEqual(json, [11, ['CODE', 'ABCDEF']]);
+        t.deepEqual(json, [11, ['code', 'ABCDEF']]);
     }
 );
 

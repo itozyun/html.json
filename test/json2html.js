@@ -7,7 +7,7 @@ test('simple',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'P', 'Hello, world!' ]
+                [ 'p', 'Hello, world!' ]
             ),
             '<p>Hello, world!'
         );
@@ -32,7 +32,7 @@ test('quote',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'IMG', { alt : '' } ]
+                [ 'img', { alt : '' } ]
             ),
             '<img alt="">'
         );
@@ -43,7 +43,7 @@ test('id-class',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'DIV#app.app nojs', 'Hello, Application!' ]
+                [ 'div#app.app nojs', 'Hello, Application!' ]
             ),
             '<div id=app class="app nojs">Hello, Application!</div>'
         );
@@ -54,7 +54,7 @@ test('boolean attributes',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'DIV', { checked : true, readonly : false, unknown : true, 'null' : null, 'false' : false } ]
+                [ 'div', { checked : true, readonly : false, unknown : true, 'null' : null, 'false' : false } ]
             ),
             '<div checked unknown false=false></div>'
         );
@@ -66,7 +66,7 @@ test('0',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'DIV', 0 ]
+                [ 'div', 0 ]
             ),
             '<div>0</div>'
         );
@@ -77,7 +77,7 @@ test('unescaped elements',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'SCRIPT', '<!--\nd=document;//-->' ]
+                [ 'script', '<!--\nd=document;//-->' ]
             ),
             '<script><!--\nd=document;//--></script>'
         );
@@ -88,13 +88,13 @@ test('<p>',
     (t) => {
         t.deepEqual(
             json2html(
-                [ 'A', [ 'P', '*' ] ]
+                [ 'a', [ 'p', '*' ] ]
             ),
             '<a><p>*</p></a>'
         );
         t.deepEqual(
             json2html(
-                [ 'A', [ 'DIV', [ 'P', '*' ] ] ]
+                [ 'a', [ 'div', [ 'p', '*' ] ] ]
             ),
             '<a><div><p>*</p></div></a>'
         );
@@ -105,14 +105,14 @@ test('conditional-comment <p>',
     (t) => {
         t.deepEqual(
             json2html(
-                [11, [13, 'if lte IE 9', [17, 'DIV']] ]
+                [11, [13, 'if lte IE 9', [17, 'div']] ]
             ),
             '<!--[if lte IE 9]><div><![endif]-->'
         );
 
         t.deepEqual(
             json2html(
-                [11, [13, 'if lte IE 9', [18, 'DIV']] ]
+                [11, [13, 'if lte IE 9', [18, 'div']] ]
             ),
             '<!--[if lte IE 9]></div><![endif]-->'
         );

@@ -50,18 +50,18 @@ var EnterNodeHandler;
 var m_OMITTABLE_END_TAGS =
         htmlparser.DEFINE.USE_TRADITIONAL_TAGS
             ? {
-                HTML     : true, HEAD    : true, BODY     : true, P     : true, DT    : true, DD : true,
-                LI       : true, OPTION  : true, TBODY    : true, THEAD : true, TFOOT : true, TD : true,
-                TH       : true, TR      : true, RP       : true, RT    : true,
-                OPTGROUP : true, CAPTION : true, COLGROUP : true,
+                html     : true, head    : true, body     : true, p     : true, dt    : true, dd : true,
+                li       : true, option  : true, tbody    : true, thead : true, tfoot : true, td : true,
+                th       : true, tr      : true, rp       : true, rt    : true,
+                optgroup : true, caption : true, colgroup : true,
                 // legacy
-                RB       : true, RBC     : true, RTC      : true
+                rb       : true, rbc     : true, rtc      : true
               }
             : {
-                HTML     : true, HEAD    : true, BODY     : true, P     : true, DT    : true, DD : true,
-                LI       : true, OPTION  : true, TBODY    : true, THEAD : true, TFOOT : true, TD : true,
-                TH       : true, TR      : true, RP       : true, RT    : true,
-                OPTGROUP : true, CAPTION : true, COLGROUP : true
+                html     : true, head    : true, body     : true, p     : true, dt    : true, dd : true,
+                li       : true, option  : true, tbody    : true, thead : true, tfoot : true, td : true,
+                th       : true, tr      : true, rp       : true, rt    : true,
+                optgroup : true, caption : true, colgroup : true,
               };
 
 /**
@@ -71,7 +71,7 @@ var m_OMITTABLE_END_TAGS =
  *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * @const {!Object.<string, boolean>}
  */
-var m_CHILD_P_MUST_HAVE_END_TAG = { A : true, AUDIO : true, DEL : true, INS : true, MAP : true, NOSCRIPT : true, VIDEO : true };
+var m_CHILD_P_MUST_HAVE_END_TAG = { a : true, audio : true, del : true, ins : true, map : true, noscript : true, video : true };
 
 /**
  * @const {!Object.<string, string>}
@@ -88,28 +88,28 @@ var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http
 var m_P_END_TAG_LESS_TAGS =
         htmlparser.DEFINE.USE_TRADITIONAL_TAGS
             ? {
-                H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
-                ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
-                HR      : true, LEGEND     : true, UL       : true, NOSCRIPT : true, OL        : true, P        : true,
-                PRE     : true, /* TABLE   : true, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                h1      : true, h2         : true, h3       : true, h4       : true, h5        : true, h6       : true,
+                address : true, blockquote : true, div      : true, dl       : true, fieldset  : true, form     : true,
+                hr      : true, legend     : true, ul       : true, noscript : true, ol        : true, p        : true,
+                pre     : true, /* table   : true, */ // ie5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                article : true, aside      : true, canvas   : true, details  : true, figcaption : true, figure  : true,
+                footer  : true, header     : true, hgroup   : true, main     : true, nav        : true, section : true,
                 // legacy
-                CENTER  : true, DIR        : true, NOFRAMES : true, MARQUEE  : true, MENU     : true
+                center  : true, dir        : true, noframes : true, marquee  : true, menu     : true
               }
             : {
-                H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
-                ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
-                HR      : true, LEGEND     : true, UL       : true, NOSCRIPT : true, OL        : true, P        : true,
-                PRE     : true /* TABLE   : true, */ // IE5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
-            // HTML5 要素は IE~8 で無視されるので除外
-            //  ARTICLE : true, ASIDE      : true, CANVAS   : true, DETAILS  : true, FIGCAPTION : true, FIGURE  : true,
-            //  FOOTER  : true, HEADER     : true, HGROUP   : true, MAIN     : true, NAV        : true, SECTION : true
+                h1      : true, h2         : true, h3       : true, h4       : true, h5        : true, h6       : true,
+                address : true, blockquote : true, div      : true, dl       : true, fieldset  : true, form     : true,
+                hr      : true, legend     : true, ul       : true, noscript : true, ol        : true, p        : true,
+                pre     : true, /* table   : true, */ // ie5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                article : true, aside      : true, canvas   : true, details  : true, figcaption : true, figure  : true,
+                footer  : true, header     : true, hgroup   : true, main     : true, nav        : true, section : true
               };
 
 /**
  * @const {!Object.<string, boolean>}
  */
 var m_TRIM_NEWLINES_ELEMENTS = {
-    SCRIPT : true, STYLE : true, TEXTAREA : true,
     script : true, style : true, textarea : true
 };
 
@@ -119,11 +119,9 @@ var m_TRIM_NEWLINES_ELEMENTS = {
 var m_FAMILY_OF_PRE_ELEMENT =
         htmlparser.DEFINE.USE_TRADITIONAL_TAGS
             ? {
-                PRE : true, LISTING : true,
                 pre : true, listing : true
               }
             : {
-                PRE : true,
                 pre : true
               };
 
@@ -469,7 +467,7 @@ function m_trimLastChar( string, chr ){
 };
 
 /**
- * `div#main.default-color` -> `['DIV', 'main', 'default-color']`
+ * `div#main.default-color` -> `['div', 'main', 'default-color']`
  * 
  * @param {string} tagName 
  * @return {!Array.<string>} [ tagName, id, className ]
