@@ -256,7 +256,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
 
                     // xml;
                     isXHTMLOrXML          = isXHTMLOrXML || htmljson.DEFINE.USE_XML_IN_HTML && htmlparser.isXMLRootElement( tagName );
-                    isXHTMLOrXMLOrVML     = isXHTMLOrXML ||                                    htmlparser.isNamespacedTag( tagName );
+                    isXHTMLOrXMLOrVML     = isXHTMLOrXML || htmljson.DEFINE.USE_XML_IN_HTML && htmlparser.isNamespacedTag( tagName );
                     pEndTagRequired       = pEndTagRequired || !!m_CHILD_P_MUST_HAVE_END_TAG[ tagName ];
                     tagUpper              = isXHTMLDocument ? tagName.toUpperCase() : tagName;
                     escapeForHTMLDisabled = escapeForHTMLDisabled || ( htmlparser.RAW_TEXT_ELEMENTS[ tagUpper ] && !htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS[ tagUpper ] );
@@ -362,7 +362,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     };
                     tagName = m_parseTagName( /** @type {string} */ (tagName) )[ 0 ];
 
-                    isXHTMLOrXMLOrVML = isXHTMLOrXML || htmlparser.isNamespacedTag( tagName );
+                    isXHTMLOrXMLOrVML = isXHTMLOrXML || htmljson.DEFINE.USE_XML_IN_HTML && htmlparser.isNamespacedTag( tagName );
 
                     if( !hasChildren && htmlparser.VOID_ELEMENTS[ isXHTMLDocument ? tagName.toUpperCase() : tagName ] ){
                         omittedEndTagBefore = '';

@@ -33,7 +33,7 @@ module.exports = {
                     for( var html = [ 11 ], l = news.length, i = 0, article; i < l; ++i ){
                         article = news[ i ];
                         html.push(
-                            [ 'H3', [ 'A', { href : article[ 'link' ] }, article[ 'title' ].substr( 0, 50 ) ] ] // , [ 'P', article[ 'content' ].substr( 0, 140 ) ]
+                            [ 'h3', [ 'a', { href : article[ 'link' ] }, article[ 'title' ].substr( 0, 50 ) ] ] // , [ 'p', article[ 'content' ].substr( 0, 140 ) ]
                         );
                     };
                     return html;
