@@ -129,7 +129,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
     /** @const */
     var attrPrefix     = options[ 'instructionAttrPrefix' ] || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX;
     /** @const */
-    var statusStack    = [ false, null, false, false, false ];
+    var statusStack    = [ false, null, false, false, false, false ];
 
     var isXHTMLDocument;
     var omittedEndTagBefore;
@@ -150,7 +150,13 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
             };
 
             var chunk = [], j = -1;
-            var hasChildren = false;
+
+            var isXHTMLOrXML          = statusStack[ depth * 6 + 0 ],
+                parentVNode           = statusStack[ depth * 6 + 1 ],
+                pEndTagRequired       = statusStack[ depth * 6 + 2 ],
+                escapeForHTMLDisabled = statusStack[ depth * 6 + 3 ],
+                hasChildren           = false, // = statusStack[ depth * 6 + 4 ];
+                isXHTMLOrXMLOrVML     = false; // = statusStack[ depth * 6 + 5 ];
 
             if( core.isArray( currentJSONNode ) ){
                 if( !isInStreaming ){
@@ -160,19 +166,13 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 };
             };
 
-            var isXHTMLOrXML          = statusStack[ depth * 5 + 0 ],
-                parentVNode           = statusStack[ depth * 5 + 1 ],
-                pEndTagRequired       = statusStack[ depth * 5 + 2 ],
-                escapeForHTMLDisabled = statusStack[ depth * 5 + 3 ];
-             // hasChildren           = statusStack[ depth * 5 + 4 ];
-
             var currentVNode = opt_onEnterNode ? m_executeEnterNodeHandler( /** @type {!HTMLJson} */ (currentJSONNode), parentVNode, opt_onEnterNode ) : null,
                 tagName      = currentJSONNode[ 0 ],
                 arg1         = currentJSONNode[ 1 ],
                 attrIndex    = 1,
                 isNewNodeGeneratedByInstruction, result,
                 isElementWithoutEndTag,
-                id, className, attrs, tagUpper, name, value, isInstruction, isBoolAttr, isXHTMLOrXMLOrVML;
+                id, className, attrs, tagUpper, name, value, isInstruction, isBoolAttr;
 
             // if( currentVNode && currentVNode._removed ){
                 // return m_getHTMLStringAfter( currentVNode );
@@ -315,11 +315,12 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                     break;
             };
 
-            statusStack[ depth * 5 + 5 ] = isXHTMLOrXML;
-            statusStack[ depth * 5 + 6 ] = currentVNode;
-            statusStack[ depth * 5 + 7 ] = pEndTagRequired;
-            statusStack[ depth * 5 + 8 ] = escapeForHTMLDisabled;
-            statusStack[ depth * 5 + 9 ] = hasChildren;
+            statusStack[ depth * 6 +  6 ] = isXHTMLOrXML;
+            statusStack[ depth * 6 +  7 ] = currentVNode;
+            statusStack[ depth * 6 +  8 ] = pEndTagRequired;
+            statusStack[ depth * 6 +  9 ] = escapeForHTMLDisabled;
+            statusStack[ depth * 6 + 10 ] = hasChildren;
+            statusStack[ depth * 6 + 11 ] = isXHTMLOrXMLOrVML;
 
             j !== -1 && transformer.queue( chunk.join( '' ) );
         },
@@ -331,17 +332,19 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
          * @return {number | void} VISITOR_OPTION.*
          */
         function( currentJSONNode, parentJSONNode, myIndex, depth ){
-            var chunk = [], j = -1, isXHTMLOrXMLOrVML;
+            var chunk = [], j = -1;
 
-            var isXHTMLOrXML          = statusStack[ depth * 5 + 5 ],
-             // parentVNode           = statusStack[ depth * 5 + 6 ],
-                pEndTagRequired       = statusStack[ depth * 5 + 7 ],
-             // escapeForHTMLDisabled = statusStack[ depth * 5 + 8 ],
-                hasChildren           = statusStack[ depth * 5 + 9 ],
+            var
+             // isXHTMLOrXML          = statusStack[ depth * 6 +  6 ],
+             // parentVNode           = statusStack[ depth * 6 +  7 ],
+                pEndTagRequired       = statusStack[ depth * 6 +  8 ],
+             // escapeForHTMLDisabled = statusStack[ depth * 6 +  8 ],
+                hasChildren           = statusStack[ depth * 6 + 10 ],
+                isXHTMLOrXMLOrVML     = statusStack[ depth * 6 + 11 ],
                 tagName               = currentJSONNode[ 0 ];
 
-            if( depth * 5 + 5 < statusStack.length ){
-                statusStack.length = depth * 5 + 5;
+            if( depth * 6 + 6 < statusStack.length ){
+                statusStack.length = depth * 6 + 6;
             };
 
             switch( m_getNodeType( currentJSONNode ) ){
@@ -361,8 +364,6 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                         tagName = currentJSONNode[ 1 ];
                     };
                     tagName = m_parseTagName( /** @type {string} */ (tagName) )[ 0 ];
-
-                    isXHTMLOrXMLOrVML = isXHTMLOrXML || htmljson.DEFINE.USE_XML_IN_HTML && htmlparser.isNamespacedTag( tagName );
 
                     if( !hasChildren && htmlparser.VOID_ELEMENTS[ isXHTMLDocument ? tagName.toUpperCase() : tagName ] ){
                         omittedEndTagBefore = '';
