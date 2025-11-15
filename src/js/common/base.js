@@ -43,9 +43,6 @@ var EnterNodeHandler;
 
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
- * 
- *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
- * 
  * @const {!Object.<string, boolean>} */
 var m_OMITTABLE_END_TAGS =
         htmlparser.DEFINE.USE_TRADITIONAL_TAGS
@@ -67,8 +64,6 @@ var m_OMITTABLE_END_TAGS =
 /**
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
  *   子である <p> の終了タグの省略ができない親タグの一覧
- * 
- *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
  * @const {!Object.<string, boolean>}
  */
 var m_CHILD_P_MUST_HAVE_END_TAG = { a : true, audio : true, del : true, ins : true, map : true, noscript : true, video : true };
@@ -81,8 +76,6 @@ var m_TAGNAME_TO_NAMESPACE = { xml : 'http://www.w3.org/1999/xhtml', svg : 'http
 /** 
  * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-p-element
  *   </p> を省略できる後続のタグの一覧
- *   xhtml では省略できないので m_P_END_TAG_LESS_TAGS[tagName.toUpaerCase()] はしない
- * 
  * @const {!Object.<string, boolean>}
  */
 var m_P_END_TAG_LESS_TAGS =
