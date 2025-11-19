@@ -8,8 +8,8 @@ html.json は HTML を表現できる JSON のサブセットです．
 
 |                                                   | 第1要素                     | 第2要素                | 第3要素           | 第4要素    |
 |:--------------------------------------------------|:----------------------------|:-----------------------|:----------------- |:-----------|
-| HTML_ELEMENT *4                                   | `1`                         | `"INPUT"`              | `{attributes}` *3 | `...nodes` |
-| タグ名(.class#id) *1, *2                          | `"INPUT"`, `"P#main.main"`  |`{attributes}` *3       | `...nodes`        | -          |
+| HTML_ELEMENT *4                                   | `1`                         | `"input"`              | `{attributes}` *3 | `...nodes` |
+| タグ名(.class#id) *1, *2                          | `"input"`, `"p#main.main"`  |`{attributes}` *3       | `...nodes`        | -          |
 | TEXT_NODE *4                                      | `3`                         | `nodeValue` *6         | -                 | -          |
 | CDATA_SECTION                                     | `4`                         | `nodeValue` *6         | -                 | -          |
 | PROCESSING_INSTRUCTION                            | `7`                         | `"メソッド名"`         | `...arguments`    | -          |
@@ -56,18 +56,18 @@ html.json は HTML を表現できる JSON のサブセットです．
     9,
     "<!DOCTYPE html>",
     [
-        "HTML",
+        "html",
         {
             "lang"    : "ja",
             "xmlns:v" : "urn:schemas-microsoft-com:vml"
         },
         [
-            "HEAD",
+            "head",
             {
                 "prefix" : "og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#"
             },
             [
-                "META",
+                "meta",
                 {
                     "http-equiv" : "Content-Type",
                     "content"    : "text/html; charset=utf-8"
@@ -75,7 +75,7 @@ html.json は HTML を表現できる JSON のサブセットです．
             ]
         ],
         [
-            "BODY",
+            "body",
             { "size" : 1 },
             // ...childNodes
         ]
@@ -87,23 +87,23 @@ html.json は HTML を表現できる JSON のサブセットです．
 
 ~~~json
 [
-    "BODY.app-root#app-root",
+    "body.app-root#app-root",
     { "size" : 1 },
     [
-        "P",
-        [ "SPAN", "Hello, World!" ]
+        "p",
+        [ "span", "Hello, World!" ]
     ]
 ]
 ~~~
 
-子要素が、`Text`, `<br>`, `Text` の場合は `... "Hello,", [ "BR" ], "World!"`
+子要素が、`Text`, `<br>`, `Text` の場合は `... "Hello,", [ "br" ], "World!"`
 
 ## Text Node
 
 テキストノードは基本的に子として出現する．
 
 ~~~json
-[ "P", "Hello, World!" ]
+[ "p", "Hello, World!" ]
 ~~~
 
 以下は単一のテキストノードの場合．
@@ -150,7 +150,7 @@ html.json は HTML を表現できる JSON のサブセットです．
 
 ~~~js
 [
-    "DIV#side",
+    "div#side",
     [
         7, // ProcessingInstruction
         "createSidebar", // メソッド名
@@ -167,7 +167,7 @@ html.json は HTML を表現できる JSON のサブセットです．
 
 ~~~js
 [
-    "UL",
+    "ul",
     {
         ":class" : [ // 動的属性
             "toggleList", // メソッド名

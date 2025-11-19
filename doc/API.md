@@ -36,7 +36,7 @@
 ~~~js
 var json = html2json('<!DOCTYPE html><p>Hello, World!');
 
-json; // [9, '<!DOCTYPE html>', ['P', 'Hello, World!']]
+json; // [9, '<!DOCTYPE html>', ['p', 'Hello, World!']]
 ~~~
 
 #### Arguments
@@ -112,7 +112,7 @@ gulp.src('json/**/*.json')
 ### 1.5. json2html()
 
 ~~~js
-var html = json2html([9, '<!DOCTYPE html>', ['P', 'Hello, World!']]);
+var html = json2html([9, '<!DOCTYPE html>', ['p', 'Hello, World!']]);
 
 html; // [11, '2024/10/31 6:59:19']
 ~~~
@@ -249,13 +249,13 @@ onInstruction ハンドラーの戻り値とその影響
 
 #### Instruction Attribute
 
-|                                                    | json2json                | json2html                |
-|:---------------------------------------------------|:-------------------------|:-------------------------|
-| `undefiend`                                         | そのまま                 | 属性の削除               |
-| `null`                                              | 属性の削除               | 属性の削除               |
-| `false`(htmlparser.BOOLEAN_ATTRIBUTES なプロパティ) | 属性の削除               | 属性の削除               |
-| `["funcName", ...args]`                             | `onInstruction` で再処理 | `onInstruction` で再処理 |
-| これ以外は属性値になる                              |                          |                          |
+|                                                         | json2json                | json2html                |
+|:--------------------------------------------------------|:-------------------------|:-------------------------|
+| `undefiend`                                             | そのまま                 | 属性の削除               |
+| `null`                                                  | 属性の削除               | 属性の削除               |
+| `false`(`htmlparser.BOOLEAN_ATTRIBUTES` に列挙した属性) | 属性の削除               | 属性の削除               |
+| `["funcName", ...args]`                                 | `onInstruction` で再処理 | `onInstruction` で再処理 |
+| これ以外は属性値になる                                  |                          |                          |
 
 
 ### 3.2. onEnterNode
@@ -272,7 +272,7 @@ function onEnterNode(vnode){
 // or
 
 var onEnterNode = [
-    nodeTypeOrTagName, // <= 1 or 3 or 'DIV' or '*'
+    nodeTypeOrTagName, // <= 1 or 3 or 'div' or '*'
     function(vnode){},
     // ...
 ];
@@ -311,7 +311,7 @@ json2json(json, null, null, null, onError);
 2. 連続する改行を1つの改行へ
 3. テキストノードの最後の連続する改行を削除
 4. `trimWhitespaces:"aggressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
-   * 但し次のいずれかを満たす場合、前後に一つの半角スペースを残す
+   * 但し次のいずれかを満たす場合、前や後に一つの半角スペースを残す
      1. テキストノードの先頭が改行ではない
      2. 後ろが改行と改行に続く0個以上の空白文字ではない
 5. 改行を半角スペースに置換
@@ -327,7 +327,7 @@ json2json(json, null, null, null, onError);
 ~~~
 
 ~~~json
-[ "DIV" ], "html.json", [ "DIV" ]
+[ "div" ], "html.json", [ "div" ]
 ~~~
 
 #### `trimWhitespaces:"aggressive"` でもテキストノードの前後の空白文字を1つづつ残す
@@ -337,7 +337,7 @@ json2json(json, null, null, null, onError);
 ~~~
 
 ~~~json
-[ "B", 1 ], " / ", [ "B", 10 ]
+[ "b", 1 ], " / ", [ "b", 10 ]
 ~~~
 
 ### `removeNewlineBetweenFullWidthChars`
