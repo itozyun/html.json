@@ -34,7 +34,7 @@ test('stream - 2', async t => {
     function onInstruction( funcName, args ){
         // console.log( funcName, args );
 
-        return funcName === 'date' ? [ [ 'BR' ], [ 'BR' ], [ 7, "rc" ], [ 'BR' ] ] : funcName === 'rc' ? date.toLocaleDateString() : undefined
+        return funcName === 'date' ? [ [ 'br' ], [ 'br' ], [ 7, "rc" ], [ 'br' ] ] : funcName === 'rc' ? date.toLocaleDateString() : undefined
     };
 
     await new Promise((resolve) => {

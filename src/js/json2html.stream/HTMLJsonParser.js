@@ -43,6 +43,7 @@ HTMLJsonParser.create = function( opt_onError ){
     /** @const */ jsonParser._tree          = [];
     /** @const */ jsonParser._waitingTokens = [];
     /** @const */ jsonParser._onError       = opt_onError;
+    /** @const */ jsonParser.processForLeavingNode = HTMLJsonParser.processForLeavingNode;
 
     stream.on( 'resume', HTMLJsonParser.resumeHandler );
     stream.stop = HTMLJsonParser.stopStream;
@@ -100,6 +101,10 @@ HTMLJsonParser.endHandler = function( data ){
         this.emit( 'error', 'Invalid html.json' );
     };
 
+    if( this._jsonParser._beforeLeave ){
+        this._jsonParser.processForLeavingNode( true );
+    };
+
     this.queue( null );
 
     /** @suppress {checkTypes} */
@@ -139,6 +144,27 @@ HTMLJsonParser.onError = function( err ){
     };
 };
 
+/**
+ * @private
+ * @this {JsonParser}
+ * @param {boolean} isLastChild 
+ * @param {!HTMLJson=} opt_currentJsonNode 
+ */
+HTMLJsonParser.processForLeavingNode = function( isLastChild, opt_currentJsonNode ){
+    const tree = this._tree;
+    let lastIndex         = tree.length - 1;
+    let parentAndPosition = tree[ lastIndex ];
+
+    if( !opt_currentJsonNode ){
+        opt_currentJsonNode = parentAndPosition[ 0 ];
+        tree.pop();
+        --lastIndex;
+        parentAndPosition = tree[ lastIndex ] || [ null, 0 ];
+    };
+    if( this.onLeaveNode ){
+        this.onLeaveNode( opt_currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ], lastIndex + 1, isLastChild );
+    };
+};
 
 /**
  * @private
@@ -155,43 +181,44 @@ HTMLJsonParser.onToken = function( token, value ){
     };
     /**
      * @param {boolean} hasUnknownChildren
+     * @param {boolean=} opt_isLastChild hasUnknownChildren==false の時に bool 値が入っている
      * @return {boolean} stopped
      */
-    function onNodeReady( hasUnknownChildren ){
+    function processForEnteringNode( hasUnknownChildren, opt_isLastChild ){
         const nodeType  = self._nodeType;
         const nodeValue = self._nodeValue;
 
         switch( nodeType ){
             case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE :
-                return dispatchEnterNodeHandler( [ nodeType ], hasUnknownChildren );
+                return _enterNode( [ nodeType ], hasUnknownChildren );
             case htmljson.NODE_TYPE.ELEMENT_START_TAG :
             case htmljson.NODE_TYPE.ELEMENT_NODE :
-                    if( self._attrs ){
-                        return dispatchEnterNodeHandler( [ nodeType, nodeValue, self._attrs ], hasUnknownChildren );
-                    };
+                if( self._attrs ){
+                    return _enterNode( [ nodeType, nodeValue, self._attrs ], hasUnknownChildren );
+                };
             case htmljson.NODE_TYPE.DOCUMENT_NODE :
             case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER :
             case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER :
-                return dispatchEnterNodeHandler( [ nodeType, nodeValue ], hasUnknownChildren );
+                return _enterNode( [ nodeType, nodeValue ], hasUnknownChildren );
             case htmljson.NODE_TYPE.TEXT_NODE :
             case htmljson.NODE_TYPE.CDATA_SECTION :
             case htmljson.NODE_TYPE.COMMENT_NODE :
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START :
             case htmljson.NODE_TYPE.ELEMENT_END_TAG :
-                return dispatchEnterNodeHandler( [ nodeType, nodeValue ], false );
+                return _enterNode( [ nodeType, nodeValue ], false );
             case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END :
-                return dispatchEnterNodeHandler( [ nodeType ], false );
+                return _enterNode( [ nodeType ], false );
             case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION :
-                return dispatchEnterNodeHandler( [ nodeType ].concat( self._args ), false );
+                return _enterNode( [ nodeType ].concat( self._args ), false );
         };
         return false;
-    };
+
     /**
      * @param {!HTMLJson} currentJsonNode 
      * @param {boolean} hasUnknownChildren 
      * @return {boolean} stopped
      */
-    function dispatchEnterNodeHandler( currentJsonNode, hasUnknownChildren ){
+    function _enterNode( currentJsonNode, hasUnknownChildren ){
         const tree = self._tree;
         const through = self._through;
 
@@ -203,7 +230,7 @@ HTMLJsonParser.onToken = function( token, value ){
         };
         const parentAndPosition = tree[ lastIndex ] || [ null, -1 ];
 
-        const result = self.onEnterNode( currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ] + 1, lastIndex + 1, hasUnknownChildren, through );
+        const result = self.onEnterNode( currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ] + 1, lastIndex + 1, hasUnknownChildren, opt_isLastChild, through );
 // console.log( currentJsonNode )
         const stopped = through.stopped;
 
@@ -212,6 +239,9 @@ HTMLJsonParser.onToken = function( token, value ){
                 // ProcessingInstruction が返した htmlJson ノード中に ProcessingInstruction or InstructionAttribute があって pause した場合、HTMLJsonParser で再処理しない
                 // InstructionAttribute で pause した場合、HTMLJsonParser で再処理しない
                 self._waitingTokens.push( token, value );
+                if( !hasUnknownChildren ){
+                    self._nodeHasNoChildrenReady = true;
+                };
             };
         } else {
             self._args.length = 0;
@@ -220,27 +250,10 @@ HTMLJsonParser.onToken = function( token, value ){
             if( hasUnknownChildren ){
                 tree.push( [ currentJsonNode, -1 ] );
             } else {
-                dispatchLeaveNodeHandler( currentJsonNode );
+                self.processForLeavingNode( /** @type {boolean} */ (opt_isLastChild), currentJsonNode );
             };
         };
         return stopped;
-    };
-    /**
-     * @param {!HTMLJson=} opt_currentJsonNode 
-     */
-    function dispatchLeaveNodeHandler( opt_currentJsonNode ){
-        const tree = self._tree;
-        let lastIndex         = tree.length - 1;
-        let parentAndPosition = tree[ lastIndex ];
-
-        if( !opt_currentJsonNode ){
-            opt_currentJsonNode = parentAndPosition[ 0 ];
-            tree.pop();
-            --lastIndex;
-            parentAndPosition = tree[ lastIndex ] || [ null, 0 ];
-        };
-        if( self.onLeaveNode ){
-            self.onLeaveNode( opt_currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ], lastIndex + 1 );
         };
     };
 
@@ -256,6 +269,26 @@ HTMLJsonParser.onToken = function( token, value ){
     if( this._through.stopped ){
         this._waitingTokens.push( token, value );
         return;
+    };
+    // 子を持たない Node の場合、lastChild を確認してから processForEnteringNode(false, isLastChild) を呼ぶ
+    if( expect === htmljson.EXPECT.IN_CHILD_NODES && this._nodeHasNoChildrenReady ){
+        if( token === JsonParser.C.COMMA || token === JsonParser.C.RIGHT_BRACKET ){
+            this._nodeHasNoChildrenReady = false;
+            if( processForEnteringNode( false, token === JsonParser.C.RIGHT_BRACKET ) ){
+                return;
+            };
+        } else if( htmljson.DEFINE.DEBUG ){
+            expect = htmljson.EXPECT.ERROR;
+        };
+    };
+    // lastChild を確認してから processForLeavingNode( isLastChild ) を呼ぶ
+    if( expect === htmljson.EXPECT.IN_CHILD_NODES && this._beforeLeave ){
+        if( token === JsonParser.C.COMMA || token === JsonParser.C.RIGHT_BRACKET ){
+            this._beforeLeave = false;
+            this.processForLeavingNode( token === JsonParser.C.RIGHT_BRACKET );
+        } else if( htmljson.DEFINE.DEBUG ){
+            expect = htmljson.EXPECT.ERROR;
+        };
     };
     if( token === JsonParser.C.COLON || token === JsonParser.C.COMMA ){
         if( this.jsonStack.length ){
@@ -275,9 +308,7 @@ HTMLJsonParser.onToken = function( token, value ){
                                 break;
                             };
                         };
-                        if( onNodeReady( false ) ){
-                            return;
-                        };
+                        this._nodeHasNoChildrenReady = true;
                         expect = getNextExpect();
                         break;
                     };
@@ -447,7 +478,7 @@ HTMLJsonParser.onToken = function( token, value ){
         /** phase => expect */
             switch( phase ){
                 case htmljson.PHASE.END_START_TAG_AND_START_CHILD :
-                    if( onNodeReady( true ) ){
+                    if( processForEnteringNode( true ) ){
                         return;
                     };
                 case htmljson.PHASE.NODE_START : // [
@@ -489,20 +520,16 @@ HTMLJsonParser.onToken = function( token, value ){
                     break;
             /**  */
                 case htmljson.PHASE.LEAVE_NODE :
-                    dispatchLeaveNodeHandler();
+                    this._beforeLeave = true;
                     expect = getNextExpect();
                     break;
                 case htmljson.PHASE.END_OF_NODE :
-                    if( onNodeReady( false ) ){
-                        return;
-                    };
+                    this._nodeHasNoChildrenReady = true;
                     expect = getNextExpect();
                     break;
             /** canHasChildren な Node が子を持たずに終わった */
                 case htmljson.PHASE.LEAVE_EMPTY_NODE :
-                    if( onNodeReady( false ) ){
-                        return;
-                    };
+                    this._nodeHasNoChildrenReady = true;
                     expect = getNextExpect();
                     break;
 
@@ -527,12 +554,14 @@ HTMLJsonParser.onToken = function( token, value ){
                     break;
                 /** Text */
                 case htmljson.PHASE.END_START_TAG_AND_TEXT_DATA :
-                    if( onNodeReady( true ) ){
+                    if( processForEnteringNode( true ) ){
                         return;
                     };
                 case htmljson.PHASE.TEXT_DATA :
+                    this._nodeHasNoChildrenReady = true;
                     expect = htmljson.EXPECT.IN_CHILD_NODES;
-                    dispatchEnterNodeHandler( [ htmljson.NODE_TYPE.TEXT_NODE, value ], false );
+                    setNodeType( htmljson.NODE_TYPE.TEXT_NODE );
+                    setNodeValue( value );
                     break;
             /** <![CDATA[ ]]> */
                 case htmljson.PHASE.ENTER_CDATA_SECTION:

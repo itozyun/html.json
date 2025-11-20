@@ -62,11 +62,20 @@ var m_OMITTABLE_END_TAGS =
               };
 
 /**
- * @see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags:the-a-element
- *   子である <p> の終了タグの省略ができない親タグの一覧
+ * @see https://outcloud.blogspot.com/2025/11/p-end-tag-omittable.html
+ *   <a> の子孫要素の閉じタグは一切省略しない(for Firefox 3.5~3.6)
+ * 
  * @const {!Object.<string, boolean>}
  */
-var m_CHILD_P_MUST_HAVE_END_TAG = { a : true, audio : true, del : true, ins : true, map : true, noscript : true, video : true };
+var m_DESCENDANTS_MUST_HAVE_END_TAG = { a : true };
+
+/**
+ * @see https://outcloud.blogspot.com/2025/11/p-end-tag-omittable.html
+ *   lastChild な </p> の省略ができない親タグの一覧
+ *   <a> を除外してあります
+ * @const {!Object.<string, boolean>}
+ */
+var m_LASTCHILD_P_MUST_HAVE_END_TAG = { audio : true, del : true, ins : true, map : true, noscript : true, video : true };
 
 /**
  * @const {!Object.<string, string>}
@@ -457,6 +466,22 @@ function m_trimLastChar( string, chr ){
     while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };
 
     return string;
+};
+
+/**
+ * 
+ * @param {!HTMLJson} htmlJsonNode
+ * @return {string}
+ */
+function m_getTagName( htmlJsonNode ){
+    var tagNameOrNodeType = htmlJsonNode[ 0 ];
+    var tagName = core.isString( tagNameOrNodeType )
+                    ? /** @type {string} */ (tagNameOrNodeType)
+                : tagNameOrNodeType === htmljson.NODE_TYPE.ELEMENT_NODE || tagNameOrNodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG
+                    ? /** @type {string} */ (htmlJsonNode[ 1 ])
+                    : '';
+
+    return tagName ? m_parseTagName( tagName )[ 0 ] : tagName;
 };
 
 /**

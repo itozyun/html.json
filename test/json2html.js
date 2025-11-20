@@ -84,13 +84,19 @@ test('unescaped elements',
     }
 );
 
-test('<p>',
+test('<a><p>',
     (t) => {
         t.deepEqual(
             json2html(
                 [ 'a', [ 'p', '*' ] ]
             ),
             '<a><p>*</p></a>'
+        );
+        t.deepEqual(
+            json2html(
+                [ 'a', [ 'p', '*' ], [ 'p', '*' ] ]
+            ),
+            '<a><p>*</p><p>*</p></a>'
         );
         t.deepEqual(
             json2html(
@@ -101,7 +107,30 @@ test('<p>',
     }
 );
 
-test('conditional-comment <p>',
+test('<audio><p>',
+    (t) => {
+        t.deepEqual(
+            json2html(
+                [ 'audio', [ 'p', '*' ] ]
+            ),
+            '<audio><p>*</p></audio>'
+        );
+        t.deepEqual(
+            json2html(
+                [ 'audio', [ 'p', '*' ], [ 'p', '*' ] ]
+            ),
+            '<audio><p>*<p>*</p></audio>'
+        );
+        t.deepEqual(
+            json2html(
+                [ 'audio', [ 'div', [ 'p', '*' ], [ 'p', '*' ] ] ]
+            ),
+            '<audio><div><p>*<p>*</div></audio>'
+        );
+    }
+);
+
+test('conditional-comment',
     (t) => {
         t.deepEqual(
             json2html(

@@ -36,12 +36,13 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
              * @param {number} myIndex
              * @param {number} depth
              * @param {boolean=} opt_hasUnknownChildren for json2html.stream
+             * @param {boolean=} opt_processingInstructionIsLastChild for json2html.stream
              * @param {!Through=} through
              * @return {number | void} VISITOR_OPTION.*
              */
-            function asyncProcessAbsorber( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, through ){
+            function asyncProcessAbsorber( currentJSONNode, parentJSONNode, myIndex, depth, opt_hasUnknownChildren, opt_processingInstructionIsLastChild, through ){
                 if( unprocessedHTMLJson ){
-                    if( processSync( unprocessedHTMLJson, indexOffset, through, onEnterNode, onLeaveNode ) ){
+                    if( processSync( unprocessedHTMLJson, indexOffset, processingInstructionIsLastChild, through, onEnterNode, onLeaveNode ) ){
                         return;
                     } else {
                         unprocessedHTMLJson = null;
@@ -65,6 +66,8 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                     parentJSONNode = /** @type {!HTMLJson} */ (parentJSONNode);
                     result = /** @type {!HTMLJson} */ (result);
                     indexOffset = myIndex - parentJSONNode.length;
+                    opt_processingInstructionIsLastChild = /** @type {boolean} */ (opt_processingInstructionIsLastChild);
+                    processingInstructionIsLastChild = opt_processingInstructionIsLastChild;
 
                     // parentJSONNode に新しい htmlJson ノードを接続する
                     if( result[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
@@ -75,7 +78,7 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
                         parentJSONNode.push( result );
                     };
 
-                    if( processSync( parentJSONNode, indexOffset, through, onEnterNode, onLeaveNode ) ){
+                    if( processSync( parentJSONNode, indexOffset, opt_processingInstructionIsLastChild, through, onEnterNode, onLeaveNode ) ){
                         unprocessedHTMLJson = parentJSONNode;
                     };
                 };
@@ -86,6 +89,8 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
             var unprocessedHTMLJson;
             /** @type {number} */
             var indexOffset;
+            /** @type {boolean} */
+            var processingInstructionIsLastChild;
 
             var onLeaveNode = opt_onLeaveNode;
 
@@ -102,11 +107,12 @@ json2html.stream = function( opt_onInstruction, opt_onEnterNode, opt_onError, op
  * 
  * @param {!HTMLJson} unprocessedHTMLJson
  * @param {number} indexOffset
+ * @param {boolean} processingInstructionIsLastChild
  * @param {!Through} through
  * @param {!htmljson.Traverser.EnterHandler} onEnterNode
  * @param {!htmljson.Traverser.LeaveHandler=} onLeaveNode
  * @return {boolean | void} aborted */
-function processSync( unprocessedHTMLJson, indexOffset, through, onEnterNode, onLeaveNode ){
+function processSync( unprocessedHTMLJson, indexOffset, processingInstructionIsLastChild, through, onEnterNode, onLeaveNode ){
     var aborted;
 
     htmljson.Traverser.traverseAllDescendantNodes(
@@ -135,8 +141,12 @@ function processSync( unprocessedHTMLJson, indexOffset, through, onEnterNode, on
             };
         },
         function( currentNode, parentNode, myIndex, depth ){
+            function isLastChild(){
+                return ( depth !== 1 || processingInstructionIsLastChild ) && myIndex === parentNode.length - 1;
+            };
+
             if( currentNode !== unprocessedHTMLJson && !currentNode.left && m_canHasChildren( currentNode ) ){
-                onLeaveNode( currentNode, parentNode, ( depth === 1 ? indexOffset : 0 ) + myIndex, depth );
+                onLeaveNode( currentNode, parentNode, ( depth === 1 ? indexOffset : 0 ) + myIndex, depth, isLastChild() );
                 currentNode.left = true;
             };
         }

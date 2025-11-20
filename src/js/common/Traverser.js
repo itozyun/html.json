@@ -26,7 +26,7 @@ htmljson.Traverser.VISITOR_OPTION = VISITOR_OPTION;
 htmljson.Traverser.EnterHandler;
 
 /**
- * @typedef {function((!HTMLJson | string | number), (HTMLJson | null), number, number):(number | void)}
+ * @typedef {function((!HTMLJson | string | number), (HTMLJson | null), number, number, boolean=):(number | void)}
  */
 htmljson.Traverser.LeaveHandler;
 
