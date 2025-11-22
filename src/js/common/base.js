@@ -62,7 +62,7 @@ var m_OMITTABLE_END_TAGS =
               };
 
 /**
- * @see https://outcloud.blogspot.com/2025/11/p-end-tag-omittable.html
+ * @see https://outcloud.blogspot.com/2021/08/richlink.html#bug-of-firefox3.5
  *   <a> の子孫要素の閉じタグは一切省略しない(for Firefox 3.5~3.6)
  * 
  * @const {!Object.<string, boolean>}

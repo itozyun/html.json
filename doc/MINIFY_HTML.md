@@ -68,7 +68,7 @@ json2html 処理時に併せて実施します．一般的な最小化処理で�
    * XHTML 文書では実施しない
    * `<a>` `<audio>` `<del>` `<ins>` `<map>` `<noscript>` `<video>` の子の lastChild な `</p>` は省略不可
      * https://triple-underscore.github.io/HTML-writing-ja.html#optional-tags
-     * [Firefox 3.5~3.6 では `<a>` の子孫の閉じタグを省略すると奇妙なツリーになる](https://outcloud.blogspot.com/2021/08/richlink.html) この問題が `<del>` `<ins>` `<map>` `<noscript>` でも発生するか未確認
+     * [Firefox 3.5~3.6 では `<a>` の子孫の閉じタグを省略すると奇妙なツリーになる](https://outcloud.blogspot.com/2021/08/richlink.html#bug-of-firefox3.5) この問題が `<del>` `<ins>` `<map>` `<noscript>` でも発生するか未確認
    * `<source>` は閉じる．`</source>` が無いと Opera 9 で DOM ツリーが崩れる為．
 
 ### 2.2. 属性値のダブルクォーテーションの省略
