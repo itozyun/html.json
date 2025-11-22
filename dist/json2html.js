@@ -131,7 +131,7 @@ function V(a, b, c) {
   }
 }
 var na = 0, ma = 1, ka = 2, R = 3, ja = 4, la = 5;
-var oa = {html:!0, head:!0, body:!0, p:!0, dt:!0, dd:!0, li:!0, option:!0, tbody:!0, thead:!0, tfoot:!0, td:!0, th:!0, tr:!0, rp:!0, rt:!0, optgroup:!0, caption:!0, colgroup:!0}, pa = {audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, qa = {a:!0}, ra = {h1:!0, h2:!0, h3:!0, h4:!0, h5:!0, h6:!0, address:!0, blockquote:!0, div:!0, dl:!0, fieldset:!0, form:!0, hr:!0, legend:!0, ul:!0, noscript:!0, ol:!0, p:!0, pre:!0, article:!0, aside:!0, canvas:!0, details:!0, figcaption:!0, figure:!0, footer:!0, 
+var oa = {html:!0, head:!0, body:!0, p:!0, dt:!0, dd:!0, li:!0, option:!0, tbody:!0, thead:!0, tfoot:!0, td:!0, th:!0, tr:!0, rp:!0, rt:!0, optgroup:!0, caption:!0, colgroup:!0}, pa = {a:!0}, qa = {audio:!0, del:!0, ins:!0, map:!0, noscript:!0, video:!0}, ra = {h1:!0, h2:!0, h3:!0, h4:!0, h5:!0, h6:!0, address:!0, blockquote:!0, div:!0, dl:!0, fieldset:!0, form:!0, hr:!0, legend:!0, ul:!0, noscript:!0, ol:!0, p:!0, pre:!0, article:!0, aside:!0, canvas:!0, details:!0, figcaption:!0, figure:!0, footer:!0, 
 header:!0, hgroup:!0, main:!0, nav:!0, section:!0};
 function W(a) {
   if (B(a) || a === +a) {
@@ -364,7 +364,7 @@ function xa(a, b, c, f, d, e) {
         h = h[ba];
         "p" !== x || ra[w] ? x = "" : r[++t] = g();
         H = (A = A || !!ca[w]) || 0 < w.indexOf(":");
-        T = T || H || !!qa[w];
+        T = T || H || !!pa[w];
         N = N || fa[w] && !ha[w];
         r[++t] = "<" + w;
         l && (r[++t] = " id=" + k(l, m, H || n));
@@ -408,7 +408,7 @@ function xa(a, b, c, f, d, e) {
         x = "";
         break;
       case 1:
-        h = Y(h), r || !t && !ea[h] ? t && !r || !(M || !oa[h] || "p" === h && y === l.length - 1 && pa[Y(l)]) ? x = h : (A[++q] = "</" + h + ">", x = "") : x = "";
+        h = Y(h), r || !t && !ea[h] ? t && !r || !(M || !oa[h] || "p" === h && y === l.length - 1 && qa[Y(l)]) ? x = h : (A[++q] = "</" + h + ">", x = "") : x = "";
     }
     -1 !== q && a.h(A.join(""));
     0 === u && (a = null);

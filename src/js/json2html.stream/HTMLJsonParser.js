@@ -37,13 +37,15 @@ HTMLJsonParser.create = function( opt_onError ){
     jsonParser._expect = htmljson.EXPECT.NODE_START;
     jsonParser._args   = [];
 
+    jsonParser._documentFragmentAdded = false;
+
     /** @const */ jsonParser._createValue   = jsonParser.onToken;
     /** @const */ jsonParser.onToken        = HTMLJsonParser.onToken;
     /** @const */ jsonParser.onError        = HTMLJsonParser.onError; // error from JsonParser
     /** @const */ jsonParser._tree          = [];
     /** @const */ jsonParser._waitingTokens = [];
     /** @const */ jsonParser._onError       = opt_onError;
-    /** @const */ jsonParser.processForLeavingNode = HTMLJsonParser.processForLeavingNode;
+    /** @const */ jsonParser.writeLeaveNode = HTMLJsonParser.writeLeaveNode;
 
     stream.on( 'resume', HTMLJsonParser.resumeHandler );
     stream.stop = HTMLJsonParser.stopStream;
@@ -94,15 +96,16 @@ HTMLJsonParser.endHandler = function( data ){
     if( data != null ){
         this.write( data );
     };
+
+    if( this._jsonParser._beforeLeaveNode ){
+        this._jsonParser.writeLeaveNode( true );
+    };
+
     /** @suppress {checkTypes} */
     var expect = this._jsonParser._expect;
 
-    if( expect !== htmljson.EXPECT.END_OF_DOCUMENT && htmljson.DEFINE.DEBUG  ){
+    if( htmljson.DEFINE.DEBUG && expect !== htmljson.EXPECT.END_OF_DOCUMENT ){
         this.emit( 'error', 'Invalid html.json' );
-    };
-
-    if( this._jsonParser._beforeLeave ){
-        this._jsonParser.processForLeavingNode( true );
     };
 
     this.queue( null );
@@ -148,9 +151,10 @@ HTMLJsonParser.onError = function( err ){
  * @private
  * @this {JsonParser}
  * @param {boolean} isLastChild 
- * @param {!HTMLJson=} opt_currentJsonNode 
+ * @param {!HTMLJson=} opt_currentJsonNode
+ * @return {number} htmljson.EXPECT
  */
-HTMLJsonParser.processForLeavingNode = function( isLastChild, opt_currentJsonNode ){
+HTMLJsonParser.writeLeaveNode = function( isLastChild, opt_currentJsonNode ){
     const tree = this._tree;
     let lastIndex         = tree.length - 1;
     let parentAndPosition = tree[ lastIndex ];
@@ -164,6 +168,7 @@ HTMLJsonParser.processForLeavingNode = function( isLastChild, opt_currentJsonNod
     if( this.onLeaveNode ){
         this.onLeaveNode( opt_currentJsonNode, parentAndPosition[ 0 ], parentAndPosition[ 1 ], lastIndex + 1, isLastChild );
     };
+    return this._expect = tree.length - ( + this._documentFragmentAdded ) ? htmljson.EXPECT.IN_CHILD_NODES : htmljson.EXPECT.END_OF_DOCUMENT;
 };
 
 /**
@@ -184,7 +189,7 @@ HTMLJsonParser.onToken = function( token, value ){
      * @param {boolean=} opt_isLastChild hasUnknownChildren==false の時に bool 値が入っている
      * @return {boolean} stopped
      */
-    function processForEnteringNode( hasUnknownChildren, opt_isLastChild ){
+    function writeEnterNode( hasUnknownChildren, opt_isLastChild ){
         const nodeType  = self._nodeType;
         const nodeValue = self._nodeValue;
 
@@ -223,8 +228,8 @@ HTMLJsonParser.onToken = function( token, value ){
         const through = self._through;
 
         let lastIndex = tree.length - 1;
-        if( lastIndex === -1 && currentJsonNode[ 0 ] !== 9 && currentJsonNode[ 0 ] !== 11 ){
-            tree.push( [ [ 11 ], -1 ] );
+        if( lastIndex === -1 && currentJsonNode[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_NODE && currentJsonNode[ 0 ] !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
+            tree.push( [ [ htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ], -1 ] );
             lastIndex = 0;
             self._documentFragmentAdded = true;
         };
@@ -240,7 +245,7 @@ HTMLJsonParser.onToken = function( token, value ){
                 // InstructionAttribute で pause した場合、HTMLJsonParser で再処理しない
                 self._waitingTokens.push( token, value );
                 if( !hasUnknownChildren ){
-                    self._nodeHasNoChildrenReady = true;
+                    self._beforeEnterChildlessNode = true;
                 };
             };
         } else {
@@ -249,16 +254,13 @@ HTMLJsonParser.onToken = function( token, value ){
             ++parentAndPosition[ 1 ];
             if( hasUnknownChildren ){
                 tree.push( [ currentJsonNode, -1 ] );
+                self._expect = expect = htmljson.EXPECT.IN_CHILD_NODES;
             } else {
-                self.processForLeavingNode( /** @type {boolean} */ (opt_isLastChild), currentJsonNode );
+                expect = self.writeLeaveNode( /** @type {boolean} */ (opt_isLastChild), currentJsonNode );
             };
         };
         return stopped;
         };
-    };
-
-    function getNextExpect(){
-        return self._tree.length - ( self._documentFragmentAdded ? 1 : 0 ) ? htmljson.EXPECT.IN_CHILD_NODES : htmljson.EXPECT.END_OF_DOCUMENT;
     };
 
     // console.log( '> ' + token + ' : ' + value, this._tree, this.jsonStack.length );
@@ -270,22 +272,22 @@ HTMLJsonParser.onToken = function( token, value ){
         this._waitingTokens.push( token, value );
         return;
     };
-    // 子を持たない Node の場合、lastChild を確認してから processForEnteringNode(false, isLastChild) を呼ぶ
-    if( expect === htmljson.EXPECT.IN_CHILD_NODES && this._nodeHasNoChildrenReady ){
+    // 子を持たない Node の場合、自身が lastChild か? を確認してから writeEnterNode(false, isLastChild) を呼ぶ
+    if( this._beforeEnterChildlessNode ){
         if( token === JsonParser.C.COMMA || token === JsonParser.C.RIGHT_BRACKET ){
-            this._nodeHasNoChildrenReady = false;
-            if( processForEnteringNode( false, token === JsonParser.C.RIGHT_BRACKET ) ){
+            this._beforeEnterChildlessNode = false;
+            if( writeEnterNode( false, token === JsonParser.C.RIGHT_BRACKET ) ){
                 return;
             };
         } else if( htmljson.DEFINE.DEBUG ){
             expect = htmljson.EXPECT.ERROR;
         };
     };
-    // lastChild を確認してから processForLeavingNode( isLastChild ) を呼ぶ
-    if( expect === htmljson.EXPECT.IN_CHILD_NODES && this._beforeLeave ){
+    // Node が lastChild か? を確認してから writeLeaveNode( isLastChild ) を呼ぶ
+    if( this._beforeLeaveNode ){
         if( token === JsonParser.C.COMMA || token === JsonParser.C.RIGHT_BRACKET ){
-            this._beforeLeave = false;
-            this.processForLeavingNode( token === JsonParser.C.RIGHT_BRACKET );
+            this._beforeLeaveNode = false;
+            expect = this.writeLeaveNode( token === JsonParser.C.RIGHT_BRACKET );
         } else if( htmljson.DEFINE.DEBUG ){
             expect = htmljson.EXPECT.ERROR;
         };
@@ -308,8 +310,7 @@ HTMLJsonParser.onToken = function( token, value ){
                                 break;
                             };
                         };
-                        this._nodeHasNoChildrenReady = true;
-                        expect = getNextExpect();
+                        this._beforeEnterChildlessNode = true;
                         break;
                     };
                 case JsonParser.C.RIGHT_BRACE : // }
@@ -478,7 +479,7 @@ HTMLJsonParser.onToken = function( token, value ){
         /** phase => expect */
             switch( phase ){
                 case htmljson.PHASE.END_START_TAG_AND_START_CHILD :
-                    if( processForEnteringNode( true ) ){
+                    if( writeEnterNode( true ) ){
                         return;
                     };
                 case htmljson.PHASE.NODE_START : // [
@@ -520,17 +521,14 @@ HTMLJsonParser.onToken = function( token, value ){
                     break;
             /**  */
                 case htmljson.PHASE.LEAVE_NODE :
-                    this._beforeLeave = true;
-                    expect = getNextExpect();
+                    this._beforeLeaveNode = true;
                     break;
                 case htmljson.PHASE.END_OF_NODE :
-                    this._nodeHasNoChildrenReady = true;
-                    expect = getNextExpect();
+                    this._beforeEnterChildlessNode = true;
                     break;
             /** canHasChildren な Node が子を持たずに終わった */
                 case htmljson.PHASE.LEAVE_EMPTY_NODE :
-                    this._nodeHasNoChildrenReady = true;
-                    expect = getNextExpect();
+                    this._beforeEnterChildlessNode = true;
                     break;
 
             /** </div> */
@@ -554,11 +552,11 @@ HTMLJsonParser.onToken = function( token, value ){
                     break;
                 /** Text */
                 case htmljson.PHASE.END_START_TAG_AND_TEXT_DATA :
-                    if( processForEnteringNode( true ) ){
+                    if( writeEnterNode( true ) ){
                         return;
                     };
                 case htmljson.PHASE.TEXT_DATA :
-                    this._nodeHasNoChildrenReady = true;
+                    this._beforeEnterChildlessNode = true;
                     expect = htmljson.EXPECT.IN_CHILD_NODES;
                     setNodeType( htmljson.NODE_TYPE.TEXT_NODE );
                     setNodeValue( value );
