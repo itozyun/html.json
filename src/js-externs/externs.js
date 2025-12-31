@@ -4,36 +4,6 @@
 
 module.exports.gulp;
 
-var __NAME_PROTECTION__ = [
-    {
-        HTML : true, HEAD     : true, BODY    :true, P        :true, DT    : true, DD : true,
-        LI   : true, OPTION   : true, TBODY   :true, THEAD    :true, TFOOT : true, TD : true,
-        TH   : true, TR       : true, RB      :true, RBC      :true, RP    : true, RT : true,
-        RTC  : true, OPTGROUP : true, CAPTION :true, COLGROUP :true
-    },
-    { A : true, AUDIO : true, DEL : true, INS : true, MAP : true, NOSCRIPT : true, VIDEO : true },
-    {
-        H1      : true, H2         : true, H3       : true, H4       : true, H5        : true, H6       : true,
-        ADDRESS : true, BLOCKQUOTE : true, DIV      : true, DL       : true, FIELDSET  : true, FORM     : true,
-        HR      : true, LEGEND     : true, MENU     : true, NOSCRIPT : true, OL        : true, P        : true,
-        PRE     : true,
-        UL      : true,
-        CENTER  : true, DIR        : true, NOFRAMES : true, MARQUEE  : true
-    },
-    {
-        SCRIPT : true, STYLE : true, TEXTAREA : true, TITLE : true, PLAINTEXT : true, XMP : true,
-        script : true, style : true, textarea : true, title : true, plaintext : true, xmp : true
-    },
-    {
-        SCRIPT : true, STYLE : true, TEXTAREA : true,
-        script : true, style : true, textarea : true
-    },
-    {
-        PRE : true, LISTING : true,
-        pre : true, listing : true
-    }
-];
-
 var NODE_TYPE = {
     ELEMENT_NODE                  :  1, // v
     // ATTRIBUTE_NODE                2
