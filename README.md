@@ -101,7 +101,7 @@ json2json, json2html で利用できる Restricted Virtual DOM の説明は [RES
 
 ## 4. HTML の minify
 
-html2json, json2json ではテキストノードの最適化と[空白ノードの除去](doc/WHITE_SPACE.md)を行います．
+html2json, json2json ではテキストノードの最適化と[空白ノードの除去](https://outcloud.blogspot.com/2025/11/optimize-whitespaces.html)を行います．
 
 json2html では、閉じタグとクォートを省略して HTML を最小化します．
 
