@@ -11,6 +11,7 @@ goog.require( 'htmlparser.VOID_ELEMENTS' );
 goog.require( 'htmlparser.DEFINE' );
 goog.require( 'htmljson.base' );
 goog.require( 'htmljson.NODE_TYPE' );
+goog.require( 'htmljson.DEFINE.USE_XML_IN_HTML' );
 goog.require( 'htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX' );
 goog.require( 'VNode' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
@@ -367,7 +368,7 @@ json2html.createJSON2HTMLTransformer = function( isInStreaming, transformer, tra
                 case htmljson.NODE_TYPE.ELEMENT_NODE :
                     tagName = m_getTagName( /** @type {!HTMLJson} */ (currentJSONNode) );
 
-                    if( !hasChildren && ( isXHTMLOrXMLOrVML || htmlparser.VOID_ELEMENTS[ tagName ] ) ){
+                    if( !hasChildren && ( isXHTMLOrXMLOrVML || htmlparser.VOID_ELEMENTS[ tagName ] && !m_FORCE_END_TAG[ tagName ] ) ){
                         omittedEndTagBefore = '';
                     } else if( ( !isXHTMLOrXMLOrVML || hasChildren ) && ( endTagRequired || !m_OMITTABLE_END_TAGS[ tagName ] || ( tagName === 'p' && pEndTagRequired() ) ) ){
                         chunk[ ++j ] = '</' + tagName + '>';

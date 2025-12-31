@@ -10,6 +10,7 @@ goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 goog.requireType( 'htmljson.Traverser.EnterHandler' );
 goog.require( 'htmljson.Traverser.traverseAllDescendantNodes' );
+goog.require( 'htmljson.DEFINE.ENABLE_LEGACY_BROWSERS_SUPPORT' );
 
 /**
  * @typedef {Object.<string, (string | number | boolean | null)>}
@@ -62,12 +63,19 @@ var m_OMITTABLE_END_TAGS =
               };
 
 /**
+ * </source> が無いと Opera 9.x でレイアウトが崩れる
+ *
+ * @const {!Object.<string, boolean>}
+ */
+var m_FORCE_END_TAG = htmljson.DEFINE.ENABLE_LEGACY_BROWSERS_SUPPORT ? { source : true } : {};
+
+/**
  * @see https://outcloud.blogspot.com/2021/08/richlink.html#bug-of-firefox3.5
  *   <a> の子孫要素の閉じタグは一切省略しない(for Firefox 3.5~3.6)
  * 
  * @const {!Object.<string, boolean>}
  */
-var m_DESCENDANTS_MUST_HAVE_END_TAG = { a : true };
+var m_DESCENDANTS_MUST_HAVE_END_TAG = htmljson.DEFINE.ENABLE_LEGACY_BROWSERS_SUPPORT ? { a : true } : {};
 
 /**
  * @see https://outcloud.blogspot.com/2025/11/p-end-tag-omittable.html
@@ -75,7 +83,9 @@ var m_DESCENDANTS_MUST_HAVE_END_TAG = { a : true };
  *   <a> を除外してあります
  * @const {!Object.<string, boolean>}
  */
-var m_LASTCHILD_P_MUST_HAVE_END_TAG = { audio : true, del : true, ins : true, map : true, noscript : true, video : true };
+var m_LASTCHILD_P_MUST_HAVE_END_TAG = htmljson.DEFINE.ENABLE_LEGACY_BROWSERS_SUPPORT
+                                        ? { audio : true, del : true, ins : true, map : true, noscript : true, video : true }
+                                        : { audio : true, del : true, ins : true, map : true, noscript : true, video : true, a : true };
 
 /**
  * @const {!Object.<string, string>}
@@ -93,9 +103,11 @@ var m_P_END_TAG_LESS_TAGS =
                 h1      : true, h2         : true, h3       : true, h4       : true, h5        : true, h6       : true,
                 address : true, blockquote : true, div      : true, dl       : true, fieldset  : true, form     : true,
                 hr      : true, legend     : true, ul       : true, noscript : true, ol        : true, p        : true,
-                pre     : true, /* table   : true, */ // ie5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                pre     : true,
                 article : true, aside      : true, canvas   : true, details  : true, figcaption : true, figure  : true,
                 footer  : true, header     : true, hgroup   : true, main     : true, nav        : true, section : true,
+                // ie5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                table   : !htmljson.DEFINE.ENABLE_LEGACY_BROWSERS_SUPPORT,
                 // legacy
                 center  : true, dir        : true, noframes : true, marquee  : true, menu     : true
               }
@@ -103,9 +115,11 @@ var m_P_END_TAG_LESS_TAGS =
                 h1      : true, h2         : true, h3       : true, h4       : true, h5        : true, h6       : true,
                 address : true, blockquote : true, div      : true, dl       : true, fieldset  : true, form     : true,
                 hr      : true, legend     : true, ul       : true, noscript : true, ol        : true, p        : true,
-                pre     : true, /* table   : true, */ // ie5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                pre     : true,
                 article : true, aside      : true, canvas   : true, details  : true, figcaption : true, figure  : true,
-                footer  : true, header     : true, hgroup   : true, main     : true, nav        : true, section : true
+                footer  : true, header     : true, hgroup   : true, main     : true, nav        : true, section : true,
+                // ie5 : <table> の直前の </p> を省略すると <table> が <p> の子になってレイアウトが崩れる
+                table   : !htmljson.DEFINE.ENABLE_LEGACY_BROWSERS_SUPPORT
               };
 
 /**
