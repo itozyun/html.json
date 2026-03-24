@@ -20,23 +20,23 @@
 4. オプション
    1. trimWhitespaces
    2. removeNewlineBetweenFullWidthChars
-   3. keepCDATASections
-   4. keepComments
-   5. keepEmptyConditionalComment
-   6. instructionAttrPrefix
-   7. argumentBrackets
-   8. useQuoteAlways
-   9. useSingleQuote
-   10. prettify
+   3. keepComments, keepEmptyConditionalComment, keepCDATASections
+   4. instructionAttrPrefix
+   5. argumentBrackets
+   6. useQuoteAlways
+   7. useSingleQuote
+   8. prettify
 
 ## 1. API の一覧
 
 ### 1.1. html2json()
 
 ~~~js
-var json = html2json('<!DOCTYPE html><p>Hello, World!');
+var json = html2json('<!DOCTYPE html><p>Hello, World!</p>');
 
 json; // [9, '<!DOCTYPE html>', ['p', 'Hello, World!']]
+
+html2json('<p>Hello, World!</p>'); // [11, ['p', 'Hello, World!']]
 ~~~
 
 #### Arguments
@@ -114,7 +114,7 @@ gulp.src('json/**/*.json')
 ~~~js
 var html = json2html([9, '<!DOCTYPE html>', ['p', 'Hello, World!']]);
 
-html; // [11, '2024/10/31 6:59:19']
+html; // "<!DOCTYPE html><p>Hello, World!"
 ~~~
 
 #### Arguments
@@ -303,67 +303,38 @@ json2json(json, null, null, null, onError);
 
 ## 4. オプション
 
-### `trimWhitespaces`
+### 4.1. `trimWhitespaces`
 
 `"normal"`, `true`, `"aggressive"`, で有効になり、`"none"`, `false` で無効になる．
 
-1. タブ文字を半角スペースに置換
-2. 連続する改行を1つの改行へ
-3. テキストノードの最後の連続する改行を削除
-4. `trimWhitespaces:"aggressive"` を指定すると、テキストノードの前後の空白文字をすべて削除する
-   * 但し次のいずれかを満たす場合、前や後に一つの半角スペースを残す
-     1. テキストノードの先頭が改行ではない
-     2. 後ろが改行と改行に続く0個以上の空白文字ではない
-5. 改行を半角スペースに置換
-6. 連続する半角スペースを1つ半角スペースへ
-7. 以上の処理から半角スペースを保護したい場合 `\u0020`, `&#32;`, `&#x20;` を使う
+より詳しい情報は『[html.json と HTML の最小化](doc/MINIFY_HTML.md)』を確認します．
 
-#### `trimWhitespaces:"aggressive"` でテキストノードの前後の空白文字をすべて削除する
-
-~~~html
-<div></div>⏎
-  html.json⏎
-<div></div>
-~~~
-
-~~~json
-[ "div" ], "html.json", [ "div" ]
-~~~
-
-#### `trimWhitespaces:"aggressive"` でもテキストノードの前後の空白文字を1つづつ残す
-
-~~~html
-<b>1</b> / <b>10</b>
-~~~
-
-~~~json
-[ "b", 1 ], " / ", [ "b", 10 ]
-~~~
-
-### `removeNewlineBetweenFullWidthChars`
+### 4.2. `removeNewlineBetweenFullWidthChars`
 
 `true` の場合、全角文字の間の単一の改行文字を削除する
 
-### `keepCDATASections`, `keepComments`, `keepEmptyConditionalComment`
+より詳しい情報は『[html.json と HTML の最小化](doc/MINIFY_HTML.md)』を確認します．
+
+### 4.3. `keepComments`, `keepEmptyConditionalComment`, `keepCDATASections`
 
 各ノードを削除しない
 
-### `instructionAttrPrefix`
+### 4.4. `instructionAttrPrefix`
 
 Instruction Attribute の属性名の prefix．デフォルト値は `":"`．
 
-### `argumentBrackets`
+### 4.5. `argumentBrackets`
 
 Processing Instruction の引数を囲む記号を指定する．デフォルト値は `"()"`．
 
-### `useQuoteAlways`
+### 4.6. `useQuoteAlways`
 
 HTML ファイルの出力時に、属性値のクォートの省略をしない．
 
-### `useSingleQuote`
+### 4.7. `useSingleQuote`
 
 HTML ファイルの出力時に、属性値を `''` で囲む．
 
-### `prettify`
+### 4.8. `prettify`
 
 html.json ファイルの出力時に format する．diff を取る際に便利．

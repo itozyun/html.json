@@ -30,7 +30,7 @@ html.json は HTML を表現できる JSON のサブセットです．
       * 省略が可能
    * 例
       * `{type:"text",style:{color:"red"}}`
-   * 値が `===false` or `===null` or `==undefined` では属性は追加されない(json2html)
+   * 値が `===false` or `===null` or `===undefined` では属性は追加されない(json2html)
    * style 属性はオブジェクトまたは文字列(`elm.style.cssText`)で記述する
      * `{style:{}}`, `style:"color:red;font-size:2em"`
 4. json2html では実装済だが html2json ではこの形では出力しない, json2json の onInstruction の戻り値で使用できる
