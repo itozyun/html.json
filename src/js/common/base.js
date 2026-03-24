@@ -126,7 +126,7 @@ var m_P_END_TAG_LESS_TAGS =
  * @const {!Object.<string, boolean>}
  */
 var m_TRIM_NEWLINES_ELEMENTS = {
-    script : true, style : true, textarea : true
+    script : true, style : true, textarea : true, title : true
 };
 
 /**
@@ -140,6 +140,13 @@ var m_FAMILY_OF_PRE_ELEMENT =
             : {
                 pre : true
               };
+
+/**
+ * @const {!Object.<string, boolean>}
+ */
+var m_SPECIAL_LAYOUT_ELEMENTS = {
+    caption : true, th : true, td : true, li : true, dt : true, dd : true
+};
 
 /**
  * 
@@ -453,33 +460,86 @@ function m_normalizeNewlines( string ){
 
 /**
  * 
- * @param {string} string 
- * @return {string} 
+ * @param {string} str
+ * @param {string} chr
+ * @return {string}
  */
-function m_trimChar( string, chr ){
-    return m_trimLastChar( m_trimFirstChar( string, chr ), chr );
+function m_trimChar( str, chr ){
+    return m_trimTrailingChar( m_trimLeadingChar( str, chr ), chr );
 };
 
 /**
  * 
- * @param {string} string 
- * @return {string} 
+ * @param {string} str
+ * @param {string} chars
+ * @return {string}
  */
-function m_trimFirstChar( string, chr ){
-    while( string.charAt( 0 ) === chr ){ string = string.substr( 1 ); };
-
-    return string;
+function m_trimChars( str, chars ){
+    return m_trimTrailingChars( m_trimLeadingChars( str, chars ), chars );
 };
 
 /**
  * 
- * @param {string} string 
+ * @param {string} str
+ * @param {string} chr
  * @return {string} 
  */
-function m_trimLastChar( string, chr ){
-    while( string.charAt( string.length - 1 ) === chr ){ string = string.substr( 0, string.length - 1 ); };
+function m_trimLeadingChar( str, chr ){
+    while( str.charAt( 0 ) === chr ){
+        str = str.substr( 1 );
+    };
+    return str;
+};
 
-    return string;
+/**
+ * 
+ * @param {string} str
+ * @param {string} chars
+ * @return {string} 
+ */
+function m_trimLeadingChars( str, chars ){
+    while( str ){
+        var c = str.charAt( 0 );
+
+        if( 0 <= chars.indexOf( c ) ){
+            str = str.substr( 1 );
+        } else {
+            break;
+        };
+    };
+    return str;
+};
+
+/**
+ * 
+ * @param {string} str
+ * @param {string} chr 
+ * @return {string} 
+ */
+function m_trimTrailingChar( str, chr ){
+    while( str.charAt( str.length - 1 ) === chr ){
+        str = str.substr( 0, str.length - 1 );
+    };
+    return str;
+};
+
+/**
+ * 
+ * @param {string} str
+ * @param {string} chars 
+ * @return {string} 
+ */
+function m_trimTrailingChars( str, chars ){
+    while( str ){
+        var c = str.charAt( str.length - 1 );
+
+        if( 0 <= chars.indexOf( c ) ){
+            str = str.substr( 0, str.length - 1 );
+        } else {
+            break;
+        };
+    };
+    return str;
 };
 
 /**
@@ -597,8 +657,8 @@ function m_toCSSTest( styles ){
  */
 function m_parseCSSText( cssText ){
     function saveCSSProperty( property, value ){
-        styles[ m_trimLastChar( property, ' ' ) ] =
-            value === '0px' ? 0 : m_tryToFiniteNumber( m_trimLastChar( value, ' ' ) );
+        styles[ m_trimTrailingChar( property, ' ' ) ] =
+            value === '0px' ? 0 : m_tryToFiniteNumber( m_trimTrailingChar( value, ' ' ) );
         ++numProps;
     };
 

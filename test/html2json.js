@@ -49,13 +49,55 @@ test('whitespace', (t) => {
 
     t.deepEqual( html2json('<p>\\u0020\\u0020', false, null, { trimWhitespaces : 'normal' }), [11, ['p', '  ']]);
 
+    t.deepEqual( html2json('\naa <a>bb</a> cc', false, null, { trimWhitespaces : 'aggressive' }), [11, 'aa ', ['a', 'bb'], ' cc']);
+    t.deepEqual( html2json('aa <a>bb</a> cc\n', false, null, { trimWhitespaces : 'aggressive' }), [11, 'aa ', ['a', 'bb'], ' cc']);
+
     t.deepEqual( html2json(`
 <ul>
-    <li>pen
-    <li>apple
-    <li>pineapple
+    <li>\n pen
+    <li> \f apple
+    <li>  \t pineapple
 </ul>
         `, false, null, { trimWhitespaces : 'aggressive' }), [11, ['ul', ['li', 'pen'], ['li', 'apple'], ['li', 'pineapple']]]);
+
+    t.deepEqual( html2json(`
+<dl>
+    <dt> pen \n 
+    <dd>  110 \t 
+</dl>
+        `, false, null, { trimWhitespaces : 'aggressive' }), [11, ['dl', ['dt', 'pen'], ['dd', 110]]]);
+
+    t.deepEqual( html2json(`
+<table>
+    <caption> Products
+    <thead>
+    <tr><th>    name         <th> price <th> tax
+    <tbody>
+    <tr><td>    Pen          <td>   110 <td>  10
+    <tr><td>    Apple        <td>   162 <td>  12
+    <tr><td><b> Pineapple </b><td>   540 <td>  40 
+</table>
+        `, false, null, { trimWhitespaces : 'aggressive' }), [11,
+            ['table',
+                ['caption', 'Products'],
+                ['thead',
+                    ['tr', [ 'th',        'name'        ], [ 'th', 'price' ], [ 'th', 'tax' ]]
+                ],
+                ['tbody',
+                    ['tr', [ 'td',        'Pen'         ], [ 'td', 110 ], [ 'td', 10 ]],
+                    ['tr', [ 'td',        'Apple'       ], [ 'td', 162 ], [ 'td', 12 ]],
+                    ['tr', [ 'td', [ 'b', 'Pineapple' ] ], [ 'td', 540 ], [ 'td', 40 ]]
+                ],
+            ]
+        ]
+    );
+
+    t.deepEqual( html2json(`
+<dl>
+    <dt> pen<br>
+110yen
+</dl>
+        `, false, null, { trimWhitespaces : 'aggressive' }), [11, ['dl', ['dt', 'pen', ['br'], '110yen']]]);
 });
 
 test('number-string', (t) => {

@@ -175,11 +175,18 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                             currentJSONNode.splice( attrIndex, 1 );
                         };
                     };
-                    if( m_FAMILY_OF_PRE_ELEMENT[ tagName ] ){
-                        trimWhitespaceInPre( /** @type {!HTMLJson} */ (currentJSONNode), isAggressiveTrim );
+                    if( m_SPECIAL_LAYOUT_ELEMENTS[ tagName ] && isAggressiveTrim ){ // caption, th, td, li, dt, dd
+                        trimWhitespaceOf( /** @type {!HTMLJson} */ (currentJSONNode), false );
+                    } else if( m_FAMILY_OF_PRE_ELEMENT[ tagName ] ){
+                        trimWhitespaceOf( /** @type {!HTMLJson} */ (currentJSONNode), true );
+                        if( isAggressiveTrim ){
+                            trimWhitespaceEachLineOfPre( /** @type {!HTMLJson} */ (currentJSONNode) );
+                        };
                         skippingTextHTMLJson = currentJSONNode;
-                    } else if( m_TRIM_NEWLINES_ELEMENTS[ tagName ] ){
-                        trimNewLines( skippingTextHTMLJson = currentJSONNode );
+                    } else if( m_TRIM_NEWLINES_ELEMENTS[ tagName ] ){ // script, style, textarea, title
+                        trimNewLines( skippingTextHTMLJson = /** @type {!HTMLJson} */ (currentJSONNode) );
+                    } else if( htmlparser.DEFINE.USE_TRADITIONAL_TAGS && ( tagName === 'xmp' || tagName === 'plaintext' ) ){ // xmp, plaintext
+                        trimNewLines( /** @type {!HTMLJson} */ (currentJSONNode), true );
                     };
                     break;
                 default :
@@ -289,6 +296,16 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
     };
 
     /**
+     * 1. 全角文字に挟まれた改行コードを削除する
+     * 2. タブは1つの半角スペースに
+     * 3. 2つ以上の改行を1つの改行へ
+     * 4. 2つ以上の半角スペースを1つの半角スペースへ
+     * 5. [trimWhitespaces: "aggressive"] 先頭が 改行 または 半角スペース+改行 であり、最後が 改行 または 改行+半角スペース なら、isAggressiveTrimWhitespace を有効に
+     * 6. 先頭と最後の改行を削除
+     * 7. 改行文字を1つの半角スペースに
+     * 8. (再) 2つ以上の半角スペースを1つの半角スペースへ
+     * 9. 先頭と最後の半角スペースをアグレッシブに削除
+     * 10. 半角スペースの保護には \u0020 または &#x20; または &#32; を使う
      * 
      * @param {string} nodeValue
      * @param {boolean} isAggressiveTrim 
@@ -316,122 +333,116 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
             };
         };
         function toSingleHalfWidthSpace(){
-            // 2つ以上の半角スペースを1つの半角スペースへ
             continuousToSingle( '  ', ' ' );
         };
 
+        // 1. 全角文字に挟まれた改行コードを削除する
         if( isRemoveNewlineBetweenFullWidthChars ){
             nodeValue = removeNewlineBetweenFullWidthChars( nodeValue );
         };
 
-        // タブは一つの半角スペースに
-        nodeValue = nodeValue.split( '\t' ).join( ' ' );
+        // 2. タブは1つの半角スペースに
+        nodeValue = nodeValue.split( '\t' ).join( ' ' ).split( '\f' ).join( ' ' );
 
-        // 2つ以上の改行を1つの改行へ
+        // 3. 2つ以上の改行を1つの改行へ
         continuousToSingle( '\n\n', '\n' );
 
+        // 4. 2つ以上の半角スペースを1つの半角スペースへ
         toSingleHalfWidthSpace();
 
+        // 5. [trimWhitespaces: "aggressive"] 先頭が 改行 または 半角スペース+改行 であり、最後が 改行 または 改行+半角スペース なら、isAggressiveTrimWhitespace を有効に
         if( isAggressiveTrim ){
-            if( nodeValue.substr( nodeValue.length - 2 ) === '\n ' ){
-                nodeValue = m_trimLastChar( nodeValue, ' ' );
-            };
-            if( nodeValue.charAt( nodeValue.length - 1 ) === '\n' ){
-                var isAggressiveTrimWhitespace =
-                    // <b>1</b> / <b>3</b>
-                    //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する
-                        // 先頭が改行、かつ
-                        nodeValue.charAt( 0 ) === '\n';
-                        // 最後が改行と0~1つの半角スペース
-            };
+        // <b>1</b> / <b>3</b>
+        //         ^^^ `/` の両隣のスペースを削除するか？は改行の有無で判断する．この場合は削除しない
+            var isAggressiveTrimLeading  = nodeValue.substr( 0, 2 ) === ' \n'                 || nodeValue.charAt( 0 ) === '\n';
+            var isAggressiveTrimTrailing = nodeValue.substr( nodeValue.length - 2 ) === '\n ' || nodeValue.charAt( nodeValue.length - 1 ) === '\n';
         };
 
-        // 最後の改行を削除
-        nodeValue = m_trimLastChar( nodeValue, '\n' );
+        // 6. 先頭と最後の改行を削除
+        nodeValue = m_trimLeadingChar( nodeValue, '\n' );
+        nodeValue = m_trimTrailingChar( nodeValue, '\n' );
 
-        // 改行文字を一つの半角スペースに
+        // 7. 改行文字を1つの半角スペースに
         nodeValue = nodeValue.split( '\n' ).join( ' ' );
 
+        // 8. (再) 2つ以上の半角スペースを1つの半角スペースへ
         toSingleHalfWidthSpace();
 
-        if( isAggressiveTrimWhitespace ){
-            // 先頭と最後の半角スペースを削除
-            nodeValue = m_trimChar( nodeValue, ' ' );
+        // 9. 先頭と最後の半角スペースをアグレッシブに削除
+        if( isAggressiveTrimLeading ){
+            nodeValue = m_trimLeadingChar( nodeValue, ' ' );
         };
-        // 半角スペースの保護には \u0020 または &#x20; または &#32; を使う
+        if( isAggressiveTrimTrailing ){
+            nodeValue = m_trimTrailingChar( nodeValue, ' ' );
+        };
+        // 10. 半角スペースの保護には \u0020 または &#x20; または &#32; を使う
         nodeValue = nodeValue.split( '\\u0020' ).join( ' ' ).split( '&#x20;' ).join( ' ' ).split( '&#32;' ).join( ' ' );
 
         return /** @type {number | string} */ (m_tryToFiniteNumber( nodeValue ));
     };
 
+    function getLastTextNode( htmlJsonTarget ){
+        var nodeAndPosition;
+
+        htmljson.Traverser.traverseAllDescendantNodes(
+            htmlJsonTarget,
+            function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                    nodeAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
+                };
+            }
+        );
+        return nodeAndPosition;
+    };
+    function isLastTextNode( htmlJsonTarget, parentJSONNode, myIndex ){
+        var nodeAndPosition = getLastTextNode( htmlJsonTarget );
+
+        return nodeAndPosition ? parentJSONNode === nodeAndPosition[ 1 ] && myIndex === nodeAndPosition[ 2 ] : false;
+    };
+
     /**
-     * pre タグ内のテキスト最小化
+     * pre, th, td, caption, li, dt, dd の前後の空白文字の削除
      * 
-     * 1. 最初のテキストノードが空白文字のみなら削除
-     * 2. 最初のテキストノードの頭の改行文字を削除
+     * 1. 先頭のテキストノードが空白文字のみなら削除
+     * 2. 先頭のテキストノードの頭の改行文字(pre 以外は \t\f と半角スペースも)を削除
      * 3. 最後のテキストノードが空白文字のみなら削除
-     * 4. 最後のテキストノードの後ろの改行文字を削除
-     * 5. 各行の改行の前の空白文字("\t", " ")も削除(trimWhitespaces:aggressive のみ)
-     *    obj.prop = 1;   \n
-     *                 ^^^
-     * 6. テキストノードが改行1文字だけの場合、直前のテキストノードに含める(trimWhitespaces:aggressive のみ)
-     *    <u>obj.prop = 1;</u>\n
-     *    ↓
-     *    <u>obj.prop = 1;\n</u>
+     * 4. 最後のテキストノードの後ろの改行文字(pre 以外は \t\f と半角スペースも)を削除
      * 
-     * @param {!HTMLJson} htmlJsonPre
-     * @param {boolean} isAggressiveTrim
+     * @param {!HTMLJson} htmlJsonTarget
+     * @param {boolean} isTrimmingNewLineOnly
      */
-    function trimWhitespaceInPre( htmlJsonPre, isAggressiveTrim ){
+    function trimWhitespaceOf( htmlJsonTarget, isTrimmingNewLineOnly ){
         /**
          * 
          * @param {string} string 
          * @return {string} 
          */
         function removeWhitespaces( string ){
-            return string.split( '\n' ).join( '' ).split( ' ' ).join( '' ).split( '\t' ).join( '' );
-        };
-        function getLastTextNode( htmlJsonTarget ){
-            var nodeAndPosition;
-
-            htmljson.Traverser.traverseAllDescendantNodes(
-                htmlJsonTarget,
-                function( currentJSONNode, parentJSONNode, myIndex, depth ){
-                    if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
-                        nodeAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
-                    };
-                }
-            );
-            return nodeAndPosition;
-        };
-        function isLastTextNode( htmlJsonTarget, parentJSONNode, myIndex ){
-            var nodeAndPosition = getLastTextNode( htmlJsonTarget );
-
-            return nodeAndPosition ? parentJSONNode === nodeAndPosition[ 1 ] && myIndex === nodeAndPosition[ 2 ] : false;
+            return string.split( '\n' ).join( '' ).split( '\t' ).join( '' ).split( '\f' ).join( '' ).split( ' ' ).join( '' );
         };
 
-        var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text, prevTextAndPosition;
+        var nodeAndPosition, htmlJsonText, htmlJsonParent, index, text;
 
         htmljson.Traverser.traverseAllDescendantNodes(
-            htmlJsonPre,
+            htmlJsonTarget,
             function( currentJSONNode, parentJSONNode, myIndex, depth ){
                 if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
                     var text = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
 
                     if( !removeWhitespaces( text ) ){
-                        // 1. 最初のテキストノードが空白文字のみなら削除
+                        // 1. 先頭のテキストノードが空白文字のみなら削除
                         parentJSONNode.splice( myIndex, 1 );
                         return htmljson.Traverser.VISITOR_OPTION.REMOVED;
                     } else {
-                        // 2. 最初のテキストノードの頭の改行文字を削除
-                        parentJSONNode.splice( myIndex, 1, m_trimFirstChar( text, '\n' ) );
+                        // 2. 先頭のテキストノードの頭の改行文字(pre 以外は \t\f と半角スペースも)を削除
+                        parentJSONNode.splice( myIndex, 1, isTrimmingNewLineOnly ? m_trimLeadingChar( text, '\n' ) : m_trimLeadingChars( text, '\n\t\f ' ) );
                         return htmljson.Traverser.VISITOR_OPTION.BREAK;
                     };
                 };
             }
         );
 
-        while( nodeAndPosition = getLastTextNode( htmlJsonPre ) ){
+        while( nodeAndPosition = getLastTextNode( htmlJsonTarget ) ){
             htmlJsonText   = nodeAndPosition[ 0 ];
             htmlJsonParent = nodeAndPosition[ 1 ];
             index          = nodeAndPosition[ 2 ];
@@ -442,69 +453,81 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                 // 3. 最後のテキストノードが空白文字のみなら削除
                 htmlJsonParent.splice( index, 1 );
             } else {
-                // 4. 最後のテキストノードの後ろの改行文字を削除
-                htmlJsonParent.splice( index, 1, m_trimLastChar( text, '\n' ) );
+                // 4. 最後のテキストノードの後ろの改行文字(pre 以外は \t\f と半角スペースも)を削除
+                htmlJsonParent.splice( index, 1, isTrimmingNewLineOnly ? m_trimTrailingChar( text, '\n' ) : m_trimTrailingChars( text, '\n\t\f ') );
                 break;
             };
         };
-
-        if( isAggressiveTrim ){
-            while(
-                htmljson.Traverser.traverseAllDescendantNodes(
-                    htmlJsonPre,
-                    function( currentJSONNode, parentJSONNode, myIndex, depth ){
-                        if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
-                            var isLast = isLastTextNode( htmlJsonPre, parentJSONNode, myIndex );
-                            var text   = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
-                            var texts  = text.split( '\n' );
-                            var i = 0, l = texts.length, charLast;
-                            var prevText, prevTextParent, prevTextIndex;
-
-                            for( ; i < l - ( isLast ? 0 : 1 ); ++i ){
-                                text = texts[ i ];
-                                // 5. 各行の改行の前の空白文字("\t", " ")も削除
-                                //    </pre> の直前の行の後ろの空白文字("\t", " ")も削除
-                                while( true ){
-                                    charLast = text.charAt( text.length - 1 );
-                                    if( charLast === '\t' || charLast === ' ' ){
-                                        text = text.substr( 0, text.length - 1 );
-                                    } else {
-                                        break;
-                                    };
-                                };
-                                texts[ i ] = text;
-                            };
-                            text = texts.join( '\n' );
-
-                            // 6. テキストノードが改行1文字だけの場合、直前のテキストノードに含める
-                            if( text === '\n' && prevTextAndPosition ){
-                                prevText       = prevTextAndPosition[ 0 ];
-                                prevTextParent = prevTextAndPosition[ 1 ];
-                                prevTextIndex  = prevTextAndPosition[ 2 ];
-
-                                if( m_isStringOrNumber( prevText ) ){
-                                    prevTextParent[ prevTextIndex ] += text;
-                                } else {
-                                    prevText[ 1 ] += text;
-                                };
-                                parentJSONNode.splice( myIndex, 1 ); // remove
-                                return htmljson.Traverser.VISITOR_OPTION.REMOVED;
-                            };
-
-                            if( m_isStringOrNumber( currentJSONNode ) ){
-                                parentJSONNode[ myIndex ] = text;
-                            } else {
-                                currentJSONNode[ 1 ] = text;
-                            };
-                            prevTextAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
-                        };
-                    }
-                )
-            ){};
-        };
     };
 
-    function trimNewLines( htmlJson ){
+    /**
+     * pre タグ内のテキスト最小化
+     * 
+     * 1. [isAggressiveTrim] 各行の改行の前の空白文字("\t", " ")も削除(trimWhitespaces:aggressive のみ)
+     *    obj.prop = 1;   \n
+     *                 ^^^
+     * 2. [isAggressiveTrim] テキストノードが改行1文字だけの場合、直前のテキストノードに含める(trimWhitespaces:aggressive のみ)
+     *    <u>obj.prop = 1;</u>\n
+     *    ↓
+     *    <u>obj.prop = 1;\n</u>
+     * 
+     * @param {!HTMLJson} htmlJsonPre
+     */
+    function trimWhitespaceEachLineOfPre( htmlJsonPre ){
+        var prevTextAndPosition;
+
+        while(
+            htmljson.Traverser.traverseAllDescendantNodes(
+                htmlJsonPre,
+                function( currentJSONNode, parentJSONNode, myIndex, depth ){
+                    if( m_getNodeType( currentJSONNode ) === htmljson.NODE_TYPE.TEXT_NODE ){
+                        var isLast = isLastTextNode( htmlJsonPre, parentJSONNode, myIndex );
+                        var text   = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
+                        var texts  = text.split( '\n' );
+                        var i = 0, l = texts.length;
+                        var prevText, prevTextParent, prevTextIndex;
+
+                        for( ; i < l - ( isLast ? 0 : 1 ); ++i ){
+                            // 1. 各行の改行の前の空白文字("\t", "\f", " ")も削除
+                            //    </pre> の直前の行の後ろの空白文字("\t", " ")も削除
+                            texts[ i ] = m_trimTrailingChars( texts[ i ], '\t\f ' );
+                        };
+                        text = texts.join( '\n' );
+
+                        // 2. テキストノードが改行1文字だけの場合、直前のテキストノードに含める
+                        if( text === '\n' && prevTextAndPosition ){
+                            prevText       = prevTextAndPosition[ 0 ];
+                            prevTextParent = prevTextAndPosition[ 1 ];
+                            prevTextIndex  = prevTextAndPosition[ 2 ];
+
+                            if( m_isStringOrNumber( prevText ) ){
+                                prevTextParent[ prevTextIndex ] += text;
+                            } else {
+                                prevText[ 1 ] += text;
+                            };
+                            parentJSONNode.splice( myIndex, 1 ); // remove
+                            return htmljson.Traverser.VISITOR_OPTION.REMOVED;
+                        };
+
+                        if( m_isStringOrNumber( currentJSONNode ) ){
+                            parentJSONNode[ myIndex ] = text;
+                        } else {
+                            currentJSONNode[ 1 ] = text;
+                        };
+                        prevTextAndPosition = [ currentJSONNode, parentJSONNode, myIndex ];
+                    };
+                }
+            )
+        ){};
+    };
+
+    /**
+     * script, style, textarea, title, xmp, plaintext
+     * 
+     * @param {!HTMLJson} htmlJson
+     * @param {boolean=} opt_isPrecessingOnlyLastChild
+     */
+    function trimNewLines( htmlJson, opt_isPrecessingOnlyLastChild ){
         var i = m_getChildNodeStartIndex( htmlJson ),
             l = htmlJson.length,
             child, firstTextIndex, firstText, lastTextIndex, lastText;
@@ -527,29 +550,30 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                 lastText = lastText[ 1 ];
             };
 
-            if( firstTextIndex === lastTextIndex ){
+            if( firstTextIndex === lastTextIndex && !opt_isPrecessingOnlyLastChild ){
                 if( core.isString( firstText ) ){
                     firstText = /** @type {string} */ (firstText);
                     firstText = m_normalizeNewlines( firstText );
                     // 先頭と最後の改行文字を削除
                     firstText = m_trimChar( /** @type {string} */ (firstText), '\n' );
-                    htmlJson[ firstTextIndex ] = m_tryToFiniteNumber( firstText );
+                    htmlJson[ firstTextIndex ] = /** @type {string | number} */ (m_tryToFiniteNumber( firstText ));
                 };
             } else {
-                if( core.isString( firstText ) ){
+                if( core.isString( firstText ) && !opt_isPrecessingOnlyLastChild ){
                     firstText = /** @type {string} */ (firstText);
                     firstText = m_normalizeNewlines( firstText );
                     // 先頭の改行文字を削除
-                    firstText = m_trimFirstChar( /** @type {string} */ (firstText), '\n' );
-                    htmlJson[ firstTextIndex ] = m_tryToFiniteNumber( firstText );
+                    firstText = m_trimLeadingChar( /** @type {string} */ (firstText), '\n' );
+                    htmlJson[ firstTextIndex ] = /** @type {string | number} */ (m_tryToFiniteNumber( firstText ));
                 };
 
                 if( core.isString( lastText ) ){
-                    lastText = /** @type {string} */ (lastText);
-                    lastText = m_normalizeNewlines( lastText );
+                    lastText      = /** @type {string} */ (lastText);
+                    lastText      = m_normalizeNewlines( lastText );
+                    lastTextIndex = /** @type {number} */ (lastTextIndex);
                     // 最後の改行文字を削除
-                    lastText = m_trimLastChar( /** @type {string} */ (lastText), '\n' );
-                    htmlJson[ lastTextIndex ] = m_tryToFiniteNumber( lastText );
+                    lastText = m_trimTrailingChar( /** @type {string} */ (lastText), '\n' );
+                    htmlJson[ lastTextIndex ] = /** @type {string | number} */ (m_tryToFiniteNumber( lastText ));
                 };
             };
         };
