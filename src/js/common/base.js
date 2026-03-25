@@ -278,8 +278,9 @@ function m_executeProcessingInstruction( onInstruction, currentJSONNode, opt_onE
 function m_replaceProcessingInstructionWithHTMLJson( parentJSONNode, index, htmlJson ){
     if( htmlJson[ 0 ] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ){
         htmlJson = /** @type {!HTMLJson} */ (htmlJson);
-        htmlJson.shift();
-        htmlJson.unshift( index, 1 );
+        // htmlJson.shift();
+        // htmlJson.unshift( index, 1 );
+        htmlJson.splice( 0, 1, index, 1 );
         parentJSONNode.splice.apply( parentJSONNode, htmlJson ); // <= parentJSONNode.splice( index, 1, ...result );
     } else {
         parentJSONNode.splice( index, 1, htmlJson );
