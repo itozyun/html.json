@@ -28,9 +28,9 @@
     if (A !== f && -A !== f) {
       if (0 < g.length - d) {
         do {
-          var p = ++h[e], l = g[p + d];
+          var n = ++h[e], l = g[n + d];
           if (null != l) {
-            f = b(l, g, p + d, e / 3 + 1);
+            f = b(l, g, n + d, e / 3 + 1);
             if (A === f) {
               return;
             }
@@ -40,7 +40,7 @@
               } else if (1 <= f && (h[e] += f), N(l) < l.length) {
                 e += 3, h[e] = -1, h[e + 1] = g = l, h[e + 2] = d = N(l);
               } else if (c && g) {
-                f = c(l, g, p + d, e / 3 + 1);
+                f = c(l, g, n + d, e / 3 + 1);
                 if (A === f) {
                   return;
                 }
@@ -48,8 +48,8 @@
               }
             }
           } else if (h.length = e, e -= 3, g = h[e + 1], d = h[e + 2], c && g) {
-            p = h[e] + d;
-            f = c(g[p], g, p, e / 3 + 1);
+            n = h[e] + d;
+            f = c(g[n], g, n, e / 3 + 1);
             if (A === f) {
               return;
             }
@@ -94,11 +94,11 @@
       for (b = [g, e = b, f = c]; 0 <= a;) {
         var h = g.shift();
         if (null != h) {
-          var p = e[h];
-          d = x(p);
+          var n = e[h];
+          d = x(n);
           h = f[h] = d ? [] : {};
-          d = d ? Z(p, h) : aa(p, h);
-          d.length && (a += 3, b.push(g = d, e = p, f = h));
+          d = d ? Z(n, h) : aa(n, h);
+          d.length && (a += 3, b.push(g = d, e = n, f = h));
         } else {
           b.length = a, a -= 3, g = b[a], e = b[a + 1], f = b[a + 2];
         }
@@ -138,8 +138,8 @@
     for (g in a) {
       var d = a[g];
       "0px" === d && (d = 0);
-      for (var e = ++c, f, h = [], p = g.split(""), l = p.length; l;) {
-        f = p[--l], "A" <= f && "Z" >= f && (f = "-" + f.toLowerCase()), h[l] = f;
+      for (var e = ++c, f, h = [], n = g.split(""), l = n.length; l;) {
+        f = n[--l], "A" <= f && "Z" >= f && (f = "-" + f.toLowerCase()), h[l] = f;
       }
       f = h.join("");
       b[e] = f + ":" + d;
@@ -149,7 +149,7 @@
   function na(a, b, c) {
     function g() {
       var k = "";
-      n && (k = "</" + n + ">", n = "");
+      p && (k = "</" + p + ">", p = "");
       return k;
     }
     function d(k, w, t) {
@@ -157,7 +157,7 @@
       r && m ? k = w ? q + k.split("'").join("\\'") + q : q + k.split('"').join('\\"') + q : r ? k = "'" + k + "'" : m ? k = w ? q + k.split("'").join("\\'") + q : q + k + q : t || k.match(/[^0-9a-z\.\-]/g) || 72 < k.length ? k = q + k + q : "" === k && (k = q + q);
       return k;
     }
-    var e = {}, f = !0 === e.useQuoteAlways, h = !0 === e.useSingleQuote, p = e.instructionAttrPrefix || ":", l = [!1, null, !1, !1, !1, !1], n;
+    var e = {}, f = !0 === e.useQuoteAlways, h = !0 === e.useSingleQuote, n = e.instructionAttrPrefix || ":", l = [!1, null, !1, !1, !1, !1], p;
     b(function(k, w, t, r, m, q) {
       function E(ea) {
         u[++v] = g() + (P ? ea : K("" + ea));
@@ -216,7 +216,7 @@
           var fa = m[2];
           m = m[0];
           k = k[H];
-          "p" !== n || oa[m] ? n = "" : u[++v] = g();
+          "p" !== p || oa[m] ? p = "" : u[++v] = g();
           G = (w = w || !1) || !1;
           t = t || G || !!pa[m];
           P = P || qa[m] && !ra[m];
@@ -226,7 +226,7 @@
           if (!x(k) && I(k)) {
             for (z in k) {
               m = k[z];
-              (H = 0 === z.indexOf(p)) && (z = z.substr(p.length));
+              (H = 0 === z.indexOf(n)) && (z = z.substr(n.length));
               "className" === z && (z = "class");
               if (H && c && (m = ba(c, z, m, void 0, q), q && q.stopped)) {
                 return;
@@ -264,10 +264,10 @@
           t[++q] = g() + "--\x3e";
           break;
         case 17:
-          n = "";
+          p = "";
           break;
         case 1:
-          k = ca(k), !u && (v || ta[k] && !ua[k]) ? n = "" : v && !u || !(E || !va[k] || "p" === k && m && wa[ca(w)]) ? n = k : (t[++q] = "</" + k + ">", n = "");
+          k = ca(k), !u && (v || ta[k] && !ua[k]) ? p = "" : v && !u || !(E || !va[k] || "p" === k && m && wa[ca(w)]) ? p = k : (t[++q] = "</" + k + ">", p = "");
       }
       -1 !== q && X(a, t.join(""));
       0 === r && (a = null);
@@ -381,39 +381,39 @@
     function c(h) {
       d.da = h;
     }
-    function g(h, p) {
+    function g(h, n) {
       function l(w, t) {
         const r = d.Z;
         var m = d.V, q = r.length - 1;
         -1 === q && 9 !== w[0] && 11 !== w[0] && (r.push([[11], -1]), q = 0, d.Y = !0);
         const E = r[q] || [null, -1];
-        q = d.ga(w, E[0], E[1] + 1, q + 1, t, p, m);
-        (m = m.stopped) ? -1 !== q && (d.W.push(a, b), t || (d.I = !0)) : (d.N.length = 0, d.P = null, ++E[1], t ? (r.push([w, -1]), d.R = e = 36) : e = d.X(p, w));
+        q = d.ga(w, E[0], E[1] + 1, q + 1, t, n, m);
+        (m = m.stopped) ? -1 !== q && (d.W.push(a, b), t || (d.I = !0)) : (d.N.length = 0, d.P = null, ++E[1], t ? (r.push([w, -1]), d.R = e = 36) : e = d.X(n, w));
         return m;
       }
-      const n = d.da, k = d.D;
-      switch(n) {
+      const p = d.da, k = d.D;
+      switch(p) {
         case 11:
-          return l([n], h);
+          return l([p], h);
         case 17:
         case 1:
           if (d.P) {
-            return l([n, k, d.P], h);
+            return l([p, k, d.P], h);
           }
         case 9:
         case 13:
         case 16:
-          return l([n, k], h);
+          return l([p, k], h);
         case 3:
         case 4:
         case 8:
         case 14:
         case 18:
-          return l([n, k], !1);
+          return l([p, k], !1);
         case 15:
-          return l([n], !1);
+          return l([p], !1);
         case 7:
-          return l([n].concat(d.N), !1);
+          return l([p].concat(d.N), !1);
       }
       return !1;
     }
@@ -674,27 +674,27 @@
     const b = ya();
     na(b, function(c, g) {
       var d, e, f;
-      b.F.ga = function(h, p, l, n, k, w, t) {
+      b.F.ga = function(h, n, l, p, k, w, t) {
         if (d) {
           if (ja(d, e, f, t, c, g)) {
             return;
           }
           d = null;
         }
-        h = c(h, p, l, n, k, t);
-        n = x(h);
+        h = c(h, n, l, p, k, t);
+        p = x(h);
         if (!t.stopped) {
-          if (n) {
-            e = l - p.length;
+          if (p) {
+            e = l - n.length;
             f = w;
             if (11 === h[0]) {
-              for (l = 1, n = h.length; l < n; ++l) {
-                p.push(h[l]);
+              for (l = 1, p = h.length; l < p; ++l) {
+                n.push(h[l]);
               }
             } else {
-              p.push(h);
+              n.push(h);
             }
-            ja(p, e, w, t, c, g) && (d = p);
+            ja(n, e, w, t, c, g) && (d = n);
           }
           return -1;
         }
@@ -705,23 +705,23 @@
   }
   function ja(a, b, c, g, d, e) {
     var f;
-    ka(a, function(h, p, l, n) {
+    ka(a, function(h, n, l, p) {
       if (h !== a && !h.h) {
-        n = d(h, p, (1 === n ? b : 0) + l, n, N(h) < h.length, g);
-        var k = x(n);
+        p = d(h, n, (1 === p ? b : 0) + l, p, N(h) < h.length, g);
+        var k = x(p);
         if (g.stopped) {
           return f = !0, A;
         }
         if (k) {
-          return 11 === n[0] ? (n.shift(), n.unshift(l, 1), p.splice.apply(p, n)) : p.splice(l, 1, n), -1;
+          return 11 === p[0] ? (p.splice(0, 1, l, 1), n.splice.apply(n, p)) : n.splice(l, 1, p), -1;
         }
         if (B(h) || h === +h) {
-          h = [3, h], p.splice(l, 1, h);
+          h = [3, h], n.splice(l, 1, h);
         }
         h.h = !0;
       }
-    }, function(h, p, l, n) {
-      h === a || h.left || -1 === [9, 11, 1, 17, 13, 16].indexOf(O(h)) || (e(h, p, (1 === n ? b : 0) + l, n, (1 !== n || c) && l === p.length - 1), h.left = !0);
+    }, function(h, n, l, p) {
+      h === a || h.left || -1 === [9, 11, 1, 17, 13, 16].indexOf(O(h)) || (e(h, n, (1 === p ? b : 0) + l, p, (1 !== p || c) && l === n.length - 1), h.left = !0);
     });
     return f;
   }

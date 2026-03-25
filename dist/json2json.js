@@ -1459,7 +1459,7 @@ function m_executeProcessingInstruction(a, b, c, d) {
   return g;
 }
 function m_replaceProcessingInstructionWithHTMLJson(a, b, c) {
-  c[0] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? (c.shift(), c.unshift(b, 1), a.splice.apply(a, c)) : a.splice(b, 1, c);
+  c[0] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? (c.splice(0, 1, b, 1), a.splice.apply(a, c)) : a.splice(b, 1, c);
 }
 function m_executeInstructionAttr(a, b, c, d, e) {
   var f;

@@ -177,7 +177,7 @@ function sa(a, c, d) {
   return b;
 }
 function ta(a, c, d) {
-  11 === d[0] ? (d.shift(), d.unshift(c, 1), a.splice.apply(a, d)) : a.splice(c, 1, d);
+  11 === d[0] ? (d.splice(0, 1, c, 1), a.splice.apply(a, d)) : a.splice(c, 1, d);
 }
 function ua(a, c, d, f, b) {
   var e;
