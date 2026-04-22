@@ -72,37 +72,10 @@ var core = {isNullOrUndefined:function(a) {
   return !!a && a.constructor === Function;
 }, isDate:function(a) {
   return !!a && a.constructor === Date;
-}, isRegExp:function(a) {
-  return !!a && a.constructor === core._globalThis.RegExp;
 }};
-core._globalThis = "undefined" !== typeof window ? window : "undefined" !== typeof self ? self : "undefined" !== typeof global ? global : this;
-core.cloneArray = function(a) {
-  for (var b = [], c = 0, d = a.length; c < d; ++c) {
-    b[c] = a[c];
-  }
-  return b;
-};
-core.dateToJSON = function(a) {
-  function b(f) {
-    return 10 > f ? "0" + f : f;
-  }
-  function c(f) {
-    f = "000" + f;
-    return f.substr(f.length - 4);
-  }
-  function d(f) {
-    f = "00000" + f;
-    return f.substr(f.length - 6);
-  }
-  var e = a.getUTCFullYear();
-  return (0 >= e ? "-" + d(-e) : 1e4 <= e ? "+" + d(e) : c(e)) + "-" + b(a.getUTCMonth() + 1) + "-" + b(a.getUTCDate()) + "T" + b(a.getUTCHours()) + ":" + b(a.getUTCMinutes()) + ":" + b(a.getUTCSeconds()) + "." + function(f) {
-    f = "00" + f;
-    return f.substr(f.length - 3);
-  }(a.getUTCMilliseconds()) + "Z";
-};
 function _copyPrimitivesAndListUncopiedIndexes(a, b) {
-  for (var c = [], d = a.length, e = 0, f = -1, g; e < d; ++e) {
-    g = a[e], core.isObject(g) ? c[++f] = e : b[e] = g;
+  for (var c = [], d = a.length, e = 0, f = -1, h; e < d; ++e) {
+    h = a[e], core.isObject(h) ? c[++f] = e : b[e] = h;
   }
   return c;
 }
@@ -115,231 +88,97 @@ function _copyPrimitivesAndListUncopiedKeys(a, b) {
   return c;
 }
 core.deepCopy = function(a) {
-  var b = 0, c = core.isArray(a), d = c ? [] : {}, e = c ? _copyPrimitivesAndListUncopiedIndexes(a, d) : core.isObject(a) ? _copyPrimitivesAndListUncopiedKeys(a, d) : null, f, g;
+  var b = 0, c = core.isArray(a), d = c ? [] : {}, e = c ? _copyPrimitivesAndListUncopiedIndexes(a, d) : core.isObject(a) ? _copyPrimitivesAndListUncopiedKeys(a, d) : null, f, h;
   if (null === e) {
     return a;
   }
-  for (a = [e, f = a, g = d]; 0 <= b;) {
-    var h = e.shift();
-    if (null != h) {
-      var l = f[h];
-      c = core.isArray(l);
-      h = g[h] = c ? [] : {};
-      c = c ? _copyPrimitivesAndListUncopiedIndexes(l, h) : _copyPrimitivesAndListUncopiedKeys(l, h);
-      c.length && (b += 3, a.push(e = c, f = l, g = h));
+  for (a = [e, f = a, h = d]; 0 <= b;) {
+    var k = e.shift();
+    if (null != k) {
+      var p = f[k];
+      c = core.isArray(p);
+      k = h[k] = c ? [] : {};
+      c = c ? _copyPrimitivesAndListUncopiedIndexes(p, k) : _copyPrimitivesAndListUncopiedKeys(p, k);
+      c.length && (b += 3, a.push(e = c, f = p, h = k));
     } else {
-      a.length = b, b -= 3, e = a[b + 0], f = a[b + 1], g = a[b + 2];
+      a.length = b, b -= 3, e = a[b + 0], f = a[b + 1], h = a[b + 2];
     }
   }
   return d;
 };
 core.deepCopySafe = function(a) {
-  var b = 0, c = core.isArray(a), d = c ? [] : {}, e = c ? _copyPrimitivesAndListUncopiedIndexes(a, d) : core.isObject(a) ? _copyPrimitivesAndListUncopiedKeys(a, d) : null, f = [a], g = [d], h = 1, l, w;
+  var b = 0, c = core.isArray(a), d = c ? [] : {}, e = c ? _copyPrimitivesAndListUncopiedIndexes(a, d) : core.isObject(a) ? _copyPrimitivesAndListUncopiedKeys(a, d) : null, f = [a], h = [d], k = 1, p, x;
   if (null === e) {
     return a;
   }
-  for (a = [e, l = a, w = d]; 0 <= b;) {
-    var r = e.shift();
-    if (null != r) {
-      var y = l[r];
+  for (a = [e, p = a, x = d]; 0 <= b;) {
+    var u = e.shift();
+    if (null != u) {
+      var z = p[u];
       a: {
-        for (c = h; c;) {
-          if (f[--c] === y) {
-            c = g[c];
+        for (c = k; c;) {
+          if (f[--c] === z) {
+            c = h[c];
             break a;
           }
         }
         c = void 0;
       }
-      c ? w[r] = c : (c = core.isArray(y), r = w[r] = c ? [] : {}, c = c ? _copyPrimitivesAndListUncopiedIndexes(y, r) : _copyPrimitivesAndListUncopiedKeys(y, r), f[h] = y, g[h] = r, h++, c.length && (b += 3, a.push(e = c, l = y, w = r)));
+      c ? x[u] = c : (c = core.isArray(z), u = x[u] = c ? [] : {}, c = c ? _copyPrimitivesAndListUncopiedIndexes(z, u) : _copyPrimitivesAndListUncopiedKeys(z, u), f[k] = z, h[k] = u, k++, c.length && (b += 3, a.push(e = c, p = z, x = u)));
     } else {
-      a.length = b, b -= 3, e = a[b + 0], l = a[b + 1], w = a[b + 2];
+      a.length = b, b -= 3, e = a[b + 0], p = a[b + 1], x = a[b + 2];
     }
   }
   return d;
 };
-core.equal = function(a, b) {
-  return a === b || core.isNaN(a) && core.isNaN(b);
-};
-function _getUntestedValueIndexesOrKeys(a, b) {
-  function c(y) {
-    var q = [], C = -1, F;
-    for (F in y) {
-      q[++C] = F;
-    }
-    return q.sort();
-  }
-  var d = null, e = core.isArray(a), f = core.isArray(b), g = -1, h;
-  if (e && f) {
-    if (e = a.length, e === b.length) {
-      for (d = [], h = 0; h < e; ++h) {
-        var l = a[h];
-        if (!core.equal(l, b[h])) {
-          if (core.isObject(l)) {
-            d[++g] = h;
-          } else {
-            d = !1;
-            break;
-          }
-        }
-      }
-    } else {
-      d = !1;
-    }
-  } else if (e || f) {
-    d = !1;
-  } else if (core.isObject(a) && core.isObject(b)) {
-    f = c(a);
-    var w = c(b);
-    e = f.length;
-    if (e === w.length) {
-      for (d = [], h = 0; h < e; ++h) {
-        var r = f[h];
-        if (r !== w[h]) {
-          d = !1;
-          break;
-        }
-        l = a[r];
-        if (!core.equal(l, b[r])) {
-          if (core.isObject(l)) {
-            d[++g] = r;
-          } else {
-            d = !1;
-            break;
-          }
-        }
-      }
-    } else {
-      d = !1;
-    }
-  }
-  return d;
-}
-core.deepEqual = function(a, b) {
-  var c = 0, d = _getUntestedValueIndexesOrKeys(a, b), e = null === d ? core.equal(a, b) : !!d, f, g, h;
-  if (d) {
-    for (a = [d, f = a, g = b]; 0 <= c && e;) {
-      var l = d.pop();
-      null != l ? (b = f[l], l = g[l], (h = _getUntestedValueIndexesOrKeys(b, l)) ? h.length && (c += 3, a.push(d = h, f = b, g = l)) : e = !1) : (a.length = c, c -= 3, d = a[c + 0], f = a[c + 1], g = a[c + 2]);
-    }
-  }
-  return e;
-};
-core.deepEqualSafe = function(a, b) {
-  var c = 0, d = _getUntestedValueIndexesOrKeys(a, b), e = null === d ? core.equal(a, b) : !!d, f = [a], g = [b], h = 1, l, w, r;
-  if (d) {
-    for (a = [d, l = a, w = b]; 0 <= c && e;) {
-      var y = d.pop();
-      if (null != y) {
-        if (b = l[y], y = w[y], r = _getUntestedValueIndexesOrKeys(b, y)) {
-          if (r.length) {
-            var q;
-            a: {
-              for (q = h; q;) {
-                if (f[--q] === b) {
-                  q = g[q] === y;
-                  break a;
-                }
-              }
-              q = !1;
-            }
-            q || (f[h] = b, g[h] = y, h++, c += 3, a.push(d = r, l = b, w = y));
-          }
-        } else {
-          e = !1;
-        }
-      } else {
-        a.length = c, c -= 3, d = a[c + 0], l = a[c + 1], w = a[c + 2];
-      }
-    }
-  }
-  return e;
-};
-core.hasProperty = function(a, b) {
-  if (void 0 !== a[b]) {
-    return !0;
-  }
-  for (var c in a) {
-    if (c === b) {
-      return !0;
-    }
-  }
-  return !1;
-};
-core.hasOwnProperty = function(a, b) {
-  function c(d, e, f) {
-    if (void 0 !== d.__proto__) {
-      var g = d.__proto__;
-    } else {
-      var h;
-      g = d === f ? null : d === (h = d.constructor.prototype) ? f : h;
-    }
-    if (!g) {
-      return core.hasProperty(d, e);
-    }
-    h = g[e];
-    var l = d[e];
-    core.isNaN(l) !== core.isNaN(h) ? e = !0 : core.isNaN(l) ? (h = g, f = c(h, e, f), h[e] = !0, d = core.isNaN(d[e]), f ? h[e] = NaN : delete h[e], e = d) : l !== h ? e = !0 : core.hasProperty(g, e) ? (f = c(g, e, f), g[e] = !h, d = l === d[e], f ? g[e] = h : delete g[e], e = d) : e = core.hasProperty(d, e);
-    return e;
-  }
-  return c(a, b, Object.prototype);
-};
-core.toNumber = function(a) {
-  return core.isBoolean(a) || null == a || core.isString(a) && "" + +a !== a ? NaN : +a;
-};
-core.toFiniteNumber = function(a) {
-  a = core.toNumber(a);
-  return core.isFiniteNumber(a) ? a : NaN;
-};
-core.all = {};
 htmljson.Traverser = {};
 htmljson.Traverser.EnterHandler = {};
 htmljson.Traverser.LeaveHandler = {};
 var VISITOR_OPTION = {REMOVED:-1, NONE:0, INSERTED_BEFORER:1, BREAK:Infinity, SKIP:-Infinity};
 htmljson.Traverser.VISITOR_OPTION = VISITOR_OPTION;
 htmljson.Traverser.traverseAllDescendantNodes = function(a, b, c) {
-  var d = a, e = m_getChildNodeStartIndex(d), f = 0, g = b(a, null, -1, f / 3), h = [-1, a, e], l = !1;
-  if (g === VISITOR_OPTION.BREAK || g === VISITOR_OPTION.SKIP) {
+  var d = a, e = m_getChildNodeStartIndex(d), f = 0, h = b(a, null, -1, f / 3), k = [-1, a, e], p = !1;
+  if (h === VISITOR_OPTION.BREAK || h === VISITOR_OPTION.SKIP) {
     return !1;
   }
   if (0 < d.length - e) {
     do {
-      var w = ++h[f];
-      var r = d[w + e];
-      if (null != r) {
-        g = b(r, d, w + e, f / 3 + 1);
-        if (g === VISITOR_OPTION.BREAK) {
-          return l;
+      var x = ++k[f];
+      var u = d[x + e];
+      if (null != u) {
+        h = b(u, d, x + e, f / 3 + 1);
+        if (h === VISITOR_OPTION.BREAK) {
+          return p;
         }
-        if (g !== VISITOR_OPTION.SKIP) {
-          if (g <= VISITOR_OPTION.REMOVED) {
-            h[f] += g, l = !0;
+        if (h !== VISITOR_OPTION.SKIP) {
+          if (h <= VISITOR_OPTION.REMOVED) {
+            k[f] += h, p = !0;
           } else {
-            if (VISITOR_OPTION.INSERTED_BEFORER <= g && (h[f] += g, l = !0), m_hasChildren(r)) {
-              f += 3, h[f + 0] = -1, h[f + 1] = d = r, h[f + 2] = e = m_getChildNodeStartIndex(r);
+            if (VISITOR_OPTION.INSERTED_BEFORER <= h && (k[f] += h, p = !0), m_hasChildren(u)) {
+              f += 3, k[f + 0] = -1, k[f + 1] = d = u, k[f + 2] = e = m_getChildNodeStartIndex(u);
             } else if (c && d) {
-              g = c(r, d, w + e, f / 3 + 1);
-              if (g === VISITOR_OPTION.BREAK) {
-                return l;
+              h = c(u, d, x + e, f / 3 + 1);
+              if (h === VISITOR_OPTION.BREAK) {
+                return p;
               }
-              g !== VISITOR_OPTION.SKIP && (g <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= g) && (h[f] += g, l = !0);
+              h !== VISITOR_OPTION.SKIP && (h <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= h) && (k[f] += h, p = !0);
             }
           }
         }
       } else {
-        if (h.length = f, f -= 3, d = h[f + 1], e = h[f + 2], c && d) {
-          w = h[f] + e;
-          g = c(d[w], d, w, f / 3 + 1);
-          if (g === VISITOR_OPTION.BREAK) {
-            return l;
+        if (k.length = f, f -= 3, d = k[f + 1], e = k[f + 2], c && d) {
+          x = k[f] + e;
+          h = c(d[x], d, x, f / 3 + 1);
+          if (h === VISITOR_OPTION.BREAK) {
+            return p;
           }
-          g !== VISITOR_OPTION.SKIP && (g <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= g) && (h[f] += g, l = !0);
+          h !== VISITOR_OPTION.SKIP && (h <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= h) && (k[f] += h, p = !0);
         }
       }
     } while (0 <= f);
   }
   c && c(a, null, -1, 0);
-  return l;
+  return p;
 };
 var VNode = function(a, b, c, d, e) {
   if (core.isBoolean(a)) {
@@ -1016,11 +855,11 @@ function _insertAt(a, b, c) {
   b = b < e ? b : e;
   if (htmljson.DEFINE.DEBUG) {
     for (; f;) {
-      if (htmljson.DEFINE.DEBUG && g && c[f - 1]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
+      if (htmljson.DEFINE.DEBUG && h && c[f - 1]._nodeType === htmljson.NODE_TYPE.ELEMENT_START_TAG) {
         throw "\u9589\u3058\u30bf\u30b0\u306e\u7121\u3044 Element \u306e\u6b21\u306b Node \u3092\u633f\u5165\u3059\u308b\u3053\u3068\u306f\u51fa\u6765\u307e\u305b\u3093!";
       }
-      var g = c[--f];
-      if (htmljson.DEFINE.DEBUG && g._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE) {
+      var h = c[--f];
+      if (htmljson.DEFINE.DEBUG && h._nodeType === htmljson.NODE_TYPE.DOCUMENT_NODE) {
         throw "Document Node \u3092\u633f\u5165\u3059\u308b\u3053\u3068\u306f\u51fa\u6765\u307e\u305b\u3093!";
       }
     }
@@ -1028,7 +867,7 @@ function _insertAt(a, b, c) {
   }
   f && (VNode.treeIsUpdated = !0);
   for (; f;) {
-    g = c[--f], g._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? g.getChildNodeCount() && _insertAt(a, b, g._childNodes) : (g.remove(), d.splice(b, 0, g), g._parent = a);
+    h = c[--f], h._nodeType === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? h.getChildNodeCount() && _insertAt(a, b, h._childNodes) : (h.remove(), d.splice(b, 0, h), h._parent = a);
   }
 }
 VNode.prototype.insertElementBefore = function(a, b, c) {
@@ -1136,30 +975,30 @@ function _walkAllDescendantVNodes(a, b, c) {
   if (a.getChildNodeCount()) {
     var f = [-1, a];
     do {
-      var g = ++f[d];
-      if (g = a.getChildNodeAt(g)) {
-        var h = b(g);
-        if (h === htmljson.Traverser.VISITOR_OPTION.BREAK) {
+      var h = ++f[d];
+      if (h = a.getChildNodeAt(h)) {
+        var k = b(h);
+        if (k === htmljson.Traverser.VISITOR_OPTION.BREAK) {
           break;
         }
-        if (h !== htmljson.Traverser.VISITOR_OPTION.SKIP) {
-          if (g.getChildNodeCount()) {
-            d += 2, f[d + 0] = -1, f[d + 1] = a = g;
+        if (k !== htmljson.Traverser.VISITOR_OPTION.SKIP) {
+          if (h.getChildNodeCount()) {
+            d += 2, f[d + 0] = -1, f[d + 1] = a = h;
           } else if (c) {
-            h = c(g);
-            if (h === htmljson.Traverser.VISITOR_OPTION.BREAK) {
+            k = c(h);
+            if (k === htmljson.Traverser.VISITOR_OPTION.BREAK) {
               break;
             }
-            h !== htmljson.Traverser.VISITOR_OPTION.SKIP && (h <= htmljson.Traverser.VISITOR_OPTION.REMOVED || htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER <= h) && (f[d] += h, e = !0);
+            k !== htmljson.Traverser.VISITOR_OPTION.SKIP && (k <= htmljson.Traverser.VISITOR_OPTION.REMOVED || htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER <= k) && (f[d] += k, e = !0);
           }
         }
       } else {
         if (c) {
-          h = c(a);
-          if (h === htmljson.Traverser.VISITOR_OPTION.BREAK) {
+          k = c(a);
+          if (k === htmljson.Traverser.VISITOR_OPTION.BREAK) {
             break;
           }
-          h !== htmljson.Traverser.VISITOR_OPTION.SKIP && (h <= htmljson.Traverser.VISITOR_OPTION.REMOVED || htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER <= h) && (f[d] += h, e = !0);
+          k !== htmljson.Traverser.VISITOR_OPTION.SKIP && (k <= htmljson.Traverser.VISITOR_OPTION.REMOVED || htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER <= k) && (f[d] += k, e = !0);
         }
         f.length = d;
         d -= 2;
@@ -1196,164 +1035,164 @@ htmlparser.unescapeAttrValue = function(a) {
 };
 var $jscomp$scope$m1534190617$0$exec = function(a, b, c, d, e) {
   function f() {
-    q = a.indexOf("<", q + 1);
-    if (-1 === q && (q = a.length, g() && htmlparser.DEFINE.USE_PAUSE)) {
+    v = a.indexOf("<", v + 1);
+    if (-1 === v && (v = a.length, h() && htmlparser.DEFINE.USE_PAUSE)) {
       return !0;
     }
   }
-  function g() {
-    if (q) {
-      var D = a.substr(0, q);
-      a = a.substr(q);
-      q = 0;
-      if ((e || C && !htmlparser.NON_TEXT_CHILD_ELEMENTS[C]) && !0 === b.onParseText(J && !htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS[C] ? D : htmlparser.unescapeHTML(D)) && htmlparser.DEFINE.USE_PAUSE) {
-        return h(), !0;
+  function h() {
+    if (v) {
+      var C = a.substr(0, v);
+      a = a.substr(v);
+      v = 0;
+      if ((e || E && !htmlparser.NON_TEXT_CHILD_ELEMENTS[E]) && !0 === b.onParseText(J && !htmlparser.ESCAPABLE_RAW_TEXT_ELEMENTS[E] ? C : htmlparser.unescapeHTML(C)) && htmlparser.DEFINE.USE_PAUSE) {
+        return k(), !0;
       }
     }
   }
-  function h() {
+  function k() {
     b.onParseProgress && b.onParseProgress(1 - a.length / d, $jscomp$scope$m1534190617$0$exec, [a, b, c, d, e]);
   }
-  function l(D) {
-    b.onParseError && b.onParseError(D);
+  function p(C) {
+    b.onParseError && b.onParseError(C);
   }
-  function w(D) {
-    for (var k = 0, u = a.length, n = 3, m, v; n < u && 2 !== k; ++n) {
-      switch(m = a.charAt(n), k) {
+  function x(C) {
+    for (var g = 0, r = a.length, m = 3, l, t; m < r && 2 !== g; ++m) {
+      switch(l = a.charAt(m), g) {
         case 0:
-          if (htmlparser.isWhitespace(m)) {
-            k = 1;
-            v = n;
+          if (htmlparser.isWhitespace(l)) {
+            g = 1;
+            t = m;
             break;
           }
         case 1:
-          ">" === m && (k = 2, v = n);
+          ">" === l && (g = 2, t = m);
       }
     }
-    if (2 === k) {
-      k = a.substring(2, v), a = a.substr(n), htmlparser.DEFINE.USE_XHTML && htmlparser.isNamespacedTag(k) || (k = k.toLowerCase()), htmlparser.VOID_ELEMENTS[k] || r(D, k, !1);
+    if (2 === g) {
+      g = a.substring(2, t), a = a.substr(m), htmlparser.DEFINE.USE_XHTML && htmlparser.isNamespacedTag(g) || (g = g.toLowerCase()), htmlparser.VOID_ELEMENTS[g] || u(C, g, !1);
     } else {
-      return l(a), !0;
+      return p(a), !0;
     }
   }
-  function r(D, k, u) {
-    var n = 0, m = D.length;
-    if (k) {
-      for (n = m; 0 <= n && D[--n] !== k;) {
+  function u(C, g, r) {
+    var m = 0, l = C.length;
+    if (g) {
+      for (m = l; 0 <= m && C[--m] !== g;) {
       }
     }
-    if (0 <= n) {
-      for (; n < m;) {
-        b.onParseEndTag(D[--m], u && !htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[D[m]], !1);
+    if (0 <= m) {
+      for (; m < l;) {
+        b.onParseEndTag(C[--l], r && !htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[C[l]], !1);
       }
-      D.length = n;
+      C.length = m;
     } else {
-      b.onParseEndTag(k, !1, !0);
+      b.onParseEndTag(g, !1, !0);
     }
-    C = c[c.length - 1] || "";
+    E = c[c.length - 1] || "";
   }
-  function y(D) {
-    function k(K) {
+  function z(C) {
+    function g(K) {
       A = a.substring(1, K);
       htmlparser.DEFINE.USE_XHTML && htmlparser.isNamespacedTag(A) || (A = A.toLowerCase());
     }
-    function u(K) {
-      var M = a.substring(I, G);
+    function r(K) {
+      var M = a.substring(H, F);
       htmlparser.DEFINE.USE_XHTML && htmlparser.isNamespacedTag(A) || (M = M.toLowerCase());
-      p = p || {};
-      p[M] = null != K ? htmlparser.unescapeAttrValue(a.substring(E, K)) : !0;
+      n = n || {};
+      n[M] = null != K ? htmlparser.unescapeAttrValue(a.substring(D, K)) : !0;
     }
-    function n() {
-      (z = "/>" === a.substr(t, 2)) && ++t;
-      return z;
+    function m() {
+      (y = "/>" === a.substr(q, 2)) && ++q;
+      return y;
     }
-    for (var m = 1, v = a.length, t = 2, p = null, z = !1, x, I, G, E, A, N, L; t < v && 9 > m; ++t) {
-      switch(x = a.charAt(t), m) {
+    for (var l = 1, t = a.length, q = 2, n = null, y = !1, w, H, F, D, A, N, L; q < t && 9 > l; ++q) {
+      switch(w = a.charAt(q), l) {
         case 1:
-          htmlparser.isWhitespace(x) ? (m = 2, k(t)) : ">" === x ? (m = 9, k(t)) : n() && (m = 9, k(t - 1));
+          htmlparser.isWhitespace(w) ? (l = 2, g(q)) : ">" === w ? (l = 9, g(q)) : m() && (l = 9, g(q - 1));
           break;
         case 2:
-          ">" === x || n() ? m = 9 : htmlparser.isWhitespace(x) || (m = 3, I = t);
+          ">" === w || m() ? l = 9 : htmlparser.isWhitespace(w) || (l = 3, H = q);
           break;
         case 3:
-          "=" === x ? (m = 5, G = t) : htmlparser.isWhitespace(x) ? (m = 4, G = t) : ">" === x ? (m = 9, G = t, u()) : n() && (m = 9, G = t - 1, u());
+          "=" === w ? (l = 5, F = q) : htmlparser.isWhitespace(w) ? (l = 4, F = q) : ">" === w ? (l = 9, F = q, r()) : m() && (l = 9, F = q - 1, r());
           break;
         case 4:
-          "=" === x ? m = 5 : ">" === x || n() ? (m = 9, u()) : htmlparser.isWhitespace(x) || (m = 3, u(), I = t);
+          "=" === w ? l = 5 : ">" === w || m() ? (l = 9, r()) : htmlparser.isWhitespace(w) || (l = 3, r(), H = q);
           break;
         case 5:
-          '"' === x || "'" === x ? (m = 6, N = x, L = !1, E = t + 1) : htmlparser.isWhitespace(x) || (m = 7, E = t);
+          '"' === w || "'" === w ? (l = 6, N = w, L = !1, D = q + 1) : htmlparser.isWhitespace(w) || (l = 7, D = q);
           break;
         case 6:
-          L || x !== N || (m = 2, u(t));
-          L = "\\" === x && !L;
+          L || w !== N || (l = 2, r(q));
+          L = "\\" === w && !L;
           break;
         case 7:
-          htmlparser.isWhitespace(x) ? (m = 2, u(t)) : ">" === x && (m = 9, u(t));
+          htmlparser.isWhitespace(w) ? (l = 2, r(q)) : ">" === w && (l = 9, r(q));
       }
     }
-    if (9 === m) {
+    if (9 === l) {
       if (!htmlparser.DEFINE.USE_XHTML || !htmlparser.isNamespacedTag(A)) {
-        for (; C;) {
-          if (htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[C] && !htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[C][A]) {
-            r(D, C, !1);
+        for (; E;) {
+          if (htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[E] && !htmlparser.OMITTABLE_END_TAG_ELEMENTS_WITH_CHILDREN[E][A]) {
+            u(C, E, !1);
           } else {
             break;
           }
         }
       }
-      (z = z || !!htmlparser.VOID_ELEMENTS[A]) || (C = c[c.length] = A);
-      a = a.substr(t);
-      if (!0 === b.onParseStartTag(A, p, z, t) && htmlparser.DEFINE.USE_PAUSE) {
-        return h(), !0;
+      (y = y || !!htmlparser.VOID_ELEMENTS[A]) || (E = c[c.length] = A);
+      a = a.substr(q);
+      if (!0 === b.onParseStartTag(A, n, y, q) && htmlparser.DEFINE.USE_PAUSE) {
+        return k(), !0;
       }
     } else {
-      return l(a), !0;
+      return p(a), !0;
     }
   }
-  var q = -1, C = "", F;
-  htmlparser.DEFINE.USE_PAUSE && (C = c[c.length - 1] || "");
+  var v = -1, E = "", I;
+  htmlparser.DEFINE.USE_PAUSE && (E = c[c.length - 1] || "");
   if (!f() || !htmlparser.DEFINE.USE_PAUSE) {
     for (; a;) {
-      var J = htmlparser.RAW_TEXT_ELEMENTS[C];
-      if (htmlparser.DEFINE.USE_XHTML && e && a.length === d && a.indexOf("<?xml ") === q) {
-        a = a.substr(q);
-        q = 0;
+      var J = htmlparser.RAW_TEXT_ELEMENTS[E];
+      if (htmlparser.DEFINE.USE_XHTML && e && a.length === d && a.indexOf("<?xml ") === v) {
+        a = a.substr(v);
+        v = 0;
         var B = a.indexOf("?>");
         if (-1 !== B) {
-          var H = a.substring(2, B);
+          var G = a.substring(2, B);
           a = a.substr(B + 2);
           e = !1;
-          if (!0 === b.onParseProcessingInstruction(H) && htmlparser.DEFINE.USE_PAUSE) {
-            h();
+          if (!0 === b.onParseProcessingInstruction(G) && htmlparser.DEFINE.USE_PAUSE) {
+            k();
             return;
           }
         } else {
-          l(a);
+          p(a);
           return;
         }
-      } else if (htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION && a.indexOf("<?") === q) {
-        if (g() && htmlparser.DEFINE.USE_PAUSE) {
+      } else if (htmlparser.DEFINE.USE_PROCESSING_INSTRUCTION && a.indexOf("<?") === v) {
+        if (h() && htmlparser.DEFINE.USE_PAUSE) {
           return;
         }
         B = a.indexOf("?>");
         if (-1 !== B) {
-          if (H = a.substring(2 + q, B), a = a.substr(B + 2), !0 === b.onParseProcessingInstruction(H) && htmlparser.DEFINE.USE_PAUSE) {
-            h();
+          if (G = a.substring(2 + v, B), a = a.substr(B + 2), !0 === b.onParseProcessingInstruction(G) && htmlparser.DEFINE.USE_PAUSE) {
+            k();
             return;
           }
         } else {
-          l(a);
+          p(a);
           return;
         }
-      } else if (a.indexOf("</", q) === q && htmlparser.isAlphabet(a.charAt(q + 2))) {
-        if (J && (htmlparser.DEFINE.USE_TRADITIONAL_TAGS && "plaintext" === C ? F = !0 : a.indexOf(C, q) !== q + 2 && a.indexOf(C.toUpperCase(), q) !== q + 2 && (F = !0)), F) {
+      } else if (a.indexOf("</", v) === v && htmlparser.isAlphabet(a.charAt(v + 2))) {
+        if (J && (htmlparser.DEFINE.USE_TRADITIONAL_TAGS && "plaintext" === E ? I = !0 : a.indexOf(E, v) !== v + 2 && a.indexOf(E.toUpperCase(), v) !== v + 2 && (I = !0)), I) {
           if (f() && htmlparser.DEFINE.USE_PAUSE) {
             return;
           }
-          F = !1;
+          I = !1;
         } else {
-          if (g() && htmlparser.DEFINE.USE_PAUSE || w(c)) {
+          if (h() && htmlparser.DEFINE.USE_PAUSE || x(c)) {
             return;
           }
         }
@@ -1361,46 +1200,46 @@ var $jscomp$scope$m1534190617$0$exec = function(a, b, c, d, e) {
         if (f() && htmlparser.DEFINE.USE_PAUSE) {
           return;
         }
-      } else if ("<" === a.charAt(q) && htmlparser.isAlphabet(a.charAt(q + 1))) {
-        if (g() && htmlparser.DEFINE.USE_PAUSE || y(c)) {
+      } else if ("<" === a.charAt(v) && htmlparser.isAlphabet(a.charAt(v + 1))) {
+        if (h() && htmlparser.DEFINE.USE_PAUSE || z(c)) {
           return;
         }
-      } else if (a.indexOf("\x3c!--") === q) {
-        if (g() && htmlparser.DEFINE.USE_PAUSE) {
+      } else if (a.indexOf("\x3c!--") === v) {
+        if (h() && htmlparser.DEFINE.USE_PAUSE) {
           return;
         }
         B = a.indexOf("--\x3e");
         if (-1 !== B) {
-          if (H = a.substring(4, B), a = a.substr(B + 3), !0 === b.onParseComment(htmlparser.unescapeHTML(H)) && htmlparser.DEFINE.USE_PAUSE) {
-            h();
+          if (G = a.substring(4, B), a = a.substr(B + 3), !0 === b.onParseComment(htmlparser.unescapeHTML(G)) && htmlparser.DEFINE.USE_PAUSE) {
+            k();
             return;
           }
         } else {
-          l(a);
+          p(a);
           return;
         }
-      } else if (htmlparser.DEFINE.USE_CDATA_SECTION && a.indexOf("<![CDATA[") === q) {
-        if (g() && htmlparser.DEFINE.USE_PAUSE) {
+      } else if (htmlparser.DEFINE.USE_CDATA_SECTION && a.indexOf("<![CDATA[") === v) {
+        if (h() && htmlparser.DEFINE.USE_PAUSE) {
           return;
         }
         B = a.indexOf("]]\x3e");
         if (-1 !== B) {
-          if (H = a.substring(9, B), a = a.substr(B + 3), !0 === b.onParseCDATASection(H) && htmlparser.DEFINE.USE_PAUSE) {
-            h();
+          if (G = a.substring(9, B), a = a.substr(B + 3), !0 === b.onParseCDATASection(G) && htmlparser.DEFINE.USE_PAUSE) {
+            k();
             return;
           }
         } else {
-          l(a);
+          p(a);
           return;
         }
-      } else if (htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE && (a.indexOf("<!DOCTYPE ") === q || a.indexOf("<!doctype ") === q)) {
-        if (a = a.substr(q), q = 0, B = a.indexOf(">"), -1 !== B) {
-          if (H = a.substring(0, B + 1), a = a.substr(B + 1), e = !1, !0 === b.onParseDocType(H) && htmlparser.DEFINE.USE_PAUSE) {
-            h();
+      } else if (htmlparser.DEFINE.USE_DOCUMENT_TYPE_NODE && (a.indexOf("<!DOCTYPE ") === v || a.indexOf("<!doctype ") === v)) {
+        if (a = a.substr(v), v = 0, B = a.indexOf(">"), -1 !== B) {
+          if (G = a.substring(0, B + 1), a = a.substr(B + 1), e = !1, !0 === b.onParseDocType(G) && htmlparser.DEFINE.USE_PAUSE) {
+            k();
             return;
           }
         } else {
-          l(a);
+          p(a);
           return;
         }
       } else {
@@ -1409,7 +1248,7 @@ var $jscomp$scope$m1534190617$0$exec = function(a, b, c, d, e) {
         }
       }
     }
-    r(c, "", !0);
+    u(c, "", !0);
     htmlparser.DEFINE.USE_PAUSE && b.onParseComplete && b.onParseComplete();
   }
 };
@@ -1452,11 +1291,11 @@ function m_isInstructionAttr(a, b) {
   return 0 === b.indexOf(a);
 }
 function m_executeProcessingInstruction(a, b, c, d) {
-  var e = b[1], f = b.slice(2), g;
-  core.isFunction(a) ? g = f.length ? a.call(d, e, f) : a.call(d, e) : a[e] && (g = f.length ? a[e].apply(d || a, f) : a[e].call(d || a));
-  htmljson.DEFINE.DEBUG && (null == g || m_isStringOrNumber(g) || core.isArray(g) || c && c("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(b) + "]"));
-  (g = core.deepCopy(g)) && core.isArray(g[0]) && g.unshift(htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE);
-  return g;
+  var e = b[1], f = b.slice(2), h;
+  core.isFunction(a) ? h = f.length ? a.call(d, e, f) : a.call(d, e) : a[e] && (h = f.length ? a[e].apply(d || a, f) : a[e].call(d || a));
+  htmljson.DEFINE.DEBUG && (null == h || m_isStringOrNumber(h) || core.isArray(h) || c && c("PROCESSING_INSTRUCTION Error! [" + JSON.stringify(b) + "]"));
+  (h = core.deepCopy(h)) && core.isArray(h[0]) && h.unshift(htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE);
+  return h;
 }
 function m_replaceProcessingInstructionWithHTMLJson(a, b, c) {
   c[0] === htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE ? (c.splice(0, 1, b, 1), a.splice.apply(a, c)) : a.splice(b, 1, c);
@@ -1464,9 +1303,9 @@ function m_replaceProcessingInstructionWithHTMLJson(a, b, c) {
 function m_executeInstructionAttr(a, b, c, d, e) {
   var f;
   if (core.isArray(c) && core.isString(c[0])) {
-    var g = c[0];
+    var h = c[0];
     c = c.slice(1);
-    core.isFunction(a) ? f = c.length ? a.call(e, g, c) : a.call(e, g) : a[g] && (f = c.length ? a[g].apply(e || a, c) : a[g].call(e || a));
+    core.isFunction(a) ? f = c.length ? a.call(e, h, c) : a.call(e, h) : a[h] && (f = c.length ? a[h].apply(e || a, c) : a[h].call(e || a));
   } else {
     core.isString(c) ? core.isFunction(a) ? f = a.call(e, c) : a[c] && (f = a[c].call(e || a)) : htmljson.DEFINE.DEBUG && d && d("Invalid InstructionAttr value! [" + b + "=" + c + "]");
   }
@@ -1591,82 +1430,82 @@ function m_toCSSTest(a) {
   return b.join(";");
 }
 function m_parseCSSText(a) {
-  function b(y, q) {
-    f[m_trimTrailingChar(y, " ")] = "0px" === q ? 0 : m_tryToFiniteNumber(m_trimTrailingChar(q, " "));
-    ++g;
+  function b(z, v) {
+    f[m_trimTrailingChar(z, " ")] = "0px" === v ? 0 : m_tryToFiniteNumber(m_trimTrailingChar(v, " "));
+    ++h;
   }
-  for (var c = 0, d = a.length, e = 0, f = {}, g = 0, h, l, w = "", r; e < d; ++e) {
-    h = a.charAt(e);
+  for (var c = 0, d = a.length, e = 0, f = {}, h = 0, k, p, x = "", u; e < d; ++e) {
+    k = a.charAt(e);
     switch(c) {
       case 0:
-        if (htmlparser.isWhitespace(h)) {
+        if (htmlparser.isWhitespace(k)) {
           break;
         }
-        l = e;
+        p = e;
         c = 1;
       case 1:
-        ":" === h && (r = a.substring(l, e), c = 2);
+        ":" === k && (u = a.substring(p, e), c = 2);
         break;
       case 2:
-        if (htmlparser.isWhitespace(h)) {
+        if (htmlparser.isWhitespace(k)) {
           break;
         }
-        l = e;
+        p = e;
         c = 3;
       case 3:
-        '"' === h || "'" === h ? (w = h, c = 4) : ";" === h && (b(r, a.substring(l, e)), c = 0);
+        '"' === k || "'" === k ? (x = k, c = 4) : ";" === k && (b(u, a.substring(p, e)), c = 0);
         break;
       case 4:
-        w === h && (w = "", c = 3);
+        x === k && (x = "", c = 3);
     }
-    3 <= c && b(r, a.substring(l));
+    3 <= c && b(u, a.substring(p));
   }
-  return g ? f : null;
+  return h ? f : null;
 }
 function m_createVNodeFromHTMLJson(a, b) {
   var c, d;
-  htmljson.Traverser.traverseAllDescendantNodes(a, function(e, f, g, h) {
-    function l(q, C, F) {
-      c ? (h < d.length && (d.length = h), q = d[d.length - 1].insertNodeLast(q, C, F), m_hasChildren(e) && (d[h] = q)) : (c = new VNode(b, 0, q, C, F), d = [c]);
+  htmljson.Traverser.traverseAllDescendantNodes(a, function(e, f, h, k) {
+    function p(v, E, I) {
+      c ? (k < d.length && (d.length = k), v = d[d.length - 1].insertNodeLast(v, E, I), m_hasChildren(e) && (d[k] = v)) : (c = new VNode(b, 0, v, E, I), d = [c]);
     }
     if (m_isStringOrNumber(e)) {
-      l(htmljson.NODE_TYPE.TEXT_NODE, e);
+      p(htmljson.NODE_TYPE.TEXT_NODE, e);
     } else {
       f = e[0];
-      g = e[1];
-      var w = 1, r = f, y;
+      h = e[1];
+      var x = 1, u = f, z;
       switch(f) {
         case htmljson.NODE_TYPE.DOCUMENT_NODE:
         case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
         case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER:
-          l(f, g);
+          p(f, h);
           break;
         case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
-          l(f);
+          p(f);
           break;
         case htmljson.NODE_TYPE.TEXT_NODE:
         case htmljson.NODE_TYPE.CDATA_SECTION:
         case htmljson.NODE_TYPE.COMMENT_NODE:
         case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START:
         case htmljson.NODE_TYPE.ELEMENT_END_TAG:
-          l(f, g);
+          p(f, h);
           break;
         case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END:
-          l(f);
+          p(f);
           break;
         case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION:
-          w = [];
-          r = 2;
-          for (y = e.length; r < y; ++r) {
-            w[r - 2] = e[r];
+          x = [];
+          u = 2;
+          for (z = e.length; u < z; ++u) {
+            x[u - 2] = e[u];
           }
-          l(f, g, y - 2 ? w : null);
+          p(f, h, z - 2 ? x : null);
           break;
         case htmljson.NODE_TYPE.ELEMENT_NODE:
         case htmljson.NODE_TYPE.ELEMENT_START_TAG:
-          r = g, w = 2;
+          u = h, x = 2;
         default:
-          core.isString(r) && l(1 === w ? htmljson.NODE_TYPE.ELEMENT_NODE : f, r, e[w]);
+          core.isString(u) && p(1 === x ? htmljson.NODE_TYPE.ELEMENT_NODE : f, u, e[x]);
       }
     }
     if (b) {
@@ -1678,116 +1517,116 @@ function m_createVNodeFromHTMLJson(a, b) {
 ;var json2json = {main:function(a, b, c, d, e, f) {
   core.isArray(a) ? (a[0] !== htmljson.NODE_TYPE.DOCUMENT_NODE && a[0] !== htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE && (a = [htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE, a]), json2json.process(a, b, c, e, f), d && dispatchDocumentReadyEvent(d, a)) : htmljson.DEFINE.DEBUG && e && e("Invalid html.json document!");
 }, process:function(a, b, c, d, e) {
-  function f(k, u, n) {
-    function m(p, z) {
-      for (; 0 <= k.indexOf(p);) {
-        k = k.split(p).join(z);
+  function f(g, r, m) {
+    function l(n, y) {
+      for (; 0 <= g.indexOf(n);) {
+        g = g.split(n).join(y);
       }
     }
-    n && (k = k.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2"));
-    k = k.split("\t").join(" ").split("\f").join(" ");
-    m("\n\n", "\n");
-    m("  ", " ");
-    if (u) {
-      var v = " \n" === k.substr(0, 2) || "\n" === k.charAt(0), t = "\n " === k.substr(k.length - 2) || "\n" === k.charAt(k.length - 1);
+    m && (g = g.replace(/([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])\s([\uFF01-\uFF60\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF])/g, "$1$2"));
+    g = g.split("\t").join(" ").split("\f").join(" ");
+    l("\n\n", "\n");
+    l("  ", " ");
+    if (r) {
+      var t = " \n" === g.substr(0, 2) || "\n" === g.charAt(0), q = "\n " === g.substr(g.length - 2) || "\n" === g.charAt(g.length - 1);
     }
-    k = m_trimLeadingChar(k, "\n");
-    k = m_trimTrailingChar(k, "\n");
-    k = k.split("\n").join(" ");
-    m("  ", " ");
-    v && (k = m_trimLeadingChar(k, " "));
-    t && (k = m_trimTrailingChar(k, " "));
-    k = k.split("\\u0020").join(" ").split("&#x20;").join(" ").split("&#32;").join(" ");
-    return m_tryToFiniteNumber(k);
+    g = m_trimLeadingChar(g, "\n");
+    g = m_trimTrailingChar(g, "\n");
+    g = g.split("\n").join(" ");
+    l("  ", " ");
+    t && (g = m_trimLeadingChar(g, " "));
+    q && (g = m_trimTrailingChar(g, " "));
+    g = g.split("\\u0020").join(" ").split("&#x20;").join(" ").split("&#32;").join(" ");
+    return m_tryToFiniteNumber(g);
   }
-  function g(k) {
-    var u;
-    htmljson.Traverser.traverseAllDescendantNodes(k, function(n, m, v, t) {
-      m_getNodeType(n) === htmljson.NODE_TYPE.TEXT_NODE && (u = [n, m, v]);
+  function h(g) {
+    var r;
+    htmljson.Traverser.traverseAllDescendantNodes(g, function(m, l, t, q) {
+      m_getNodeType(m) === htmljson.NODE_TYPE.TEXT_NODE && (r = [m, l, t]);
     });
-    return u;
+    return r;
   }
-  function h(k, u) {
-    function n(p) {
-      return p.split("\n").join("").split("\t").join("").split("\f").join("").split(" ").join("");
+  function k(g, r) {
+    function m(n) {
+      return n.split("\n").join("").split("\t").join("").split("\f").join("").split(" ").join("");
     }
-    var m;
-    for (htmljson.Traverser.traverseAllDescendantNodes(k, function(p, z, x, I) {
-      if (m_getNodeType(p) === htmljson.NODE_TYPE.TEXT_NODE) {
-        p = "" + (m_isStringOrNumber(p) ? p : p[1]);
-        if (n(p)) {
-          return z.splice(x, 1, u ? m_trimLeadingChar(p, "\n") : m_trimLeadingChars(p, "\n\t\f ")), htmljson.Traverser.VISITOR_OPTION.BREAK;
+    var l;
+    for (htmljson.Traverser.traverseAllDescendantNodes(g, function(n, y, w, H) {
+      if (m_getNodeType(n) === htmljson.NODE_TYPE.TEXT_NODE) {
+        n = "" + (m_isStringOrNumber(n) ? n : n[1]);
+        if (m(n)) {
+          return y.splice(w, 1, r ? m_trimLeadingChar(n, "\n") : m_trimLeadingChars(n, "\n\t\f ")), htmljson.Traverser.VISITOR_OPTION.BREAK;
         }
-        z.splice(x, 1);
+        y.splice(w, 1);
         return htmljson.Traverser.VISITOR_OPTION.REMOVED;
       }
-    }); m = g(k);) {
-      var v = m[0];
-      var t = m[1];
-      m = m[2];
-      v = "" + (m_isStringOrNumber(v) ? v : v[1]);
-      if (n(v)) {
-        t.splice(m, 1, u ? m_trimTrailingChar(v, "\n") : m_trimTrailingChars(v, "\n\t\f "));
+    }); l = h(g);) {
+      var t = l[0];
+      var q = l[1];
+      l = l[2];
+      t = "" + (m_isStringOrNumber(t) ? t : t[1]);
+      if (m(t)) {
+        q.splice(l, 1, r ? m_trimTrailingChar(t, "\n") : m_trimTrailingChars(t, "\n\t\f "));
         break;
       } else {
-        t.splice(m, 1);
+        q.splice(l, 1);
       }
     }
   }
-  function l(k) {
-    for (var u; htmljson.Traverser.traverseAllDescendantNodes(k, function(n, m, v, t) {
-      if (m_getNodeType(n) === htmljson.NODE_TYPE.TEXT_NODE) {
-        t = (t = g(k)) ? m === t[1] && v === t[2] : !1;
-        var p = "" + (m_isStringOrNumber(n) ? n : n[1]);
-        p = p.split("\n");
-        for (var z = 0, x = p.length; z < x - (t ? 0 : 1); ++z) {
-          p[z] = m_trimTrailingChars(p[z], "\t\f ");
+  function p(g) {
+    for (var r; htmljson.Traverser.traverseAllDescendantNodes(g, function(m, l, t, q) {
+      if (m_getNodeType(m) === htmljson.NODE_TYPE.TEXT_NODE) {
+        q = (q = h(g)) ? l === q[1] && t === q[2] : !1;
+        var n = "" + (m_isStringOrNumber(m) ? m : m[1]);
+        n = n.split("\n");
+        for (var y = 0, w = n.length; y < w - (q ? 0 : 1); ++y) {
+          n[y] = m_trimTrailingChars(n[y], "\t\f ");
         }
-        p = p.join("\n");
-        if ("\n" === p && u) {
-          return n = u[0], t = u[1], z = u[2], m_isStringOrNumber(n) ? t[z] += p : n[1] += p, m.splice(v, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+        n = n.join("\n");
+        if ("\n" === n && r) {
+          return m = r[0], q = r[1], y = r[2], m_isStringOrNumber(m) ? q[y] += n : m[1] += n, l.splice(t, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
         }
-        m_isStringOrNumber(n) ? m[v] = p : n[1] = p;
-        u = [n, m, v];
+        m_isStringOrNumber(m) ? l[t] = n : m[1] = n;
+        r = [m, l, t];
       }
     });) {
     }
   }
-  function w(k, u) {
-    for (var n = m_getChildNodeStartIndex(k), m = k.length, v, t, p, z, x; n < m; ++n) {
-      v = k[n], m_getNodeType(v) === htmljson.NODE_TYPE.TEXT_NODE && (t = t || n, p = p || v, z = n, x = v);
+  function x(g, r) {
+    for (var m = m_getChildNodeStartIndex(g), l = g.length, t, q, n, y, w; m < l; ++m) {
+      t = g[m], m_getNodeType(t) === htmljson.NODE_TYPE.TEXT_NODE && (q = q || m, n = n || t, y = m, w = t);
     }
-    t && (core.isArray(p) && (p = p[1]), core.isArray(x) && (x = x[1]), t !== z || u ? (core.isString(p) && !u && (p = m_normalizeNewlines(p), p = m_trimLeadingChar(p, "\n"), k[t] = m_tryToFiniteNumber(p)), core.isString(x) && (x = m_normalizeNewlines(x), x = m_trimTrailingChar(x, "\n"), k[z] = m_tryToFiniteNumber(x))) : core.isString(p) && (p = m_normalizeNewlines(p), p = m_trimChar(p, "\n"), k[t] = m_tryToFiniteNumber(p)));
+    q && (core.isArray(n) && (n = n[1]), core.isArray(w) && (w = w[1]), q !== y || r ? (core.isString(n) && !r && (n = m_normalizeNewlines(n), n = m_trimLeadingChar(n, "\n"), g[q] = m_tryToFiniteNumber(n)), core.isString(w) && (w = m_normalizeNewlines(w), w = m_trimTrailingChar(w, "\n"), g[y] = m_tryToFiniteNumber(w))) : core.isString(n) && (n = m_normalizeNewlines(n), n = m_trimChar(n, "\n"), g[q] = m_tryToFiniteNumber(n)));
   }
   c = e || {};
-  var r = -1 !== ["normal", !0, "aggressive"].indexOf(c.trimWhitespaces), y = "aggressive" === c.trimWhitespaces, q = !!c.removeNewlineBetweenFullWidthChars, C = !1 !== c.keepCDATASections, F = !1 !== c.keepComments, J = !0 === c.keepEmptyConditionalComment, B = c.instructionAttrPrefix || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX, H, D;
-  (htmljson.Traverser.traverseAllDescendantNodes(a, function(k, u, n, m) {
-    m = k[0];
-    var v = k[1], t = 1;
-    switch(m_getNodeType(k)) {
+  var u = -1 !== ["normal", !0, "aggressive"].indexOf(c.trimWhitespaces), z = "aggressive" === c.trimWhitespaces, v = !!c.removeNewlineBetweenFullWidthChars, E = !1 !== c.keepCDATASections, I = !1 !== c.keepComments, J = !0 === c.keepEmptyConditionalComment, B = c.instructionAttrPrefix || htmljson.DEFINE.INSTRUCTION_ATTR_PREFIX, G, C;
+  (htmljson.Traverser.traverseAllDescendantNodes(a, function(g, r, m, l) {
+    l = g[0];
+    var t = g[1], q = 1;
+    switch(m_getNodeType(g)) {
       case htmljson.NODE_TYPE.DOCUMENT_NODE:
-        r && (k[1] = htmlparser.DEFINE.USE_XHTML ? v.split("\n").join(" ").split("  ").join(" ").split("?> <!").join("?>\n<!") : v.split("\n").join(" ").split("  ").join(" "));
+        u && (g[1] = htmlparser.DEFINE.USE_XHTML ? t.split("\n").join(" ").split("  ").join(" ").split("?> <!").join("?>\n<!") : t.split("\n").join(" ").split("  ").join(" "));
         break;
       case htmljson.NODE_TYPE.DOCUMENT_FRAGMENT_NODE:
         break;
       case htmljson.NODE_TYPE.TEXT_NODE:
-        core.isArray(k) || (v = k);
-        if (core.isString(v)) {
-          if (D || (v = m_normalizeNewlines(v), r && (v = f(v, y, q))), "" !== v) {
-            u[n] = v;
+        core.isArray(g) || (t = g);
+        if (core.isString(t)) {
+          if (C || (t = m_normalizeNewlines(t), u && (t = f(t, z, v))), "" !== t) {
+            r[m] = t;
           } else {
-            return u.splice(n, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+            return r.splice(m, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
           }
         }
         break;
       case htmljson.NODE_TYPE.CDATA_SECTION:
-        if (!C) {
-          return u.splice(n, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+        if (!E) {
+          return r.splice(m, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
         }
         break;
       case htmljson.NODE_TYPE.COMMENT_NODE:
-        if (!F) {
-          return u.splice(n, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+        if (!I) {
+          return r.splice(m, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
         }
         break;
       case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
@@ -1795,91 +1634,91 @@ function m_createVNodeFromHTMLJson(a, b) {
       case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START:
         break;
       case htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_END:
-        k = u[n - 1];
-        if (!J && k && k[0] === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START) {
-          return u.splice(n - 1, 2), 2 * htmljson.Traverser.VISITOR_OPTION.REMOVED;
+        g = r[m - 1];
+        if (!J && g && g[0] === htmljson.NODE_TYPE.COND_CMT_SHOW_LOWER_START) {
+          return r.splice(m - 1, 2), 2 * htmljson.Traverser.VISITOR_OPTION.REMOVED;
         }
         break;
       case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER:
         break;
       case htmljson.NODE_TYPE.PROCESSING_INSTRUCTION:
-        if (b && (k = m_executeProcessingInstruction(b, k, d), void 0 !== k)) {
-          if (null === k || "" === k) {
-            return u.splice(n, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+        if (b && (g = m_executeProcessingInstruction(b, g, d), void 0 !== g)) {
+          if (null === g || "" === g) {
+            return r.splice(m, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
           }
-          if (m_isStringOrNumber(k)) {
-            u.splice(n, 1, k), H = !0;
-          } else if (core.isArray(k)) {
-            return m_replaceProcessingInstructionWithHTMLJson(u, n, k), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+          if (m_isStringOrNumber(g)) {
+            r.splice(m, 1, g), G = !0;
+          } else if (core.isArray(g)) {
+            return m_replaceProcessingInstructionWithHTMLJson(r, m, g), htmljson.Traverser.VISITOR_OPTION.REMOVED;
           }
         }
         break;
       case htmljson.NODE_TYPE.ELEMENT_NODE:
       case htmljson.NODE_TYPE.ELEMENT_START_TAG:
-        core.isNumber(m) && (m = v, t = 2);
-        m = m_parseTagName(m)[0];
-        u = k[t];
-        if (m_isAttributes(u)) {
-          n = t - 1;
-          v = 0;
-          var p, z = m_parseTagName(k[n]), x = z[1], I = z[2];
-          z = z[0];
-          for (A in u) {
-            var G = A;
-            var E = u[A];
-            if (p = m_isInstructionAttr(B, A)) {
+        core.isNumber(l) && (l = t, q = 2);
+        l = m_parseTagName(l)[0];
+        r = g[q];
+        if (m_isAttributes(r)) {
+          m = q - 1;
+          t = 0;
+          var n, y = m_parseTagName(g[m]), w = y[1], H = y[2];
+          y = y[0];
+          for (A in r) {
+            var F = A;
+            var D = r[A];
+            if (n = m_isInstructionAttr(B, A)) {
               var A = A.substr(B.length);
               "className" === A && (A = "class");
               if (b) {
-                if (E = m_executeInstructionAttr(b, A, E, d), void 0 !== E) {
-                  if (delete u[G], core.isArray(E)) {
-                    core.isString(E[0]) ? (u[G] = E, ++v) : htmljson.DEFINE.DEBUG && d && d("Invalid dynamic attribute callback value! [" + G + "=" + E + "]");
-                  } else if ((!htmlparser.BOOLEAN_ATTRIBUTES[A] || !1 !== E) && null !== E) {
-                    if (core.isString(E)) {
+                if (D = m_executeInstructionAttr(b, A, D, d), void 0 !== D) {
+                  if (delete r[F], core.isArray(D)) {
+                    core.isString(D[0]) ? (r[F] = D, ++t) : htmljson.DEFINE.DEBUG && d && d("Invalid dynamic attribute callback value! [" + F + "=" + D + "]");
+                  } else if ((!htmlparser.BOOLEAN_ATTRIBUTES[A] || !1 !== D) && null !== D) {
+                    if (core.isString(D)) {
                       if ("id" === A) {
-                        x = E;
+                        w = D;
                         continue;
                       } else if ("class" === A) {
-                        G = E.split(" ");
-                        for (E = G.length; E;) {
-                          p = G[--E], -1 === (" " + I + " ").indexOf(" " + p + " ") && (I = (I ? " " : "") + p);
+                        F = D.split(" ");
+                        for (D = F.length; D;) {
+                          n = F[--D], -1 === (" " + H + " ").indexOf(" " + n + " ") && (H = (H ? " " : "") + n);
                         }
                         continue;
                       }
                     }
-                    u[A] = E;
-                    ++v;
+                    r[A] = D;
+                    ++t;
                   }
                 } else {
-                  ++v;
+                  ++t;
                 }
               } else {
-                ++v;
+                ++t;
               }
             } else {
-              ++v;
+              ++t;
             }
           }
-          k[n] = m_createTagName(z, x, I);
-          0 === v && k.splice(t, 1);
+          g[m] = m_createTagName(y, w, H);
+          0 === t && g.splice(q, 1);
         }
-        m_SPECIAL_LAYOUT_ELEMENTS[m] && y ? h(k, !1) : m_FAMILY_OF_PRE_ELEMENT[m] ? (h(k, !0), y && l(k), D = k) : m_TRIM_NEWLINES_ELEMENTS[m] ? w(D = k) : !htmlparser.DEFINE.USE_TRADITIONAL_TAGS || "xmp" !== m && "plaintext" !== m || w(k, !0);
+        m_SPECIAL_LAYOUT_ELEMENTS[l] && z ? k(g, !1) : m_FAMILY_OF_PRE_ELEMENT[l] ? (k(g, !0), z && p(g), C = g) : m_TRIM_NEWLINES_ELEMENTS[l] ? x(C = g) : !htmlparser.DEFINE.USE_TRADITIONAL_TAGS || "xmp" !== l && "plaintext" !== l || x(g, !0);
         break;
       default:
-        htmljson.DEFINE.DEBUG && d && d("Not html.json! [" + k + "]");
+        htmljson.DEFINE.DEBUG && d && d("Not html.json! [" + g + "]");
     }
-  }, function(k, u, n, m) {
+  }, function(g, r, m, l) {
     if (!J) {
-      switch(m_getNodeType(k)) {
+      switch(m_getNodeType(g)) {
         case htmljson.NODE_TYPE.COND_CMT_HIDE_LOWER:
         case htmljson.NODE_TYPE.NETSCAPE4_COND_CMT_HIDE_LOWER:
-          if (2 === k.length) {
-            return u.splice(n, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
+          if (2 === g.length) {
+            return r.splice(m, 1), htmljson.Traverser.VISITOR_OPTION.REMOVED;
           }
       }
     }
-    D === k && (D = null);
-  }) || H) && normalizeTextNodes(a);
+    C === g && (C = null);
+  }) || G) && normalizeTextNodes(a);
 }};
 function dispatchDocumentReadyEvent(a, b) {
   var c = m_createVNodeFromHTMLJson(b, !1);
@@ -1896,12 +1735,12 @@ function normalizeTextNodes(a) {
     c = "";
   }
   var c = "", d, e, f;
-  htmljson.Traverser.traverseAllDescendantNodes(a, function(g, h, l, w) {
-    if (c && d !== w) {
+  htmljson.Traverser.traverseAllDescendantNodes(a, function(h, k, p, x) {
+    if (c && d !== x) {
       return b(), htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
     }
-    if (m_getNodeType(g) === htmljson.NODE_TYPE.TEXT_NODE) {
-      return c = m_isStringOrNumber(g) ? c + g : c + g[1], h.splice(l, 1), d = w, e = h, f = l, htmljson.Traverser.VISITOR_OPTION.REMOVED;
+    if (m_getNodeType(h) === htmljson.NODE_TYPE.TEXT_NODE) {
+      return c = m_isStringOrNumber(h) ? c + h : c + h[1], k.splice(p, 1), d = x, e = k, f = p, htmljson.Traverser.VISITOR_OPTION.REMOVED;
     }
     if (c) {
       return b(), htmljson.Traverser.VISITOR_OPTION.INSERTED_BEFORER;
@@ -1926,25 +1765,25 @@ json2json.main.ELEMENT_START_TAG = htmljson.NODE_TYPE.ELEMENT_START_TAG;
 json2json.main.ELEMENT_END_TAG = htmljson.NODE_TYPE.ELEMENT_END_TAG;
 json2json.gulp = {};
 json2json.main.gulp = function(a, b, c, d, e) {
-  const f = require("plugin-error"), g = require("through2"), h = e && e.prettify;
-  return g.obj(function(l, w, r) {
-    if (l.isNull()) {
-      return r();
+  const f = require("plugin-error"), h = require("through2"), k = e && e.prettify;
+  return h.obj(function(p, x, u) {
+    if (p.isNull()) {
+      return u();
     }
-    if (l.isStream()) {
-      return this.emit("error", new f("json2json", "Streaming not supported")), r();
+    if (p.isStream()) {
+      return this.emit("error", new f("json2json", "Streaming not supported")), u();
     }
-    if (".json" === l.extname) {
+    if (".json" === p.extname) {
       try {
-        const y = JSON.parse(l.contents.toString(w));
-        json2json.main(y, a, b, c, d, e);
-        const q = JSON.stringify(y, null, h ? "    " : "");
-        l.contents = Buffer.from(q);
-      } catch (y) {
-        this.emit("error", new f("json2json", y));
+        const z = JSON.parse(p.contents.toString(x));
+        json2json.main(z, a, b, c, d, e);
+        const v = JSON.stringify(z, null, k ? "    " : "");
+        p.contents = Buffer.from(v);
+      } catch (z) {
+        this.emit("error", new f("json2json", z));
       }
     }
-    r(null, l);
+    u(null, p);
   });
 };
 

@@ -2,7 +2,15 @@ goog.provide( 'htmljson.base' );
 goog.provide( 'InstructionHandler' );
 goog.provide( 'EnterNodeHandler' );
 
-goog.require( 'core.all' );
+goog.require( 'core.isString' );
+goog.require( 'core.isNumber' );
+goog.require( 'core.isFiniteNumericString' );
+goog.require( 'core.isArray' );
+goog.require( 'core.isObject' );
+goog.require( 'core.isFunction' );
+goog.require( 'core.isBoolean' );
+goog.require( 'core.isFiniteNumericString' );
+goog.require( 'core.deepCopy' );
 goog.require( 'VNode' );
 goog.require( 'htmlparser.DEFINE' );
 goog.require( 'htmlparser.isWhitespace' );

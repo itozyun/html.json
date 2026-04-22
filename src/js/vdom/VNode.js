@@ -2,7 +2,9 @@ goog.provide( 'VNode' );
 goog.provide( 'VNode.currentRestrictedVNode' );
 goog.provide( 'VNode.treeIsUpdated' );
 
-goog.require( 'core.all' );
+goog.require( 'core.isString' );
+goog.require( 'core.isObject' );
+goog.require( 'core.isBoolean' );
 goog.require( 'htmljson.NODE_TYPE' );
 goog.require( 'htmljson.Traverser.VISITOR_OPTION' );
 
