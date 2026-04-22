@@ -21,6 +21,9 @@ module.exports = {
                   });
         return json2html.stream(
             {
+                'year' : function(){
+                    return new Date().getFullYear();
+                },
                 'time' : function(){
                     if(!news){
                         stoppingStream = this;
