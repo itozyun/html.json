@@ -484,10 +484,10 @@ json2json.process = function( rootHTMLJson, opt_onInstruction, opt_onEnterNode, 
                         var isLast = isLastTextNode( htmlJsonPre, parentJSONNode, myIndex );
                         var text   = '' + ( m_isStringOrNumber( currentJSONNode ) ? currentJSONNode : currentJSONNode[ 1 ] );
                         var texts  = text.split( '\n' );
-                        var i = 0, l = texts.length;
+                        var i = 0, l = texts.length - ( isLast ? 0 : 1 );
                         var prevText, prevTextParent, prevTextIndex;
 
-                        for( ; i < l - ( isLast ? 0 : 1 ); ++i ){
+                        for( ; i < l; ++i ){
                             // 1. 各行の改行の前の空白文字("\t", "\f", " ")も削除
                             //    </pre> の直前の行の後ろの空白文字("\t", " ")も削除
                             texts[ i ] = m_trimTrailingChars( texts[ i ], '\t\f ' );

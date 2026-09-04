@@ -15,8 +15,6 @@ goog.require( 'JsonParser' );
 goog.require( 'JsonParser.C' );
 goog.require( 'bufferFrom' );
 goog.require( 'Through' );
-goog.requireType( 'htmljson.Traverser.EnterHandler' );
-goog.requireType( 'htmljson.Traverser.LeaveHandler' );
 
 /**
  * @param {!function((string | !Error))=} opt_onError

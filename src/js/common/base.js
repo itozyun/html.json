@@ -656,16 +656,15 @@ function m_toCSSTest( styles ){
  */
 function m_parseCSSText( cssText ){
     function saveCSSProperty( property, value ){
+        styles = styles || {};
         styles[ m_trimTrailingChar( property, ' ' ) ] =
             value === '0px' ? 0 : m_tryToFiniteNumber( m_trimTrailingChar( value, ' ' ) );
-        ++numProps;
     };
 
-    var phase    = 0,
-        l        = cssText.length,
-        i        = 0,
-        styles   = {},
-        numProps = 0,
+    var phase  = 0,
+        l      = cssText.length,
+        i      = 0,
+        styles = null,
         chr, start, quot = '', property;
 
     for( ; i < l; ++i ){
@@ -711,7 +710,7 @@ function m_parseCSSText( cssText ){
             saveCSSProperty( property, cssText.substring( /** @type {number} */ (start) ) );
         };
     };
-    return numProps ? styles : null;
+    return styles;
 };
 
 /**
