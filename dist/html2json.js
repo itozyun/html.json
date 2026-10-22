@@ -42,7 +42,7 @@ function ia(a, b, f) {
             break;
           }
         case 1:
-          ">" === d && (m = 2, x = q);
+          ">" === d && (m = 2, x = x || q);
       }
     }
     if (2 === m) {
@@ -76,7 +76,7 @@ function ia(a, b, f) {
       var Z = a.substring(Y, R);
       0 < H.indexOf(":") || (Z = Z.toLowerCase());
       B = B || {};
-      B[Z] = null != U ? F(a.substring(aa, U)).split('\\"').join('"').split("\\'").join("'") : !0;
+      B[Z] = null != U ? F(a.substring(aa, U)).split('\\"').join('"').split("&quot;").join('"').split("\\'").join("'").split("&apos;").join("'") : !0;
     }
     function q() {
       (S = "/>" === a.substr(v, 2)) && ++v;

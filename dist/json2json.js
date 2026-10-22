@@ -1031,7 +1031,7 @@ htmlparser.escapeHTML = function(a) {
   return a.split("&lt;").join("&amp;lt;").split("&gt;").join("&amp;gt;").split("<").join("&lt;").split(">").join("&gt;");
 };
 htmlparser.unescapeAttrValue = function(a) {
-  return htmlparser.unescapeHTML(a).split('\\"').join('"').split("\\'").join("'");
+  return htmlparser.unescapeHTML(a).split('\\"').join('"').split("&quot;").join('"').split("\\'").join("'").split("&apos;").join("'");
 };
 var $jscomp$scope$m1534190617$0$exec = function(a, b, c, d, e) {
   function f() {
@@ -1066,7 +1066,7 @@ var $jscomp$scope$m1534190617$0$exec = function(a, b, c, d, e) {
             break;
           }
         case 1:
-          ">" === l && (h = 2, t = m);
+          ">" === l && (h = 2, t = t || m);
       }
     }
     if (2 === h) {
