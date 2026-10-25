@@ -137,48 +137,51 @@ htmljson.Traverser.LeaveHandler = {};
 var VISITOR_OPTION = {REMOVED:-1, NONE:0, INSERTED_BEFORER:1, BREAK:Infinity, SKIP:-Infinity};
 htmljson.Traverser.VISITOR_OPTION = VISITOR_OPTION;
 htmljson.Traverser.traverseAllDescendantNodes = function(a, b, c) {
-  var d = a, e = m_getChildNodeStartIndex(d), f = 0, g = b(a, null, -1, f / 3), k = [-1, a, e], p = !1;
+  var d = a, e = m_getChildNodeStartIndex(d), f = 0, g = b(a, null, -1, f / 3), k = -1, p = [k, a, e], x = !1;
   if (g === VISITOR_OPTION.BREAK || g === VISITOR_OPTION.SKIP) {
     return !1;
   }
   if (0 < d.length - e) {
-    do {
-      var x = ++k[f];
-      var u = d[x + e];
+    for (;;) {
+      ++k;
+      var u = d[k + e];
       if (null != u) {
-        g = b(u, d, x + e, f / 3 + 1);
+        g = b(u, d, k + e, f / 3 + 1);
         if (g === VISITOR_OPTION.BREAK) {
-          return p;
+          return x;
         }
         if (g !== VISITOR_OPTION.SKIP) {
           if (g <= VISITOR_OPTION.REMOVED) {
-            k[f] += g, p = !0;
+            k += g, x = !0;
           } else {
-            if (VISITOR_OPTION.INSERTED_BEFORER <= g && (k[f] += g, p = !0), m_hasChildren(u)) {
-              f += 3, k[f + 0] = -1, k[f + 1] = d = u, k[f + 2] = e = m_getChildNodeStartIndex(u);
-            } else if (c && d) {
-              g = c(u, d, x + e, f / 3 + 1);
+            if (VISITOR_OPTION.INSERTED_BEFORER <= g && (k += g, x = !0), m_hasChildren(u)) {
+              p[f + 0] = k, f += 3, p[f + 0] = k = -1, p[f + 1] = d = u, p[f + 2] = e = m_getChildNodeStartIndex(u);
+            } else if (c) {
+              g = c(u, d, k + e, f / 3 + 1);
               if (g === VISITOR_OPTION.BREAK) {
-                return p;
+                return x;
               }
-              g !== VISITOR_OPTION.SKIP && (g <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= g) && (k[f] += g, p = !0);
+              g !== VISITOR_OPTION.SKIP && (g <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= g) && (k += g, x = !0);
             }
           }
         }
       } else {
-        if (k.length = f, f -= 3, d = k[f + 1], e = k[f + 2], c && d) {
-          x = k[f] + e;
-          g = c(d[x], d, x, f / 3 + 1);
-          if (g === VISITOR_OPTION.BREAK) {
-            return p;
+        if (3 <= f) {
+          if (p.length = f, f -= 3, k = p[f + 0], d = p[f + 1], e = p[f + 2], c) {
+            g = c(d[k + e], d, k + e, f / 3 + 1);
+            if (g === VISITOR_OPTION.BREAK) {
+              return x;
+            }
+            g !== VISITOR_OPTION.SKIP && (g <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= g) && (k += g, x = !0);
           }
-          g !== VISITOR_OPTION.SKIP && (g <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= g) && (k[f] += g, p = !0);
+        } else {
+          break;
         }
       }
-    } while (0 <= f);
+    }
   }
   c && c(a, null, -1, 0);
-  return p;
+  return x;
 };
 var VNode = function(a, b, c, d, e) {
   if (core.isBoolean(a)) {

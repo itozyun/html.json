@@ -1,20 +1,24 @@
-function h(a, b) {
-  var f = a, e = l(f), c = 0, d = b(a, null, -1, c / 3);
-  a = [-1, a, e];
-  if (Infinity !== d && -Infinity !== d && 0 < f.length - e) {
-    do {
-      d = ++a[c];
-      var g = f[d + e];
-      if (null != g) {
-        d = b(g, f, d + e, c / 3 + 1);
-        if (Infinity === d) {
+function k(a, b) {
+  var f = a, c = l(f), d = 0, e = b(a, null, -1, d / 3), g = -1;
+  a = [g, a, c];
+  if (Infinity !== e && -Infinity !== e && 0 < f.length - c) {
+    for (;;) {
+      ++g;
+      var h = f[g + c];
+      if (null != h) {
+        e = b(h, f, g + c, d / 3 + 1);
+        if (Infinity === e) {
           break;
         }
-        -Infinity !== d && (-1 >= d ? a[c] += d : (1 <= d && (a[c] += d), l(g) < g.length && (c += 3, a[c] = -1, a[c + 1] = f = g, a[c + 2] = e = l(g))));
+        -Infinity !== e && (-1 >= e ? g += e : (1 <= e && (g += e), l(h) < h.length && (a[d] = g, d += 3, a[d] = g = -1, a[d + 1] = f = h, a[d + 2] = c = l(h))));
       } else {
-        a.length = c, c -= 3, f = a[c + 1], e = a[c + 2];
+        if (3 <= d) {
+          a.length = d, d -= 3, g = a[d], f = a[d + 1], c = a[d + 2];
+        } else {
+          break;
+        }
       }
-    } while (0 <= c);
+    }
   }
 }
 ;var n = {caption:{article:!0, section:!0, nav:!0, aside:!0, h1:!0, h2:!0, h3:!0, h4:!0, h5:!0, h6:!0, header:!0, footer:!0, address:!0, p:!0, hr:!0, pre:!0, blockquote:!0, ol:!0, ul:!0, dl:!0, figure:!0, div:!0, a:!0, em:!0, strong:!0, small:!0, s:!0, cite:!0, q:!0, dfn:!0, abbr:!0, data:!0, time:!0, code:!0, "var":!0, samp:!0, kbd:!0, sub:!0, sup:!0, i:!0, b:!0, u:!0, mark:!0, ruby:!0, bdi:!0, bdo:!0, span:!0, br:!0, wbr:!0, ins:!0, del:!0, picture:!0, img:!0, iframe:!0, embed:!0, object:!0, video:!0, 
@@ -46,15 +50,15 @@ function l(a) {
 }
 ;function r(a, b) {
   var f = !0;
-  h(a, function(e) {
-    var c = e[0], d = 1, g;
-    switch(q(e)) {
+  k(a, function(c) {
+    var d = c[0], e = 1, g;
+    switch(q(c)) {
       case 7:
         return f = !1, Infinity;
       case 1:
       case 17:
-        if (c === +c && (d = 2), e = e[d], (!e || e.constructor !== Array) && e && "object" === typeof e) {
-          for (g in e) {
+        if (d === +d && (e = 2), c = c[e], (!c || c.constructor !== Array) && c && "object" === typeof c) {
+          for (g in c) {
             if (0 === g.indexOf(b)) {
               return f = !1, Infinity;
             }
@@ -66,25 +70,25 @@ function l(a) {
 }
 ;module.exports = {STATIC:1, DYNAMIC:2};
 module.exports.gulp = function(a, b) {
-  const f = require("plugin-error"), e = require("through2"), c = b && b.instructionAttrPrefix || ":";
-  return e.obj(function(d, g, k) {
-    if (d.isNull()) {
-      return k();
+  const f = require("plugin-error"), c = require("through2"), d = b && b.instructionAttrPrefix || ":";
+  return c.obj(function(e, g, h) {
+    if (e.isNull()) {
+      return h();
     }
-    if (d.isStream()) {
-      return this.emit("error", new f("filter", "Streaming not supported")), k();
+    if (e.isStream()) {
+      return this.emit("error", new f("filter", "Streaming not supported")), h();
     }
-    if (".json" === d.extname) {
+    if (".json" === e.extname) {
       try {
-        const m = JSON.parse(d.contents.toString(g)), p = r(m, c);
+        const m = JSON.parse(e.contents.toString(g)), p = r(m, d);
         if (!p && a & 1 || p && a & 2) {
-          return k();
+          return h();
         }
       } catch (m) {
         this.emit("error", new f("filter", m));
       }
     }
-    k(null, d);
+    h(null, e);
   });
 };
 
