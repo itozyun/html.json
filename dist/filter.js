@@ -12,11 +12,14 @@ function k(a, b) {
         }
         -Infinity !== e && (-1 >= e ? g += e : (1 <= e && (g += e), l(h) < h.length && (a[d] = g, d += 3, a[d] = g = -1, a[d + 1] = f = h, a[d + 2] = c = l(h))));
       } else {
-        if (3 <= d) {
-          a.length = d, d -= 3, g = a[d], f = a[d + 1], c = a[d + 2];
-        } else {
+        if (0 === d) {
           break;
         }
+        a.length = d;
+        d -= 3;
+        g = a[d];
+        f = a[d + 1];
+        c = a[d + 2];
       }
     }
   }

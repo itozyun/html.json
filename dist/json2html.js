@@ -47,34 +47,42 @@ function K(a, c) {
           if (Infinity === g) {
             return;
           }
-          if (-Infinity !== g) {
-            if (-1 >= g) {
-              k += g;
-            } else {
-              if (1 <= g && (k += g), O(n) < n.length) {
-                l[e] = k, e += 3, l[e] = k = -1, l[e + 1] = f = n, l[e + 2] = b = O(n);
-              } else if (d) {
-                g = d(n, f, k + b, e / 3 + 1);
-                if (Infinity === g) {
-                  return;
-                }
-                -Infinity !== g && (-1 >= g || 1 <= g) && (k += g);
-              }
+          if (-Infinity === g) {
+            continue;
+          } else if (-1 >= g) {
+            k += g;
+            continue;
+          } else {
+            if (1 <= g && (k += g), O(n) < n.length) {
+              l[e] = k;
+              e += 3;
+              l[e] = k = -1;
+              l[e + 1] = f = n;
+              l[e + 2] = b = O(n);
+              continue;
+            } else if (!d) {
+              continue;
             }
           }
         } else {
-          if (3 <= e) {
-            if (l.length = e, e -= 3, k = l[e], f = l[e + 1], b = l[e + 2], d) {
-              g = d(f[k + b], f, k + b, e / 3 + 1);
-              if (Infinity === g) {
-                return;
-              }
-              -Infinity !== g && (-1 >= g || 1 <= g) && (k += g);
-            }
-          } else {
+          if (0 === e) {
             break;
           }
+          l.length = e;
+          e -= 3;
+          k = l[e];
+          f = l[e + 1];
+          b = l[e + 2];
+          if (!d) {
+            continue;
+          }
+          n = f[k + b];
         }
+        g = d(n, f, k + b, e / 3 + 1);
+        if (Infinity === g) {
+          return;
+        }
+        -Infinity !== g && (-1 >= g || 1 <= g) && (k += g);
       }
     }
     d && d(a, null, -1, 0);

@@ -60,55 +60,49 @@ htmljson.Traverser.traverseAllDescendantNodes = function( rootHTMLJson, onEnterN
                 operation = onEnterNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 + 1 );
                 if( operation === VISITOR_OPTION.BREAK ){
                     return treeIsUpdated;
-                };
-                if( operation !== VISITOR_OPTION.SKIP ){
-                    if( operation <= VISITOR_OPTION.REMOVED ){
+                } else if( operation === VISITOR_OPTION.SKIP ){
+                    continue;
+                } else if( operation <= VISITOR_OPTION.REMOVED ){
+                    currentIndex += operation;
+                    treeIsUpdated = true;
+                    continue;
+                } else {
+                    if( VISITOR_OPTION.INSERTED_BEFORER <= operation ){
                         currentIndex += operation;
                         treeIsUpdated = true;
-                    } else {
-                        if( VISITOR_OPTION.INSERTED_BEFORER <= operation ){
-                            currentIndex += operation;
-                            treeIsUpdated = true;
-                        };
-                        if( m_hasChildren( childNode ) ){
-                            tuple[ depthX3 + 0 ] = currentIndex;
-                            depthX3 += 3;
-                            tuple[ depthX3 + 0 ] = currentIndex   = -1;
-                            tuple[ depthX3 + 1 ] = parentNode     = childNode;
-                            tuple[ depthX3 + 2 ] = childNodeStart = m_getChildNodeStartIndex( childNode );
-                        } else if( opt_onLeaveNode ){
-                            operation = opt_onLeaveNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 + 1 );
-                            if( operation === VISITOR_OPTION.BREAK ){
-                                return treeIsUpdated;
-                            } else if( operation !== VISITOR_OPTION.SKIP ){
-                                if( operation <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= operation ){
-                                    currentIndex += operation;
-                                    treeIsUpdated = true;
-                                };
-                            };
-                        };
+                    };
+                    if( m_hasChildren( childNode ) ){
+                        tuple[ depthX3 + 0 ] = currentIndex;
+                        depthX3 += 3;
+                        tuple[ depthX3 + 0 ] = currentIndex   = -1;
+                        tuple[ depthX3 + 1 ] = parentNode     = childNode;
+                        tuple[ depthX3 + 2 ] = childNodeStart = m_getChildNodeStartIndex( childNode );
+                        continue;
+                    } else if( !opt_onLeaveNode ){
+                        continue;
                     };
                 };
             } else {
-                if( 3 <= depthX3 ){
-                    tuple.length = depthX3;
-                    depthX3 -= 3;
-                    currentIndex   = tuple[ depthX3 + 0 ];
-                    parentNode     = tuple[ depthX3 + 1 ];
-                    childNodeStart = tuple[ depthX3 + 2 ];
-                    if( opt_onLeaveNode ){
-                        operation = opt_onLeaveNode( parentNode[ currentIndex + childNodeStart ], parentNode, currentIndex + childNodeStart, depthX3 / 3 + 1 );
-                        if( operation === VISITOR_OPTION.BREAK ){
-                            return treeIsUpdated;
-                        } else if( operation !== VISITOR_OPTION.SKIP ){
-                            if( operation <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= operation ){
-                                currentIndex += operation;
-                                treeIsUpdated = true;
-                            };
-                        };
-                    };
-                } else {
+                if( depthX3 === 0 ){
                     break;
+                };
+                tuple.length = depthX3;
+                depthX3 -= 3;
+                currentIndex   = tuple[ depthX3 + 0 ];
+                parentNode     = tuple[ depthX3 + 1 ];
+                childNodeStart = tuple[ depthX3 + 2 ];
+                if( !opt_onLeaveNode ){
+                    continue;
+                };
+                childNode = parentNode[ currentIndex + childNodeStart ];
+            };
+            operation = opt_onLeaveNode( childNode, parentNode, currentIndex + childNodeStart, depthX3 / 3 + 1 );
+            if( operation === VISITOR_OPTION.BREAK ){
+                return treeIsUpdated;
+            } else if( operation !== VISITOR_OPTION.SKIP ){
+                if( operation <= VISITOR_OPTION.REMOVED || VISITOR_OPTION.INSERTED_BEFORER <= operation ){
+                    currentIndex += operation;
+                    treeIsUpdated = true;
                 };
             };
         };
